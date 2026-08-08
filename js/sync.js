@@ -232,6 +232,7 @@ function updateDriveUI() {
   const logged = isDriveTokenValid();
 
   const logoutBtn = document.getElementById('menuDriveLogout');
+  const syncItem = document.getElementById('menuSyncNow');
 
   if (logged) {
     item.title = 'Zalogowano — kliknij aby synchronizować';
@@ -239,11 +240,13 @@ function updateDriveUI() {
     if (label) label.textContent = 'Google Drive ☁️ (zalogowano)';
     item.classList.remove('drive-error');
     if (logoutBtn) logoutBtn.style.display = 'flex';
+    if (syncItem) syncItem.style.display = 'flex';
   } else {
     if (check) check.style.display = 'none';
     if (label) label.textContent = 'Google Drive ☁️ (zaloguj)';
     item.title = 'Kliknij aby zalogować się do Google Drive';
     if (logoutBtn) logoutBtn.style.display = 'none';
+    if (syncItem) syncItem.style.display = 'none';
   }
 }
 
