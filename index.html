@@ -213,6 +213,16 @@ body {
   color: #fff;
   transform: scale(1.08);
 }
+
+#userAuthBtn.auth-logged-in {
+  background: #2ecc71;
+  color: #fff;
+  border-color: #27ae60;
+}
+
+#userAuthBtn.auth-logged-in:hover {
+  background: #27ae60;
+}
 .icon-btn.edit-active {
   background: linear-gradient(135deg, #e67e22, #d35400);
   color: #fff;
@@ -2023,6 +2033,7 @@ small { color: var(--text-muted); font-weight: normal; }
   <div class="top-bar">
     <button class="icon-btn" id="editModeToggle" title="Tryb edycji (E)">✏️</button>
     <h1>🏭 Grafik Gillette</h1>
+    <button class="icon-btn" id="userAuthBtn" title="Zaloguj do Google Drive">👤</button>
     <button class="icon-btn" id="menuBtn" title="Menu">☰</button>
   </div>
 

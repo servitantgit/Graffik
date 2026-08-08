@@ -233,6 +233,7 @@ function updateDriveUI() {
 
   const logoutBtn = document.getElementById('menuDriveLogout');
   const syncItem = document.getElementById('menuSyncNow');
+  const authBtn = document.getElementById('userAuthBtn');
 
   if (logged) {
     item.title = 'Zalogowano — kliknij aby synchronizować';
@@ -241,12 +242,22 @@ function updateDriveUI() {
     item.classList.remove('drive-error');
     if (logoutBtn) logoutBtn.style.display = 'flex';
     if (syncItem) syncItem.style.display = 'flex';
+    if (authBtn) {
+      authBtn.textContent = '🚪';
+      authBtn.title = 'Wyloguj z Google Drive';
+      authBtn.classList.add('auth-logged-in');
+    }
   } else {
     if (check) check.style.display = 'none';
     if (label) label.textContent = 'Google Drive ☁️ (zaloguj)';
     item.title = 'Kliknij aby zalogować się do Google Drive';
     if (logoutBtn) logoutBtn.style.display = 'none';
     if (syncItem) syncItem.style.display = 'none';
+    if (authBtn) {
+      authBtn.textContent = '👤';
+      authBtn.title = 'Zaloguj do Google Drive';
+      authBtn.classList.remove('auth-logged-in');
+    }
   }
 }
 
@@ -354,7 +365,19 @@ function initSync() {
     };
   }
 
-  // Przycisk wylogowania
+  const authBtn = document.getElementById('userAuthBtn');
+  if (authBtn) {
+    authBtn.onclick = () => {
+      closeSideMenu();
+      if (isDriveTokenValid()) {
+        logoutDrive();
+      } else {
+        loginDrive();
+      }
+    };
+  }
+
+  // Przycisk wylogування
   const logoutBtn = document.getElementById('menuDriveLogout');
   if (logoutBtn) {
     logoutBtn.onclick = () => {
