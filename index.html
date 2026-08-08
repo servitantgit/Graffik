@@ -2200,6 +2200,7 @@ small { color: var(--text-muted); font-weight: normal; }
     <div class="edit-banner-actions">
       <button id="saveChangesBtn" class="save">💾 Zapisz</button>
       <button id="discardChangesBtn">↶ Cofnij</button>
+      <button id="menuVacationLimit">🌴 Limit urlopu</button>
       <button id="exportDataBtn">📥 JSON</button>
       <button id="importDataBtn">📂 Import</button>
       <button id="clearYearBtn" class="danger">🗑 Rok</button>
@@ -2319,16 +2320,24 @@ small { color: var(--text-muted); font-weight: normal; }
   </div>
 
   <div class="menu-section">
-    <div class="menu-section-title">⚙️ Opcje</div>
-    <button class="menu-item" id="menuWeekSummary">
-      <span class="mi-icon">📊</span>
-      <span>Podsumowanie tygodnia</span>
+    <div class="menu-section-title">☁️ Google Drive</div>
+    <button class="menu-item" id="menuDriveSync">
+      <span class="mi-icon">☁️</span>
+      <span>Google Drive ☁️ (zaloguj)</span>
       <span class="mi-check" style="display:none;">✓</span>
     </button>
-    <button class="menu-item" id="menuVacationLimit">
-      <span class="mi-icon">🌴</span>
-      <span>Ustaw limit urlopu</span>
+    <button class="menu-item" id="menuSyncNow" style="display:none;">
+      <span class="mi-icon">🔄</span>
+      <span>Synchronizuj teraz</span>
     </button>
+    <button class="menu-item" id="menuDriveLogout" style="display:none;">
+      <span class="mi-icon">🚪</span>
+      <span>Wyloguj z Google Drive</span>
+    </button>
+  </div>
+
+  <div class="menu-section">
+    <div class="menu-section-title">🔔 Powiadomienia</div>
     <button class="menu-item" id="menuNotifications">
       <span class="mi-icon">🔔</span>
       <span>Powiadomienia o zmianach</span>
@@ -2339,6 +2348,12 @@ small { color: var(--text-muted); font-weight: normal; }
       <span>Zainstaluj aplikację</span>
     </button>
   </div>
+
+  <div class="menu-section">
+    <div class="menu-section-title">ℹ️ Info</div>
+    <button class="menu-item" id="menuHelp"><span class="mi-icon">❓</span> Pomoc / FAQ</button>
+  </div>
+</div>
 
   <div class="menu-section">
     <div class="menu-section-title">📤 Akcje</div>
