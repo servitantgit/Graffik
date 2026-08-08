@@ -1961,8 +1961,21 @@ small { color: var(--text-muted); font-weight: normal; }
 }
 
 @media print {
+  :root, body.theme-dark, body.theme-neon, body.theme-contrast, body.theme-ocean, body.theme-forest, body.theme-sunset, body.theme-pastel {
+    --bg-container: #fff;
+    --bg-cell: #fafbfd;
+    --border-cell: #ccc;
+    --color-W: #ecf0f1;
+    --color-W-text: #7f8c8d;
+    --color-W-border: #ccd1d1;
+  }
   body { background: #fff !important; padding: 0; color: #000; }
   .container { box-shadow: none; padding: 5px; max-width: 100%; }
+  .day-cell.cell-R, .brigade-table td.tc-R, .mini-day.mR { background: var(--color-R) !important; }
+  .day-cell.cell-P, .brigade-table td.tc-P, .mini-day.mP { background: var(--color-P) !important; }
+  .day-cell.cell-N, .brigade-table td.tc-N, .mini-day.mN { background: var(--color-N-grad) !important; }
+  .day-cell.cell-W, .brigade-table td.tc-W, .mini-day.mW { background: var(--color-W) !important; color: var(--color-W-text) !important; }
+  .day-cell.urlop, .brigade-table td.tc-U, .mini-day.mU { background: var(--color-U-grad) !important; color: #fff !important; }
   .top-bar, .controls-main, .view-switcher, .search-box, .modal-overlay,
   .toast-container, .edit-banner, .edit-palette, .side-menu-overlay, .side-menu,
   .dashboard, .month-nav button, .progress-bar, .progress-label, .info-panel { display: none !important; }
@@ -1970,21 +1983,17 @@ small { color: var(--text-muted); font-weight: normal; }
   .day-cell { break-inside: avoid; page-break-inside: avoid; min-height: 60px; }
   .calendar { gap: 2px; }
   .week-view { grid-template-columns: repeat(7, minmax(0, 1fr)) !important; gap: 4px !important; }
-  .week-day-cell { break-inside: avoid; page-break-inside: avoid; min-height: 110px !important; background: #fff !important; border: 1px solid #999 !important; }
+  .week-day-cell { break-inside: avoid; page-break-inside: avoid; min-height: 110px !important; border: 1px solid #999 !important; }
   .week-day-cell .wdc-header { border-bottom-color: #999 !important; }
-  .week-day-cell .wdc-shift.W { background: #ecf0f1 !important; color: #7f8c8d !important; }
-  .week-day-cell .wdc-shift.U { background: linear-gradient(135deg, #d97706, #075985) !important; color: #fff !important; }
-  .day-cell.cell-R { background: #f39c12 !important; color: #fff !important; }
-  .day-cell.cell-P { background: #16a085 !important; color: #fff !important; }
-  .day-cell.cell-N { background: #2980b9 !important; color: #fff !important; }
-  .day-cell.cell-W { background: #ecf0f1 !important; color: #7f8c8d !important; }
-  .day-cell.urlop { background: linear-gradient(135deg, #d97706, #075985) !important; color: #fff !important; }
+  .week-day-cell .wdc-shift { padding: 8px 4px !important; }
+  .week-day-cell .wdc-shift .wdc-label { font-size: 12px !important; overflow-wrap: anywhere; word-break: break-word; }
+  .week-day-cell .wdc-shift .wdc-time { font-size: 9px !important; }
+  .year-month { break-inside: avoid; border: 1px solid #999 !important; padding: 6px !important; }
+  .year-month h4 { font-size: 12px !important; margin: 0 0 4px !important; }
   .year-view {
     grid-template-columns: repeat(3, 1fr) !important;
     gap: 8px !important;
   }
-  .year-month { break-inside: avoid; background: #fff !important; border: 1px solid #999 !important; padding: 6px !important; }
-  .year-month h4 { color: #000 !important; font-size: 12px !important; margin: 0 0 4px !important; }
   .mini-calendar { gap: 1px !important; }
   .mini-day {
     min-height: 18px !important;
@@ -1992,11 +2001,6 @@ small { color: var(--text-muted); font-weight: normal; }
     border-radius: 2px !important;
     text-shadow: none !important;
   }
-  .mini-day.mR { background: #f39c12 !important; color: #fff !important; }
-  .mini-day.mP { background: #16a085 !important; color: #fff !important; }
-  .mini-day.mN { background: #2980b9 !important; color: #fff !important; }
-  .mini-day.mW { background: #ecf0f1 !important; color: #333 !important; }
-  .mini-day.mU { background: linear-gradient(135deg, #d97706, #075985) !important; color: #fff !important; }
   .mini-day.mE { background: transparent !important; }
   .mini-day.mHoliday { box-shadow: inset 0 0 0 1.5px #c0392b !important; }
   .relief-popup, .ot-popup { display: none !important; }
