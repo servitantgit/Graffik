@@ -195,45 +195,179 @@ async function uploadToDrive(force = false) {
 async function downloadFromDrive(confirmOverwrite = false) {
   if (!isDriveTokenValid()) { showToast('warn', '☁️ Najpierw zaloguj się do Google Drive'); return false; }
   try {
+    console.log('[SYNC] downloadFromDrive start', { confirmOverwrite, gDriveFileId });
     if (!gDriveFileId) {
       const found = await findDriveFile();
       if (!found) { showToast('info', '☁️ Brak pliku w Google Drive — nic do pobrania'); return false; }
       gDriveFileId = found.id;
       localStorage.setItem('grafik_drive_file_id', gDriveFileId);
+      console.log('[SYNC] downloadFromDrive found gDriveFileId', gDriveFileId);
     }
     const resp = await driveFetch(
       `https://www.googleapis.com/drive/v3/files/${gDriveFileId}?alt=media`
     );
+    console.log('[SYNC] downloadFromDrive response', {
+      ok: resp.ok,
+      status: resp.status,
+      contentLength: resp.headers && resp.headers.get ? resp.headers.get('content-length') : null
+    });
     if (!resp.ok) {
       showToast('error', '☁️ Błąd pobierania pliku z Drive');
       return false;
     }
     const data = await resp.json();
+    console.log('[SYNC] downloadFromDrive parsed data', data && typeof data === 'object' ? { keys: Object.keys(data) } : typeof data);
     if (!data || typeof data !== 'object') {
       showToast('error', '☁️ Nieprawidłowy format danych w Drive');
       return false;
     }
 
     const doApply = () => {
-      if (data.factorySchedule) factorySchedule = data.factorySchedule;
-      if (data.customSchedule) customSchedule = data.customSchedule;
-      if (data.urlops) urlops = data.urlops;
-      if (data.overtimes) overtimes = data.overtimes;
-      if (data.notes) notes = data.notes;
-      if (data.prefs) { prefs = { ...prefs, ...data.prefs }; savePrefs(prefs); }
-      saveCustomSchedule(customSchedule);
-      saveUrlops(urlops);
-      saveOvertimes(overtimes);
-      saveNotes(notes);
-      // Limity urlopu zapis
-      if (data.vacationLimits) {
-        Object.keys(data.vacationLimits).forEach(brig => {
-          setVacationLimit(brig, data.vacationLimits[brig]);
-        });
+      console.log('[SYNC] downloadFromDrive doApply start');
+      let applyErrors = [];
+
+      if (data.factorySchedule) {
+        try {
+          console.log('[SYNC] applying factorySchedule');
+          factorySchedule = data.factorySchedule;
+          console.log('[SYNC] factorySchedule applied');
+        } catch (e) {
+          console.error('[SYNC] factorySchedule error', e);
+          applyErrors.push('factorySchedule');
+        }
       }
+
+      if (data.customSchedule) {
+        try {
+          console.log('[SYNC] applying customSchedule');
+          customSchedule = data.customSchedule;
+          console.log('[SYNC] customSchedule applied');
+        } catch (e) {
+          console.error('[SYNC] customSchedule error', e);
+          applyErrors.push('customSchedule');
+        }
+      }
+
+      if (data.urlops) {
+        try {
+          console.log('[SYNC] applying urlops');
+          urlops = data.urlops;
+          console.log('[SYNC] urlops applied');
+        } catch (e) {
+          console.error('[SYNC] urlops error', e);
+          applyErrors.push('urlops');
+        }
+      }
+
+      if (data.overtimes) {
+        try {
+          console.log('[SYNC] applying overtimes');
+          overtimes = data.overtimes;
+          console.log('[SYNC] overtimes applied');
+        } catch (e) {
+          console.error('[SYNC] overtimes error', e);
+          applyErrors.push('overtimes');
+        }
+      }
+
+      if (data.notes) {
+        try {
+          console.log('[SYNC] applying notes');
+          notes = data.notes;
+          console.log('[SYNC] notes applied');
+        } catch (e) {
+          console.error('[SYNC] notes error', e);
+          applyErrors.push('notes');
+        }
+      }
+
+      if (data.prefs) {
+        try {
+          console.log('[SYNC] applying prefs');
+          prefs = { ...prefs, ...data.prefs };
+          savePrefs(prefs);
+          console.log('[SYNC] prefs applied');
+        } catch (e) {
+          console.error('[SYNC] prefs error', e);
+          applyErrors.push('prefs');
+        }
+      }
+
+      try {
+        console.log('[SYNC] saving customSchedule');
+        saveCustomSchedule(customSchedule);
+        console.log('[SYNC] saveCustomSchedule OK');
+      } catch (e) {
+        console.error('[SYNC] saveCustomSchedule error', e);
+        applyErrors.push('saveCustomSchedule');
+      }
+
+      try {
+        console.log('[SYNC] saving urlops');
+        saveUrlops(urlops);
+        console.log('[SYNC] saveUrlops OK');
+      } catch (e) {
+        console.error('[SYNC] saveUrlops error', e);
+        applyErrors.push('saveUrlops');
+      }
+
+      try {
+        console.log('[SYNC] saving overtimes');
+        saveOvertimes(overtimes);
+        console.log('[SYNC] saveOvertimes OK');
+      } catch (e) {
+        console.error('[SYNC] saveOvertimes error', e);
+        applyErrors.push('saveOvertimes');
+      }
+
+      try {
+        console.log('[SYNC] saving notes');
+        saveNotes(notes);
+        console.log('[SYNC] saveNotes OK');
+      } catch (e) {
+        console.error('[SYNC] saveNotes error', e);
+        applyErrors.push('saveNotes');
+      }
+
+      if (data.vacationLimits) {
+        if (typeof setVacationLimit === 'function') {
+          Object.keys(data.vacationLimits).forEach(brig => {
+            try {
+              console.log('[SYNC] applying vacationLimit', brig, data.vacationLimits[brig]);
+              setVacationLimit(brig, data.vacationLimits[brig]);
+              console.log('[SYNC] vacationLimit applied', brig);
+            } catch (e) {
+              console.error('[SYNC] vacationLimit error', brig, e);
+              applyErrors.push('vacationLimits.' + brig);
+            }
+          });
+        } else {
+          console.warn('[SYNC] setVacationLimit not available, skipping vacationLimits');
+        }
+      }
+
       currentView = 'dashboard';
-      if (typeof switchView === 'function') switchView('dashboard');
-      else refreshViews();
+      if (typeof switchView === 'function') {
+        try {
+          switchView('dashboard');
+          console.log('[SYNC] switchView dashboard');
+        } catch (e) {
+          console.error('[SYNC] switchView error', e);
+          applyErrors.push('switchView');
+        }
+      } else if (typeof refreshViews === 'function') {
+        try {
+          refreshViews();
+          console.log('[SYNC] refreshViews');
+        } catch (e) {
+          console.error('[SYNC] refreshViews error', e);
+          applyErrors.push('refreshViews');
+        }
+      } else {
+        console.warn('[SYNC] neither switchView nor refreshViews available');
+      }
+
+      console.log('[SYNC] downloadFromDrive doApply end', { applyErrors: applyErrors.length ? applyErrors : null });
       showToast('success', '☁️ Dane pobrane z Google Drive');
       updateDriveUI();
     };
@@ -439,39 +573,3 @@ if (document.readyState === 'loading') {
 } else {
   initSync();
 }
-/* === DEBUG (тимчасово) === */
-window.debugDriveShow = function() {
-  const token = localStorage.getItem('grafik_drive_token');
-  const fileId = localStorage.getItem('grafik_drive_file_id');
-  
-  if (!token) {
-    alert('❌ NIE ZALOGOWANO\n\nToken: null\n\nZaloguj się przez Menu → Google Drive');
-    return;
-  }
-  
-  fetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&fields=files(id,name,size,modifiedTime)', {
-    headers: { 'Authorization': 'Bearer ' + token }
-  }).then(r => {
-    if (!r.ok) {
-      alert('❌ API Error: ' + r.status + '\n\nToken може бути прострочений або scope неправильний');
-      return null;
-    }
-    return r.json();
-  }).then(d => {
-    if (!d) return;
-    const files = d.files || [];
-    const filesInfo = files.map((f, i) => 
-      `#${i+1}: ${f.name}\n  Size: ${f.size}b\n  Modified: ${f.modifiedTime}\n  ID: ${f.id.substring(0, 15)}...`
-    ).join('\n\n');
-    
-    alert(
-      '✅ ZALOGOWANO\n\n' +
-      '🔐 Token: OK (' + token.substring(0, 20) + '...)\n\n' +
-      '📁 LocalFileID: ' + (fileId ? fileId.substring(0, 15) + '...' : 'null') + '\n\n' +
-      '📂 Files in AppData: ' + files.length + '\n\n' +
-      (filesInfo || 'BRAK PLIKÓW')
-    );
-  }).catch(e => {
-    alert('❌ Błąd: ' + e.message);
-  });
-};
