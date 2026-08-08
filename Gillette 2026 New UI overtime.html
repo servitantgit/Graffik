@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#1e3c72">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Grafik Gillette - IV brygady</title>
 
 <!-- STYLE - см. повідомлення 2 -->
@@ -2188,6 +2194,15 @@ small { color: var(--text-muted); font-weight: normal; }
       <span class="mi-icon">🌴</span>
       <span>Ustaw limit urlopu</span>
     </button>
+    <button class="menu-item" id="menuNotifications">
+      <span class="mi-icon">🔔</span>
+      <span>Powiadomienia o zmianach</span>
+      <span class="mi-check" style="display:none;">✓</span>
+    </button>
+    <button class="menu-item" id="menuInstallApp" style="display:none;">
+      <span class="mi-icon">📲</span>
+      <span>Zainstaluj aplikację</span>
+    </button>
   </div>
 
   <div class="menu-section">
@@ -2398,8 +2413,7 @@ small { color: var(--text-muted); font-weight: normal; }
           <div class="faq-answer">
             Tak. W menu dostępny jest eksport <b>.ics</b> do kalendarza oraz backup <b>JSON</b>. Plik .ics można zaimportować do Google Calendar, Outlooka, iPhone’a i wielu innych aplikacji kalendarzowych.
           </div>
-        </details>
-
+        </deta
         <details class="faq-item">
           <summary>🐛 Jak zgłosić problem lub sugestię?</summary>
           <div class="faq-answer">
@@ -2427,6 +2441,7 @@ small { color: var(--text-muted); font-weight: normal; }
 <script src="js/calendar.js"></script>
 <script src="js/views.js"></script>
 <script src="js/actions.js"></script>
+<script src="js/pwa.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,32 @@
+{
+  "name": "Grafik Gillette - IV brygady",
+  "short_name": "Grafik",
+  "description": "Grafik zmian dla brygad A/B/C/D z urlopami, nadgodzinami i powiadomieniami",
+  "start_url": "./Gillette 2026 New UI overtime.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1e3c72",
+  "theme_color": "#1e3c72",
+  "lang": "pl",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
