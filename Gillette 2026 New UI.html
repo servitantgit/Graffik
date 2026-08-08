@@ -1872,6 +1872,10 @@
       <span>Podsumowanie tygodnia</span>
       <span class="mi-check" style="display:none;">✓</span>
     </button>
+    <button class="menu-item" id="menuVacationLimit">
+      <span class="mi-icon">🌴</span>
+      <span>Ustaw limit urlopu</span>
+    </button>
   </div>
 
   <div class="menu-section">
@@ -1913,11 +1917,11 @@
 <div class="modal-overlay" id="faqOverlay">
   <div class="modal" style="max-width:800px;">
     <div class="modal-header">
-      <h3>❓ Pomoc — Grafik Gillette</h3>
+      <h3>❓ Pomoc — Grafik Gillette (FAQ v3)</h3>
       <button class="modal-close" id="faqClose">×</button>
     </div>
     <div class="modal-body">
-      <p class="faq-intro" style="color:var(--text-muted); font-size:13px; margin-bottom:15px;">Kliknij pytanie, aby zobaczyć odpowiedź. Poniżej znajdziesz opis wszystkich funkcji aplikacji.</p>
+      <p class="faq-intro" style="color:var(--text-muted); font-size:13px; margin-bottom:15px;">Kliknij pytanie, aby zobaczyć odpowiedź. Poniżej znajdziesz szczegółowy opis zakładek, możliwości i tego, co aplikacja pokazuje.</p>
 
       <div class="faq-list" style="display:flex; flex-direction:column; gap:8px;">
 
@@ -2276,6 +2280,21 @@ const SHIFT_CYCLE = ['','R','P','N'];
 const MIN_YEAR = 2020;
 const MAX_YEAR = 2050;
 const URLOP_LIMIT = 26;
+
+function getVacationLimit(brigade) {
+  const raw = prefs.urlopLimits && prefs.urlopLimits[brigade];
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 0) return URLOP_LIMIT;
+  return Math.floor(value);
+}
+
+function setVacationLimit(brigade, value) {
+  const limit = Math.max(0, Math.floor(Number(value) || 0));
+  if (!prefs.urlopLimits) prefs.urlopLimits = {};
+  prefs.urlopLimits[brigade] = limit;
+  savePrefs(prefs);
+  return limit;
+}
 
 /* === Свята (Гаусс) === */
 function easter(year) {
@@ -2715,6 +2734,34 @@ document.getElementById('menuWeekSummary').querySelector('.mi-check').style.disp
 document.getElementById('menuIcs').onclick = () => { closeSideMenu(); exportICS(); };
 document.getElementById('menuPrint').onclick = () => { closeSideMenu(); doPrint(); };
 document.getElementById('menuShare').onclick = () => { closeSideMenu(); shareDay(); };
+document.getElementById('menuVacationLimit').onclick = () => {
+  closeSideMenu();
+  const currentLimit = getVacationLimit(selectedShift);
+  const body = `
+    <p>Podaj nową liczbę dni urlopu dla brygady <strong>${selectedShift}</strong>:</p>
+    <input id="vacationLimitInput" type="number" min="0" step="1" value="${currentLimit}" style="width:100%; padding:10px; border:1px solid var(--border-cell); border-radius:8px; font-size:16px;">
+  `;
+  showModal({
+    title: 'Ustaw limit urlopu',
+    body,
+    buttons: [
+      { text: 'Anuluj', class: 'secondary' },
+      { text: 'Zapisz', class: 'primary', onClick: () => {
+          const input = document.getElementById('vacationLimitInput');
+          const parsed = Number(input.value);
+          if (!Number.isFinite(parsed) || parsed < 0) {
+            showToast('error', 'Wpisz liczbę dni większą lub równą 0');
+            return;
+          }
+          setVacationLimit(selectedShift, parsed);
+          showToast('success', `Limit urlopów dla brygady ${selectedShift}: ${parsed} dni`);
+          renderInfo();
+          if (currentView === 'dashboard') renderDashboard();
+        }
+      }
+    ]
+  });
+};
 
 /* === 13. РЕНДЕР DASHBOARD === */
 function renderDashboard() {
@@ -2811,6 +2858,7 @@ if (tOnU) {
 
   const totalUrlop = (urlops[selectedShift] || []).filter(k => k.startsWith(y+'-')).length;
   const usedUrlop = countWorkingUrlops(y, selectedShift);
+  const limit = getVacationLimit(selectedShift);
 
   // Найближчі 7 днів
   let upcomingHtml = '';
@@ -2867,7 +2915,7 @@ if (tOnU) {
         <div class="dsc-icon">🌴</div>
         <div class="dsc-info">
           <div class="dsc-label">Urlop ${y}</div>
-          <div class="dsc-value">${usedUrlop} / ${URLOP_LIMIT} dni</div>
+          <div class="dsc-value">${usedUrlop} / ${limit} dni</div>
         </div>
       </div>
     </div>
@@ -3187,10 +3235,14 @@ function renderInfo() {
 
   const totalUrlop = (urlops[selectedShift] || []).filter(k => k.startsWith(currentYear+'-')).length;
   const usedUrlop = countWorkingUrlops(currentYear, selectedShift);
-  const overLimit = usedUrlop > URLOP_LIMIT;
+  const limit = getVacationLimit(selectedShift);
+  const overLimit = usedUrlop > limit;
   const urlopStats = `<div class="urlop-stats">
     <span>🌴 Urlop ${selectedShift} (${currentYear}):<br><small style="opacity:.9;font-weight:normal;">Zaznaczone: ${totalUrlop} • Robocze: ${usedUrlop}</small></span>
-    <span><span class="us-count ${overLimit?'us-over':''}">${usedUrlop}</span> / ${URLOP_LIMIT} ${overLimit ? '⚠️' : ''}</span>
+    <div style="display:flex; align-items:center; gap:6px;">
+      <span><span class="us-count ${overLimit?'us-over':''}">${usedUrlop}</span> / ${limit} ${overLimit ? '⚠️' : ''}</span>
+      <button class="urlop-limit-edit" data-brigade="${selectedShift}" title="Zmień limit urlopów dla ${selectedShift}" style="border:none; background:rgba(255,255,255,0.18); color:inherit; border-radius:6px; width:24px; height:24px; cursor:pointer;">✏️</button>
+    </div>
   </div>`;
 
   let liveInfo = '';
@@ -3251,6 +3303,37 @@ function renderInfo() {
         ${toWolneInfo}
         <div class="info-card"><div class="label">📝 Notatka</div><div class="value"><input class="note-input" id="noteInput" value="${(notes[noteKey]||'').replace(/"/g,'&quot;')}" placeholder="Dodaj notatkę..."></div></div>
       </div>`;
+  }
+
+  const editLimitBtn = panel.querySelector('.urlop-limit-edit');
+  if (editLimitBtn) {
+    editLimitBtn.addEventListener('click', () => {
+      const brigade = editLimitBtn.dataset.brigade;
+      const currentLimit = getVacationLimit(brigade);
+      const body = `
+        <p>Podaj nową liczbę dni urlopu dla brygady <strong>${brigade}</strong>:</p>
+        <input id="vacationLimitInput" type="number" min="0" step="1" value="${currentLimit}" style="width:100%; padding:10px; border:1px solid var(--border-cell); border-radius:8px; font-size:16px;">
+      `;
+      showModal({
+        title: 'Ustaw limit urlopu',
+        body,
+        buttons: [
+          { text: 'Anuluj', class: 'secondary' },
+          { text: 'Zapisz', class: 'primary', onClick: () => {
+              const input = document.getElementById('vacationLimitInput');
+              const parsed = Number(input.value);
+              if (!Number.isFinite(parsed) || parsed < 0) {
+                showToast('error', 'Wpisz liczbę dni większą lub równą 0');
+                return;
+              }
+              setVacationLimit(brigade, parsed);
+              showToast('success', `Limit urlopów dla brygady ${brigade}: ${parsed} dni`);
+              renderInfo();
+            }
+          }
+        ]
+      });
+    });
   }
 
   const ni = document.getElementById('noteInput');
