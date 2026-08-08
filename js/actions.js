@@ -42,6 +42,35 @@ function exportICS() {
 document.getElementById('icsBtn').onclick = exportICS;
 document.getElementById('printBtn').onclick = () => window.print();
 
+/* === PRINT HEADER/FOOTER === */
+function addPrintHeader() {
+  const existing = document.querySelector('.print-header');
+  if (existing) existing.remove();
+  const header = document.createElement('div');
+  header.className = 'print-header';
+  const today = new Date();
+  const dateStr = `${today.getDate()} ${monthNames[today.getMonth()]} ${today.getFullYear()}`;
+  const viewName = { dashboard: 'Dashboard', week: 'Tydzień', month: 'Miesiąc', table: 'Tabela' }[currentView] || '';
+  const yearSuffix = yearMode ? ' — cały rok' : '';
+  header.textContent = `🏭 Grafik Gillette — ${viewName}${yearSuffix} • Brygada ${selectedShift} • ${dateStr}`;
+  document.body.prepend(header);
+}
+function addPrintFooter() {
+  const existing = document.querySelector('.print-footer');
+  if (existing) existing.remove();
+  const footer = document.createElement('div');
+  footer.className = 'print-footer';
+  footer.textContent = `Wygenerowano: ${new Date().toLocaleString('pl-PL')} • Grafik Gillette`;
+  document.body.appendChild(footer);
+}
+window.addEventListener('beforeprint', () => {
+  addPrintHeader();
+  addPrintFooter();
+});
+window.addEventListener('afterprint', () => {
+  document.querySelectorAll('.print-header, .print-footer').forEach(el => el.remove());
+});
+
 /* === SHARE === */
 function shareDay() {
   const d = selectedDay || new Date().getDate();
