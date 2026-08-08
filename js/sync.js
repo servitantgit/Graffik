@@ -439,3 +439,39 @@ if (document.readyState === 'loading') {
 } else {
   initSync();
 }
+/* === DEBUG (тимчасово) === */
+window.debugDriveShow = function() {
+  const token = localStorage.getItem('grafik_drive_token');
+  const fileId = localStorage.getItem('grafik_drive_file_id');
+  
+  if (!token) {
+    alert('❌ NIE ZALOGOWANO\n\nToken: null\n\nZaloguj się przez Menu → Google Drive');
+    return;
+  }
+  
+  fetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&fields=files(id,name,size,modifiedTime)', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  }).then(r => {
+    if (!r.ok) {
+      alert('❌ API Error: ' + r.status + '\n\nToken може бути прострочений або scope неправильний');
+      return null;
+    }
+    return r.json();
+  }).then(d => {
+    if (!d) return;
+    const files = d.files || [];
+    const filesInfo = files.map((f, i) => 
+      `#${i+1}: ${f.name}\n  Size: ${f.size}b\n  Modified: ${f.modifiedTime}\n  ID: ${f.id.substring(0, 15)}...`
+    ).join('\n\n');
+    
+    alert(
+      '✅ ZALOGOWANO\n\n' +
+      '🔐 Token: OK (' + token.substring(0, 20) + '...)\n\n' +
+      '📁 LocalFileID: ' + (fileId ? fileId.substring(0, 15) + '...' : 'null') + '\n\n' +
+      '📂 Files in AppData: ' + files.length + '\n\n' +
+      (filesInfo || 'BRAK PLIKÓW')
+    );
+  }).catch(e => {
+    alert('❌ Błąd: ' + e.message);
+  });
+};
