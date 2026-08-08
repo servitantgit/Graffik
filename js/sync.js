@@ -231,15 +231,19 @@ function updateDriveUI() {
   const label = item.querySelector('span:nth-child(2)');
   const logged = isDriveTokenValid();
 
+  const logoutBtn = document.getElementById('menuDriveLogout');
+
   if (logged) {
     item.title = 'Zalogowano — kliknij aby synchronizować';
     if (check) check.style.display = 'inline';
     if (label) label.textContent = 'Google Drive ☁️ (zalogowano)';
     item.classList.remove('drive-error');
+    if (logoutBtn) logoutBtn.style.display = 'flex';
   } else {
     if (check) check.style.display = 'none';
     if (label) label.textContent = 'Google Drive ☁️ (zaloguj)';
-    item.title = 'Ustawienia → Google Drive → zaloguj się';
+    item.title = 'Kliknij aby zalogować się do Google Drive';
+    if (logoutBtn) logoutBtn.style.display = 'none';
   }
 }
 
@@ -283,21 +287,23 @@ function askForClientId() {
   });
 }
 
-/* === GŁÓWNE MENU: synchronizuj === */
-async function syncWithDrive() {
+/* === LOGOWANIE === */
+function loginDrive() {
   if (!gDriveClientId) {
-    showModal({
-      title: '☁️ Google Drive',
-      body: 'Najpierw skonfiguruj Google Drive w ustawieniach (Client ID).',
-      buttons: [{ text: 'OK', class: 'primary' }],
-      onShow: () => {}
-    });
+    showToast('warn', '☁️ Najpierw skonfiguruj Client ID w ustawieniach');
+    askForClientId();
     return;
   }
+  if (!gDriveTokenClient) initGDriveTokenClient();
+  if (!gDriveTokenClient) { showToast('error', '☁️ Nie można zainicjować logowania — sprawdź Client ID'); return; }
+  gDriveTokenClient.requestAccessToken();
+}
+
+/* === GŁÓWNE MENU: synchronizuj === */
+async function syncWithDrive() {
   if (!isDriveTokenValid()) {
-    if (!gDriveTokenClient) initGDriveTokenClient();
-    if (!gDriveTokenClient) { showToast('error', '☁️ Nie można zainicjować logowania — sprawdź Client ID'); return; }
-    gDriveTokenClient.requestAccessToken();
+    showToast('warn', '☁️ Najpierw zaloguj się do Google Drive');
+    loginDrive();
     return;
   }
   // Zalogowano: zapytaj użytkownika
@@ -336,28 +342,36 @@ function initSync() {
   const menuBtn = document.getElementById('menuDriveSync');
   if (menuBtn) {
     menuBtn.onclick = () => {
-      const logged = isDriveTokenValid();
-      showConfirm(
-        '☁️ Google Drive',
-        logged
-          ? 'Jesteś zalogowany. Wybierz opcję:'
-          : 'Nie jesteś zalogowany. Chcesz skonfigurować lub zalogować się?',
-        () => {
-          if (logged) {
-            syncWithDrive();
-          } else {
-            askForClientId();
-          }
-        },
-        { primaryText: logged ? '☁️ Synchronizuj' : '⚙️ Ustawienia', primaryClass: 'primary' }
-      );
+      closeSideMenu();
+      if (isDriveTokenValid()) {
+        syncWithDrive();
+      } else {
+        loginDrive();
+      }
     };
   }
 
-  // Przycisk w menu akcji
+  // Przycisk wylogowania
+  const logoutBtn = document.getElementById('menuDriveLogout');
+  if (logoutBtn) {
+    logoutBtn.onclick = () => {
+      closeSideMenu();
+      logoutDrive();
+    };
+  }
+
+  // Przycisk w menu akcji — sync tylko dla zalogowanych
   const syncItem = document.getElementById('menuSyncNow');
   if (syncItem) {
-    syncItem.onclick = () => syncWithDrive();
+    syncItem.onclick = () => {
+      closeSideMenu();
+      if (!isDriveTokenValid()) {
+        showToast('warn', '☁️ Najpierw zaloguj się do Google Drive');
+        loginDrive();
+        return;
+      }
+      syncWithDrive();
+    };
   }
 
   loadGis().then(() => {

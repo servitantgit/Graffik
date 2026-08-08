@@ -112,7 +112,7 @@ function escapeHtml(value) {
   const A = String.fromCharCode(38), L = String.fromCharCode(60),
         G = String.fromCharCode(62), Q = String.fromCharCode(34),
         P = String.fromCharCode(39);
-  return String(value ?? '')
+  return String(value != null ? value : '')
     .split(A).join(A + 'amp;')
     .split(L).join(A + 'lt;')
     .split(G).join(A + 'gt;')

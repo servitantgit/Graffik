@@ -2012,7 +2012,7 @@ small { color: var(--text-muted); font-weight: normal; }
   .relief-popup, .ot-popup { display: none !important; }
   .table-view { break-inside: auto; overflow: visible !important; }
   .brigade-table { min-width: 100% !important; font-size: 10px !important; }
-  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 }
 </style>
 </head>
@@ -2213,14 +2213,18 @@ small { color: var(--text-muted); font-weight: normal; }
     <button class="menu-item" id="menuSyncNow"><span class="mi-icon">☁️</span> Synchronizuj teraz</button>
   </div>
 
-  <div class="menu-section">
-    <div class="menu-section-title">☁️ Google Drive</div>
-    <button class="menu-item" id="menuDriveSync">
-      <span class="mi-icon">☁️</span>
-      <span>Google Drive ☁️ (zaloguj)</span>
-      <span class="mi-check" style="display:none;">✓</span>
-    </button>
-  </div>
+    <div class="menu-section">
+      <div class="menu-section-title">☁️ Google Drive</div>
+      <button class="menu-item" id="menuDriveSync">
+        <span class="mi-icon">☁️</span>
+        <span>Google Drive ☁️ (zaloguj)</span>
+        <span class="mi-check" style="display:none;">✓</span>
+      </button>
+      <button class="menu-item" id="menuDriveLogout" style="display:none;">
+        <span class="mi-icon">🚪</span>
+        <span>Wyloguj z Google Drive</span>
+      </button>
+    </div>
 
   <div class="menu-section">
     <div class="menu-section-title">ℹ️ Info</div>

@@ -336,7 +336,7 @@ function openOvertimeModal(day, shift, position, existing) {
     <b>🏭 Zmiana:</b> ${shift} (${shiftTimeStr})<br>
     <b>📍 Pozycja:</b> ${posLabel} zmiany
   `;
-  document.getElementById('otNote').value = existing?.note || '';
+  document.getElementById('otNote').value = existing ? existing.note || '' : '';
   document.getElementById('otCustomHours').value = '';
 
   document.querySelectorAll('.ot-qbtn').forEach(b => b.classList.remove('active'));
