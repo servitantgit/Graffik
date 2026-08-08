@@ -2,10 +2,10 @@
    GRAFIK GILLETTE — Service Worker (PWA)
    Кешування + push-сповіщення про зміни
    ================================================================ */
-const CACHE_NAME = 'grafik-gillette-v1';
+const CACHE_NAME = 'grafik-gillette-v2';
 const ASSETS = [
   './',
-  './Gillette 2026 New UI overtime.html',
+  './index.html',
   './manifest.json',
   './js/data.js',
   './js/core.js',
@@ -15,6 +15,8 @@ const ASSETS = [
   './js/calendar.js',
   './js/views.js',
   './js/actions.js',
+  './js/pwa.js',
+  './js/sync.js',
   './js/main.js',
   './icons/icon-192.png',
   './icons/icon-512.png',

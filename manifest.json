@@ -2,7 +2,7 @@
   "name": "Grafik Gillette - IV brygady",
   "short_name": "Grafik",
   "description": "Grafik zmian dla brygad A/B/C/D z urlopami, nadgodzinami i powiadomieniami",
-  "start_url": "./Gillette 2026 New UI overtime.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
