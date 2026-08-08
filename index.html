@@ -2007,6 +2007,17 @@ small { color: var(--text-muted); font-weight: normal; }
   .calendar { gap: 6px; }
 }
 
+/* Fix for short viewport heights (landscape phones, small windows): allow calendar to scroll vertically
+   so months that need 6 rows (e.g. August) don't cut off the last week. */
+@media (max-height: 720px) {
+  .calendar-wrap {
+    max-height: calc(100vh - 180px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 6px;
+  }
+}
+
 @media print {
   :root, body.theme-dark, body.theme-neon, body.theme-contrast, body.theme-ocean, body.theme-forest, body.theme-sunset, body.theme-pastel {
     --bg-container: #fff;
