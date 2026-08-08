@@ -84,12 +84,39 @@ async function driveFetch(url, options = {}, retry = true) {
 
 /* === SZUKANIE PLIKU W DRIVE === */
 async function findDriveFile() {
-  const query = `name='${DRIVE_FILE_NAME}' and trashed=false and 'appDataFolder' in parents`;
-  const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=files(id,name,mimeType,modifiedTime)`;
+  // Шукаємо ВСІ файли з нашою назвою в App Data
+  const query = `name='${DRIVE_FILE_NAME}' and trashed=false`;
+  const url = `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${encodeURIComponent(query)}&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc`;
+  
   const resp = await driveFetch(url);
-  if (!resp.ok) return null;
+  if (!resp.ok) {
+    console.error('[SYNC] findDriveFile error:', resp.status);
+    return null;
+  }
+  
   const data = await resp.json();
-  return data.files && data.files.length > 0 ? data.files[0] : null;
+  const files = data.files || [];
+  
+  if (files.length === 0) return null;
+  
+  // Найновіший файл — перший у списку (orderBy=modifiedTime desc)
+  const newest = files[0];
+  console.log('[SYNC] Найновіший файл:', newest.id, newest.modifiedTime);
+  
+  // Видаляємо дублікати (всі крім першого)
+  if (files.length > 1) {
+    console.log('[SYNC] Знайдено дублікатів:', files.length - 1, '— видаляю...');
+    for (let i = 1; i < files.length; i++) {
+      try {
+        await driveFetch(`https://www.googleapis.com/drive/v3/files/${files[i].id}`, { method: 'DELETE' });
+        console.log('[SYNC] Видалено дублікат:', files[i].id);
+      } catch (e) {
+        console.warn('[SYNC] Не вдалося видалити:', files[i].id);
+      }
+    }
+  }
+  
+  return newest;
 }
 
 /* === ZAPIS (create lub update) === */
