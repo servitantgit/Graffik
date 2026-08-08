@@ -72,6 +72,30 @@ function updateNotificationUI() {
   item.title = enabled
     ? 'Powiadomienia WŁĄCZONE — kliknij, aby wyłączyć'
     : 'Powiadomienia WYŁĄCZONE — kliknij, aby włączyć';
+
+  // Add lead-time selector (1/2/3 hours) next to the label
+  // Ensure prefs.notificationsLead exists
+  if (typeof prefs.notificationsLead === 'undefined') prefs.notificationsLead = 1;
+  let existing = document.getElementById('notifLeadSelect');
+  if (!existing) {
+    const sel = document.createElement('select');
+    sel.id = 'notifLeadSelect';
+    sel.style.marginLeft = '8px';
+    sel.style.fontSize = '12px';
+    sel.title = 'Ile godzin przed zmianą wysłać powiadomienie';
+    [1,2,3].forEach(h => {
+      const o = document.createElement('option'); o.value = String(h); o.textContent = h + 'h'; sel.appendChild(o);
+    });
+    sel.value = String(prefs.notificationsLead);
+    sel.addEventListener('change', (e) => {
+      prefs.notificationsLead = parseInt(e.target.value, 10) || 1;
+      savePrefs(prefs);
+      showToast('info', `⏱ Powiadomienie: ${prefs.notificationsLead} godz. przed zmianą`);
+    });
+    if (label && label.parentNode) label.parentNode.insertBefore(sel, label.nextSibling);
+  } else {
+    existing.value = String(prefs.notificationsLead);
+  }
 }
 
 function requestNotificationPermission() {
