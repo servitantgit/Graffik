@@ -1082,19 +1082,33 @@ body {
 .day-cell.empty { background: transparent; border: none; cursor: default; }
 
 .day-cell.today {
-  box-shadow: 0 0 0 4px #f1c40f, 0 0 20px rgba(241,196,15,0.45);
+  /* Remove decorative dot; use contrasting outline/frame instead */
+  box-shadow: none;
 }
-.day-cell.today::before {
-  content: '';
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  width: 10px;
-  height: 10px;
-  background: #f1c40f;
-  border-radius: 50%;
-  box-shadow: 0 0 10px #f1c40f;
-  z-index: 2;
+
+/* Hide previous dot marker if present */
+.day-cell.today::before { display: none; }
+
+/* Contrasting outline: light outline for dark shift backgrounds (R,P,N),
+   dark outline for light backgrounds (W, U) */
+.day-cell.cell-R.today,
+.day-cell.cell-P.today,
+.day-cell.cell-N.today {
+  outline: 3px solid rgba(255,255,255,0.9);
+  outline-offset: 2px;
+  box-shadow: 0 0 18px rgba(255,255,255,0.06);
+}
+.day-cell.cell-W.today,
+.day-cell.urlop.today {
+  outline: 3px solid rgba(0,0,0,0.45);
+  outline-offset: 2px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+/* Fallback generic styling if day has no cell- class */
+.day-cell.today:not([class*="cell-"]) {
+  outline: 3px solid rgba(241,196,15,0.9);
+  outline-offset: 2px;
 }
 
 .day-cell.selected {
