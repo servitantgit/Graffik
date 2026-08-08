@@ -1450,13 +1450,14 @@ body.theme-contrast .day-cell.day-weekend.cell-W {
 /* === WEEK VIEW === */
 .week-view {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 6px;
   margin-top: 10px;
   animation: slideIn .3s ease-out;
 }
 .week-day-cell {
   min-height: 130px;
+  min-width: 0;
   border-radius: 12px;
   padding: 10px;
   border: 2px solid var(--border-cell);
@@ -1968,6 +1969,11 @@ small { color: var(--text-muted); font-weight: normal; }
   .month-nav { justify-content: center; }
   .day-cell { break-inside: avoid; page-break-inside: avoid; min-height: 60px; }
   .calendar { gap: 2px; }
+  .week-view { grid-template-columns: repeat(7, minmax(0, 1fr)) !important; gap: 4px !important; }
+  .week-day-cell { break-inside: avoid; page-break-inside: avoid; min-height: 110px !important; background: #fff !important; border: 1px solid #999 !important; }
+  .week-day-cell .wdc-header { border-bottom-color: #999 !important; }
+  .week-day-cell .wdc-shift.W { background: #ecf0f1 !important; color: #7f8c8d !important; }
+  .week-day-cell .wdc-shift.U { background: linear-gradient(135deg, #d97706, #075985) !important; color: #fff !important; }
   .day-cell.cell-R { background: #f39c12 !important; color: #fff !important; }
   .day-cell.cell-P { background: #16a085 !important; color: #fff !important; }
   .day-cell.cell-N { background: #2980b9 !important; color: #fff !important; }
