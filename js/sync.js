@@ -6,7 +6,7 @@
 const DRIVE_CLIENT_ID_KEY = 'grafik_drive_client_id';
 const DRIVE_FILE_NAME = 'grafik-gillette-data.json';
 const DRIVE_MIME = 'application/json';
-const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.appdata';
 
 let gDriveTokenClient = null;
 let gDriveToken = localStorage.getItem('grafik_drive_token') || null;
@@ -134,7 +134,8 @@ async function uploadToDrive(force = false) {
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({}));
         console.error('[SYNC] Create error:', err);
-        showToast('error', '☁️ Błąd tworzenia pliku w Drive');
+        const errText = (err && err.error && err.error.message) || err.message || JSON.stringify(err) || 'nieznany błąd';
+        showToast('error', '☁️ Błąd tworzenia pliku w Drive: ' + errText);
         return false;
       }
       const data = await resp.json();
