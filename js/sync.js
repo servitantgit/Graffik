@@ -295,22 +295,27 @@ const doApply = () => {
     }
   }
 
-  // vacationLimits — defensive
-  if (data.vacationLimits) {
-    if (typeof setVacationLimit === 'function') {
-      Object.keys(data.vacationLimits).forEach(brig => {
-        try {
-          console.log('[SYNC] applying vacationLimit', brig, data.vacationLimits[brig]);
-          setVacationLimit(brig, data.vacationLimits[brig]);
-          console.log('[SYNC] vacationLimit applied', brig);
-        } catch (e) {
-          console.error('[SYNC] vacationLimit error', brig, e);
-          applyErrors.push('vacationLimits.' + brig);
-        }
-      });
-    } else {
+  const applyVacationLimits = (limits, source) => {
+    if (!limits || typeof limits !== 'object') return false;
+    if (typeof setVacationLimit !== 'function') {
       console.warn('[SYNC] setVacationLimit not available, skipping vacationLimits');
+      return false;
     }
+    Object.keys(limits).forEach(brig => {
+      try {
+        console.log('[SYNC] applying vacationLimit', brig, limits[brig], 'source', source);
+        setVacationLimit(brig, limits[brig]);
+        console.log('[SYNC] vacationLimit applied', brig);
+      } catch (e) {
+        console.error('[SYNC] vacationLimit error', brig, e);
+        applyErrors.push('vacationLimits.' + brig);
+      }
+    });
+    return true;
+  };
+
+  if (!applyVacationLimits(data.vacationLimits, 'data.vacationLimits')) {
+    applyVacationLimits(data.prefs && data.prefs.urlopLimits, 'data.prefs.urlopLimits');
   }
 
   // Odświeżamy widok
