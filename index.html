@@ -1018,7 +1018,7 @@ body {
 .month-nav {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 15px;
   margin: 10px 0 5px;
 }
@@ -1049,6 +1049,11 @@ body {
 .slide-left { animation: slideLeft .3s ease-out; }
 @keyframes slideRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes slideLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+/* Ensure calendar fits container without breaking popups */
+.calendar { 
+  width: 100%; 
+  box-sizing: border-box; 
+}
 
 .day-header { text-align: center; font-weight: bold; padding: 6px; background: var(--text-header); color: #fff; border-radius: 6px; font-size: 13px; }
 .day-header.weekend {
@@ -1336,9 +1341,6 @@ body.theme-contrast .day-cell.day-weekend.cell-W {
 }
 .ot-qbtn {
   padding: 10px 6px;
-/* Safety: ensure calendar grid fits its container and cells wrap long content */
-.calendar { width: 100%; box-sizing: border-box; }
-.calendar > * { min-width: 0; overflow: hidden; word-break: break-word; }
   border: 2px solid var(--border-cell);
   background: var(--bg-cell);
   color: var(--text-main);
