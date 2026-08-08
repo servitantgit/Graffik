@@ -1080,18 +1080,18 @@ body {
 .day-cell.empty { background: transparent; border: none; cursor: default; }
 
 .day-cell.today {
-  box-shadow: 0 0 0 2px #f1c40f, 0 0 15px rgba(241,196,15,0.4);
+  box-shadow: 0 0 0 4px #f1c40f, 0 0 20px rgba(241,196,15,0.45);
 }
 .day-cell.today::before {
   content: '';
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 6px;
-  height: 6px;
+  top: 6px;
+  left: 6px;
+  width: 10px;
+  height: 10px;
   background: #f1c40f;
   border-radius: 50%;
-  box-shadow: 0 0 6px #f1c40f;
+  box-shadow: 0 0 10px #f1c40f;
   z-index: 2;
 }
 
@@ -1994,6 +1994,17 @@ small { color: var(--text-muted); font-weight: normal; }
   .day-cell.has-ot .day-actual-time { font-size: 8px; }
   .day-cell .ot-strip { font-size: 8px; }
   .ot-summary-grid { grid-template-columns: 1fr; }
+}
+
+/* Allow month calendar to scroll on small/mobile screens (fixes months that need 6 rows, e.g. August) */
+@media (max-width: 420px) {
+  .calendar-wrap {
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 6px;
+  }
+  .calendar { gap: 6px; }
 }
 
 @media print {
