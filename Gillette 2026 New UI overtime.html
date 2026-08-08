@@ -2210,6 +2210,16 @@ small { color: var(--text-muted); font-weight: normal; }
     <button class="menu-item" id="menuIcs"><span class="mi-icon">📥</span> Eksport .ics</button>
     <button class="menu-item" id="menuPrint"><span class="mi-icon">🖨️</span> Drukuj</button>
     <button class="menu-item" id="menuShare"><span class="mi-icon">🔗</span> Udostępnij dzień</button>
+    <button class="menu-item" id="menuSyncNow"><span class="mi-icon">☁️</span> Synchronizuj teraz</button>
+  </div>
+
+  <div class="menu-section">
+    <div class="menu-section-title">☁️ Google Drive</div>
+    <button class="menu-item" id="menuDriveSync">
+      <span class="mi-icon">☁️</span>
+      <span>Google Drive ☁️ (zaloguj)</span>
+      <span class="mi-check" style="display:none;">✓</span>
+    </button>
   </div>
 
   <div class="menu-section">
@@ -2413,7 +2423,8 @@ small { color: var(--text-muted); font-weight: normal; }
           <div class="faq-answer">
             Tak. W menu dostępny jest eksport <b>.ics</b> do kalendarza oraz backup <b>JSON</b>. Plik .ics można zaimportować do Google Calendar, Outlooka, iPhone’a i wielu innych aplikacji kalendarzowych.
           </div>
-        </deta
+        </details>
+
         <details class="faq-item">
           <summary>🐛 Jak zgłosić problem lub sugestię?</summary>
           <div class="faq-answer">
@@ -2442,6 +2453,5 @@ small { color: var(--text-muted); font-weight: normal; }
 <script src="js/views.js"></script>
 <script src="js/actions.js"></script>
 <script src="js/pwa.js"></script>
+<script src="js/sync.js"></script>
 <script src="js/main.js"></script>
-</body>
-</html>
