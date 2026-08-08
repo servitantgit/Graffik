@@ -1974,6 +1974,67 @@ body.edit-active .brigade-table td.tc:hover { outline: 3px solid #e67e22; outlin
 
 small { color: var(--text-muted); font-weight: normal; }
 
+/* === NOTIFICATION LEAD BUTTONS === */
+.notif-lead-buttons {
+  padding: 10px 12px;
+  margin: 0 0 8px 0;
+  background: var(--bg-cell);
+  border: 1px solid var(--border-cell);
+  border-radius: 8px;
+  animation: fadeInUp .3s ease-out;
+}
+
+.notif-lead-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.notif-lead-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.notif-lead-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: 2px solid var(--border-cell);
+  background: var(--bg-container);
+  color: var(--text-main);
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  transition: all .15s;
+}
+
+.notif-lead-btn:hover {
+  border-color: var(--text-header);
+  background: var(--bg-controls);
+}
+
+.notif-lead-btn.active {
+  background: var(--text-header);
+  color: #fff;
+  border-color: var(--text-header);
+  box-shadow: 0 2px 6px var(--shadow-color);
+  transform: scale(1.05);
+}
+
+.notif-lead-btn.active:hover {
+  filter: brightness(1.1);
+}
+
+@media (max-width: 600px) {
+  .notif-lead-btn {
+    padding: 10px 8px;
+    font-size: 14px;
+  }
+}
+
 @media (max-width: 600px) {
   body { padding: 8px; }
   .container { padding: 12px; }

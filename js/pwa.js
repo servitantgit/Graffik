@@ -73,29 +73,58 @@ function updateNotificationUI() {
     ? 'Powiadomienia WŁĄCZONE — kliknij, aby wyłączyć'
     : 'Powiadomienia WYŁĄCZONE — kliknij, aby włączyć';
 
-  // Add lead-time selector (1/2/3 hours) next to the label
   // Ensure prefs.notificationsLead exists
   if (typeof prefs.notificationsLead === 'undefined') prefs.notificationsLead = 1;
-  let existing = document.getElementById('notifLeadSelect');
-  if (!existing) {
-    const sel = document.createElement('select');
-    sel.id = 'notifLeadSelect';
-    sel.style.marginLeft = '8px';
-    sel.style.fontSize = '12px';
-    sel.title = 'Ile godzin przed zmianą wysłać powiadomienie';
-    [1,2,3].forEach(h => {
-      const o = document.createElement('option'); o.value = String(h); o.textContent = h + 'h'; sel.appendChild(o);
-    });
-    sel.value = String(prefs.notificationsLead);
-    sel.addEventListener('change', (e) => {
-      prefs.notificationsLead = parseInt(e.target.value, 10) || 1;
-      savePrefs(prefs);
-      showToast('info', `⏱ Powiadomienie: ${prefs.notificationsLead} godz. przed zmianą`);
-    });
-    if (label && label.parentNode) label.parentNode.insertBefore(sel, label.nextSibling);
+
+  // Usuwamy stary selector jeśli był
+  const oldSelect = document.getElementById('notifLeadSelect');
+  if (oldSelect) oldSelect.remove();
+
+  // Kontener z przyciskami — pokazujemy tylko gdy notifications ON
+  let leadContainer = document.getElementById('notifLeadContainer');
+  
+  if (enabled) {
+    if (!leadContainer) {
+      leadContainer = document.createElement('div');
+      leadContainer.id = 'notifLeadContainer';
+      leadContainer.className = 'notif-lead-buttons';
+      leadContainer.innerHTML = `
+        <div class="notif-lead-label">⏰ Przypomnij za:</div>
+        <div class="notif-lead-btns">
+          <button type="button" class="notif-lead-btn" data-lead="1">1h</button>
+          <button type="button" class="notif-lead-btn" data-lead="2">2h</button>
+          <button type="button" class="notif-lead-btn" data-lead="3">3h</button>
+        </div>
+      `;
+      // Wstawiamy PO menu-item (na dole, jako osobny blok)
+      item.parentNode.insertBefore(leadContainer, item.nextSibling);
+
+      // Podpinamy click
+      leadContainer.querySelectorAll('.notif-lead-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const val = parseInt(btn.dataset.lead, 10) || 1;
+          prefs.notificationsLead = val;
+          savePrefs(prefs);
+          updateLeadButtonsActive();
+          const timeText = val === 1 ? 'godzinę' : `${val} godziny`;
+          showToast('info', `⏰ Powiadomienie za ${timeText} przed zmianą`);
+        });
+      });
+    }
+    updateLeadButtonsActive();
   } else {
-    existing.value = String(prefs.notificationsLead);
+    // Chowamy kontener gdy notifications OFF
+    if (leadContainer) leadContainer.remove();
   }
+}
+
+// Помічник — оновлює активну кнопку
+function updateLeadButtonsActive() {
+  const lead = prefs.notificationsLead || 1;
+  document.querySelectorAll('.notif-lead-btn').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.lead, 10) === lead);
+  });
 }
 
 function requestNotificationPermission() {
