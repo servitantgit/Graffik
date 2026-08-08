@@ -52,7 +52,7 @@ function renderDashboard() {
         const dom = cat.h200 > 0 ? '+200%' : cat.h100 > 0 ? '+100%' : '+50%';
         parts.push(`${otToday.po.hours}h ${dom} ➡`);
       }
-      otInfo = `<div style="margin-top:8px; padding:6px 12px; background:rgba(241,196,15,0.25); border-radius:8px; font-size:13px; font-weight:600;">⏱ Nadgodziny: ${parts.join(' · ')}<br><small style="opacity:.85;">Fakticzny czas: ${actualTime}</small></div>`;
+      otInfo = `<div style="margin-top:8px; padding:8px 12px; background:rgba(0,0,0,0.35); border-radius:8px; font-size:13px; font-weight:600; color:#fff;">⏱ Nadgodziny: ${parts.join(' · ')}<br><span style="font-size:12px; font-weight:700; color:#fff;">Faktyczny czas: ${actualTime}</span></div>`;
     }
 
     todayCard = `
