@@ -12,25 +12,10 @@ let gDriveTokenClient = null;
 let gDriveToken = localStorage.getItem('grafik_drive_token') || null;
 let gDriveTokenExpiry = parseInt(localStorage.getItem('grafik_drive_token_expiry') || '0', 10);
 let gDriveFileId = localStorage.getItem('grafik_drive_file_id') || null;
-let gDriveClientId = localStorage.getItem(DRIVE_CLIENT_ID_KEY) || '';
+const DEFAULT_CLIENT_ID = '384517397558-agfoqvv4pv5nbkejhc9i7hbg86qs6her.apps.googleusercontent.com';
+let gDriveClientId = localStorage.getItem(DRIVE_CLIENT_ID_KEY) || DEFAULT_CLIENT_ID;
 
 /* === POMOCNICZE === */
-function driveCallbackToSSE(callback) {
-  // Przekształca odpowiedź Google na proste callbacki
-  return (response) => {
-    if (response.access_token) {
-      gDriveToken = response.access_token;
-      const expires = Date.now() + (response.expires_in || 3600) * 1000;
-      gDriveTokenExpiry = expires;
-      localStorage.setItem('grafik_drive_token', gDriveToken);
-      localStorage.setItem('grafik_drive_token_expiry', String(expires));
-      callback(true, response);
-    } else {
-      callback(false, response);
-    }
-  };
-}
-
 function isDriveTokenValid() {
   return gDriveToken && Date.now() < gDriveTokenExpiry - 60000;
 }
