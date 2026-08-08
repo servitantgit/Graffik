@@ -222,155 +222,128 @@ async function downloadFromDrive(confirmOverwrite = false) {
       return false;
     }
 
-    const doApply = () => {
-      console.log('[SYNC] downloadFromDrive doApply start');
-      let applyErrors = [];
+const doApply = () => {
+  console.log('[SYNC] downloadFromDrive doApply start');
+  let applyErrors = [];
 
-      if (data.factorySchedule) {
+  // customSchedule — МУТУЄМО об'єкт (не перезаписуємо)
+  if (data.customSchedule && typeof customSchedule !== 'undefined') {
+    try {
+      console.log('[SYNC] applying customSchedule (mutation)');
+      Object.keys(customSchedule).forEach(k => delete customSchedule[k]);
+      Object.assign(customSchedule, data.customSchedule);
+      saveCustomSchedule(customSchedule);
+      console.log('[SYNC] customSchedule applied, years:', Object.keys(customSchedule));
+    } catch (e) {
+      console.error('[SYNC] customSchedule error', e);
+      applyErrors.push('customSchedule');
+    }
+  }
+
+  // urlops — МУТУЄМО об'єкт (KRYTYCZNE — тут була проблема!)
+  if (data.urlops && typeof urlops !== 'undefined') {
+    try {
+      console.log('[SYNC] applying urlops (mutation)');
+      Object.keys(urlops).forEach(k => delete urlops[k]);
+      Object.assign(urlops, data.urlops);
+      saveUrlops(urlops);
+      console.log('[SYNC] urlops applied, brygady:', Object.keys(urlops));
+    } catch (e) {
+      console.error('[SYNC] urlops error', e);
+      applyErrors.push('urlops');
+    }
+  }
+
+  // overtimes — МУТУЄМО об'єкт
+  if (data.overtimes && typeof overtimes !== 'undefined') {
+    try {
+      console.log('[SYNC] applying overtimes (mutation)');
+      Object.keys(overtimes).forEach(k => delete overtimes[k]);
+      Object.assign(overtimes, data.overtimes);
+      saveOvertimes(overtimes);
+      console.log('[SYNC] overtimes applied, keys:', Object.keys(overtimes).length);
+    } catch (e) {
+      console.error('[SYNC] overtimes error', e);
+      applyErrors.push('overtimes');
+    }
+  }
+
+  // notes — МУТУЄМО об'єкт
+  if (data.notes && typeof notes !== 'undefined') {
+    try {
+      console.log('[SYNC] applying notes (mutation)');
+      Object.keys(notes).forEach(k => delete notes[k]);
+      Object.assign(notes, data.notes);
+      saveNotes(notes);
+      console.log('[SYNC] notes applied, keys:', Object.keys(notes).length);
+    } catch (e) {
+      console.error('[SYNC] notes error', e);
+      applyErrors.push('notes');
+    }
+  }
+
+  // prefs — мержимо (не видаляємо ключі!)
+  if (data.prefs && typeof prefs !== 'undefined') {
+    try {
+      console.log('[SYNC] applying prefs (merge)');
+      Object.assign(prefs, data.prefs);
+      savePrefs(prefs);
+      console.log('[SYNC] prefs merged');
+    } catch (e) {
+      console.error('[SYNC] prefs error', e);
+      applyErrors.push('prefs');
+    }
+  }
+
+  // vacationLimits — defensive
+  if (data.vacationLimits) {
+    if (typeof setVacationLimit === 'function') {
+      Object.keys(data.vacationLimits).forEach(brig => {
         try {
-          console.log('[SYNC] applying factorySchedule');
-          factorySchedule = data.factorySchedule;
-          console.log('[SYNC] factorySchedule applied');
+          console.log('[SYNC] applying vacationLimit', brig, data.vacationLimits[brig]);
+          setVacationLimit(brig, data.vacationLimits[brig]);
+          console.log('[SYNC] vacationLimit applied', brig);
         } catch (e) {
-          console.error('[SYNC] factorySchedule error', e);
-          applyErrors.push('factorySchedule');
+          console.error('[SYNC] vacationLimit error', brig, e);
+          applyErrors.push('vacationLimits.' + brig);
         }
-      }
+      });
+    } else {
+      console.warn('[SYNC] setVacationLimit not available, skipping vacationLimits');
+    }
+  }
 
-      if (data.customSchedule) {
-        try {
-          console.log('[SYNC] applying customSchedule');
-          customSchedule = data.customSchedule;
-          console.log('[SYNC] customSchedule applied');
-        } catch (e) {
-          console.error('[SYNC] customSchedule error', e);
-          applyErrors.push('customSchedule');
-        }
-      }
+  // Odświeżamy widok
+  currentView = 'dashboard';
+  if (typeof switchView === 'function') {
+    try {
+      switchView('dashboard');
+      console.log('[SYNC] switchView dashboard');
+    } catch (e) {
+      console.error('[SYNC] switchView error', e);
+      applyErrors.push('switchView');
+    }
+  } else if (typeof refreshViews === 'function') {
+    try {
+      refreshViews();
+      console.log('[SYNC] refreshViews');
+    } catch (e) {
+      console.error('[SYNC] refreshViews error', e);
+      applyErrors.push('refreshViews');
+    }
+  } else {
+    console.warn('[SYNC] neither switchView nor refreshViews available');
+  }
 
-      if (data.urlops) {
-        try {
-          console.log('[SYNC] applying urlops');
-          urlops = data.urlops;
-          console.log('[SYNC] urlops applied');
-        } catch (e) {
-          console.error('[SYNC] urlops error', e);
-          applyErrors.push('urlops');
-        }
-      }
-
-      if (data.overtimes) {
-        try {
-          console.log('[SYNC] applying overtimes');
-          overtimes = data.overtimes;
-          console.log('[SYNC] overtimes applied');
-        } catch (e) {
-          console.error('[SYNC] overtimes error', e);
-          applyErrors.push('overtimes');
-        }
-      }
-
-      if (data.notes) {
-        try {
-          console.log('[SYNC] applying notes');
-          notes = data.notes;
-          console.log('[SYNC] notes applied');
-        } catch (e) {
-          console.error('[SYNC] notes error', e);
-          applyErrors.push('notes');
-        }
-      }
-
-      if (data.prefs) {
-        try {
-          console.log('[SYNC] applying prefs');
-          prefs = { ...prefs, ...data.prefs };
-          savePrefs(prefs);
-          console.log('[SYNC] prefs applied');
-        } catch (e) {
-          console.error('[SYNC] prefs error', e);
-          applyErrors.push('prefs');
-        }
-      }
-
-      try {
-        console.log('[SYNC] saving customSchedule');
-        saveCustomSchedule(customSchedule);
-        console.log('[SYNC] saveCustomSchedule OK');
-      } catch (e) {
-        console.error('[SYNC] saveCustomSchedule error', e);
-        applyErrors.push('saveCustomSchedule');
-      }
-
-      try {
-        console.log('[SYNC] saving urlops');
-        saveUrlops(urlops);
-        console.log('[SYNC] saveUrlops OK');
-      } catch (e) {
-        console.error('[SYNC] saveUrlops error', e);
-        applyErrors.push('saveUrlops');
-      }
-
-      try {
-        console.log('[SYNC] saving overtimes');
-        saveOvertimes(overtimes);
-        console.log('[SYNC] saveOvertimes OK');
-      } catch (e) {
-        console.error('[SYNC] saveOvertimes error', e);
-        applyErrors.push('saveOvertimes');
-      }
-
-      try {
-        console.log('[SYNC] saving notes');
-        saveNotes(notes);
-        console.log('[SYNC] saveNotes OK');
-      } catch (e) {
-        console.error('[SYNC] saveNotes error', e);
-        applyErrors.push('saveNotes');
-      }
-
-      if (data.vacationLimits) {
-        if (typeof setVacationLimit === 'function') {
-          Object.keys(data.vacationLimits).forEach(brig => {
-            try {
-              console.log('[SYNC] applying vacationLimit', brig, data.vacationLimits[brig]);
-              setVacationLimit(brig, data.vacationLimits[brig]);
-              console.log('[SYNC] vacationLimit applied', brig);
-            } catch (e) {
-              console.error('[SYNC] vacationLimit error', brig, e);
-              applyErrors.push('vacationLimits.' + brig);
-            }
-          });
-        } else {
-          console.warn('[SYNC] setVacationLimit not available, skipping vacationLimits');
-        }
-      }
-
-      currentView = 'dashboard';
-      if (typeof switchView === 'function') {
-        try {
-          switchView('dashboard');
-          console.log('[SYNC] switchView dashboard');
-        } catch (e) {
-          console.error('[SYNC] switchView error', e);
-          applyErrors.push('switchView');
-        }
-      } else if (typeof refreshViews === 'function') {
-        try {
-          refreshViews();
-          console.log('[SYNC] refreshViews');
-        } catch (e) {
-          console.error('[SYNC] refreshViews error', e);
-          applyErrors.push('refreshViews');
-        }
-      } else {
-        console.warn('[SYNC] neither switchView nor refreshViews available');
-      }
-
-      console.log('[SYNC] downloadFromDrive doApply end', { applyErrors: applyErrors.length ? applyErrors : null });
-      showToast('success', '☁️ Dane pobrane z Google Drive');
-      updateDriveUI();
-    };
+  console.log('[SYNC] downloadFromDrive doApply end', { applyErrors: applyErrors.length ? applyErrors : null });
+  
+  if (applyErrors.length) {
+    showToast('warn', '☁️ Dane pobrane, ale były błędy: ' + applyErrors.join(', '));
+  } else {
+    showToast('success', '☁️ Dane pobrane z Google Drive');
+  }
+  updateDriveUI();
+};
 
     if (confirmOverwrite) {
       showConfirm('☁️ Pobrać dane z Google Drive?', 'Dane lokalne zostaną nadpisane. Kontynuować?', doApply, { primaryText: 'Pobierz', primaryClass: 'primary' });
