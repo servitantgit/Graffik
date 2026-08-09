@@ -19,10 +19,49 @@ function registerServiceWorker() {
   });
 }
 
+/* === WYKRYWANIE PLATFORMY === */
+function isIOS() {
+  const ua = navigator.userAgent || '';
+  return /iPad|iPhone|iPod/.test(ua) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+    (window.navigator.standalone === true);
+}
+
 /* === INSTALL PROMPT (Dodaj do ekranu głównego) === */
 function setupInstallPrompt() {
   const installItem = document.getElementById('menuInstallApp');
   if (!installItem) return;
+
+  // iOS nie obsługuje beforeinstallprompt — pokazujemy instrukcję manualną
+  if (isIOS()) {
+    if (!isStandalone()) {
+      installItem.style.display = 'flex';
+      installItem.onclick = () => {
+        closeSideMenu();
+        showModal({
+          title: '📲 Zainstaluj aplikację',
+          body: `
+            <p>Aby zainstalować aplikację na <b>iPhone / iPad</b>:</p>
+            <ol style="margin:8px 0; padding-left:22px; font-size:13px;">
+              <li>Dotknij przycisku <b>Udostępnij</b> <span style="font-size:16px;">⬆️</span> na dole Safari</li>
+              <li>Przewiń w dół i wybierz <b>„Dodaj do ekranu głównego"</b></li>
+              <li>Dotknij <b>„Dodaj"</b> w prawym górnym rogu</li>
+            </ol>
+            <p style="font-size:12px; color:var(--text-muted);">Po dodaniu aplikacja pojawi się jako ikona na ekranie głównym.</p>
+          `,
+          buttons: [
+            { text: 'OK, rozumiem', class: 'primary' }
+          ]
+        });
+      };
+    } else {
+      installItem.style.display = 'none';
+    }
+    return;
+  }
 
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
@@ -155,7 +194,7 @@ function requestNotificationPermission() {
           body: 'Powiadomienia działają! Będziesz dostawać przypomnienia o rozpoczęciu zmiany.',
           icon: './icons/icon-192.png'
         });
-      } catch (e) { /* ignore */ }
+      } catch (e) { /* ignoruj */ }
     } else {
       prefs.notifications = false;
       savePrefs(prefs);
@@ -238,9 +277,9 @@ function initPwa() {
   const notifItem = document.getElementById('menuNotifications');
   if (notifItem) notifItem.onclick = toggleNotifications;
 
-  // Ukrywamy pozycję instalacji domyślnie
+  // Ukrywamy pozycję instalacji domyślnie (nie na iOS — tam pokazujemy instrukcję)
   const installItem = document.getElementById('menuInstallApp');
-  if (installItem) installItem.style.display = 'none';
+  if (installItem && !isIOS()) installItem.style.display = 'none';
 
   updateNotificationUI();
 

@@ -1,9 +1,12 @@
 {
+  "id": "./",
   "name": "Grafik Gillette - IV brygady",
   "short_name": "Grafik",
   "description": "Grafik zmian dla brygad A/B/C/D z urlopami, nadgodzinami i powiadomieniami",
   "start_url": "./",
   "scope": "./",
+  "categories": ["productivity", "utilities"],
+  "dir": "ltr",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#1e3c72",
