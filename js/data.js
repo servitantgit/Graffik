@@ -95,7 +95,7 @@ const shiftLongNames = { R: 'Rano', P: 'Popołudnie', N: 'Noc' };
 const shiftEmoji = { R: '🌅', P: '🌤️', N: '🌙', '': '🏖️' };
 const shiftHours = { R: [6,14], P: [14,22], N: [22,30] };
 const SHIFT_CYCLE = ['','R','P','N'];
-const MIN_YEAR = 2020;
+const MIN_YEAR = 2026;
 const MAX_YEAR = 2050;
 const URLOP_LIMIT = 26;
 
