@@ -78,7 +78,7 @@ function refreshViews() {
   const actionButtons = getElementByIdSafe('actionButtons');
   if (actionButtons) actionButtons.style.display = currentView === 'dashboard' ? 'none' : 'block';
 
-  // Прибираємо старий підсумок надгодин при переключенні виду
+  // Usuwamy stare podsumowanie nadgodzin przy przełączaniu widoku
   const oldOtSum = document.getElementById('otMonthSummary');
   if (oldOtSum) oldOtSum.remove();
 

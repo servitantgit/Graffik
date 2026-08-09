@@ -1,6 +1,6 @@
 /* ================================================================
    GRAFIK GILLETTE — Service Worker (PWA)
-   Кешування + push-сповіщення про зміни
+   Cache'owanie + powiadomienia push o zmianach
    ================================================================ */
 const CACHE_NAME = 'grafik-gillette-v3';
 const ASSETS = [
@@ -23,7 +23,7 @@ const ASSETS = [
   './icons/icon-512-maskable.png'
 ];
 
-/* === INSTALL: кешуємо всі активи === */
+/* === INSTALL: cache'ujemy wszystkie zasoby === */
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -32,7 +32,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-/* === ACTIVATE: очищуємо старі кеші === */
+/* === ACTIVATE: usuwamy stare cache === */
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
@@ -43,16 +43,16 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-/* === FETCH: спочатку мережа, потім кеш (stale-while-revalidate) === */
+/* === FETCH: najpierw sieć, potem cache (stale-while-revalidate) === */
 self.addEventListener('fetch', (event) => {
-  // Не кешуємо non-GET запити
+  // Nie cache'ujemy zapytań non-GET
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const fetchPromise = fetch(event.request)
         .then((response) => {
-          // Кешуємо тільки успішні відповіді
+          // Cache'ujemy tylko udane odpowiedzi
           if (response && response.status === 200 && response.type === 'basic') {
             const clone = response.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
@@ -65,7 +65,7 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-/* === PUSH: показуємо сповіщення === */
+/* === PUSH: pokazujemy powiadomienia === */
 self.addEventListener('push', (event) => {
   let data = {};
   try {
@@ -86,7 +86,7 @@ self.addEventListener('push', (event) => {
   );
 });
 
-/* === NOTIFICATION CLICK: відкриваємо додаток === */
+/* === NOTIFICATION CLICK: otwieramy aplikację === */
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const url = event.notification.data && event.notification.data.url

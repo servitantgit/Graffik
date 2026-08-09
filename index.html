@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Grafik Gillette - IV brygady</title>
 
-<!-- STYLE - см. повідомлення 2 -->
+<!-- STYLE -->
 <style>
 * { box-sizing: border-box; }
 
@@ -1049,7 +1049,7 @@ body {
 .slide-left { animation: slideLeft .3s ease-out; }
 @keyframes slideRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes slideLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
-/* Ensure calendar fits container without breaking popups */
+/* Zapewnij, że kalendarz mieści się w kontenerze bez łamania popupów */
 .calendar { 
   width: 100%; 
   box-sizing: border-box; 
@@ -1076,7 +1076,7 @@ body {
   color: var(--text-main);
   position: relative;
 }
-/* Ensure day cells do not force grid column expansion (fixes months with oversized cells) */
+/* Zapewnij, że komórki dni nie wymuszają rozszerzania kolumn siatki (naprawia miesiące z za dużymi komórkami) */
 .day-cell { min-width: 0; }
 .day-cell:hover { 
   transform: translateY(-2px); 
@@ -1087,15 +1087,15 @@ body {
 .day-cell.empty { background: transparent; border: none; cursor: default; }
 
 .day-cell.today {
-  /* Remove decorative dot; use contrasting outline/frame instead */
+  /* Usuń ozdobną kropkę; zamiast tego użyj kontrastującego obramowania */
   box-shadow: none;
 }
 
-/* Hide previous dot marker if present */
+/* Ukryj poprzedni znacznik kropki, jeśli jest obecny */
 .day-cell.today::before { display: none; }
 
-/* Contrasting outline: light outline for dark shift backgrounds (R,P,N),
-   dark outline for light backgrounds (W, U) */
+/* Kontrastujące obramowanie: jasne dla ciemnych tła zmian (R,P,N),
+   ciemne dla jasnych tła (W, U) */
 .day-cell.cell-R.today,
 .day-cell.cell-P.today,
 .day-cell.cell-N.today {
@@ -1110,7 +1110,7 @@ body {
   box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
 
-/* Fallback generic styling if day has no cell- class */
+/* Rezerwowe ogólne stylowanie, jeśli dzień nie ma klasy cell- */
 .day-cell.today:not([class*="cell-"]) {
   outline: 3px solid rgba(241,196,15,0.9);
   outline-offset: 2px;
@@ -1211,7 +1211,7 @@ body.theme-contrast .day-cell.day-weekend.cell-W {
   z-index: 3;
 }
 
-/* === NADGODZINY (візуальний поділ клітинки + попапи) === */
+/* === NADGODZINY (wizualny podział komórki + popupy) === */
 .day-cell .ot-strip {
   position: absolute;
   top: 0;
@@ -1432,7 +1432,7 @@ body.theme-contrast .day-cell.day-weekend.cell-W {
   color: var(--text-header);
 }
 
-/* === Nadgodziny в Tydzień === */
+/* === Nadgodziny w Tydzień === */
 .week-day-cell .wdc-shift .wdc-actual-time {
   margin-top: 4px;
   padding: 2px 6px;
@@ -1467,7 +1467,7 @@ body.theme-contrast .day-cell.day-weekend.cell-W {
 .wdc-ot-badge.b-100 { background: linear-gradient(135deg, #8e44ad, #6c3483); }
 .wdc-ot-badge.b-200 { background: linear-gradient(135deg, #c0392b, #922b21); }
 
-/* === Nadgodziny в Dashboard chip === */
+/* === Nadgodziny w Dashboard chip === */
 .dash-day-chip {
   position: relative;
 }
@@ -1611,7 +1611,7 @@ body.theme-contrast .day-cell.day-weekend.cell-W {
   .year-view { grid-template-columns: repeat(2, 1fr); }
   .week-view { 
     grid-template-columns: 1fr; 
-    /* Allow the stacked week to scroll on small viewports so Sunday is reachable */
+    /* Pozwól ułożonemu tygodniowi przewijać się na małych ekranach, aby Niedziela była osiągalna */
     max-height: calc(100vh - 180px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -1619,7 +1619,7 @@ body.theme-contrast .day-cell.day-weekend.cell-W {
   }
   .week-day-cell { min-height: 70px; margin-bottom: 8px; }
   .week-day-cell .wdc-shift .wdc-label { font-size: 15px; }
-  /* Make current day more prominent on small screens */
+  /* Wyróżnij bieżący dzień na małych ekranach */
   .week-day-cell.today {
     box-shadow: 0 0 0 6px #f1c40f, 0 0 28px rgba(241,196,15,0.45);
     transform: translateY(-2px);
@@ -1761,21 +1761,21 @@ body.edit-active .brigade-table td.tc:hover { outline: 3px solid #e67e22; outlin
   transition-delay: 0.6s;
 }
 
-/* Показати попапи при hover на клітинці АБО якщо клітинка вибрана */
+/* Pokazuj popupy przy hover na komórce LUB jeśli komórka jest wybrana */
 .day-cell:hover .relief-popup,
 .day-cell.selected .relief-popup {
   opacity: 1;
   visibility: visible;
   transform: scale(1);
-  transition-delay: 0.6s;  /* затримка ПЕРЕД появою */
+  transition-delay: 0.6s;  /* opóźnienie PRZED pojawieniem */
 }
 
-/* Selected клітинка — попапи з'являються ОДРАЗУ */
+/* Wybrana komórka — popupy pojawiają się NATYCHMIAST */
 .day-cell.selected .relief-popup {
   transition-delay: 0s;
 }
 
-/* Positioning */
+/* Pozycjonowanie */
 .relief-popup.left { right: calc(100% + 8px); }
 .relief-popup.right { left: calc(100% + 8px); }
 .relief-popup.top {
@@ -1787,9 +1787,9 @@ body.edit-active .brigade-table td.tc:hover { outline: 3px solid #e67e22; outlin
   max-width: 130px;
 }
 
-/* === Auto-flip при краях екрана === */
+/* === Auto-flip przy krawędziach ekranu === */
 
-/* Крайня ліва колонка (Понеділок) — лівий попап переносимо ВНИЗ під клітинку */
+/* Skrajna lewa kolumna (Poniedziałek) — lewy popup przenosimy W DÓŁ pod komórkę */
 .day-cell.col-first .relief-popup.left {
   right: auto;
   left: 50%;
@@ -1810,7 +1810,7 @@ body.edit-active .brigade-table td.tc:hover { outline: 3px solid #e67e22; outlin
   border-left-color: transparent;
 }
 
-/* Крайня права колонка (Неділя) — правий попап переносимо ВНИЗ під клітинку */
+/* Skrajna prawa kolumna (Niedziela) — prawy popup przenosimy W DÓŁ pod komórkę */
 .day-cell.col-last .relief-popup.right {
   left: auto;
   right: 50%;
@@ -1835,7 +1835,7 @@ body.edit-active .brigade-table td.tc:hover { outline: 3px solid #e67e22; outlin
   transform: translateX(-50%) scale(1);
 }
 
-/* Arrows */
+/* Strzałki */
 .relief-popup::before {
   content: '';
   position: absolute;
@@ -1854,7 +1854,7 @@ body.edit-active .brigade-table td.tc:hover { outline: 3px solid #e67e22; outlin
   border-top-color: inherit;
 }
 
-/* Colors */
+/* Kolory */
 .relief-popup.pop-R { background: var(--color-R); border-color: var(--color-R); pointer-events: auto; cursor: pointer; }
 .relief-popup.pop-P { background: var(--color-P); border-color: var(--color-P); pointer-events: auto; cursor: pointer; }
 .relief-popup.pop-N { background: var(--color-N); border-color: var(--color-N); pointer-events: auto; cursor: pointer; }
@@ -1872,7 +1872,7 @@ body.edit-active .brigade-table td.tc:hover { outline: 3px solid #e67e22; outlin
   cursor: pointer;
 }
 
-/* Hover effects on popups */
+/* Efekty hover na popupach */
 .relief-popup.pop-R:hover,
 .relief-popup.pop-P:hover,
 .relief-popup.pop-N:hover {
@@ -1885,7 +1885,7 @@ body.edit-active .brigade-table td.tc:hover { outline: 3px solid #e67e22; outlin
   filter: brightness(1.15);
 }
 
-/* Content styles */
+/* Style treści */
 .relief-popup .rp-label { font-size: 10px; text-transform: uppercase; opacity: .9; margin-bottom: 3px; letter-spacing: .5px; }
 .relief-popup .rp-brig { font-size: 26px; font-weight: bold; line-height: 1; padding: 4px 0; background: rgba(255,255,255,0.2); border-radius: 5px; margin: 2px 0; }
 .relief-popup .rp-info { font-size: 11px; opacity: .95; margin-top: 3px; }
@@ -2078,7 +2078,7 @@ small { color: var(--text-muted); font-weight: normal; }
   .ot-summary-grid { grid-template-columns: 1fr; }
 }
 
-/* Allow month calendar to scroll on small/mobile screens (fixes months that need 6 rows, e.g. August) */
+/* Pozwól kalendarzowi miesięcznemu przewijać się na małych/mobilnych ekranach (naprawia miesiące potrzebujące 6 wierszy, np. sierpień) */
 @media (max-width: 420px) {
   .calendar-wrap {
     max-height: calc(100vh - 220px);
@@ -2089,8 +2089,8 @@ small { color: var(--text-muted); font-weight: normal; }
   .calendar { gap: 6px; }
 }
 
-/* Fix for short viewport heights (landscape phones, small windows): allow calendar to scroll vertically
-   so months that need 6 rows (e.g. August) don't cut off the last week. */
+/* Poprawka dla niskich wysokości viewportu (telefony w poziomie, małe okna): pozwól kalendarzowi przewijać się
+   w pionie, aby miesiące potrzebujące 6 wierszy (np. sierpień) nie ucinały ostatniego tygodnia. */
 @media (max-height: 720px) {
   .calendar-wrap {
     max-height: calc(100vh - 180px);

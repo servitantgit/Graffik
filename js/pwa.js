@@ -4,7 +4,7 @@
 
 /* === STAN === */
 let deferredInstallPrompt = null;
-let lastNotified = null; // 'YYYY-MM-DD:ZMINA'
+let lastNotified = null; // 'YYYY-MM-DD:ZMIANA'
 
 /* === SERVICE WORKER === */
 function registerServiceWorker() {
@@ -73,7 +73,7 @@ function updateNotificationUI() {
     ? 'Powiadomienia WŁĄCZONE — kliknij, aby wyłączyć'
     : 'Powiadomienia WYŁĄCZONE — kliknij, aby włączyć';
 
-  // Ensure prefs.notificationsLead exists
+  // Upewnij się, że prefs.notificationsLead istnieje
   if (typeof prefs.notificationsLead === 'undefined') prefs.notificationsLead = 1;
 
   // Usuwamy stary selector jeśli był
@@ -119,7 +119,7 @@ function updateNotificationUI() {
   }
 }
 
-// Помічник — оновлює активну кнопку
+// Pomocnik — aktualizuje aktywny przycisk
 function updateLeadButtonsActive() {
   const lead = prefs.notificationsLead || 1;
   document.querySelectorAll('.notif-lead-btn').forEach(btn => {
@@ -149,7 +149,7 @@ function requestNotificationPermission() {
       prefs.notifications = true;
       savePrefs(prefs);
       showToast('success', '🔔 Powiadomienia WŁĄCZONE');
-      // testowe spowiadomienie
+      // testowe powiadomienie
       try {
         new Notification('🔔 Grafik Gillette', {
           body: 'Powiadomienia działają! Będziesz dostawać przypomnienia o rozpoczęciu zmiany.',
@@ -185,7 +185,7 @@ function notifyCurrentShift() {
   const m = now.getMonth() + 1;
   const d = now.getDate();
 
-  // Зміна за розкладом вибраної бригади на сьогодні
+  // Zmiana zgodnie z grafikiem wybranej brygady na dziś
   const s = getShiftAt(y, m, d, selectedShift);
   if (isWolne(s) || isUrlop(y, m, d, selectedShift)) return;
 
@@ -193,10 +193,10 @@ function notifyCurrentShift() {
   if (!hours) return;
   const startHour = hours[0];
 
-  // Показуємо сповіщення, коли година = початок зміни (0 хвилин)
+  // Pokazujemy powiadomienie, gdy godzina = początek zmiany (0 minut)
   if (now.getHours() === startHour && now.getMinutes() === 0) {
     const key = `${y}-${m}-${d}:${s}`;
-    if (lastNotified === key) return; // вже показали сьогодні
+    if (lastNotified === key) return; // już pokazaliśmy dzisiaj
     lastNotified = key;
     localStorage.setItem('grafik_last_notified', key);
 
@@ -231,25 +231,25 @@ function initPwa() {
   registerServiceWorker();
   setupInstallPrompt();
 
-  // Przywróć ostatnie spowiadomienie
+  // Przywróć ostatnie powiadomienie
   lastNotified = localStorage.getItem('grafik_last_notified');
 
-  // Меню: сповіщення
+  // Menu: powiadomienia
   const notifItem = document.getElementById('menuNotifications');
   if (notifItem) notifItem.onclick = toggleNotifications;
 
-  // Приховуємо пункт встановлення за замовчуванням
+  // Ukrywamy pozycję instalacji domyślnie
   const installItem = document.getElementById('menuInstallApp');
   if (installItem) installItem.style.display = 'none';
 
   updateNotificationUI();
 
-  // Перевірка щохвилини
+  // Sprawdzanie co minutę
   window._notifyTimer = setInterval(notifyCurrentShift, 60000);
   notifyCurrentShift();
 }
 
-// Запускаємо після завантаження DOM
+// Uruchamiamy po załadowaniu DOM
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initPwa);
 } else {

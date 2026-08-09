@@ -84,7 +84,7 @@ async function driveFetch(url, options = {}, retry = true) {
 
 /* === SZUKANIE PLIKU W DRIVE === */
 async function findDriveFile() {
-  // Шукаємо ВСІ файли з нашою назвою в App Data
+  // Szukamy WSZYSTKICH plików o naszej nazwie w App Data
   const query = `name='${DRIVE_FILE_NAME}' and trashed=false`;
   const url = `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${encodeURIComponent(query)}&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc`;
   
@@ -99,19 +99,19 @@ async function findDriveFile() {
   
   if (files.length === 0) return null;
   
-  // Найновіший файл — перший у списку (orderBy=modifiedTime desc)
+  // Najnowszy plik — pierwszy na liście (orderBy=modifiedTime desc)
   const newest = files[0];
-  console.log('[SYNC] Найновіший файл:', newest.id, newest.modifiedTime);
+  console.log('[SYNC] Najnowszy plik:', newest.id, newest.modifiedTime);
   
-  // Видаляємо дублікати (всі крім першого)
+  // Usuwamy duplikaty (wszystkie oprócz pierwszego)
   if (files.length > 1) {
-    console.log('[SYNC] Знайдено дублікатів:', files.length - 1, '— видаляю...');
+    console.log('[SYNC] Znaleziono duplikatów:', files.length - 1, '— usuwam...');
     for (let i = 1; i < files.length; i++) {
       try {
         await driveFetch(`https://www.googleapis.com/drive/v3/files/${files[i].id}`, { method: 'DELETE' });
-        console.log('[SYNC] Видалено дублікат:', files[i].id);
+        console.log('[SYNC] Usunięto duplikat:', files[i].id);
       } catch (e) {
-        console.warn('[SYNC] Не вдалося видалити:', files[i].id);
+        console.warn('[SYNC] Nie udało się usunąć:', files[i].id);
       }
     }
   }
@@ -226,7 +226,7 @@ const doApply = () => {
   console.log('[SYNC] downloadFromDrive doApply start');
   let applyErrors = [];
 
-  // customSchedule — МУТУЄМО об'єкт (не перезаписуємо)
+  // customSchedule — MUTUJEMY obiekt (nie nadpisujemy)
   if (data.customSchedule && typeof customSchedule !== 'undefined') {
     try {
       console.log('[SYNC] applying customSchedule (mutation)');
@@ -240,7 +240,7 @@ const doApply = () => {
     }
   }
 
-  // urlops — МУТУЄМО об'єкт (KRYTYCZNE — тут була проблема!)
+  // urlops — MUTUJEMY obiekt (KRYTYCZNE — tu był problem!)
   if (data.urlops && typeof urlops !== 'undefined') {
     try {
       console.log('[SYNC] applying urlops (mutation)');
@@ -254,7 +254,7 @@ const doApply = () => {
     }
   }
 
-  // overtimes — МУТУЄМО об'єкт
+  // overtimes — MUTUJEMY obiekt
   if (data.overtimes && typeof overtimes !== 'undefined') {
     try {
       console.log('[SYNC] applying overtimes (mutation)');
@@ -268,7 +268,7 @@ const doApply = () => {
     }
   }
 
-  // notes — МУТУЄМО об'єкт
+  // notes — MUTUJEMY obiekt
   if (data.notes && typeof notes !== 'undefined') {
     try {
       console.log('[SYNC] applying notes (mutation)');
@@ -282,7 +282,7 @@ const doApply = () => {
     }
   }
 
-  // prefs — мержимо (не видаляємо ключі!)
+  // prefs — scalamy (nie usuwamy kluczy!)
   if (data.prefs && typeof prefs !== 'undefined') {
     try {
       console.log('[SYNC] applying prefs (merge)');
@@ -517,7 +517,7 @@ function initSync() {
     };
   }
 
-  // Przycisk wylogування
+  // Przycisk wylogowania
   const logoutBtn = document.getElementById('menuDriveLogout');
   if (logoutBtn) {
     logoutBtn.onclick = () => {

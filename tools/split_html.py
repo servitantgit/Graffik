@@ -7,13 +7,13 @@ DST = 'Gillette 2026 New UI overtime.html'
 with io.open(SRC, 'r', encoding='utf-8-sig') as f:
     content = f.read()
 
-# Find the LAST <script> tag (the inline JS block at the end of the body)
+# Znajdź OSTATNI tag <script> (blok inline JS na końcu body)
 idx = content.rfind('<script>')
 if idx == -1:
-    print('ERROR: <script> tag not found')
+    print('ERROR: nie znaleziono tagu <script>')
     sys.exit(1)
 
-# Cut everything from the marker (inclusive) to end of file
+# Wytnij wszystko od znacznika (włącznie) do końca pliku
 html_part = content[:idx].rstrip()
 
 scripts = '''
@@ -36,5 +36,5 @@ new_content = html_part + scripts
 with io.open(DST, 'w', encoding='utf-8', newline='\n') as f:
     f.write(new_content)
 
-print('OK: replaced inline JS with module references')
-print('New file size:', len(new_content), 'chars')
+print('OK: zastąpiono inline JS odwołaniami do modułów')
+print('Nowy rozmiar pliku:', len(new_content), 'znaków')

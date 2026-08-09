@@ -238,11 +238,11 @@ function getLiveTimer(shift, y, m, d) {
       // Jeśli jesteśmy po północy, sprawdzamy nadgodziny z "wczorajszej" zmiany N
       // Ale renderDashboard/getLiveTimer są wywoływane dla konkretnej daty y,m,d (dzisiaj).
       // System przechowuje nadgodziny zmiany N na dniu, w którym się zaczęła.
-      // Więc jeśli mMinutes < 6*60, to jesteśmy w fazie końcowej zmiany N z dnia y,m,d-1? 
-      // Nie, bo wywołanie jest dla daty y,m,d. 
-      // W obecnej architekturze, jeśli dzisiaj (d) jest N, to o 2:00 rano (d) 
-      // pokazywany jest koniec zmiany N która zaczęła się dnia d-1. 
-      // Ale getOvertimes(y,m,d) pobierze OT dla zmiany która zacznie się o 22:00 DZISIAJ.
+      // Więc jeśli nowMinutes < 6*60, to jesteśmy w fazie końcowej zmiany N z dnia y,m,d-1?
+      // Nie, bo wywołanie jest dla daty y,m,d.
+      // W obecnej architekturze, jeśli dzisiaj (d) jest N, to o 2:00 rano (d)
+      // pokazywany jest koniec zmiany N, która zaczęła się dnia d-1.
+      // Ale getOvertimes(y,m,d) pobierze OT dla zmiany, która zacznie się o 22:00 DZISIAJ.
       // To jest szerszy problem z nocną zmianą, ale skupmy się najpierw na P/R i ogólnym poprawieniu endMin.
     }
   } else return null;
