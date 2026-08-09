@@ -260,7 +260,6 @@ function buildMonthTable(month) {
   table.appendChild(tbody);
   return table;
 }
-window.goToMonth = goToMonth;
 
 /* === EMPTY STATE === */
 function renderEmptyState(container) {

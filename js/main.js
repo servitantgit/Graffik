@@ -203,6 +203,7 @@ function goToMonth(delta) {
   selectedDay = null;
   refreshViews();
 }
+window.goToMonth = goToMonth;
 function goToYear(delta, keepMonth) {
   const newYear = currentYear + delta;
   if (newYear < MIN_YEAR || newYear > MAX_YEAR) return;

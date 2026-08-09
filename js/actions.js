@@ -2,6 +2,15 @@
    GRAFIK GILLETTE — Moduł 8: AKCJE (ICS, JSON, SHARE, SEARCH, MENU)
    ================================================================ */
 
+function bindClick(id, handler) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.onclick = handler;
+  } else {
+    console.warn(`[actions.js] Element #${id} not found in DOM`);
+  }
+}
+
 /* === ICS EXPORT === */
 function exportICS() {
   let ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Gillette Grafik//PL\r\n';
@@ -39,8 +48,8 @@ function exportICS() {
   a.click();
   showToast('success', 'Kalendarz wyeksportowany');
 }
-document.getElementById('icsBtn').onclick = exportICS;
-document.getElementById('printBtn').onclick = () => window.print();
+bindClick('icsBtn', exportICS);
+bindClick('printBtn', () => window.print());
 
 /* === PRINT HEADER/FOOTER === */
 function addPrintHeader() {
@@ -108,7 +117,7 @@ function shareDay() {
       .catch(() => showToast('error', 'Nie udało się skopiować linku'));
   }
 }
-document.getElementById('shareBtn').onclick = shareDay;
+bindClick('shareBtn', shareDay);
 
 /* === EXPORT/IMPORT JSON === */
 document.getElementById('exportDataBtn').onclick = () => {
@@ -122,12 +131,12 @@ document.getElementById('exportDataBtn').onclick = () => {
   showToast('success', 'Backup pobrany');
 };
 
-document.getElementById('menuIcs').onclick = () => { closeSideMenu(); exportICS(); };
-document.getElementById('menuPrint').onclick = () => { closeSideMenu(); window.print(); };
-document.getElementById('menuShare').onclick = () => { closeSideMenu(); shareDay(); };
+bindClick('menuIcs', () => { closeSideMenu(); exportICS(); });
+bindClick('menuPrint', () => { closeSideMenu(); window.print(); });
+bindClick('menuShare', () => { closeSideMenu(); shareDay(); });
 
 /* === IMPORT === */
-document.getElementById('importDataBtn').onclick = () => document.getElementById('importFile').click();
+bindClick('importDataBtn', () => document.getElementById('importFile').click());
 document.getElementById('importFile').onchange = (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -156,17 +165,17 @@ document.getElementById('importFile').onchange = (e) => {
 };
 
 /* === MENU: OPCJE === */
-document.getElementById('menuWeekSummary').onclick = () => {
+bindClick('menuWeekSummary', () => {
   prefs.weekSummaryEnabled = !prefs.weekSummaryEnabled;
   savePrefs(prefs);
   document.getElementById('menuWeekSummary').querySelector('.mi-check').style.display = prefs.weekSummaryEnabled ? 'inline' : 'none';
   showToast('info', prefs.weekSummaryEnabled ? 'Podsumowanie tygodnia WŁ' : 'Podsumowanie tygodnia WYŁ');
   closeSideMenu();
   refreshViews();
-};
+});
 if (prefs.weekSummaryEnabled) document.getElementById('menuWeekSummary').querySelector('.mi-check').style.display = 'inline';
 
-document.getElementById('menuVacationLimit').onclick = () => {
+bindClick('menuVacationLimit', () => {
   closeSideMenu();
   const currentLimit = getVacationLimit(selectedShift);
   const body = `
@@ -192,10 +201,10 @@ document.getElementById('menuVacationLimit').onclick = () => {
       }
     ]
   });
-};
+});
 
 /* === CZYSZCZENIE ROKU / RESET === */
-document.getElementById('clearYearBtn').onclick = () => {
+bindClick('clearYearBtn', () => {
   showConfirm(
     `🗑 Wyczyścić rok ${currentYear}?`,
     'Usunięte zostaną: zapisane zmiany + bufor dla tego roku. Urlopy i nadgodziny pozostaną. Dane fabryczne wrócą (jeśli istnieją).',
@@ -211,9 +220,9 @@ document.getElementById('clearYearBtn').onclick = () => {
     },
     { primaryText: '🗑 Wyczyść', primaryClass: 'danger' }
   );
-};
+});
 
-document.getElementById('resetCustomBtn').onclick = () => {
+bindClick('resetCustomBtn', () => {
   showConfirm(
     '↺ Reset wszystkich edycji?',
     'Usunięte zostaną WSZYSTKIE Twoje edycje (wszystkie lata + bufor). Fabryczne dane wrócą. Urlopy, nadgodziny i notatki pozostaną.',
@@ -227,17 +236,17 @@ document.getElementById('resetCustomBtn').onclick = () => {
     },
     { primaryText: '↺ Reset', primaryClass: 'danger' }
   );
-};
+});
 
 /* === SEARCH === */
 const searchMonthSel = document.getElementById('searchMonth');
 monthNames.forEach((n,i)=>{ const o=document.createElement('option'); o.value=i+1; o.textContent=n; searchMonthSel.appendChild(o); });
 
-document.getElementById('searchToggleBtn').onclick = () => {
+bindClick('searchToggleBtn', () => {
   const sb = document.getElementById('searchBox');
   sb.style.display = sb.style.display === 'none' ? 'block' : 'none';
-};
-document.getElementById('searchBtn').onclick = () => {
+});
+bindClick('searchBtn', () => {
   const type = document.getElementById('searchType').value;
   const month = +document.getElementById('searchMonth').value;
   const results = [];
@@ -268,4 +277,4 @@ document.getElementById('searchBtn').onclick = () => {
   rc.querySelectorAll('.search-result-item').forEach(el => {
     el.onclick = () => { jumpToDate(currentYear, +el.dataset.m, +el.dataset.d); };
   });
-};
+});
