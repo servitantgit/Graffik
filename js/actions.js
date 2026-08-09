@@ -165,15 +165,6 @@ document.getElementById('importFile').onchange = (e) => {
 };
 
 /* === MENU: OPCJE === */
-bindClick('menuWeekSummary', () => {
-  prefs.weekSummaryEnabled = !prefs.weekSummaryEnabled;
-  savePrefs(prefs);
-  document.getElementById('menuWeekSummary').querySelector('.mi-check').style.display = prefs.weekSummaryEnabled ? 'inline' : 'none';
-  showToast('info', prefs.weekSummaryEnabled ? 'Podsumowanie tygodnia WŁ' : 'Podsumowanie tygodnia WYŁ');
-  closeSideMenu();
-  refreshViews();
-});
-if (prefs.weekSummaryEnabled) document.getElementById('menuWeekSummary').querySelector('.mi-check').style.display = 'inline';
 
 bindClick('menuVacationLimit', () => {
   closeSideMenu();

@@ -160,7 +160,6 @@ function renderCalendar(direction) {
         return;
       }
       selectedDay = (selectedDay === d) ? null : d;
-      weekSummaryClosed = false;
       renderCalendar();
       renderInfo();
     });
@@ -175,7 +174,6 @@ function renderCalendar(direction) {
   if (monthHours) monthHours.textContent = `Godziny: A=${h.A} • B=${h.B} • C=${h.C} • D=${h.D}${compareShift?` (vs ${compareShift})`:''}`;
 
   renderProgress();
-  renderWeekSummary();
   renderMonthOvertimeSummary();
 }
 
@@ -508,40 +506,6 @@ function renderProgress() {
   const pct = Math.round((workedHours/totalHours)*100);
   progressFill.style.width = Math.min(pct, 100) + '%';
   progressLabel.textContent = `Brygada ${selectedShift}: ${workedHours}h / ${totalHours}h (${pct}%)`;
-}
-
-/* === PODSUMOWANIE TYGODNIA === */
-function renderWeekSummary() {
-  const el = document.getElementById('weekSummary');
-  if (!prefs.weekSummaryEnabled || !selectedDay || weekSummaryClosed || currentView !== 'month') {
-    el.style.display = 'none';
-    return;
-  }
-  const sd = new Date(currentYear, currentMonth-1, selectedDay);
-  const dow = sd.getDay();
-  const daysToMon = (dow === 0 ? 6 : dow - 1);
-  const monday = new Date(sd); monday.setDate(sd.getDate() - daysToMon);
-  const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
-  const counts = { R: 0, P: 0, N: 0, W: 0, U: 0 };
-  for (let i = 0; i < 7; i++) {
-    const dt = new Date(monday); dt.setDate(monday.getDate() + i);
-    const y = dt.getFullYear(), m = dt.getMonth()+1, dd = dt.getDate();
-    if (isUrlop(y, m, dd, selectedShift)) { counts.U++; continue; }
-    const s = getShiftAtWithPending(y, m, dd, selectedShift);
-    counts[isWolne(s) ? 'W' : s]++;
-  }
-  const totalH = (counts.R + counts.P + counts.N) * 8;
-  const weekRange = `${monday.getDate()}.${String(monday.getMonth()+1).padStart(2,'0')} – ${sunday.getDate()}.${String(sunday.getMonth()+1).padStart(2,'0')}`;
-  el.style.display = 'block';
-  document.getElementById('weekSummaryContent').innerHTML = `
-    <div style="text-align:center; font-size:12px; color:var(--text-muted); margin-bottom:8px;">${weekRange}</div>
-    <div style="display:flex; justify-content:space-between; padding:6px 10px; background:var(--bg-cell); border-radius:6px; margin:6px 0;"><span>🌅 R:</span><b>${counts.R}</b></div>
-    <div style="display:flex; justify-content:space-between; padding:6px 10px; background:var(--bg-cell); border-radius:6px; margin:6px 0;"><span>🌤️ P:</span><b>${counts.P}</b></div>
-    <div style="display:flex; justify-content:space-between; padding:6px 10px; background:var(--bg-cell); border-radius:6px; margin:6px 0;"><span>🌙 N:</span><b>${counts.N}</b></div>
-    <div style="display:flex; justify-content:space-between; padding:6px 10px; background:var(--bg-cell); border-radius:6px; margin:6px 0;"><span>🏖️ W:</span><b>${counts.W}</b></div>
-    ${counts.U > 0 ? `<div style="display:flex; justify-content:space-between; padding:6px 10px; background:var(--color-U-grad); color:#fff; border-radius:6px; margin:6px 0;"><span>🌴 U:</span><b style="color:#fff;">${counts.U}</b></div>` : ''}
-    <div style="display:flex; justify-content:space-between; padding:10px; background:var(--text-header); color:#fff; border-radius:6px; margin-top:12px; font-weight:700;"><span>Razem:</span><b style="color:#fff;">${totalH}h</b></div>
-  `;
 }
 
 /* === INFO PANEL === */

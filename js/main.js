@@ -12,7 +12,6 @@ let currentView = prefs.view || 'dashboard';
 let yearMode = prefs.yearMode || false;
 let editMode = false;
 let editPaletteMode = 'CYCLE';
-let weekSummaryClosed = false;
 let popupFadeTimer = null;
 let undoStack = [];
 
@@ -309,12 +308,6 @@ document.getElementById('todayBtn').onclick = () => {
   savePrefs(prefs);
   if (currentView === 'dashboard') refreshViews();
   else switchView('month');
-};
-
-/* === WEEK SUMMARY CLOSE === */
-document.getElementById('wsCloseBtn').onclick = () => {
-  document.getElementById('weekSummary').style.display = 'none';
-  weekSummaryClosed = true;
 };
 
 /* === beforeunload === */
