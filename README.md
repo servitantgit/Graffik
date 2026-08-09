@@ -31,7 +31,11 @@ Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w system
 
 ## 📱 Zrzuty ekranu
 
-TODO: Dodać screenshoty
+![Dashboard](screenshots/dashboard.jpg)
+
+![Miesiąc](screenshots/miesiac.jpg)
+
+![Rok](screenshots/rok.jpg)
 
 ## 🛠 Technologie
 
