@@ -227,13 +227,42 @@ function getLiveTimer(shift, y, m, d) {
   if (now.getFullYear() !== y || now.getMonth()+1 !== m || now.getDate() !== d) return null;
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
   let startMin, endMin;
+
+  const ot = getOvertimes(y, m, d, selectedShift);
+
   if (shift === 'R') { startMin = 6*60; endMin = 14*60; }
   else if (shift === 'P') { startMin = 14*60; endMin = 22*60; }
   else if (shift === 'N') {
-    if (nowMinutes >= 22*60) { startMin = 22*60; endMin = 30*60; }
-    else if (nowMinutes < 6*60) return `Kończy się za ${Math.floor((6*60-nowMinutes)/60)}h ${(6*60-nowMinutes)%60}min`;
-    else return null;
+    startMin = 22*60; endMin = 30*60;
+    if (nowMinutes < 6*60) {
+      // Jeśli jesteśmy po północy, sprawdzamy nadgodziny z "wczorajszej" zmiany N
+      // Ale renderDashboard/getLiveTimer są wywoływane dla konkretnej daty y,m,d (dzisiaj).
+      // System przechowuje nadgodziny zmiany N na dniu, w którym się zaczęła.
+      // Więc jeśli mMinutes < 6*60, to jesteśmy w fazie końcowej zmiany N z dnia y,m,d-1? 
+      // Nie, bo wywołanie jest dla daty y,m,d. 
+      // W obecnej architekturze, jeśli dzisiaj (d) jest N, to o 2:00 rano (d) 
+      // pokazywany jest koniec zmiany N która zaczęła się dnia d-1. 
+      // Ale getOvertimes(y,m,d) pobierze OT dla zmiany która zacznie się o 22:00 DZISIAJ.
+      // To jest szerszy problem z nocną zmianą, ale skupmy się najpierw na P/R i ogólnym poprawieniu endMin.
+    }
   } else return null;
+
+  if (ot.przed) startMin -= ot.przed.hours * 60;
+  if (ot.po) endMin += ot.po.hours * 60;
+
+  if (shift === 'N' && nowMinutes < 6*60) {
+    // Specyficzna obsługa dla N po północy - używamy wczorajszych nadgodzin
+    const yesterday = new Date(now); yesterday.setDate(yesterday.getDate() - 1);
+    const yOT = getOvertimes(yesterday.getFullYear(), yesterday.getMonth()+1, yesterday.getDate(), selectedShift);
+    let yEndMin = 6*60;
+    if (yOT.po) yEndMin += yOT.po.hours * 60;
+    if (nowMinutes < yEndMin) {
+      const rem = yEndMin - nowMinutes;
+      return `⏱️ Kończy się za ${Math.floor(rem/60)}h ${rem%60}min`;
+    }
+    return null;
+  }
+
   if (nowMinutes >= startMin && nowMinutes < endMin) {
     const rem = endMin - nowMinutes;
     return `⏱️ Kończy się za ${Math.floor(rem/60)}h ${rem%60}min`;
