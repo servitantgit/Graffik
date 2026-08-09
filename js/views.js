@@ -138,12 +138,32 @@ function renderYearView() {
           refreshViews();
           return;
         }
-        currentMonth = m; selectedDay = d; switchView('month');
+        currentMonth = m;
+        selectedDay = d;
+        yearMode = false;
+        prefs.yearMode = false;
+        savePrefs(prefs);
+        const yt = document.getElementById('yearToggle');
+        if (yt) yt.checked = false;
+        const ytl = document.getElementById('yearToggleLabel');
+        if (ytl) ytl.classList.remove('active');
+        switchView('month');
       };
       mini.appendChild(el);
     }
     wrap.appendChild(mini);
-    wrap.onclick = () => { if (editMode) return; currentMonth = m; switchView('month'); };
+    wrap.onclick = () => {
+      if (editMode) return;
+      currentMonth = m;
+      yearMode = false;
+      prefs.yearMode = false;
+      savePrefs(prefs);
+      const yt = document.getElementById('yearToggle');
+      if (yt) yt.checked = false;
+      const ytl = document.getElementById('yearToggleLabel');
+      if (ytl) ytl.classList.remove('active');
+      switchView('month');
+    };
     yv.appendChild(wrap);
   }
 }
@@ -247,10 +267,19 @@ function buildMonthTable(month) {
           refreshViews();
           return;
         }
-        selectedShift = brig; currentMonth = month; selectedDay = d;
+        selectedShift = brig;
+        currentMonth = month;
+        selectedDay = d;
         compareShift = null;
-        prefs.shift = selectedShift; savePrefs(prefs);
+        yearMode = false;
+        prefs.shift = selectedShift;
+        prefs.yearMode = false;
+        savePrefs(prefs);
         updateShiftButtons();
+        const yt = document.getElementById('yearToggle');
+        if (yt) yt.checked = false;
+        const ytl = document.getElementById('yearToggleLabel');
+        if (ytl) ytl.classList.remove('active');
         switchView('month');
       };
       tr.appendChild(td);
