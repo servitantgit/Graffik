@@ -31,11 +31,33 @@ Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w system
 
 ## 📱 Zrzuty ekranu
 
-![Dashboard](screenshots/dashboard.jpg)
+<table>
+  <tr>
+    <td align="center">
+      <a href="./screenshots/dashboard.jpg" target="_blank">
+        <img src="./screenshots/dashboard.jpg" width="240" alt="Dashboard">
+      </a>
+      <br>
+      <sub><b>🏠 Dashboard</b></sub>
+    </td>
+    <td align="center">
+      <a href="./screenshots/miesiac.jpg" target="_blank">
+        <img src="./screenshots/miesiac.jpg" width="240" alt="Miesiąc">
+      </a>
+      <br>
+      <sub><b>📅 Widok miesiąca</b></sub>
+    </td>
+    <td align="center">
+      <a href="./screenshots/rok.jpg" target="_blank">
+        <img src="./screenshots/rok.jpg" width="240" alt="Rok">
+      </a>
+      <br>
+      <sub><b>📆 Widok tygodnia</b></sub>
+    </td>
+  </tr>
+</table>
 
-![Miesiąc](screenshots/miesiac.jpg)
-
-![Rok](screenshots/rok.jpg)
+<sub>💡 Kliknij zdjęcie, aby zobaczyć w pełnym rozmiarze</sub>
 
 ## 🛠 Technologie
 
