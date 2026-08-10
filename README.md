@@ -1,92 +1,204 @@
-# 📅 Grafik Brygad
+# 📅 Grafik Gillette
 
 Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w systemie 3-zmianowym (Rano/Popołudnie/Noc). Zastępuje papierowy kalendarz w plakietce.
+
+**Demo:** [https://servitantgit.github.io/Graffik/](https://servitantgit.github.io/Graffik/)
 
 ![Status](https://img.shields.io/badge/status-production-brightgreen)
 ![PWA](https://img.shields.io/badge/PWA-ready-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-## 🚀 Demo / Uruchomienie
+## 📸 Zrzuty ekranu
 
-- **Wersja online:** [https://servitantgit.github.io/Graffik/](https://servitantgit.github.io/Graffik/)
-- Aplikację można zainstalować bezpośrednio na telefonie/komputerze jako **PWA**.
-- **Uruchomienie lokalne:**
-  ```bash
-  python -m http.server 8000
-  ```
+*Coming soon — miejsce na zrzuty ekranu Dashboard, Miesiąc, Tydzień, Tabela*
 
-## ✨ Funkcje
+## ✨ Główne funkcje
 
-- 📅 Grafik dla 4 brygad (A/B/C/D)
-- 🕐 3 zmiany (Rano/Popołudnie/Noc)
-- 🌴 Urlopy z automatycznym limitem
-- ⏱ Nadgodziny z kategoryzacją (+50%/+100%/+200%)
-- ☁️ Synchronizacja Google Drive
-- 🔔 Powiadomienia push
-- 📱 Instalacja jako PWA
-- 🎨 8 motywów kolorystycznych
-- 📥 Eksport do Google Calendar / Outlook (.ics)
-- 🔒 Prywatność — dane każdego użytkownika w jego własnym Drive
-- 💾 Praca offline
+- 📊 **4 brygady** (A/B/C/D) z systemem 3 zmian (R/P/N) + Wolne + Urlop
+- 🏠 **4 widoki**: Dashboard, Tydzień, Miesiąc, Tabela
+- 📈 **Tryb Rok** — rozszerza Miesiąc/Tabelę na cały rok (12 mini-kalendarzy/tabel)
+- ✏️ **Edycja grafiku** z historią cofania (undo/redo)
+- 🌴 **Urlopy** z limitem per brygada i automatycznym liczeniem dni roboczych
+- ⏱ **Nadgodziny** z auto-kategoryzacją (+50%/+100%/+200%)
+- 📝 **Notatki** do dowolnych dni
+- 🔍 **Wyszukiwanie** zmian, wolnych, urlopów
+- ⚖️ **Porównywanie brygad** (Ctrl+klik)
+- 🎨 **2 motywy**: jasny/ciemny (przełącznik w top-bar)
+- 📱 **PWA** — instalacja na telefonie, tryb offline, powiadomienia
+- ☁️ **Google Drive sync** — dane między urządzeniami
+- 🔗 **Kontekstowe udostępnianie** — link do dokładnie tego widoku
+- 📥 **Eksport .ics** do kalendarza, **drukowanie**, **backup JSON**
 
-## 📱 Zrzuty ekranu
+## 🚀 Szybki start
 
-<table>
-  <tr>
-    <td align="center">
-      <a href="./screenshots/dashboard.jpg" target="_blank">
-        <img src="./screenshots/dashboard.jpg" width="240" alt="Dashboard">
-      </a>
-      <br>
-      <sub><b>🏠 Dashboard</b></sub>
-    </td>
-    <td align="center">
-      <a href="./screenshots/miesiac.jpg" target="_blank">
-        <img src="./screenshots/miesiac.jpg" width="240" alt="Miesiąc">
-      </a>
-      <br>
-      <sub><b>📅 Widok miesiąca</b></sub>
-    </td>
-    <td align="center">
-      <a href="./screenshots/rok.jpg" target="_blank">
-        <img src="./screenshots/rok.jpg" width="240" alt="Rok">
-      </a>
-      <br>
-      <sub><b>📆 Widok tygodnia</b></sub>
-    </td>
-  </tr>
-</table>
+1. Otwórz [https://servitantgit.github.io/Graffik/](https://servitantgit.github.io/Graffik/)
+2. Wybierz brygadę (A/B/C/D) i rok
+3. Dashboard pokaże dzisiejszą zmianę z timerem
+4. Przełączaj widoki górnym menu
 
-<sub>💡 Kliknij zdjęcie, aby zobaczyć w pełnym rozmiarze</sub>
+**Szczegóły funkcji:** zobacz sekcję Pomoc w aplikacji (☰ Menu → ❓)
 
-## 🛠 Technologie
+## 📱 Instalacja jako PWA
 
-- HTML5, CSS3 (Custom Properties, Flexbox, Grid)
-- Vanilla JavaScript (ES6+, bez frameworków)
-- Google Drive API (OAuth 2.0)
-- PWA (Service Worker + Web App Manifest)
-- GitHub Pages (hosting)
+### Android (Chrome)
+- Menu przeglądarki (⋮) → "Dodaj do ekranu głównego"
+- Lub: ☰ Menu → 📲 Zainstaluj aplikację
 
-## 📖 Dokumentacja
+### iPhone / iPad (Safari)
+1. Otwórz stronę w **Safari** (nie w innej przeglądarce!)
+2. Dotknij **Udostępnij** ⬆️ na dole ekranu
+3. Przewiń w dół → **„Dodaj do ekranu głównego"**
+4. Dotknij **„Dodaj"**
 
-Szczegółowa dokumentacja techniczna: [PROJECT_DOCS.md](./PROJECT_DOCS.md)
+Po instalacji aplikacja działa w pełnym ekranie, bez paska adresu, i jest dostępna offline.
 
-## 🚀 Jak zacząć (dla użytkowników)
+## 🔗 Udostępnianie i URL params
 
-1. Otwórz w telefonie: https://servitantgit.github.io/Graffik/
-2. Zainstaluj jako aplikację (Chrome/Safari zaproponuje sam)
-3. Zaloguj się przez Google Drive (opcjonalne — dla synchronizacji)
-4. Wybierz swoją brygadę
-5. Gotowe!
+Funkcja **🔗 Udostępnij widok** w bocznym menu tworzy link do dokładnie tego, co widzisz. Odbiorca zobaczy ten sam widok.
 
-## 🤝 Wkład
+### Parametry URL
 
-Sugestie i uwagi mile widziane. Otwórz Issue lub napisz email.
+| Parametr | Znaczenie | Przykład | Opcjonalny |
+|----------|-----------|----------|------------|
+| `view` | Typ widoku: `dashboard`, `week`, `month`, `table` | `view=month` | Nie |
+| `y` | Rok | `y=2026` | Nie |
+| `m` | Miesiąc (1-12) | `m=8` | Tak* |
+| `d` | Dzień (1-31) | `d=10` | Tak* |
+| `brig` | Brygada (A/B/C/D) | `brig=C` | Tak* |
+| `rok` | Tryb Rok (1 = włączony) | `rok=1` | Tak* |
 
-## 📧 Kontakt
+\* Parametr jest dodawany automatycznie, jeśli ma sens w danym widoku.
 
-Email: tantsiura.s@pg.com
+### Przykłady URL
 
-## 📄 Licencja
+```
+# Dzień 10 sierpnia, brygada C
+?view=month&y=2026&m=8&d=10&brig=C
 
-MIT License
+# Cały sierpień, brygada C
+?view=month&y=2026&m=8&brig=C
+
+# Rok view, brygada C
+?view=month&y=2026&brig=C&rok=1
+
+# Tydzień z 10 sierpnia, brygada C
+?view=week&y=2026&m=8&d=10&brig=C
+
+# Tabela — cały rok
+?view=table&y=2026&rok=1
+```
+
+## 🛠 Dla developerów
+
+### Stos technologiczny
+- **Vanilla JavaScript** (ES2020+, bez frameworków, bez build system)
+- **HTML5 + CSS3** (Custom Properties, Flexbox, Grid)
+- **PWA**: Service Worker + Web App Manifest
+- **Google Drive API** (OAuth 2.0)
+- **Hosting**: GitHub Pages
+
+### Wymagania
+- Nowoczesna przeglądarka z obsługą ES2020, Service Worker, localStorage
+- **Uwaga**: PWA i moduły JS wymagają HTTP (nie działa z `file://`)
+
+### Uruchomienie lokalne
+
+```bash
+# Python 3
+python -m http.server 8000
+
+# Node.js (jeśli masz http-server)
+npx http-server -p 8000
+```
+
+Następnie otwórz: `http://localhost:8000`
+
+### Struktura projektu
+
+```
+Graffik/
+├── index.html          # HTML + CSS (w <style>)
+├── manifest.json       # PWA manifest
+├── sw.js              # Service Worker
+├── js/
+│   ├── data.js        # Stałe, factorySchedule
+│   ├── core.js        # Biznes-logika (getShiftAt, isWolne, isUrlop)
+│   ├── ui.js          # Toast, Modal, Confirm, escapeHtml
+│   ├── edit.js        # Tryb edycji, undo/redo, applyEdit
+│   ├── dashboard.js   # Renderowanie Dashboard
+│   ├── calendar.js    # Kalendarz, popupy, nadgodziny
+│   ├── views.js       # Tydzień, Rok, Tabela
+│   ├── actions.js     # Eksport .ics, share, import/export JSON
+│   ├── pwa.js         # Service Worker, powiadomienia
+│   ├── sync.js        # Google Drive sync
+│   └── main.js        # Stan aplikacji, events, init
+├── icons/
+│   ├── icon-192.png
+│   ├── icon-512.png
+│   └── icon-512-maskable.png
+├── PROJECT_DOCS.md    # Dokumentacja techniczna
+└── README.md
+```
+
+## ⌨️ Skróty klawiszowe
+
+### Tryb edycji
+| Skrót | Działanie |
+|-------|-----------|
+| `R` / `P` / `N` / `W` | Wybór zmiany do malowania |
+| `C` | Tryb cyklu (rotacja zmian) |
+| `O` | Tryb nadgodzin |
+| `Ctrl+Z` | Cofnij ostatnią zmianę |
+| `Ctrl+Y` / `Ctrl+Shift+Z` | Ponów cofniętą zmianę |
+| `Ctrl+S` | Zapisz wszystkie zmiany |
+| `Esc` | Wyjdź z trybu edycji |
+
+### Nawigacja
+| Skrót | Działanie |
+|-------|-----------|
+| `←` / `→` | Poprzedni/następny miesiąc lub tydzień |
+| `E` | Włącz/wyłącz tryb edycji |
+| `Esc` | Zamknij popup/modal lub wyjdź z edycji |
+
+### Wybór brygady
+| Akcja | Działanie |
+|-------|-----------|
+| `Klik` | Zmień aktywną brygadę |
+| `Ctrl + klik` | Porównaj z inną brygadą (podświetla wspólne zmiany) |
+
+## 💾 Przechowywanie danych
+
+Aplikacja przechowuje dane w trzech miejscach:
+
+1. **localStorage** (podstawowe) — urlopy, nadgodziny, notatki, ustawienia, edycje grafiku
+2. **Google Drive** (opcjonalne) — ręczna synchronizacja między urządzeniami
+3. **Backup JSON** — eksport/import pliku z całą kopią danych
+
+**Uwaga:** Dane w localStorage można stracić przy wyczyszczeniu pamięci przeglądarki. Regularnie rób backup przez 📥 JSON lub ☁️ Google Drive.
+
+## 🔒 Prywatność
+
+Wszystkie dane przechowywane są lokalnie w przeglądarce użytkownika. Synchronizacja Google Drive używa własnego konta użytkownika — brak zewnętrznych serwerów. Aplikacja nie wysyła żadnych danych do innych serwisów.
+
+## 🐛 Zgłaszanie błędów
+
+Znaleziono błąd lub masz sugestię? Napisz na: [tantsiura.s@pg.com](mailto:tantsiura.s@pg.com)
+
+Przy zgłoszeniu podaj:
+- Rok, datę, brygadę
+- Nazwę przeglądarki i urządzenie
+- Krótki opis problemu
+- Zrzut ekranu (jeśli możliwy)
+
+## 📝 Licencja
+
+MIT License (lub wewnętrzne narzędzie fabryczne — wg wyboru autora)
+
+## 🙏 Autor
+
+**Sergii Tantsiura**  
+📧 [tantsiura.s@pg.com](mailto:tantsiura.s@pg.com)
+
+---
+
+**Uwaga dla developerów:** Szczegółowa dokumentacja techniczna (architektura, sync, edge cases) znajduje się w [PROJECT_DOCS.md](./PROJECT_DOCS.md). FAQ w aplikacji (☰ Menu → ❓) zawiera przewodnik dla użytkowników.
