@@ -93,7 +93,6 @@ const dayNamesFull = ['Niedziela','Poniedziałek','Wtorek','Środa','Czwartek','
 const shiftFullName = { R: 'Rano (6:00–14:00)', P: 'Popołudnie (14:00–22:00)', N: 'Noc (22:00–6:00)', '': 'Wolne' };
 const shiftLongNames = { R: 'Rano', P: 'Popołudnie', N: 'Noc' };
 const shiftEmoji = { R: '🌅', P: '🌤️', N: '🌙', '': '🏖️' };
-const shiftHours = { R: [6,14], P: [14,22], N: [22,30] };
 const SHIFT_CYCLE = ['','R','P','N'];
 const MIN_YEAR = 2026;
 const MAX_YEAR = 2050;

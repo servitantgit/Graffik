@@ -24,7 +24,8 @@ Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą p
 ### Katalog `js/` (Logika modułowa)
 Projekt został zrefaktorowany: stary monolityczny JS podzielono na logiczne moduły:
 1. `data.js` — Grafik fabryczny (`factorySchedule`), nazwy miesięcy, stałe oraz klucze `localStorage`.
-2. `core.js` — Podstawowa logika biznesowa: obliczanie świąt (Wielkanoc), praca z `localStorage`, obliczanie kategorii nadgodzin (50%/100%/200%).
+  2. `core.js` — Podstawowa logika biznesowa: praca z `localStorage`.
+  2a. `overtime-logic.js` — Czyste funkcje obliczeniowe (obliczanie świąt Wielkanocy, kategoryzacja nadgodzin, kalkulacja czasu nadgodzin). Bez zależności od DOM/LS, łatwe do testowania.
 3. `ui.js` — Narzędzia interfejsu: okna modalne, toasty (powiadomienia), escapowanie HTML.
 4. `edit.js` — Logika trybu edycji, bufor niezapisanych zmian (`pendingChanges`), pełna obsługa Undo/Redo.
 5. `dashboard.js` — Renderowanie ekranu głównego (statystyki, aktualna zmiana, najbliższe dni).
@@ -38,6 +39,7 @@ Projekt został zrefaktorowany: stary monolityczny JS podzielono na logiczne mod
 ### Katalog `tools/`
 - `split_html.py` — Skrypt użyty do podziału starego monolitycznego HTML na obecną strukturę modułową.
 - `generate_icons.py` — Narzędzie do generowania ikon PWA.
+- `test_core.js` — Skrypt testowy Node.js do automatycznego sprawdzania poprawności obliczeń świąt i kategoryzacji nadgodzin.
 
 ### Pliki przestarzałe (History)
 Wcześniej projekt składał się z jednego pliku `Gillette 2026 New UI overtime.html`. Obecny `index.html` jest jego nowoczesną, modułową i w pełni funkcjonalną wersją. Wszystkie inne pliki o nazwie `Gillette 2026...html` w katalogu głównym są przestarzałymi szkicami.
