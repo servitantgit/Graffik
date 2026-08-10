@@ -289,174 +289,267 @@
       <button class="modal-close" id="faqClose">×</button>
     </div>
     <div class="modal-body">
-      <p class="faq-intro" style="color:var(--text-muted); font-size:13px; margin-bottom:15px;">Kliknij pytanie, aby zobaczyć odpowiedź. Poniżej znajdziesz szczegółowy opis zakładek, możliwości i tego, co aplikacja pokazuje.</p>
+      <p class="faq-intro" style="color:var(--text-muted); font-size:13px; margin-bottom:15px;">
+        Kliknij pytanie, aby zobaczyć odpowiedź. Poniżej znajdziesz szczegółowy opis zakładek, możliwości i tego, co aplikacja pokazuje.
+      </p>
       <div class="faq-list" style="display:flex; flex-direction:column; gap:8px;">
-
+    
         <details class="faq-item" open>
-          <summary>🚀 Jak zacząć pracę z aplikacją?</summary>
-          <div class="faq-answer">
-            <ol>
-              <li>Wybierz swoją brygadę (A/B/C/D)</li>
-              <li>Wybierz rok strzałkami <b>‹ ›</b></li>
-              <li>Uruchom <b>🏠 Dashboard</b>, bo jest najlepszy do szybkiego przeglądu dnia</li>
-              <li>Jeżeli chcesz wprowadzać zmiany, przejdź do trybu edycji przyciskiem <b>✏️</b></li>
-            </ol>
-            <p>Ustawienia zapisują się automatycznie w przeglądarce, więc po powrocie do aplikacji wracasz do ostatniego stanu.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>📋 Jakie są główne zakładki i co każda z nich pokazuje?</summary>
-          <div class="faq-answer">
-            <p>Aplikacja ma kilka głównych widoków, które służą do różnych zadań:</p>
-            <ul>
-              <li><b>🏠 Dashboard</b> — ekran startowy. Pokazuje dzisiejszą zmianę, najbliższe dni, podsumowanie tygodnia, status urlopów i szybkie przejścia do innych widoków.</li>
-              <li><b>📆 Tydzień</b> — pokazuje grafik na 7 dni w większej, bardziej uporządkowanej formie, przydatnej do planowania najbliższych dni.</li>
-              <li><b>📅 Miesiąc</b> — główny kalendarz. Tutaj widać zmiany, dni wolne, urlopy, notatki, nadgodziny i dodatkowe popupy z informacją o poprzedniej i następnej zmianie.</li>
-              <li><b>📋 Tabela</b> — pokazuje wszystkie 4 brygady w jednym miesiącu, co ułatwia porównanie grafików między brygadami.</li>
-              <li><b>📊 Rok</b> — rozszerza widok miesiąca lub tabeli na cały rok i pokazuje 12 mini-kalendarzy albo 12 tabel.</li>
-            </ul>
-            <p>Każda zakładka odpowiada innemu celowi: szybki przegląd, planowanie, edycja i analiza całego okresu.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>🧩 Jakie są najważniejsze możliwości programu?</summary>
-          <div class="faq-answer">
-            <p>Program potrafi robić znacznie więcej niż tylko pokazywać grafik. Oto jego najważniejsze możliwości:</p>
-            <ul>
-              <li><b>Pokazywanie zmian</b> dla każdej brygady: rano, popołudnie, noc oraz dni wolne.</li>
-              <li><b>Wyświetlanie aktualnej i najbliższej zmiany</b> z timerem, który informuje, kiedy zmiana się zaczyna lub kończy.</li>
-              <li><b>Obsługę urlopów</b> — użytkownik może oznaczać dni urlopowe i sprawdzać ich liczenie w bieżącym roku.</li>
-              <li><b>Dodawanie nadgodzin</b> do wybranych dni, z automatycznym policzeniem poziomu premii.</li>
-              <li><b>Notatki do dni</b> — można zapisywać dodatkowe informacje dla konkretnych dat.</li>
-              <li><b>Wyszukiwanie dni</b> — aplikacja potrafi znaleźć zmiany, dni wolne, blok wolnego i urlopy.</li>
-              <li><b>Porównywanie brygad</b> — można zobaczyć, kiedy dwie brygady mają tę samą zmianę.</li>
-              <li><b>Eksport do kalendarza i backup JSON</b> — dane można zapisać lub przenieść do innych narzędzi.</li>
-              <li><b>Drukowanie i udostępnianie</b> wybranego widoku albo konkretnego dnia.</li>
-            </ul>
-            <p>W praktyce aplikacja łączy funkcje grafiku, planera, kalendarza i prostego narzędzia do analizy zmian.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>⏱ Jak dodawać nadgodziny?</summary>
-          <div class="faq-answer">
-            <ol>
-              <li>Włącz <b>✏️ tryb edycji</b></li>
-              <li>W palecie na dole wybierz <b>⏱</b> lub naciśnij klawisz <b>O</b></li>
-              <li>Kliknij dzień z zmianą — pojawią się dwa popupy:
-                <ul>
-                  <li><b>⏱ PRZED</b> — nadgodziny przed zmianą</li>
-                  <li><b>⏱ PO</b> — nadgodziny po zmianie</li>
-                </ul>
-              </li>
-              <li>Kliknij popup i wpisz liczbę godzin w oknie modalnym</li>
-            </ol>
-            <p><b>Kategoria nadgodzin</b> jest obliczana automatycznie:</p>
-            <ul>
-              <li><b>+200%</b> — jeśli dzień jest świętem</li>
-              <li><b>+100%</b> — gdy nadgodziny są w nocy (22:00–6:00) albo w niedzielę</li>
-              <li><b>+50%</b> — zwykłe nadgodziny dzienne</li>
-            </ul>
-            <p>Komórka zostaje wizualnie podzielona na części, a pod nią widoczny jest rzeczywisty czas pracy. W widoku miesiąca pojawia się także podsumowanie miesięczne.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>🌴 Jak zaznaczać urlopy i kiedy są liczone?</summary>
-          <div class="faq-answer">
-            W widoku <b>📅 Miesiąc</b> kliknij wybrany dzień i wybierz popup <b>🌴 +</b>, aby dodać urlop.
-            <p>Aby usunąć urlop, kliknij ponownie ten sam dzień i wybierz czerwony <b>🌴 ❌</b>.</p>
-            <p>Statystyka pokazuje liczbę zaznaczonych dni oraz dni roboczych w bieżącym roku. Tylko dni robocze są liczone do limitu.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>📝 Jak działają notatki do dni?</summary>
-          <div class="faq-answer">
-            W widoku miesiąca wybierz dzień, a w dolnym panelu wpisz notatkę. Po kliknięciu poza pole lub po naciśnięciu Tab notatka zostaje zapisana.
-            <p>Na komórce dnia pojawi się ikona 📝 — najedź na nią, aby przeczytać treść.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>⌨️ Jakie są skróty klawiszowe?</summary>
-          <div class="faq-answer">
-            <b>W trybie edycji:</b>
-            <ul>
-              <li><b>R / P / N / W</b> — wybór zmiany do malowania</li>
-              <li><b>C</b> — tryb cyklu</li>
-              <li><b>O</b> — tryb nadgodzin</li>
-              <li><b>Ctrl+Z</b> — cofnij ostatnią zmianę</li>
-              <li><b>Ctrl+S</b> — zapisz wszystkie zmiany</li>
-            </ul>
-            <b>Nawigacja:</b>
-            <ul>
-              <li><b>← / →</b> — poprzedni/następny miesiąc</li>
-              <li><b>Esc</b> — zamknij popup lub wyjdź z edycji</li>
-              <li><b>E</b> — włącz/wyłącz edycję</li>
-            </ul>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>💾 Jak zapisują się dane?</summary>
-          <div class="faq-answer">
-            Grafiki zapisują się po kliknięciu <b>💾 Zapisz</b> w żółtym banerze.
-            <p>Urlopy, nadgodziny i notatki zapisują się automatycznie. Regularnie rób backup przez <b>📥 JSON</b>, żeby nie stracić danych po czyszczeniu przeglądarki.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>☁️ Jak działa synchronizacja z Google Drive?</summary>
-          <div class="faq-answer">
-            Synchronizacja pozwala przenieść dane aplikacji między urządzeniami przez Google Drive.
-            <ul>
-              <li>W menu wybierz <b>Google Drive</b>. Jeśli nie jesteś zalogowany, aplikacja poprosi o zalogowanie.</li>
-              <li>Możesz <b>wysłać</b> dane do Drive lub <b>pobrać</b> zapisane dane z Drive.</li>
-              <li>Synchronizowane dane obejmują: ustawienia grafiku, urlopy, nadgodziny, notatki i limity urlopu.</li>
-              <li>Przy pobieraniu danych aplikacja pyta o potwierdzenie nadpisania lokalnych danych.</li>
-              <li>Przycisk synchronizacji widoczny jest tylko po zalogowaniu; po wylogowaniu dostępny jest tylko przycisk logowania.</li>
-            </ul>
-            <p>To nowy sposób na przechowywanie grafiku w chmurze bez ręcznego eksportu.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>📥 Czy można eksportować grafik do innych aplikacji?</summary>
-          <div class="faq-answer">
-            Tak. W menu dostępny jest eksport <b>.ics</b> do kalendarza oraz backup <b>JSON</b>. Plik .ics można zaimportować do Google Calendar, Outlooka, iPhone’a i wielu innych aplikacji kalendarzowych.
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>📲 Jak zainstalować aplikację na iPhone / iPad?</summary>
-          <div class="faq-answer">
-            <p>Aplikacja jest dostępna jako PWA (Progressive Web App). Na urządzeniach Apple nie ma natywnego okna instalacji, ale możesz dodać ją do ekranu głównego:</p>
-            <ol>
-              <li>Otwórz tę stronę w <b>Safari</b> (nie w innej przeglądarce)</li>
-              <li>Dotknij przycisku <b>Udostępnij</b> <span style="font-size:16px;">⬆️</span> u dołu ekranu</li>
-              <li>Przewiń w dół i wybierz <b>„Dodaj do ekranu głównego"</b></li>
-              <li>Dotknij <b>„Dodaj"</b> w prawym górnym rogu</li>
-            </ol>
-            <p>Po dodaniu ikona aplikacji pojawi się na ekranie głównym. Uruchamiając ją stąd, otworzy się w pełnoekranowym trybie bez paska adresu.</p>
-            <p style="font-size:12px; color:var(--text-muted);">W menu aplikacji (☰ Menu → Zainstaluj aplikację) dostępna jest także szczegółowa instrukcja krok po kroku.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>🐛 Jak zgłosić problem lub sugestię?</summary>
-          <div class="faq-answer">
-            <div style="background:linear-gradient(135deg, #667eea, #764ba2); color:#fff; padding:15px; border-radius:10px; text-align:center;">
-              <b>📧 Kontakt:</b><br>
-              <a href="mailto:tantsiura.s@pg.com?subject=Grafik Gillette" style="color:#fff; font-weight:bold; text-decoration:none;">tantsiura.s@pg.com</a>
+            <summary>🚀 Jak zacząć pracę z aplikacją?</summary>
+            <div class="faq-answer">
+                <ol>
+                    <li>Wybierz swoją brygadę (A/B/C/D) — przyciski na górze.</li>
+                    <li>Wybierz rok strzałkami <b>‹ ›</b> obok numeru roku.</li>
+                    <li>Otwórz <b>🏠 Dashboard</b> — najlepszy do szybkiego przeglądu dzisiejszej zmiany.</li>
+                    <li>Aby wprowadzać zmiany, włącz tryb edycji przyciskiem <b>✏️</b> w lewym górnym rogu.</li>
+                </ol>
+                <p>Ustawienia (brygada, rok, motyw, ostatni widok) zapisują się automatycznie — po powrocie do aplikacji wracasz do ostatniego stanu.</p>
             </div>
-            <p>Przy zgłoszeniu błędu warto podać rok, datę, brygadę, przeglądarkę i krótki opis problemu.</p>
-          </div>
         </details>
-
-      </div>
+    
+        <details class="faq-item">
+            <summary>📋 Jakie są główne widoki?</summary>
+            <div class="faq-answer">
+                <ul>
+                    <li><b>🏠 Dashboard</b> — ekran startowy: dzisiejsza zmiana z timerem, najbliższe dni, statystyki, szybkie przejścia.</li>
+                    <li><b>📆 Tydzień</b> — 7 dni w większej, uporządkowanej formie do planowania.</li>
+                    <li><b>📅 Miesiąc</b> — główny kalendarz: zmiany, dni wolne, urlopy, notatki, nadgodziny, popupy z poprzednią i następną zmianą.</li>
+                    <li><b>📋 Tabela</b> — wszystkie 4 brygady w jednym miesiącu, do porównywania grafików między brygadami.</li>
+                    <li><b>📊 Rok</b> — przełącznik obok widoków. Rozszerza <b>Miesiąc</b> lub <b>Tabelę</b> na cały rok (12 mini-kalendarzy lub 12 tabel).</li>
+                </ul>
+                <p><b>Nowe:</b> kliknięcie na konkretny dzień w widoku "Miesiąc + Rok" lub "Tabela + Rok" automatycznie przełącza na szczegółowy widok miesiąca z podświetlonym dniem.</p>
+            </div>
+        </details>
+    
+        <details class="faq-item">
+            <summary>🎨 Jak zmienić motyw (jasny/ciemny)?</summary>
+            <div class="faq-answer">
+                <p>Przełącznik motywu znajduje się w górnym pasku aplikacji:</p>
+                <ul>
+                    <li>🌙 — kliknij, aby przełączyć na motyw <b>ciemny</b> (dobry na wieczór, mniej męczy oczy).</li>
+                    <li>☀️ — kliknij, aby przełączyć na motyw <b>jasny</b> (dobry w dzień).</li>
+                </ul>
+                <p>Wybrany motyw zapisuje się automatycznie i wraca po ponownym otwarciu aplikacji.</p>
+            </div>
+        </details>
+    
+        <details class="faq-item">
+            <summary>🧩 Najważniejsze możliwości aplikacji</summary>
+            <div class="faq-answer">
+                <ul>
+                    <li><b>Wyświetlanie zmian</b> dla każdej brygady: rano (R), popołudnie (P), noc (N), wolne (W).</li>
+                    <li><b>Live timer</b> na Dashboardzie — pokazuje ile zostało do końca aktualnej zmiany.</li>
+                    <li><b>Urlopy</b> — oznaczanie dni urlopowych, automatyczne liczenie zużytych dni roboczych i porównywanie z limitem.</li>
+                    <li><b>Nadgodziny</b> — dodawanie do dni ze zmianą, automatyczne obliczanie kategorii (+50%, +100%, +200%).</li>
+                    <li><b>Notatki</b> — dodawanie własnych informacji do dowolnego dnia.</li>
+                    <li><b>Wyszukiwanie</b> — szukanie dni po typie zmiany, blokach wolnego (min. 3 dni), urlopach.</li>
+                    <li><b>Porównywanie brygad</b> — Ctrl+klik na inną brygadę pokazuje wspólne zmiany.</li>
+                    <li><b>Eksport</b> — kalendarz .ics, backup JSON, drukowanie widoku.</li>
+                    <li><b>Udostępnianie</b> — kontekstowe: wysyła link do dokładnie tego widoku, który widzisz.</li>
+                    <li><b>Synchronizacja Google Drive</b> — dane między urządzeniami przez chmurę.</li>
+                    <li><b>PWA</b> — instalacja na urządzeniu, tryb offline, powiadomienia o rozpoczęciu zmiany.</li>
+                </ul>
+            </div>
+        </details>
+    
+        <details class="faq-item">
+            <summary>⏱ Jak dodawać nadgodziny?</summary>
+            <div class="faq-answer">
+                <ol>
+                    <li>Włącz <b>✏️ tryb edycji</b> (przycisk w lewym górnym rogu).</li>
+                    <li>W palecie na dole ekranu wybierz <b>⏱</b> (lub naciśnij klawisz <b>O</b>).</li>
+                    <li>Kliknij dzień ze zmianą — pojawią się dwa popupy:
+                        <ul>
+                            <li><b>⏱ PRZED</b> — nadgodziny przed zmianą</li>
+                            <li><b>⏱ PO</b> — nadgodziny po zmianie</li>
+                        </ul>
+                    </li>
+                    <li>Kliknij popup i wpisz liczbę godzin w oknie modalnym.</li>
+                </ol>
+                <p><b>Kategoria</b> obliczana automatycznie:</p>
+                <ul>
+                    <li><b>+200%</b> — jeśli dzień jest świętem</li>
+                    <li><b>+100%</b> — nadgodziny w nocy (22:00–6:00) lub w niedzielę</li>
+                    <li><b>+50%</b> — zwykłe nadgodziny dzienne</li>
+                </ul>
+                <p>Komórka dnia dzieli się wizualnie: paski z boku pokazują nadgodziny, u góry — rzeczywisty czas pracy. Pod kalendarzem widoczne jest podsumowanie miesięczne.</p>
+            </div>
+        </details>
+    
+        <details class="faq-item">
+            <summary>🌴 Jak zaznaczać urlopy?</summary>
+            <div class="faq-answer">
+                <p>W widoku <b>📅 Miesiąc</b> kliknij wybrany dzień — nad komórką pojawi się popup <b>🌴 +</b>. Kliknij, aby oznaczyć urlop.</p>
+                <p>Aby usunąć urlop, kliknij ponownie ten sam dzień — pojawi się czerwony <b>🌴 ❌</b>.</p>
+                <p>W panelu informacji pod kalendarzem widoczne są statystyki: liczba zaznaczonych dni, liczba dni roboczych oraz limit. Można też szybko zmienić limit klikając ikonę <b>✏️</b> obok statystyki.</p>
+                <p><b>Uwaga:</b> tylko dni robocze (nie wolne) są liczone do limitu urlopu.</p>
+            </div>
+        </details>
+    
+        <details class="faq-item">
+            <summary>📝 Jak działają notatki?</summary>
+            <div class="faq-answer">
+                <p>W widoku miesiąca kliknij dowolny dzień, a w panelu informacji na dole wpisz treść notatki. Zostanie zapisana automatycznie po kliknięciu poza pole lub naciśnięciu Tab.</p>
+                <p>Na komórce dnia z notatką pojawi się ikona 📝. Najedź na nią kursorem, aby przeczytać treść.</p>
+            </div>
+        </details>
+    
+        <details class="faq-item">
+            <summary>🔗 Jak udostępnić widok innej osobie?</summary>
+            <div class="faq-answer">
+                <p>W bocznym menu wybierz <b>🔗 Udostępnij widok</b>. Funkcja jest <b>kontekstowa</b> — wysyła link do dokładnie tego, co aktualnie widzisz:</p>
+                <ul>
+                    <li>W widoku <b>Miesiąc</b> z wybranym dniem → link otwiera ten sam miesiąc z podświetlonym dniem.</li>
+                    <li>W widoku <b>Miesiąc</b> bez wybranego dnia → link do całego miesiąca.</li>
+                    <li>W widoku <b>Miesiąc + Rok</b> → link do całego roku wybranej brygady.</li>
+                    <li>W widoku <b>Tydzień</b> → link do tego samego tygodnia.</li>
+                    <li>W widoku <b>Tabela</b> → link do tabeli wszystkich brygad w wybranym miesiącu/roku.</li>
+                </ul>
+                <p>Osoba, która otworzy link, zobaczy dokładnie to samo, co Ty w chwili udostępnienia.</p>
+            </div>
+        </details>
+    
+        <details class="faq-item">
+            <summary>⌨️ Skróty klawiszowe</summary>
+            <div class="faq-answer">
+                <b>W trybie edycji:</b>
+                <ul>
+                    <li><b>R / P / N / W</b> — wybór zmiany do "malowania"</li>
+                    <li><b>C</b> — tryb cyklu (przełącza zmianę zgodnie z rotacją)</li>
+                    <li><b>O</b> — tryb nadgodzin</li>
+                    <li><b>Ctrl+Z</b> — cofnij ostatnią zmianę</li>
+                    <li><b>Ctrl+S</b> — zapisz wszystkie zmiany</li>
+                </ul>
+                <b>Nawigacja:</b>
+                <ul>
+                    <li><b>← / →</b> — poprzedni/następny miesiąc lub tydzień</li>
+                    <li><b>Esc</b> — zamknij popup, modal lub wyjdź z edycji</li>
+                    <li><b>E</b> — włącz/wyłącz tryb edycji</li>
+                </ul>
+                <b>Wybór brygady:</b>
+                <ul>
+                    <li><b>Klik</b> na literę brygady — zmiana aktywnej brygady</li>
+                    <li><b>Ctrl + klik</b> na inną brygadę — tryb porównywania (podświetla wspólne zmiany)</li>
+                </ul>
+            </div>
+        </details>
+    
+        <details class="faq-item">
+            <summary>💾 Jak zapisują się dane?</summary>
+            <div class="faq-answer">
+                <p>Aplikacja automatycznie zapisuje w pamięci przeglądarki:</p>
+                <ul>
+                    <li>Urlopy, nadgodziny, notatki — <b>zapis natychmiastowy</b>.</li>
+                    <li>Zmiany w grafikach — wymagają kliknięcia <b>💾 Zapisz</b> w żółtym pasku trybu edycji.</li>
+                </ul>
+                <p><b>Ważne:</b> dane w przeglądarce można stracić przy wyczyszczeniu pamięci. Regularnie rób backup:</p>
+                <ul>
+                    <li><b>📥 JSON</b> (przycisk w pasku trybu edycji) — pobiera plik z całą kopią danych.</li>
+                    <li><b>☁️ Google Drive</b> (bocznym menu) — synchronizacja w chmurze między urządzeniami.</li>
+                </ul>
+            </div>
+        </details>
+    
+        <details class="faq-item">
+            <summary>☁️ Jak działa synchronizacja Google Drive?</summary>
+            <div class="faq-answer">
+                <p>Synchronizacja pozwala przenieść dane aplikacji między urządzeniami przez Twoje własne konto Google Drive.</p>
+                <ol>
+                    <li>W bocznym menu wybierz <b>Google Drive ☁️ (zaloguj)</b>.</li>
+                    <li>Zaloguj się na swoje konto Google i zezwól aplikacji na dostęp.</li>
+                    <li>Użyj <b>🔄 Synchronizuj teraz</b>, aby wysłać/pobrać dane.</li>
+                </ol>
+                <p>Synchronizowane są: ustawienia, urlopy, nadgodziny, notatki, edycje grafiku, limity urlopu.</p>
+                <p>Przy pobieraniu z Drive aplikacja pyta o potwierdzenie nadpisania lokalnych danych.</p>
+            </div>
+        </details>
+    
+        <details class="faq-item">
+            <summary>📥 Jak eksportować grafik do kalendarza?</summary>
+            <div class="faq-answer">
+                <p>W bocznym menu wybierz <b>📥 Eksport do kalendarza (.ics)</b>. Zostanie pobrany plik, który można zaimportować do:</p>
+                <ul>
+                    <li>Google Calendar</li>
+                    <li>Outlook / Microsoft Calendar</li>
+                    <li>Apple Calendar (iPhone, Mac)</li>
+                    <li>Innych aplikacji obsługujących format iCalendar</li>
+                </ul>
+                <p>Plik zawiera wszystkie zmiany i urlopy wybranej brygady dla aktualnego roku.</p>
+            </div>
+        </details>
+    
+        <details class="faq-item">
+            <summary>🖨️ Jak wydrukować grafik?</summary>
+            <div class="faq-answer">
+                <p>W bocznym menu wybierz <b>🖨️ Drukuj</b>. Zostanie otwarte okno druku przeglądarki z aktualnym widokiem (miesiąc, tydzień, rok lub tabela).</p>
+                <p>Nagłówek i stopka wydruku zawierają nazwę widoku, brygadę i datę wygenerowania. Kolory zmian i weekendów są zachowane, elementy interaktywne (menu, przyciski, popupy) są ukryte.</p>
+                <p>Dla najlepszego efektu wybierz orientację poziomą (landscape) — szczególnie dla widoku Tabela.</p>
+            </div>
+        </details>
+    
+        <details class="faq-item">
+            <summary>🔔 Powiadomienia o zmianach</summary>
+            <div class="faq-answer">
+                <p>Aplikacja może wysyłać powiadomienia o rozpoczęciu Twojej zmiany.</p>
+                <ol>
+                    <li>W bocznym menu wybierz <b>🔔 Powiadomienia o zmianach</b>.</li>
+                    <li>Zezwól przeglądarce/systemowi na powiadomienia.</li>
+                    <li>Wybierz z ilu godzin wyprzedzeniem chcesz być powiadamiany (1h, 2h, 3h).</li>
+                </ol>
+                <p><b>Uwaga:</b> aplikacja musi być otwarta w tle (jako karta lub zainstalowana jako PWA), aby wysyłać powiadomienia.</p>
+            </div>
+        </details>
+    
+        <details class="faq-item">
+            <summary>📲 Jak zainstalować aplikację na telefonie?</summary>
+            <div class="faq-answer">
+                <p>Aplikacja jest dostępna jako PWA — można ją zainstalować jak zwykłą apkę.</p>
+                <p><b>Android (Chrome):</b></p>
+                <ol>
+                    <li>W bocznym menu wybierz <b>📲 Zainstaluj aplikację</b> (jeśli widoczne).</li>
+                    <li>Lub w menu przeglądarki (⋮) → "Dodaj do ekranu głównego".</li>
+                </ol>
+                <p><b>iPhone / iPad (Safari):</b></p>
+                <ol>
+                    <li>Otwórz stronę w Safari (nie w innej przeglądarce!).</li>
+                    <li>Dotknij <b>Udostępnij</b> ⬆️ na dole ekranu.</li>
+                    <li>Przewiń w dół → <b>„Dodaj do ekranu głównego"</b>.</li>
+                    <li>Dotknij <b>„Dodaj"</b> w prawym górnym rogu.</li>
+                </ol>
+                <p>Po instalacji aplikacja działa w pełnym ekranie, bez paska adresu, i jest dostępna offline.</p>
+            </div>
+        </details>
+    
+        <details class="faq-item">
+            <summary>🗑 Reset i czyszczenie danych</summary>
+            <div class="faq-answer">
+                <p>W trybie edycji dostępne są dwa przyciski w żółtym pasku:</p>
+                <ul>
+                    <li><b>🗑 Rok</b> — usuwa wszystkie Twoje edycje TYLKO w wybranym roku. Dane fabryczne wracają. Urlopy, nadgodziny i notatki pozostają.</li>
+                    <li><b>↺ Reset</b> — usuwa WSZYSTKIE Twoje edycje we wszystkich latach. Urlopy, nadgodziny i notatki pozostają.</li>
+                </ul>
+                <p>Obie operacje wymagają potwierdzenia i nie można ich cofnąć — dlatego przed użyciem warto zrobić backup przez <b>📥 JSON</b>.</p>
+            </div>
+        </details>
+    
+        <details class="faq-item">
+            <summary>🐛 Zgłaszanie błędów i sugestii</summary>
+            <div class="faq-answer">
+                <div style="background:linear-gradient(135deg, #667eea, #764ba2); color:#fff; padding:15px; border-radius:10px; text-align:center;">
+                    <b>📧 Kontakt:</b><br>
+                    <a href="mailto:tantsiura.s@pg.com?subject=Grafik Gillette" style="color:#fff; font-weight:bold; text-decoration:none;">tantsiura.s@pg.com</a>
+                </div>
+                <p>Przy zgłoszeniu warto podać:</p>
+                <ul>
+                    <li>Rok, datę, brygadę, których dotyczy problem.</li>
+                    <li>Nazwę przeglądarki (Chrome, Safari, Firefox itp.).</li>
+                    <li>Urządzenie (telefon/komputer, system).</li>
+                    <li>Krótki opis co się stało i co powinno się stać.</li>
+                    <li>Zrzut ekranu (jeśli możliwy).</li>
+                </ul>
+            </div>
+        </details>
+    
     </div>
     <div class="modal-footer">
       <button class="modal-btn primary" onclick="document.getElementById('faqOverlay').classList.remove('show')">Rozumiem</button>
