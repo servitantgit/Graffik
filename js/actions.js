@@ -48,9 +48,6 @@ function exportICS() {
   a.click();
   showToast('success', 'Kalendarz wyeksportowany');
 }
-bindClick('icsBtn', exportICS);
-bindClick('printBtn', () => window.print());
-
 /* === PRINT HEADER/FOOTER === */
 function addPrintHeader() {
   const existing = document.querySelector('.print-header');
@@ -117,7 +114,6 @@ function shareDay() {
       .catch(() => showToast('error', 'Nie udało się skopiować linku'));
   }
 }
-bindClick('shareBtn', shareDay);
 
 /* === EXPORT/IMPORT JSON === */
 document.getElementById('exportDataBtn').onclick = () => {

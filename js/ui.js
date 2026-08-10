@@ -3,18 +3,24 @@
    ================================================================ */
 
 /* === THEMES === */
-const THEMES = ['light','dark','ocean','forest','sunset','neon','pastel','contrast'];
+const THEMES = ['light','dark'];
 function applyTheme(themeName) {
   THEMES.forEach(t => document.body.classList.remove('theme-' + t));
   if (themeName !== 'light') document.body.classList.add('theme-' + themeName);
-  document.querySelectorAll('.theme-swatch').forEach(el => {
-    el.classList.toggle('active', el.dataset.theme === themeName);
-  });
+  const toggleBtn = document.getElementById('themeToggleBtn');
+  if (toggleBtn) {
+    toggleBtn.textContent = themeName === 'dark' ? '☀️' : '🌙';
+  }
   prefs.theme = themeName;
   savePrefs(prefs);
 }
 if (prefs.dark && !prefs.theme) prefs.theme = 'dark';
 applyTheme(prefs.theme || 'light');
+
+function toggleTheme() {
+  const current = document.body.classList.contains('theme-dark') ? 'dark' : 'light';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+}
 
 /* === TOAST === */
 function showToast(type, message, duration) {
@@ -76,7 +82,13 @@ document.getElementById('menuBtn').onclick = openSideMenu;
 document.getElementById('sideMenuClose').onclick = closeSideMenu;
 sideMenuOverlay.onclick = closeSideMenu;
 
-/* === TEMATY — kliknięcia === */
+/* === THEME TOGGLE === */
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+if (themeToggleBtn) {
+  themeToggleBtn.onclick = toggleTheme;
+}
+
+/* === TEMATY — kliknięcia (backward compatibility) === */
 document.querySelectorAll('.theme-swatch').forEach(el => {
   el.onclick = () => { applyTheme(el.dataset.theme); showToast('info', 'Motyw: ' + el.dataset.name, 1500); };
 });
