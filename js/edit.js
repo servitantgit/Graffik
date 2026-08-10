@@ -29,6 +29,7 @@ function applyEdit(year, month, day, brigade, forcedValue) {
   const prev = getShiftAtWithPending(year, month, day, brigade) || '';
   undoStack.push({ k, prev, orig: pendingOriginals[k], wasDirty: pendingChanges.hasOwnProperty(k) });
   if (undoStack.length > 100) undoStack.shift();
+  redoStack = []; // Nowa akcja czyści historię "w przód"
 
   if (next === pendingOriginals[k]) {
     delete pendingChanges[k];
@@ -42,7 +43,15 @@ function applyEdit(year, month, day, brigade, forcedValue) {
 
 function undoLastEdit() {
   if (undoStack.length === 0) { showToast('info', 'Nie ma czego cofnąć'); return false; }
+  
+  const k = undoStack[undoStack.length - 1].k;
+  const currentVal = pendingChanges.hasOwnProperty(k) ? pendingChanges[k] : pendingOriginals[k];
   const last = undoStack.pop();
+  
+  // Zapamiętaj do Redo
+  redoStack.push({ ...last, redoVal: currentVal });
+  if (redoStack.length > 100) redoStack.shift();
+
   if (last.prev === last.orig) {
     delete pendingChanges[last.k];
     if (!last.wasDirty) delete pendingOriginals[last.k];
@@ -50,6 +59,28 @@ function undoLastEdit() {
     pendingChanges[last.k] = last.prev;
     if (!last.wasDirty) pendingOriginals[last.k] = last.orig;
   }
+  updateDirtyIndicator();
+  refreshViews();
+  return true;
+}
+
+function redoLastEdit() {
+  if (redoStack.length === 0) { showToast('info', 'Nie ma czego powtórzyć'); return false; }
+  
+  const last = redoStack.pop();
+  const k = last.k;
+  
+  // Przywróć z powrotem na Undo
+  undoStack.push({ k: last.k, prev: last.prev, orig: last.orig, wasDirty: last.wasDirty });
+  if (undoStack.length > 100) undoStack.shift();
+
+  if (last.redoVal === last.orig) {
+    delete pendingChanges[k];
+    delete pendingOriginals[k];
+  } else {
+    pendingChanges[k] = last.redoVal;
+  }
+  
   updateDirtyIndicator();
   refreshViews();
   return true;
@@ -75,6 +106,7 @@ function saveAllPendingChanges() {
       pendingChanges = {};
       pendingOriginals = {};
       undoStack = [];
+      redoStack = [];
       updateDirtyIndicator();
       refreshViews();
       showToast('success', `Zapisano ${count} ${count === 1 ? 'zmianę' : 'zmian'}`);
@@ -94,6 +126,7 @@ function discardAllPendingChanges() {
       pendingChanges = {};
       pendingOriginals = {};
       undoStack = [];
+      redoStack = [];
       updateDirtyIndicator();
       refreshViews();
       showToast('info', 'Zmiany cofnięte');
@@ -109,8 +142,13 @@ function updateDirtyIndicator() {
   const cnt = getElementByIdSafe('dirtyCount');
   const saveBtn = getElementByIdSafe('saveChangesBtn');
   const discardBtn = getElementByIdSafe('discardChangesBtn');
+  const undoBtn = getElementByIdSafe('undoBtn');
+  const redoBtn = getElementByIdSafe('redoBtn');
+
   if (ind) ind.style.display = count > 0 ? 'inline-block' : 'none';
   if (cnt) cnt.textContent = count;
   if (saveBtn) saveBtn.disabled = count === 0;
   if (discardBtn) discardBtn.disabled = count === 0;
+  if (undoBtn) undoBtn.disabled = undoStack.length === 0;
+  if (redoBtn) redoBtn.disabled = redoStack.length === 0;
 }

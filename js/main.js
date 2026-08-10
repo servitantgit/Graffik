@@ -14,6 +14,7 @@ let editMode = false;
 let editPaletteMode = 'CYCLE';
 let popupFadeTimer = null;
 let undoStack = [];
+let redoStack = [];
 
 /* === URL === */
 const urlParams = new URLSearchParams(window.location.search);
@@ -155,7 +156,7 @@ document.getElementById('editModeToggle').onclick = () => {
       showConfirm(
         `⚠️ Masz ${pc} niezapisanych zmian`,
         'Wybierz co zrobić:',
-        () => { pendingChanges = {}; pendingOriginals = {}; undoStack = []; editMode = false; refreshViews(); showToast('warn', 'Zmiany odrzucone'); },
+        () => { pendingChanges = {}; pendingOriginals = {}; undoStack = []; redoStack = []; editMode = false; refreshViews(); showToast('warn', 'Zmiany odrzucone'); },
         { primaryText: 'Odrzuć i wyjdź', primaryClass: 'danger' }
       );
     } else {
@@ -193,6 +194,8 @@ function setPaletteMode(mode) {
 
 document.getElementById('saveChangesBtn').onclick = saveAllPendingChanges;
 document.getElementById('discardChangesBtn').onclick = discardAllPendingChanges;
+document.getElementById('undoBtn').onclick = undoLastEdit;
+document.getElementById('redoBtn').onclick = redoLastEdit;
 
 /* === NAWIGACJA === */
 function goToMonth(delta) {
@@ -244,6 +247,7 @@ document.addEventListener('keydown', e => {
   if (editMode) {
     if (e.ctrlKey && e.key.toLowerCase() === 's') { e.preventDefault(); saveAllPendingChanges(); return; }
     if (e.ctrlKey && e.key.toLowerCase() === 'z') { e.preventDefault(); undoLastEdit(); return; }
+    if (e.ctrlKey && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) { e.preventDefault(); redoLastEdit(); return; }
     const k = e.key.toLowerCase();
     if (k === 'r') { setPaletteMode('R'); return; }
     if (k === 'p') { setPaletteMode('P'); return; }

@@ -2199,8 +2199,10 @@ small { color: var(--text-muted); font-weight: normal; }
       <br><small style="opacity:.9;">Skróty: R P N W = zmiana • O = nadgodziny • Ctrl+Z = cofnij • Ctrl+S = zapisz • Esc = wyjdź</small>
     </div>
     <div class="edit-banner-actions">
-      <button id="saveChangesBtn" class="save">💾 Zapisz</button>
-      <button id="discardChangesBtn">↶ Cofnij</button>
+      <button id="undoBtn" title="Cofnij ostatnią zmianę (Ctrl+Z)">↶ Undo</button>
+      <button id="redoBtn" title="Ponów cofniętą zmianę (Ctrl+Y)">↷ Redo</button>
+      <button id="saveChangesBtn" class="save" title="Zapisz zmiany w przeglądarce (Ctrl+S)">💾 Zapisz</button>
+      <button id="discardChangesBtn">↶ Odrzuć wszystko</button>
       <button id="menuVacationLimit">🌴 Limit urlopu</button>
       <button id="exportDataBtn">📥 JSON</button>
       <button id="importDataBtn">📂 Import</button>

@@ -26,7 +26,7 @@ Projekt został zrefaktorowany: stary monolityczny JS podzielono na logiczne mod
 1. `data.js` — Grafik fabryczny (`factorySchedule`), nazwy miesięcy, stałe oraz klucze `localStorage`.
 2. `core.js` — Podstawowa logika biznesowa: obliczanie świąt (Wielkanoc), praca z `localStorage`, obliczanie kategorii nadgodzin (50%/100%/200%).
 3. `ui.js` — Narzędzia interfejsu: okna modalne, toasty (powiadomienia), escapowanie HTML.
-4. `edit.js` — Logika trybu edycji, bufor niezapisanych zmian (`pendingChanges`), Undo/Redo.
+4. `edit.js` — Logika trybu edycji, bufor niezapisanych zmian (`pendingChanges`), pełna obsługa Undo/Redo.
 5. `dashboard.js` — Renderowanie ekranu głównego (statystyki, aktualna zmiana, najbliższe dni).
 6. `calendar.js` — Generowanie siatki kalendarza dla widoku „Miesiąc”.
 7. `views.js` — Renderowanie alternatywnych widoków: „Tydzień”, „Rok”, „Tabela”.
