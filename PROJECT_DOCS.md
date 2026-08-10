@@ -1,116 +1,310 @@
-# PROJECT_DOCS.md — Dokumentacja techniczna projektu „Grafik Gillette”
+# PROJECT_DOCS.md — Dokumentacja techniczna projektu „Grafik Gillette"
 
-Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą projektu.
+Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą projektu. Przeznaczony dla developerów i AI-asystentów.
 
-## 1. OPIS OGÓLNY
-**Grafik Gillette** — to aplikacja webowa (PWA) do wizualizacji i zarządzania grafikiem pracy czterech brygad (A, B, C, D) w zakładzie Gillette. Aplikacja pozwala śledzić zmiany (Rano, Popołudnie, Noc), planować urlopy, dodawać nadgodziny oraz synchronizować dane przez Google Drive.
+## 1. Przegląd architektury
 
-### Stos technologiczny
-- **Frontend**: Vanilla HTML5, CSS3 (Custom Properties, Flexbox, Grid), Vanilla JavaScript (ES6+).
-- **Backend**: Brak (w pełni aplikacja kliencka).
-- **Trwałość danych**: `localStorage` do przechowywania lokalnego + Google Drive API do synchronizacji.
-- **PWA**: Service Worker (`sw.js`) do pracy w trybie offline.
+- **Typ projektu**: Vanilla JavaScript PWA, brak frameworków, brak build system
+- **Skrypty**: Klasyczne (bez ES modules), dzielone przez global scope
+- **CSS**: Inline w `<style>` w index.html (jeden plik dla wszystkiego)
+- **Hosting**: GitHub Pages (https://servitantgit.github.io/Graffik/)
+- **Kolejność ładowania skryptów**: Ważna — data.js → core.js → ui.js → edit.js → dashboard.js → calendar.js → views.js → actions.js → pwa.js → sync.js → main.js
 
----
+## 2. Modele danych
 
-## 2. STRUKTURA PLIKÓW
+### prefs (localStorage: `gillette_prefs_v1`)
+```javascript
+{
+  year: 2026,                    // Aktualny rok
+  month: 8,                      // Aktualny miesiąc (1-12)
+  shift: 'A',                    // Aktywna brygada
+  view: 'month',                 // Aktywny widok
+  yearMode: false,               // Tryb Rok
+  theme: 'light' | 'dark',       // Motyw (TYLKO te dwie wartości)
+  notifications: false,          // Powiadomienia włączone
+  notificationsLead: 1,          // Wyprzedzenie powiadomień (godziny)
+  vacationLimits: { A: 26, B: 26, C: 26, D: 26 },  // Limity urlopów
+  welcomed: true,                // Czy pokazano ekran powitalny
+  skipEditConfirm: false,        // Pomiń potwierdzenie trybu edycji
+  driveTokenExpiry: null         // Wygaśnięcie tokenu Drive (jeśli sync)
+}
+```
 
-### Pliki główne
-- `index.html` — **Główny plik roboczy**. Jedyny punkt wejścia, zawiera strukturę UI.
-- `css/styles.css` — Główny plik stylów CSS (wyodrębniony z `index.html`).
-- `manifest.json` — Konfiguracja PWA (nazwa, kolory, ikony).
-- `sw.js` — Service Worker do cache'owania zasobów i dostępu offline.
-- `.agent.md` — Instrukcje dla asystentów AI dotyczące stylu kodowania i przeglądu.
+### customSchedule (localStorage: `gillette_custom_schedule_v2`)
+```javascript
+{
+  [year]: {
+    [month]: {
+      [brigade]: 'RRPPNNWW...'  // String 28-31 znaków (R/P/N/W)
+    }
+  }
+}
+```
+Przykład: `{ 2026: { 8: { A: 'RRPPNNWW...', B: 'PPNNRRWW...' } } }`
 
-### Katalog `js/` (Logika modułowa)
-Projekt został zrefaktorowany: stary monolityczny JS podzielono na logiczne moduły:
-1. `data.js` — Grafik fabryczny (`factorySchedule`), nazwy miesięcy, stałe oraz klucze `localStorage`.
-  2. `core.js` — Podstawowa logika biznesowa: praca z `localStorage`.
-  2a. `overtime-logic.js` — Czyste funkcje obliczeniowe (obliczanie świąt Wielkanocy, kategoryzacja nadgodzin, kalkulacja czasu nadgodzin). Bez zależności od DOM/LS, łatwe do testowania.
-3. `ui.js` — Narzędzia interfejsu: okna modalne, toasty (powiadomienia), escapowanie HTML.
-4. `edit.js` — Logika trybu edycji, bufor niezapisanych zmian (`pendingChanges`), pełna obsługa Undo/Redo.
-5. `dashboard.js` — Renderowanie ekranu głównego (statystyki, aktualna zmiana, najbliższe dni).
-6. `calendar.js` — Generowanie siatki kalendarza dla widoku „Miesiąc”.
-7. `views.js` — Renderowanie alternatywnych widoków: „Tydzień”, „Rok”, „Tabela”.
-8. `actions.js` — Obsługa akcji menu: eksport JSON/ICS, import, czyszczenie danych, zarządzanie limitami urlopów.
-9. `pwa.js` — Rejestracja Service Worker oraz logika aktualizacji aplikacji.
-10. `sync.js` — Integracja z Google Drive API do backupu w chmurze.
-11. `main.js` — Punkt wejścia: inicjalizacja stanu, routing (przez parametry URL), obsługa zdarzeń klawiatury i gestów.
+### urlops (localStorage: `gillette_urlops_v1`)
+```javascript
+{
+  [brigade]: ['2026-08-10', '2026-08-11', ...]  // Tablica stringów dat
+}
+```
 
-### Katalog `tools/`
-- `split_html.py` — Skrypt użyty do podziału starego monolitycznego HTML na obecną strukturę modułową.
-- `generate_icons.py` — Narzędzie do generowania ikon PWA.
-- `test_core.js` — Skrypt testowy Node.js do automatycznego sprawdzania poprawności obliczeń świąt i kategoryzacji nadgodzin.
+### notes (localStorage: `gillette_notes_v1`)
+```javascript
+{
+  '2026-8-10-C': 'treść notatki',
+  '2026-8-15-A': 'inna notatka'
+}
+```
 
-### Pliki przestarzałe (History)
-Wcześniej projekt składał się z jednego pliku `Gillette 2026 New UI overtime.html`. Obecny `index.html` jest jego nowoczesną, modułową i w pełni funkcjonalną wersją. Wszystkie inne pliki o nazwie `Gillette 2026...html` w katalogu głównym są przestarzałymi szkicami.
+### overtimes (localStorage: `gillette_overtimes_v1`)
+```javascript
+{
+  [brigade]: {
+    [year]: {
+      [month]: {
+        [day]: {
+          przed: { hours: 2, note: 'przed zmianą' },
+          po: { hours: 3, note: 'po zmianie' }
+        }
+      }
+    }
+  }
+}
+```
 
----
+### pendingChanges (w pamięci, tylko w trybie edycji)
+```javascript
+{
+  '2026-8-10-C': 'R',           // Klucz: 'rok-miesiąc-dzień-brygada', wartość: nowa zmiana
+  '2026-8-11-C': 'P'
+}
+```
 
-## 3. ARCHITEKTURA I STAN
+### AppState
+Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
+- `currentYear`, `currentMonth`, `selectedShift`, `compareShift`
+- `selectedDay`, `currentView`, `yearMode`
+- `editMode`, `editPaletteMode`, `popupFadeTimer`
+- `pendingChanges`, `pendingOriginals`, `undoStack`, `redoStack` (w edit.js)
 
-### Globalne zmienne stanu (`js/main.js`)
-- `currentYear`: Aktualnie wybrany rok (domyślnie: 2026).
-- `currentMonth`: Aktualny miesiąc (1-12).
-- `selectedShift`: Wybrana brygada (A, B, C lub D).
-- `currentView`: Aktywny widok (`dashboard`, `month`, `week`, `year`, `table`).
-- `editMode`: Boolean, czy włączony jest tryb rysowania grafiku.
+## 3. Mapa plików JS (co gdzie)
 
-### Przechowywanie danych (localStorage)
-| Klucz | Przeznaczenie |
-| :--- | :--- |
-| `gillette_prefs_v1` | Ustawienia: rok, brygada, motyw, widok, limity urlopów. |
-| `gillette_notes_v1` | Notatki tekstowe użytkownika do konkretnych dat. |
-| `gillette_urlops_v1` | Tablice dat urlopów dla każdej brygady. |
-| `gillette_custom_schedule_v2` | Obiekt z ręcznymi zmianami w grafiku (nadpisuje factorySchedule). |
-| `gillette_overtimes_v1` | Dane o nadgodzinach (liczba godzin, typ). |
+### js/data.js — Moduł 1: Dane statyczne
+- `factorySchedule` — grafik fabryczny 2026 (i inne lata)
+- `monthNames`, `monthNamesShort`, `dayNames`, `dayNamesFull`
+- `shiftHours`, `shiftEmoji`, `shiftFullName`, `shiftLongNames`
+- `SHIFT_CYCLE`, `MIN_YEAR`, `MAX_YEAR`, `URLOP_LIMIT`
+- `buildHolidays(year)` — polskie święta
+- `daysInMonthCal`, `isWolne`, `escapeHtml`
 
----
+### js/core.js — Moduł 2: Storage + logika biznesowa
+- `loadPrefs/savePrefs`, `loadCustomSchedule/saveCustomSchedule`
+- `loadUrlops/saveUrlops`, `loadNotes/saveNotes`, `loadOvertimes/saveOvertimes`
+- `getShiftAt(y, m, d, brig)` — źródło zmiany dla danego dnia
+- `getShiftAtWithPending(y, m, d, brig)` — z buforem edycji
+- `getYearSchedule(y)` — cały rok jako struktura
+- `getMonthHours(y, m)` — sumowanie godzin w miesiącu
+- `isUrlop`, `toggleUrlop`, `getVacationLimit`, `setVacationLimit`, `countWorkingUrlops`
+- `getOvertimes`, `setOvertime`, `removeOvertime`, `categorizeOvertime`, `calcOvertimeTime`, `getActualWorkTime`, `getMonthOvertimeSummary`
+- `getRelief(y, m, d, brig, shift)` — kto przekazuje/przejmuje zmianę
+- `getCycleRange`, `daysToNextWolne`, `getLiveTimer`, `jumpToDate`
+- `hasFactoryData`, `hasCustomData`, `isDirty`
+- `getElementByIdSafe` — bezpieczny dostęp do DOM
 
-## 4. MODEL DANYCH
+### js/ui.js — Moduł 3: UI helpers
+- `showToast(type, msg, duration)` — powiadomienia toast
+- `showModal({title, body, buttons})` — uniwersalne okno modalne
+- `showConfirm(title, body, onConfirm, opts)` — potwierdzenie z 2 przyciskami
+- `hideModal` — zamknięcie modala
+- `openSideMenu`, `closeSideMenu` — boczne menu
+- `applyTheme(themeName)`, `toggleTheme()` — przełączanie motywów
+- Bindings: `themeToggleBtn`, `menuBtn`, `sideMenuClose`, `faqHelp`
 
-### Grafik zmian
-Przechowywany w `factorySchedule` (js/data.js) oraz `customSchedule` (localStorage).
-Format: `Rok -> Miesiąc -> Brygada -> Array[dni]`.
-Wartości: `'R'` (Rano), `'P'` (Popołudnie), `'N'` (Noc), `''` (Dzień wolny).
+### js/edit.js — Moduł 4: Tryb edycji
+- `pendingChanges`, `pendingOriginals` — bufor zmian
+- `undoStack`, `redoStack` — historia cofania
+- `applyEdit(y, m, d, brig, val)` — aplikuje edycję do bufora
+- `undoLastEdit` — cofa ostatnią zmianę
+- `redoLastEdit` — przywraca cofniętą zmianę
+- `saveAllPendingChanges` — zapis bufora do customSchedule
+- `discardAllPendingChanges` — czyszczenie bufora
+- `updateDirtyIndicator` — licznik niezapisanych zmian
 
-### Format kluczy do mapowania
-- **Urlopy/Notatki**: `YYYY-MM-DD` (np. `2026-05-01`).
-- **Nadgodziny**: `YYYY-MM-DD-Brygada` (np. `2026-05-01-A`).
-- **Obiekt nadgodzin**: `{ przed: { hours: 4 }, po: { hours: 2 } }`.
+### js/dashboard.js — Moduł 5: Widok Dashboard
+- `renderDashboard()` — cały widok Dashboard
+  - Hero section z powitaniem i datą
+  - Karta dzisiejszej zmiany z live timerem
+  - Statystyki (najbliższe zmiany, urlopy, nadgodziny)
+  - Upcoming days chips
+  - Quick actions
 
----
+### js/calendar.js — Moduł 6: Widok Miesiąc
+- `renderCalendar(direction)` — generowanie siatki kalendarza
+- `addReliefPopups(cell, d, shiftCode, onUrlop)` — popupy z brygadą przekazującą/przejmującą
+- `addOvertimePopups(cell, d, shift)` — popupy PRZED/PO w trybie nadgodzin
+- `openOvertimeModal(d, shift, type)` — modal edycji nadgodzin
+- `updateOvertimePreview()` — podgląd nadgodzin w modalu
+- `saveOvertimeFromModal()` — zapis nadgodzin
+- `renderMonthOvertimeSummary()` — podsumowanie miesięczne nadgodzin
+- `renderProgress()` — pasek postępu miesiąca
+- `renderInfo()` — panel informacji pod kalendarzem
+- `getLiveShiftInfo()` — info o aktualnej zmianie
 
-## 5. ZNANE FUNKCJE / TODO
-- **Nadgodziny**: Obliczane automatycznie w zależności od czasu (nocne/dzienne) oraz kalendarza świąt (200% w dni świąteczne).
-- **Synchronizacja**: Używa `appDataFolder` w Google Drive, co gwarantuje prywatność (aplikacja widzi tylko swoje pliki).
-- **Eksport ICS**: Generuje plik kalendarza do importu w Google Calendar/iOS.
-- **Plany na przyszłość**: Możliwość dodawania niestandardowych typów zmian oraz wsparcie dla wielu profili użytkowników.
+### js/views.js — Moduł 7: Widoki Tydzień, Rok, Tabela
+- `renderWeekView()` — widok tygodnia (7 dni)
+- `ensureWeekStart()` — ustawia początek tygodnia na poniedziałek
+- `prevWeek()`, `nextWeek()` — nawigacja tygodniowa
+- `renderYearView()` — 12 mini-kalendarzy (Rok mode)
+- `renderTableView(yearMode)` — tabela wszystkich brygad
+- `buildMonthTable(year, month, yearMode)` — budowa tabeli dla miesiąca
+- `renderEmptyState(container)` — placeholder gdy brak danych
 
----
+### js/actions.js — Moduł 8: Akcje
+- `bindClick(id, handler)` — bezpieczny helper (console.warn jeśli brak elementu)
+- `exportICS()` — eksport do kalendarza .ics
+- `shareCurrent()` — kontekstowe udostępnianie widoku
+- `buildShareUrl()` — budowa URL z parametrami
+- `buildShareText()` — budowa tekstu do udostępnienia
+- `copyToClipboard(url)` — fallback dla kopiowania
+- Import/eksport JSON: `exportDataBtn`, `importDataBtn`, `importFile`
+- `addPrintHeader()`, `addPrintFooter()` — nagłówek/stopka druku
+- Menu handlers: `menuIcs`, `menuPrint`, `menuShare`, `menuVacationLimit`
+- `searchToggleBtn`, `searchBtn` — wyszukiwanie
+- `clearYearBtn`, `resetCustomBtn` — czyszczenie danych
 
-## 6. STRATEGIA KONFLIKTÓW SYNCHRONIZACJI
+### js/pwa.js — Moduł 9: PWA + Powiadomienia
+- `registerServiceWorker()` — rejestracja SW
+- `setupInstallPrompt()` — prompt instalacji PWA
+- `isIOS`, `isStandalone` — detekcja środowiska
+- `requestNotificationPermission()` — prośba o uprawnienia
+- `toggleNotifications()` — włącz/wyłącz powiadomienia
+- `notifyCurrentShift()` — powiadomienie o zmianie
+- `areNotificationsEnabled()` — status powiadomień
+- `updateNotificationUI()` — aktualizacja UI powiadomień
+- Timer sprawdzania rozpoczęcia zmiany (setInterval 60s)
+
+### js/sync.js — Moduł 10: Google Drive
+- Logowanie/wylogowanie (OAuth 2.0)
+- `findDriveFile()` — wyszukiwanie pliku w Drive (najnowszy po modifiedTime)
+- `downloadFromDrive()` — pobieranie i pełne zastąpienie lokalnych danych
+- `uploadToDrive()` — wysyłanie danych do Drive
+- Obsługa konfliktów (brak merge — last-write-wins)
+
+### js/main.js — Moduł 11: Stan + Init
+- Globalne zmienne stanu (wszystkie z sekcji 2)
+- `applyUrlParams()` — parsowanie URL params (view/y/m/d/brig/rok)
+- `switchView(view)` — przełączanie widoków
+- `refreshViews()` — odświeżanie wszystkich widoków
+- `updateShiftButtons()`, `updateYearPicker()`, `updateEditModeUI()`, `updateYearToggleState()`
+- `goToMonth(delta)`, `goToYear(delta, keepMonth)` — nawigacja
+- Obsługa klawiatury (keydown handler) — skróty, nawigacja
+- Obsługa gestów (touchstart/touchend) — swipe
+- Obsługa kliknięć: shift buttons, palette buttons, todayBtn
+- `beforeunload` handler — ostrzeżenie przed niezapisanymi zmianami
+- Auto-refresh timer (setInterval 60s) — aktualizacja Dashboard
+- Inicjalizacja na końcu pliku
+
+## 4. Ważne konwencje
+
+### Klasy CSS
+- Komórki dni: `.cell-R`, `.cell-P`, `.cell-N`, `.cell-W`, `.cell-U`
+- Stany komórek: `.selected`, `.today`, `.urlop`, `.dirty-edit`, `.cycle-start`, `.cycle-middle`, `.cycle-end`, `.compare-match`
+- Pozycja w tygodniu: `.col-first` (Poniedziałek), `.col-last` (Niedziela) — dla popupów
+- Tryb edycji: `body.edit-active .day-cell:not(.empty)`
+
+### Motywy
+- Tylko 2 motywy: `:root` (jasny domyślny) i `body.theme-dark` (ciemny)
+- Przełącznik: `#themeToggleBtn` w top-bar
+- Ikona: 🌙 gdy jasny (można przełączyć na ciemny), ☀️ gdy ciemny
+- Funkcje: `applyTheme(themeName)`, `toggleTheme()`
+
+### URL params (po refaktoringu Share)
+Wspierane parametry: `view`, `y`, `m`, `d`, `brig`, `rok`
+
+Przykłady:
+- `?view=month&y=2026&m=8&d=10&brig=C` — dzień 10 sierpnia, brygada C
+- `?view=month&y=2026&m=8&brig=C` — cały sierpień, brygada C
+- `?view=month&y=2026&brig=C&rok=1` — Rok view, brygada C
+- `?view=week&y=2026&m=8&d=10&brig=C` — tydzień z 10 sierpnia
+- `?view=table&y=2026&rok=1` — tabela cały rok
+
+Po załadowaniu URL jest czyszczony przez `history.replaceState` (dla czystości).
+
+### bindClick helper (js/actions.js)
+```javascript
+function bindClick(id, handler) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.onclick = handler;
+  } else {
+    console.warn(`[actions.js] Element #${id} not found in DOM`);
+  }
+}
+```
+Używany dla wszystkich przycisków w side menu i edit banner.
+
+## 5. Znane zagadnienia (Known issues)
+
+- Zmienne stanu są globalne — potencjalne konflikty przy dużych zmianach
+- CSS w jednym pliku inline — trudno modularyzować
+- Brak testów jednostkowych automatycznych (poza `test_core.js` dla obliczeń)
+- Synchronizacja Google Drive: brak merge/diff — last-write-wins (patrz sekcja 6)
+- `goToMonth` musi być exposed na `window` (patrz `window.goToMonth = goToMonth`)
+
+## 6. Strategia konfliktów synchronizacji
 
 ### 6.1. Wybór pliku w chmurze (`findDriveFile()`)
-Funkcja `findDriveFile()` w `js/sync.js` wyszukuje pliki w folderze aplikacji na Google Drive i **wybiera wyłącznie najnowszy plik** według pola `modifiedTime`. Jeśli w chmurze istnieje wiele wersji pliku (np. z różnych urządzeń), starsze duplikaty są pomijane. System **nie porównuje zawartości** plików — decyduje wyłącznie znacznik czasu modyfikacji.
-
-**Konsekwencja**: Jeśli użytkownik synchronizuje dane z dwóch urządzeń, które mają różne wersje pliku, system automatycznie wybierze wersję z późniejszą datą modyfikacji, bez względu na to, która wersja ma więcej zmian.
+Funkcja `findDriveFile()` w `js/sync.js` wyszukuje pliki w folderze aplikacji na Google Drive i **wybiera wyłącznie najnowszy plik** według pola `modifiedTime`. Starsze duplikaty są pomijane. System **nie porównuje zawartości** plików.
 
 ### 6.2. Pobieranie danych z chmury (`downloadFromDrive()`)
-Po pobraniu wybranego pliku z Google Drive funkcja `downloadFromDrive()` **w pełni zastępuje lokalny stan** danymi z chmury. Nie ma mechanizmu merge, diff ani scalania zmian między lokalnymi a chmurowymi danymi.
-
-**Konsekwencja**: Wszystkie lokalne niezapisane zmiany są tracone w momencie pobrania danych z chmury. Lokalny `localStorage` jest nadpisywany bez żadnych ostrzeżeń poza ogólnym dialogiem `showConfirm` z tekstem *"Dane lokalne zostaną nadpisane"*.
+Po pobraniu pliku funkcja `downloadFromDrive()` **w pełni zastępuje lokalny stan** danymi z chmury. Nie ma mechanizmu merge, diff ani scalania zmian.
 
 ### 6.3. Synchronizacja z wielu urządzeń (tryb offline)
-System **nie obsługuje bezpiecznej synchronizacji z wielu urządzeń jednocześnie**, szczególnie w trybie offline. Jeśli użytkownik edytuje dane na dwóch urządzeniach jednocześnie bez połączenia z internetem:
+System **nie obsługuje bezpiecznej synchronizacji z wielu urządzeń jednocześnie**. Jeśli użytkownik edytuje dane na dwóch urządzeniach:
+1. Oba urządzenia pracują z własną wersją w `localStorage`
+2. Po synchronizacji **wygraje urządzenie, które zapisało plik jako ostatnie**
+3. **Zmiany z drugiego urządzenia zostaną bezpowrotnie utracone**
+4. Jedynym ostrzeżeniem jest dialog `showConfirm` z tekstem *"Dane lokalne zostaną nadpisane"*
 
-1. **Oba urządzenia** pracują z własną wersją danych w `localStorage`.
-2. Po nawiązaniu połączenia i wykonaniu synchronizacji **wygraje urządzenie, które zapisało plik w Drive jako ostatnie** (według `modifiedTime`).
-3. **Zmiany z drugiego urządzenia zostaną bezpowrotnie utracone** — nie ma możliwości ich odzyskania.
-4. Jedynym ostrzeżeniem jest ogólny dialog `showConfirm` z tekstem *"Dane lokalne zostaną nadpisane"*, który nie informuje użytkownika o konkretnych zmianach, które zostaną utracone.
+### 6.4. Zalecenia
+- **Nie obiecuj użytkownikom "bezpiecznej synchronizacji z wielu urządzeń"**
+- Wymaga to znaczącej przebudowy (wersjonowanie, historia zmian, trzyustawowe scalanie)
+- Rozważ wersjonowanie plików w chmurze lub jaśniejsze ostrzeżenia o utracie danych
 
-### 6.4. Zalecenia dla deweloperów i użytkowników
-- **Nie obiecuj użytkownikom "bezpiecznej synchronizacji z wielu urządzeń"** — obecna implementacja nie gwarantuje bezpieczeństwa danych w takim scenariuszu.
-- Jeśli planujesz wprowadzić mechanizm merge/diff, wymaga to znaczącej przebudowy architektury synchronizacji (wersjonowanie, historia zmian, trzyustawowe scalanie).
-- Rozważ dodanie wersjonowania plików w chmurze lub mechanizmu "last write wins" z jaśniejszym ostrzeżeniem o utracie danych.
-- W przypadku konfliktów, rozważ wyświetlanie listy konkretnych zmian, które zostaną utracone, zamiast ogólnego komunikatu.
+## 7. Historia zmian (ostatnie refaktoringi)
+
+- Usunięto martwy kod "Podsumowania tygodnia"
+- Dodano `bindClick()` helper dla bezpiecznego bindowania
+- Uproszczono motywy z 8 do 2 (jasny/ciemny) + przełącznik w top-bar
+- Usunięto duplikat `#actionButtons` pod kalendarzem (kontrolki są w bocznym menu)
+- Refaktoring "Udostępnij" — kontekstowe udostępnianie z URL params
+- Poprawiono UX Rok mode: klik na dzień prowadzi do widoku Miesiąca
+- Naprawiono ReferenceError: `goToMonth` (expose na window)
+- Dodano przycisk "Drukuj" w bocznym menu
+
+## 8. Backlog / TODO na przyszłość
+
+- [ ] Migracja na ES modules (plan istnieje)
+- [ ] Wprowadzenie `AppState` jako obiektu (proto-krok do modułów)
+- [ ] Zastąpienie inline `onclick` przez `addEventListener`
+- [ ] Bundler (Vite) — dla mniejszego finalnego kodu i tree-shakingu
+- [ ] TypeScript — dla lepszej dyscypliny typów
+- [ ] Testy automatyczne (Vitest/Jest)
+- [ ] Mechanizm merge/diff dla Google Drive sync
+- [ ] Wersjonowanie plików w chmurze
+
+## 9. Szybkie odwołania
+
+### Pliki konfiguracyjne
+- `manifest.json` — PWA manifest (nazwa, kolory, ikony)
+- `sw.js` — Service Worker (cache strategy)
+- `.agent.md` — Instrukcje dla AI-asystentów
+
+### Dokumentacja użytkownika
+- FAQ w aplikacji: ☰ Menu → ❓ Pomoc
+- README.md — dla użytkowników końcowych
+
+### Kontakt
+- Email: tantsiura.s@pg.com
+- Demo: https://servitantgit.github.io/Graffik/
