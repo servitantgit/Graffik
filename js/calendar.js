@@ -201,7 +201,7 @@ function addReliefPopups(cell, d, shiftCode, onUrlop) {
     const prevWhen = (info.prevYear !== currentYear || info.prevMonth !== currentMonth)
       ? `${info.prevDay} ${monthNamesShort[info.prevMonth-1]}${info.prevYear !== currentYear ? ' '+info.prevYear : ''}`
       : (info.prevDay === d ? 'dziś' : info.prevDay === d-1 ? 'wczoraj' : `${info.prevDay}`);
-    leftPopup.innerHTML = `<div class="rp-label">⬅ Zmienia</div><div class="rp-brig">${info.prevBrig || '—'}</div><div class="rp-info">${info.prevType} · ${prevWhen}</div>`;
+    leftPopup.innerHTML = `<div class="rp-label">⬅ Przekazał</div><div class="rp-brig">${info.prevBrig || '—'}</div><div class="rp-info">${info.prevType} · ${prevWhen}</div>`;
     if (info.prevBrig) {
       leftPopup.style.pointerEvents = 'auto';
       leftPopup.style.cursor = 'pointer';
@@ -223,7 +223,7 @@ function addReliefPopups(cell, d, shiftCode, onUrlop) {
     const nextWhen = (info.nextYear !== currentYear || info.nextMonth !== currentMonth)
       ? `${info.nextDay} ${monthNamesShort[info.nextMonth-1]}${info.nextYear !== currentYear ? ' '+info.nextYear : ''}`
       : (info.nextDay === d ? 'dziś' : info.nextDay === d+1 ? 'jutro' : `${info.nextDay}`);
-    rightPopup.innerHTML = `<div class="rp-label">Zmieni ➡</div><div class="rp-brig">${info.nextBrig || '—'}</div><div class="rp-info">${info.nextType} · ${nextWhen}</div>`;
+    rightPopup.innerHTML = `<div class="rp-label">Przejmie ➡</div><div class="rp-brig">${info.nextBrig || '—'}</div><div class="rp-info">${info.nextType} · ${nextWhen}</div>`;
     if (info.nextBrig) {
       rightPopup.style.pointerEvents = 'auto';
       rightPopup.style.cursor = 'pointer';
@@ -614,8 +614,8 @@ function renderInfo() {
       ${urlopStats}
       <div class="info-grid">
         <div class="info-card"><div class="label">Zmiana</div><div class="value"><span class="shift-chip ${shiftCode}">${shiftEmoji[shiftCode]} ${shiftCode}</span> ${shiftFullName[shiftCode]}</div></div>
-        <div class="info-card"><div class="label">⬅️ Kogo zmienia</div><div class="value">${prevText}</div></div>
-        <div class="info-card"><div class="label">➡️ Kto zmienia dalej</div><div class="value">${nextText}</div></div>
+        <div class="info-card"><div class="label">⬅️ Kto przekazał zmianę</div><div class="value">${prevText}</div></div>
+        <div class="info-card"><div class="label">➡️ Kto przejmie zmianę</div><div class="value">${nextText}</div></div>
         ${liveInfo}
         ${cycleInfo}
         ${toWolneInfo}
