@@ -136,6 +136,68 @@ bindClick('menuPrint', () => { closeSideMenu(); window.print(); });
 bindClick('menuShare', () => { closeSideMenu(); shareDay(); });
 
 /* === IMPORT === */
+function validateImportedData(data) {
+  if (!data || typeof data !== 'object') throw new Error('Dane nie są obiektem');
+  if (!data.customSchedule && !data.urlops && !data.notes && !data.overtimes) throw new Error('Brak znanych kluczy danych w pliku');
+
+  const brigades = ['A', 'B', 'C', 'D'];
+
+  if (data.customSchedule) {
+    if (typeof data.customSchedule !== 'object') throw new Error('Nieprawidłowa struktura customSchedule');
+    for (const year in data.customSchedule) {
+      if (isNaN(parseInt(year, 10))) throw new Error(`Nieprawidłowy rok w customSchedule: ${year}`);
+      const months = data.customSchedule[year];
+      if (typeof months !== 'object') throw new Error(`Nieprawidłowa struktura miesięcy dla roku ${year}`);
+      for (let m = 1; m <= 12; m++) {
+        if (!months[m]) continue;
+        const monthData = months[m];
+        brigades.forEach(b => {
+          if (monthData[b]) {
+            if (!Array.isArray(monthData[b])) throw new Error(`Dane brygady ${b} w miesiącu ${m}/${year} muszą być tablicą`);
+            const daysInMonth = new Date(year, m, 0).getDate();
+            if (monthData[b].length !== daysInMonth) throw new Error(`Błędna liczba dni dla brygady ${b} w ${m}/${year}: jest ${monthData[b].length}, powinno być ${daysInMonth}`);
+            monthData[b].forEach((dayVal, idx) => {
+              if (typeof dayVal !== 'string') throw new Error(`Nieprawidłowa wartość dnia ${idx+1} dla brygady ${b} w ${m}/${year}`);
+            });
+          }
+        });
+      }
+    }
+  }
+
+  if (data.urlops) {
+    if (typeof data.urlops !== 'object') throw new Error('Nieprawidłowa struktura urlops');
+    brigades.forEach(b => {
+      if (data.urlops[b]) {
+        if (!Array.isArray(data.urlops[b])) throw new Error(`Urlopy brygady ${b} muszą być tablicą`);
+        data.urlops[b].forEach(d => {
+          if (typeof d !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(d)) throw new Error(`Nieprawidłowy format daty urlopu: ${d}`);
+        });
+      }
+    });
+  }
+
+  if (data.overtimes) {
+    if (typeof data.overtimes !== 'object') throw new Error('Nieprawidłowa struktura overtimes');
+    for (const k in data.overtimes) {
+      const ot = data.overtimes[k];
+      if (!ot || typeof ot !== 'object') throw new Error(`Nieprawidłowy wpis nadgodzin dla klucza ${k}`);
+      ['przed', 'po'].forEach(p => {
+        if (ot[p]) {
+          if (typeof ot[p] !== 'object' || typeof ot[p].hours !== 'number') throw new Error(`Nieprawidłowa wartość ${p} w nadgodzinach dla ${k}`);
+        }
+      });
+    }
+  }
+
+  if (data.notes) {
+    if (typeof data.notes !== 'object') throw new Error('Nieprawidłowa struktura notes');
+    for (const k in data.notes) {
+      if (typeof data.notes[k] !== 'string') throw new Error(`Notatka dla ${k} musi być tekstem`);
+    }
+  }
+}
+
 bindClick('importDataBtn', () => document.getElementById('importFile').click());
 document.getElementById('importFile').onchange = (e) => {
   const file = e.target.files[0];
@@ -144,7 +206,7 @@ document.getElementById('importFile').onchange = (e) => {
   reader.onload = (ev) => {
     try {
       const data = JSON.parse(ev.target.result);
-      if (!data.customSchedule && !data.urlops && !data.notes && !data.overtimes) { showToast('error', 'Nieprawidłowy plik'); return; }
+      validateImportedData(data);
       showConfirm(
         '⚠️ Zastąpić aktualne dane?',
         'Import nadpisze Twoje grafiki, urlopy, nadgodziny i notatki.',
@@ -158,7 +220,10 @@ document.getElementById('importFile').onchange = (e) => {
         },
         { primaryText: 'Importuj', primaryClass: 'primary' }
       );
-    } catch(err) { showToast('error', 'Błąd: ' + err.message); }
+    } catch(err) { 
+      const msg = err instanceof SyntaxError ? 'Błąd składni JSON' : err.message;
+      showToast('error', 'Błąd importu: ' + msg); 
+    }
   };
   reader.readAsText(file);
   e.target.value = '';
