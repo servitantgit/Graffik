@@ -86,3 +86,31 @@ Wartości: `'R'` (Rano), `'P'` (Popołudnie), `'N'` (Noc), `''` (Dzień wolny).
 - **Synchronizacja**: Używa `appDataFolder` w Google Drive, co gwarantuje prywatność (aplikacja widzi tylko swoje pliki).
 - **Eksport ICS**: Generuje plik kalendarza do importu w Google Calendar/iOS.
 - **Plany na przyszłość**: Możliwość dodawania niestandardowych typów zmian oraz wsparcie dla wielu profili użytkowników.
+
+---
+
+## 6. STRATEGIA KONFLIKTÓW SYNCHRONIZACJI
+
+### 6.1. Wybór pliku w chmurze (`findDriveFile()`)
+Funkcja `findDriveFile()` w `js/sync.js` wyszukuje pliki w folderze aplikacji na Google Drive i **wybiera wyłącznie najnowszy plik** według pola `modifiedTime`. Jeśli w chmurze istnieje wiele wersji pliku (np. z różnych urządzeń), starsze duplikaty są pomijane. System **nie porównuje zawartości** plików — decyduje wyłącznie znacznik czasu modyfikacji.
+
+**Konsekwencja**: Jeśli użytkownik synchronizuje dane z dwóch urządzeń, które mają różne wersje pliku, system automatycznie wybierze wersję z późniejszą datą modyfikacji, bez względu na to, która wersja ma więcej zmian.
+
+### 6.2. Pobieranie danych z chmury (`downloadFromDrive()`)
+Po pobraniu wybranego pliku z Google Drive funkcja `downloadFromDrive()` **w pełni zastępuje lokalny stan** danymi z chmury. Nie ma mechanizmu merge, diff ani scalania zmian między lokalnymi a chmurowymi danymi.
+
+**Konsekwencja**: Wszystkie lokalne niezapisane zmiany są tracone w momencie pobrania danych z chmury. Lokalny `localStorage` jest nadpisywany bez żadnych ostrzeżeń poza ogólnym dialogiem `showConfirm` z tekstem *"Dane lokalne zostaną nadpisane"*.
+
+### 6.3. Synchronizacja z wielu urządzeń (tryb offline)
+System **nie obsługuje bezpiecznej synchronizacji z wielu urządzeń jednocześnie**, szczególnie w trybie offline. Jeśli użytkownik edytuje dane na dwóch urządzeniach jednocześnie bez połączenia z internetem:
+
+1. **Oba urządzenia** pracują z własną wersją danych w `localStorage`.
+2. Po nawiązaniu połączenia i wykonaniu synchronizacji **wygraje urządzenie, które zapisało plik w Drive jako ostatnie** (według `modifiedTime`).
+3. **Zmiany z drugiego urządzenia zostaną bezpowrotnie utracone** — nie ma możliwości ich odzyskania.
+4. Jedynym ostrzeżeniem jest ogólny dialog `showConfirm` z tekstem *"Dane lokalne zostaną nadpisane"*, który nie informuje użytkownika o konkretnych zmianach, które zostaną utracone.
+
+### 6.4. Zalecenia dla deweloperów i użytkowników
+- **Nie obiecuj użytkownikom "bezpiecznej synchronizacji z wielu urządzeń"** — obecna implementacja nie gwarantuje bezpieczeństwa danych w takim scenariuszu.
+- Jeśli planujesz wprowadzić mechanizm merge/diff, wymaga to znaczącej przebudowy architektury synchronizacji (wersjonowanie, historia zmian, trzyustawowe scalanie).
+- Rozważ dodanie wersjonowania plików w chmurze lub mechanizmu "last write wins" z jaśniejszym ostrzeżeniem o utracie danych.
+- W przypadku konfliktów, rozważ wyświetlanie listy konkretnych zmian, które zostaną utracone, zamiast ogólnego komunikatu.
