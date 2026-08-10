@@ -13,8 +13,6 @@ let yearMode = prefs.yearMode || false;
 let editMode = false;
 let editPaletteMode = 'CYCLE';
 let popupFadeTimer = null;
-let undoStack = [];
-let redoStack = [];
 
 /* === URL === */
 const urlParams = new URLSearchParams(window.location.search);

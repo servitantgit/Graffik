@@ -4,6 +4,8 @@
 
 let pendingChanges = {};
 let pendingOriginals = {};
+let undoStack = [];
+let redoStack = [];
 
 function pendingKey(year, month, day, brigade) { return `${year}-${month}-${day}-${brigade}`; }
 function getShiftAtWithPending(year, month, day, brigade) {
