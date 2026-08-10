@@ -951,26 +951,17 @@ body {
 /* Ukryj poprzedni znacznik kropki, jeśli jest obecny */
 .day-cell.today::before { display: none; }
 
-/* Kontrastujące obramowanie: jasne dla ciemnych tła zmian (R,P,N),
-   ciemne dla jasnych tła (W, U) */
+/* Kontrastujące obramowanie: stały, jasny żółty (#f1c40f) widoczny na każdej
+   temacie — zarówno na ciemnym, jak i na jasnym tle zmian (R,P,N,W,U) */
 .day-cell.cell-R.today,
 .day-cell.cell-P.today,
-.day-cell.cell-N.today {
-  outline: 3px solid rgba(255,255,255,0.9);
-  outline-offset: 2px;
-  box-shadow: 0 0 18px rgba(255,255,255,0.06);
-}
+.day-cell.cell-N.today,
 .day-cell.cell-W.today,
-.day-cell.urlop.today {
-  outline: 3px solid rgba(0,0,0,0.45);
-  outline-offset: 2px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-}
-
-/* Rezerwowe ogólne stylowanie, jeśli dzień nie ma klasy cell- */
+.day-cell.urlop.today,
 .day-cell.today:not([class*="cell-"]) {
-  outline: 3px solid rgba(241,196,15,0.9);
+  outline: 3px solid #f1c40f;
   outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(241,196,15,0.4);
 }
 
 .day-cell.selected {
