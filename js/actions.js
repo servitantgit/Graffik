@@ -78,41 +78,98 @@ window.addEventListener('afterprint', () => {
 });
 
 /* === SHARE === */
-function shareDay() {
-  const d = selectedDay || new Date().getDate();
-  const dateStr = `${d} ${monthNames[currentMonth-1]} ${currentYear}`;
-  const params = `?brig=${selectedShift}&date=${currentYear}-${String(currentMonth).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-  const isLocal = location.protocol === 'file:' || !location.origin || location.origin === 'null';
-  const shiftCode = getShiftAt(currentYear, currentMonth, d, selectedShift);
-  const shiftText = isWolne(shiftCode) ? 'Wolne' : `${shiftCode}`;
+function buildShareUrl() {
+    const params = new URLSearchParams();
+    params.set('view', currentView);
+    params.set('y', currentYear);
+    
+    // Rok mode
+    if (yearMode && (currentView === 'month' || currentView === 'table')) {
+        params.set('rok', '1');
+    }
+    
+    // Місяць (для month/week/table без yearMode)
+    if (currentView === 'month' || currentView === 'week' || 
+        (currentView === 'table' && !yearMode)) {
+        params.set('m', currentMonth);
+    }
+    
+    // День (тільки для month з вибраним днем, або week)
+    if ((currentView === 'month' && selectedDay && !yearMode) || 
+        currentView === 'week') {
+        const d = selectedDay || new Date().getDate();
+        params.set('d', d);
+    }
+    
+    // Бригада (для всіх видів окрім table)
+    if (currentView !== 'table') {
+        params.set('brig', selectedShift);
+    }
+    
+    return `${location.origin}${location.pathname}?${params.toString()}`;
+}
 
-  if (isLocal) {
-    const text = `📅 ${dateStr}\n🏭 Brygada ${selectedShift}\n⏰ ${shiftText}`;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text)
-        .then(() => showToast('success', 'Skopiowano do schowka'))
-        .catch(() => showToast('error', 'Kopiowanie niemożliwe'));
-    } else showToast('error', 'Kopiowanie niemożliwe');
-    return;
-  }
-  const url = `${location.origin}${location.pathname}${params}`;
-  if (navigator.share) {
-    navigator.share({ title: 'Grafik Gillette', text: `Brygada ${selectedShift}, ${dateStr}`, url })
-      .then(() => showToast('success', 'Udostępniono'))
-      .catch(() => {
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(url)
-            .then(() => showToast('success', 'Link skopiowany'))
-            .catch(() => showToast('error', 'Nie udało się skopiować linku'));
+function buildShareText() {
+    // Опис того, чим ділимося (для тексту повідомлення)
+    const viewNames = {
+        dashboard: 'Widok główny',
+        week: 'Tydzień',
+        month: yearMode ? `Rok ${currentYear}` : `${monthNames[currentMonth-1]} ${currentYear}`,
+        table: yearMode ? `Tabela — cały rok ${currentYear}` : `Tabela — ${monthNames[currentMonth-1]} ${currentYear}`
+    };
+    
+    let text = `📅 ${viewNames[currentView]}`;
+    
+    if (currentView === 'week') {
+        const d = selectedDay || new Date().getDate();
+        text = `📆 Tydzień ${d} ${monthNames[currentMonth-1]} ${currentYear}`;
+    } else if (currentView === 'month' && selectedDay && !yearMode) {
+        text = `📅 ${selectedDay} ${monthNames[currentMonth-1]} ${currentYear}`;
+    }
+    
+    if (currentView !== 'table') {
+        text += ` • Brygada ${selectedShift}`;
+    }
+    
+    return text;
+}
+
+function shareCurrent() {
+    const url = buildShareUrl();
+    const text = buildShareText();
+    const isLocal = location.protocol === 'file:' || !location.origin || location.origin === 'null';
+    
+    // Локальний файл: копіюємо текст без URL
+    if (isLocal) {
+        const content = `${text}\n🏭 Grafik Gillette`;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(content)
+                .then(() => showToast('success', 'Skopiowano do schowka'))
+                .catch(() => showToast('error', 'Kopiowanie niemożliwe'));
         } else {
-          showToast('error', 'Nie udało się udostępnić ani skopiować linku');
+            showToast('error', 'Kopiowanie niemożliwe');
         }
-      });
-  } else if (navigator.clipboard) {
-    navigator.clipboard.writeText(url)
-      .then(() => showToast('success', 'Link skopiowany'))
-      .catch(() => showToast('error', 'Nie udało się skopiować linku'));
-  }
+        return;
+    }
+    
+    // Native share (mobile)
+    if (navigator.share) {
+        navigator.share({ title: 'Grafik Gillette', text, url })
+            .then(() => showToast('success', 'Udostępniono'))
+            .catch(() => copyToClipboard(url));
+    } else {
+        copyToClipboard(url);
+    }
+}
+
+function copyToClipboard(url) {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(url)
+            .then(() => showToast('success', 'Link skopiowany do schowka'))
+            .catch(() => showToast('error', 'Nie udało się skopiować linku'));
+    } else {
+        showToast('error', 'Nie udało się skopiować linku');
+    }
 }
 
 /* === EXPORT/IMPORT JSON === */
@@ -129,7 +186,7 @@ document.getElementById('exportDataBtn').onclick = () => {
 
 bindClick('menuIcs', () => { closeSideMenu(); exportICS(); });
 bindClick('menuPrint', () => { closeSideMenu(); window.print(); });
-bindClick('menuShare', () => { closeSideMenu(); shareDay(); });
+bindClick('menuShare', () => { closeSideMenu(); shareCurrent(); });
 
 /* === IMPORT === */
 function validateImportedData(data) {

@@ -14,20 +14,61 @@ let editMode = false;
 let editPaletteMode = 'CYCLE';
 let popupFadeTimer = null;
 
-/* === URL === */
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get('year')) currentYear = parseInt(urlParams.get('year'), 10) || currentYear;
-if (urlParams.get('date')) {
-  const parts = urlParams.get('date').split('-');
-  if (parts.length === 3) {
-    currentYear = parseInt(parts[0], 10) || currentYear;
-    currentMonth = parseInt(parts[1], 10) || currentMonth;
-    selectedDay = parseInt(parts[2], 10) || selectedDay;
-  }
-}
-if (urlParams.get('brig')) selectedShift = urlParams.get('brig').toUpperCase();
+/* === URL PARAMS === */
+(function applyUrlParams() {
+    const p = new URLSearchParams(window.location.search);
+    if (!p.toString()) return; // немає параметрів — виходимо
+    
+    // View
+    const v = p.get('view');
+    if (v && ['dashboard', 'week', 'month', 'table'].includes(v)) {
+        currentView = v;
+        prefs.view = v;
+    }
+    
+    // Rok mode
+    if (p.get('rok') === '1') {
+        yearMode = true;
+        prefs.yearMode = true;
+    }
+    
+    // Рік
+    const y = parseInt(p.get('y'), 10);
+    if (y >= MIN_YEAR && y <= MAX_YEAR) {
+        currentYear = y;
+        prefs.year = y;
+    }
+    
+    // Місяць
+    const m = parseInt(p.get('m'), 10);
+    if (m >= 1 && m <= 12) {
+        currentMonth = m;
+    }
+    
+    // День
+    const d = parseInt(p.get('d'), 10);
+    if (d >= 1 && d <= 31) {
+        selectedDay = d;
+    }
+    
+    // Бригада
+    const b = (p.get('brig') || '').toUpperCase();
+    if (['A', 'B', 'C', 'D'].includes(b)) {
+        selectedShift = b;
+        prefs.shift = b;
+    }
+    
+    // Зберегти оновлені prefs
+    savePrefs(prefs);
+})();
+
 if (currentYear < MIN_YEAR) currentYear = MIN_YEAR;
 if (currentYear > MAX_YEAR) currentYear = MAX_YEAR;
+
+// Очистити URL після завантаження параметрів
+if (window.location.search) {
+    history.replaceState({}, '', window.location.pathname);
+}
 
 /* === VIEW SWITCHER === */
 function switchView(view) {
