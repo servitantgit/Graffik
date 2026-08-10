@@ -16,7 +16,8 @@ Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą p
 ## 2. STRUKTURA PLIKÓW
 
 ### Pliki główne
-- `index.html` — **Główny plik roboczy**. Jedyny punkt wejścia, zawiera strukturę UI oraz style.
+- `index.html` — **Główny plik roboczy**. Jedyny punkt wejścia, zawiera strukturę UI.
+- `css/styles.css` — Główny plik stylów CSS (wyodrębniony z `index.html`).
 - `manifest.json` — Konfiguracja PWA (nazwa, kolory, ikony).
 - `sw.js` — Service Worker do cache'owania zasobów i dostępu offline.
 - `.agent.md` — Instrukcje dla asystentów AI dotyczące stylu kodowania i przeglądu.
