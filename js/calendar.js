@@ -87,7 +87,7 @@ function renderCalendar(direction) {
 
     const shiftEl = document.createElement('div');
     shiftEl.className = 'day-shift';
-    if (onUrlop) shiftEl.innerHTML = `<span style="font-size:14px;">URLOP</span>`;
+    if (onUrlop) shiftEl.innerHTML = `<span style="font-size:14px;">${t('infoUrlop')}</span>`;
     else if (isWolne(shiftCode)) shiftEl.textContent = '—';
     else shiftEl.innerHTML = `<span class="shift-emoji">${shiftEmoji[shiftCode]}</span>${shiftCode}`;
     cell.appendChild(shiftEl);
@@ -145,7 +145,7 @@ function renderCalendar(direction) {
         if (editPaletteMode === 'OT') {
           const shiftHere = getShiftAtWithPending(currentYear, currentMonth, d, selectedShift);
           if (isWolne(shiftHere)) {
-            showToast('warn', 'Nadgodziny można dodać tylko do dnia ze zmianą');
+            showToast('warn', t('otOnlyOnShift'));
             return;
           }
           selectedDay = d;
@@ -171,7 +171,7 @@ function renderCalendar(direction) {
   if (monthTitle) monthTitle.textContent = `${monthNames[currentMonth-1]} ${currentYear}`;
   const h = getMonthHours(currentYear, currentMonth);
   const monthHours = getElementByIdSafe('monthHours');
-  if (monthHours) monthHours.textContent = `Godziny: A=${h.A} • B=${h.B} • C=${h.C} • D=${h.D}${compareShift?` (vs ${compareShift})`:''}`;
+  if (monthHours) monthHours.textContent = `A=${h.A} • B=${h.B} • C=${h.C} • D=${h.D}${compareShift?` (vs ${compareShift})`:''}`;
 
   renderProgress();
   renderMonthOvertimeSummary();
@@ -182,12 +182,12 @@ function addReliefPopups(cell, d, shiftCode, onUrlop) {
   const urlopPopup = document.createElement('div');
   urlopPopup.className = 'relief-popup top ' + (onUrlop ? 'pop-urlop-remove' : 'pop-urlop');
   urlopPopup.innerHTML = onUrlop
-    ? `<div class="rp-label">❌ Usuń urlop</div><div class="rp-brig">🌴</div><div class="rp-info">Kliknij</div>`
-    : `<div class="rp-label">🌴 Urlop</div><div class="rp-brig">+</div><div class="rp-info">Zaznacz</div>`;
+    ? `<div class="rp-label">❌ ${t('urlopRemoved')}</div><div class="rp-brig">🌴</div><div class="rp-info">${t('infoPanelHint')}</div>`
+    : `<div class="rp-label">🌴 ${t('vacation')}</div><div class="rp-brig">+</div><div class="rp-info">${t('infoUrlopMarked')}</div>`;
   urlopPopup.addEventListener('click', (ev) => {
     ev.stopPropagation();
     toggleUrlop(currentYear, currentMonth, d, selectedShift);
-    showToast('success', onUrlop ? 'Urlop usunięty' : 'Urlop dodany');
+    showToast('success', onUrlop ? t('urlopRemoved') : t('urlopAdded'));
     refreshViews();
   });
   cell.appendChild(urlopPopup);
@@ -200,8 +200,8 @@ function addReliefPopups(cell, d, shiftCode, onUrlop) {
     leftPopup.className = 'relief-popup left pop-' + prevCls;
     const prevWhen = (info.prevYear !== currentYear || info.prevMonth !== currentMonth)
       ? `${info.prevDay} ${monthNamesShort[info.prevMonth-1]}${info.prevYear !== currentYear ? ' '+info.prevYear : ''}`
-      : (info.prevDay === d ? 'dziś' : info.prevDay === d-1 ? 'wczoraj' : `${info.prevDay}`);
-    leftPopup.innerHTML = `<div class="rp-label">⬅ Przekazał</div><div class="rp-brig">${info.prevBrig || '—'}</div><div class="rp-info">${info.prevType} · ${prevWhen}</div>`;
+      : (info.prevDay === d ? t('todayLabel') : info.prevDay === d-1 ? t('dayBefore') : `${info.prevDay}`);
+    leftPopup.innerHTML = `<div class="rp-label">⬅ ${t('infoPrevShift')}</div><div class="rp-brig">${info.prevBrig || '—'}</div><div class="rp-info">${info.prevType} · ${prevWhen}</div>`;
     if (info.prevBrig) {
       leftPopup.style.pointerEvents = 'auto';
       leftPopup.style.cursor = 'pointer';
@@ -222,8 +222,8 @@ function addReliefPopups(cell, d, shiftCode, onUrlop) {
     rightPopup.className = 'relief-popup right pop-' + nextCls;
     const nextWhen = (info.nextYear !== currentYear || info.nextMonth !== currentMonth)
       ? `${info.nextDay} ${monthNamesShort[info.nextMonth-1]}${info.nextYear !== currentYear ? ' '+info.nextYear : ''}`
-      : (info.nextDay === d ? 'dziś' : info.nextDay === d+1 ? 'jutro' : `${info.nextDay}`);
-    rightPopup.innerHTML = `<div class="rp-label">Przejmie ➡</div><div class="rp-brig">${info.nextBrig || '—'}</div><div class="rp-info">${info.nextType} · ${nextWhen}</div>`;
+      : (info.nextDay === d ? t('todayLabel') : info.nextDay === d+1 ? t('dayAfter') : `${info.nextDay}`);
+    rightPopup.innerHTML = `<div class="rp-label">${t('infoNextShift')} ➡</div><div class="rp-brig">${info.nextBrig || '—'}</div><div class="rp-info">${info.nextType} · ${nextWhen}</div>`;
     if (info.nextBrig) {
       rightPopup.style.pointerEvents = 'auto';
       rightPopup.style.cursor = 'pointer';
@@ -252,7 +252,7 @@ function addOvertimePopups(cell, d, shift) {
     const cat = categorizeOvertime(currentYear, currentMonth, d, shift, 'przed', ot.przed.hours);
     const dom = cat.h200 > 0 ? '+200%' : cat.h100 > 0 ? '+100%' : '+50%';
     topPopup.innerHTML = `
-      <div class="otp-label">⏱ PRZED</div>
+      <div class="otp-label">${t('otBefore')}</div>
       <div class="otp-content">${ot.przed.hours}h · ${dom}</div>
       <div class="otp-time">${formatTimeRange(from, to)}</div>
       <div class="otp-actions">
@@ -262,19 +262,19 @@ function addOvertimePopups(cell, d, shift) {
     `;
   } else {
     topPopup.innerHTML = `
-      <div class="otp-label">⏱ PRZED</div>
-      <div class="otp-content">+ Dodaj</div>
+      <div class="otp-label">${t('otBefore')}</div>
+      <div class="otp-content">${t('otAdd')}</div>
     `;
   }
   topPopup.addEventListener('click', (ev) => {
     ev.stopPropagation();
     const t = ev.target;
     if (t.dataset && t.dataset.act === 'del-przed') {
-      showConfirm('Usunąć nadgodziny PRZED?', '', () => {
+      showConfirm(t('otDeleteBefore'), '', () => {
         removeOvertime(currentYear, currentMonth, d, selectedShift, 'przed');
-        showToast('success', 'Usunięto');
+        showToast('success', t('removed'));
         refreshViews();
-      }, { primaryText: 'Usuń', primaryClass: 'danger' });
+      }, { primaryText: t('otDeleteBtn'), primaryClass: 'danger' });
       return;
     }
     openOvertimeModal(d, shift, 'przed', ot.przed);
@@ -288,7 +288,7 @@ function addOvertimePopups(cell, d, shift) {
     const cat = categorizeOvertime(currentYear, currentMonth, d, shift, 'po', ot.po.hours);
     const dom = cat.h200 > 0 ? '+200%' : cat.h100 > 0 ? '+100%' : '+50%';
     botPopup.innerHTML = `
-      <div class="otp-label">⏱ PO</div>
+      <div class="otp-label">${t('otAfter')}</div>
       <div class="otp-content">${ot.po.hours}h · ${dom}</div>
       <div class="otp-time">${formatTimeRange(from, to)}</div>
       <div class="otp-actions">
@@ -298,19 +298,19 @@ function addOvertimePopups(cell, d, shift) {
     `;
   } else {
     botPopup.innerHTML = `
-      <div class="otp-label">⏱ PO</div>
-      <div class="otp-content">+ Dodaj</div>
+      <div class="otp-label">${t('otAfter')}</div>
+      <div class="otp-content">${t('otAdd')}</div>
     `;
   }
   botPopup.addEventListener('click', (ev) => {
     ev.stopPropagation();
     const t = ev.target;
     if (t.dataset && t.dataset.act === 'del-po') {
-      showConfirm('Usunąć nadgodziny PO?', '', () => {
+      showConfirm(t('otDeleteAfter'), '', () => {
         removeOvertime(currentYear, currentMonth, d, selectedShift, 'po');
-        showToast('success', 'Usunięto');
+        showToast('success', t('removed'));
         refreshViews();
-      }, { primaryText: 'Usuń', primaryClass: 'danger' });
+      }, { primaryText: t('otDeleteBtn'), primaryClass: 'danger' });
       return;
     }
     openOvertimeModal(d, shift, 'po', ot.po);
@@ -324,15 +324,15 @@ let otModalContext = null;
 function openOvertimeModal(day, shift, position, existing) {
   otModalContext = { day, shift, position };
   const overlay = document.getElementById('otOverlay');
-  const posLabel = position === 'przed' ? 'PRZED' : 'PO';
+  const posLabel = position === 'przed' ? t('otPositionBefore') : t('otPositionAfter');
   const [sh, eh] = shiftHours[shift];
   const shiftTimeStr = `${String(sh).padStart(2,'0')}:00-${String(eh%24).padStart(2,'0')}:00`;
 
-  document.getElementById('otTitle').textContent = `Nadgodziny ${posLabel} zmiany ${shift}`;
+  document.getElementById('otTitle').textContent = `${t('otTitle')} ${posLabel} ${shift}`;
   document.getElementById('otContext').innerHTML = `
-    <b>📅 Data:</b> ${day} ${monthNames[currentMonth-1]} ${currentYear}<br>
-    <b>🏭 Zmiana:</b> ${shift} (${shiftTimeStr})<br>
-    <b>📍 Pozycja:</b> ${posLabel} zmiany
+    <b>${t('infoDate')}</b> ${day} ${monthNames[currentMonth-1]} ${currentYear}<br>
+    <b>${t('infoShiftLabel')}</b> ${shift} (${shiftTimeStr})<br>
+    <b>${t('infoPosition')}</b> ${posLabel}
   `;
   document.getElementById('otNote').value = existing ? existing.note || '' : '';
   document.getElementById('otCustomHours').value = '';
@@ -351,18 +351,18 @@ function openOvertimeModal(day, shift, position, existing) {
   footer.innerHTML = '';
   const cancelBtn = document.createElement('button');
   cancelBtn.className = 'modal-btn secondary';
-  cancelBtn.textContent = 'Anuluj';
+  cancelBtn.textContent = t('otCancelBtn');
   cancelBtn.onclick = () => overlay.classList.remove('show');
   footer.appendChild(cancelBtn);
 
   if (existing) {
     const delBtn = document.createElement('button');
     delBtn.className = 'modal-btn danger';
-    delBtn.textContent = '🗑 Usuń';
+    delBtn.textContent = '🗑 ' + t('otDeleteBtn');
     delBtn.onclick = () => {
       removeOvertime(currentYear, currentMonth, day, selectedShift, position);
       overlay.classList.remove('show');
-      showToast('success', 'Nadgodziny usunięte');
+      showToast('success', t('otDeleted'));
       refreshViews();
     };
     footer.appendChild(delBtn);
@@ -370,7 +370,7 @@ function openOvertimeModal(day, shift, position, existing) {
 
   const saveBtn = document.createElement('button');
   saveBtn.className = 'modal-btn success';
-  saveBtn.textContent = '💾 Zapisz';
+  saveBtn.textContent = t('otSaveBtn');
   saveBtn.onclick = saveOvertimeFromModal;
   footer.appendChild(saveBtn);
 
@@ -398,14 +398,14 @@ function updateOvertimePreview(hours) {
   preview.style.display = 'block';
   const paid = cat.h50 * 1.5 + cat.h100 * 2 + cat.h200 * 3;
   preview.innerHTML = `
-    <div style="font-weight:700; color:var(--text-header); margin-bottom:6px;">📊 Podgląd</div>
-    <div>⏰ Czas: <b>${formatTimeRange(from, to)}</b> (${hours}h)</div>
-    ${crossesMidnight ? `<div style="color:#c0392b; font-weight:700; margin-top:4px;">⚠️ Przechodzi przez północ</div>` : ''}
-    ${cat.h50 > 0 ? `<div>🟡 <b>+50%</b>: ${cat.h50}h → ${cat.h50 * 1.5}h zapłaty</div>` : ''}
-    ${cat.h100 > 0 ? `<div>🟣 <b>+100%</b>: ${cat.h100}h → ${cat.h100 * 2}h zapłaty</div>` : ''}
-    ${cat.h200 > 0 ? `<div>🔴 <b>+200%</b>: ${cat.h200}h → ${cat.h200 * 3}h zapłaty</div>` : ''}
+    <div style="font-weight:700; color:var(--text-header); margin-bottom:6px;">${t('otPreview')}</div>
+    <div>${t('infoTime')} <b>${formatTimeRange(from, to)}</b> (${hours}h)</div>
+    ${crossesMidnight ? `<div style="color:#c0392b; font-weight:700; margin-top:4px;">${t('otCrossesMidnight')}</div>` : ''}
+    ${cat.h50 > 0 ? `<div>🟡 <b>+50%</b>: ${cat.h50}h → ${cat.h50 * 1.5}h ${t('infoPaid')}</div>` : ''}
+    ${cat.h100 > 0 ? `<div>🟣 <b>+100%</b>: ${cat.h100}h → ${cat.h100 * 2}h ${t('infoPaid')}</div>` : ''}
+    ${cat.h200 > 0 ? `<div>🔴 <b>+200%</b>: ${cat.h200}h → ${cat.h200 * 3}h ${t('infoPaid')}</div>` : ''}
     <div style="margin-top:6px; padding-top:6px; border-top:1px solid var(--border-cell); font-weight:700;">
-      💰 Razem płatne: ${paid}h
+      ${t('otPayment')}: ${paid}h
     </div>
   `;
 }
@@ -414,14 +414,14 @@ function saveOvertimeFromModal() {
   if (!otModalContext) return;
   const hours = getSelectedHours();
   if (!hours || hours <= 0) {
-    showToast('error', 'Wybierz liczbę godzin');
+    showToast('error', t('otSelectHours'));
     return;
   }
   const note = document.getElementById('otNote').value.trim();
   const { day, position } = otModalContext;
   setOvertime(currentYear, currentMonth, day, selectedShift, position, { hours, note });
   document.getElementById('otOverlay').classList.remove('show');
-  showToast('success', `Zapisano ${hours}h nadgodzin`);
+  showToast('success', t('otSaved', { h: hours }));
   refreshViews();
 }
 
@@ -462,7 +462,7 @@ function renderMonthOvertimeSummary() {
   el.id = 'otMonthSummary';
   el.className = 'ot-summary';
   el.innerHTML = `
-    <div class="ot-summary-title">⏱ Nadgodziny w miesiącu (${sum.count} ${sum.count === 1 ? 'wpis' : 'wpisów'})</div>
+    <div class="ot-summary-title">${t('otMonthSummary')} (${sum.count} ${sum.count === 1 ? t('otMonthEntry') : t('otMonthEntries')})</div>
     <div class="ot-summary-grid">
       <div class="ot-summary-card s-50">
         <div class="ssc-label">+50%</div>
@@ -478,7 +478,7 @@ function renderMonthOvertimeSummary() {
       </div>
     </div>
     <div class="ot-summary-total">
-      📊 Razem: <b>${totalH}h</b> przepracowane · 💰 <b>${paid}h</b> płatne
+      ${t('otMonthTotal')}: <b>${totalH}h</b> ${t('otMonthWorked')} · 💰 <b>${paid}h</b> ${t('otMonthPaid')}
     </div>
   `;
   const infoPanel = document.getElementById('infoPanel');
@@ -505,14 +505,14 @@ function renderProgress() {
   }
   const pct = Math.round((workedHours/totalHours)*100);
   progressFill.style.width = Math.min(pct, 100) + '%';
-  progressLabel.textContent = `Brygada ${selectedShift}: ${workedHours}h / ${totalHours}h (${pct}%)`;
+  progressLabel.textContent = t('infoBrigadeHours', { brig: selectedShift, worked: workedHours, total: totalHours, pct: pct });
 }
 
 /* === INFO PANEL === */
 function renderInfo() {
   const panel = document.getElementById('infoPanel');
   if (!selectedDay) {
-    panel.innerHTML = '<h3>ℹ️ Wybierz dzień w kalendarzu</h3><p>Kliknij dowolny dzień, aby zobaczyć szczegóły.</p>';
+    panel.innerHTML = `<h3>${t('infoPanelTitle')}</h3><p>${t('infoPanelHint')}</p>`;
     return;
   }
   const shiftCode = getShiftAtWithPending(currentYear, currentMonth, selectedDay, selectedShift);
@@ -530,10 +530,10 @@ function renderInfo() {
   const limit = getVacationLimit(selectedShift);
   const overLimit = usedUrlop > limit;
   const urlopStats = `<div class="urlop-stats">
-    <span>🌴 Urlop ${selectedShift} (${currentYear}):<br><small style="opacity:.9;font-weight:normal;">Zaznaczone: ${totalUrlop} • Robocze: ${usedUrlop}</small></span>
+    <span>${t('infoUrlopStats', { brig: selectedShift, year: currentYear })}<br><small style="opacity:.9;font-weight:normal;">${t('infoUrlopMarked')}: ${totalUrlop} • ${t('infoUrlopWorking')}: ${usedUrlop}</small></span>
     <div style="display:flex; align-items:center; gap:6px;">
       <span><span class="us-count ${overLimit?'us-over':''}">${usedUrlop}</span> / ${limit} ${overLimit ? '⚠️' : ''}</span>
-      <button class="urlop-limit-edit" data-brigade="${selectedShift}" title="Zmień limit urlopów dla ${selectedShift}" style="border:none; background:rgba(255,255,255,0.18); color:inherit; border-radius:6px; width:24px; height:24px; cursor:pointer;">✏️</button>
+      <button class="urlop-limit-edit" data-brigade="${selectedShift}" title="${t('infoUrlopLimitEdit', { brig: selectedShift })}" style="border:none; background:rgba(255,255,255,0.18); color:inherit; border-radius:6px; width:24px; height:24px; cursor:pointer;">✏️</button>
     </div>
   </div>`;
 
@@ -545,7 +545,7 @@ function renderInfo() {
   const cyc = getCycleRange(currentYear, currentMonth, selectedDay, selectedShift);
   if (cyc && cyc.length > 1) {
     const which = selectedDay - cyc.start + 1;
-    cycleInfo = `<div class="info-card"><div class="label">🔁 Blok</div><div class="value">${which} z ${cyc.length}</div></div>`;
+    cycleInfo = `<div class="info-card"><div class="label">${t('infoCycle')}</div><div class="value">${t('infoCycleOf', { n: which, total: cyc.length })}</div></div>`;
   }
 
   let toWolneInfo = '';
@@ -553,8 +553,8 @@ function renderInfo() {
     const w = daysToNextWolne(currentYear, currentMonth, selectedDay, selectedShift);
     if (w && w.days > 0) {
       const wd = `${w.day} ${monthNames[w.month-1]}${w.year !== currentYear ? ' '+w.year : ''}`;
-      const label = w.days === 1 ? 'Jutro' : `Za ${w.days} dni`;
-      toWolneInfo = `<div class="info-card"><div class="label">🏖️ Do wolnego</div><div class="value">${label} (${wd})</div></div>`;
+      const label = w.days === 1 ? t('tomorrow') : t('inDays', { n: w.days });
+      toWolneInfo = `<div class="info-card"><div class="label">${t('infoNextDayOff')}</div><div class="value">${label} (${wd})</div></div>`;
     }
   }
 
@@ -569,7 +569,7 @@ function renderInfo() {
         const { from, to } = calcOvertimeTime(shiftCode, pos, otData[pos].hours);
         const cat = categorizeOvertime(currentYear, currentMonth, selectedDay, shiftCode, pos, otData[pos].hours);
         const dom = cat.h200 > 0 ? '200' : cat.h100 > 0 ? '100' : '50';
-        const label = pos === 'przed' ? '⬅ PRZED' : 'PO ➡';
+        const label = pos === 'przed' ? t('otWeekBefore') : t('otWeekAfter');
         items += `
           <div class="ot-list-item">
             <span class="oti-badge b-${dom}">+${dom}%</span>
@@ -580,7 +580,7 @@ function renderInfo() {
           </div>
         `;
       });
-      overtimeInfo = `<div class="info-card" style="grid-column:1/-1;"><div class="label">⏱ Nadgodziny</div><div class="value">${items}</div></div>`;
+      overtimeInfo = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoOvertime')}</div><div class="value">${items}</div></div>`;
     }
   }
 
@@ -588,24 +588,24 @@ function renderInfo() {
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
       ${urlopStats}
       <div class="info-grid">
-        <div class="info-card"><div class="label">Status</div><div class="value" style="color:#e67e22;">🌴 URLOP</div></div>
-        <div class="info-card"><div class="label">Zaplanowana zmiana</div><div class="value">${isWolne(shiftCode) ? '🏖️ Wolne' : `<span class="shift-chip ${shiftCode}">${shiftEmoji[shiftCode]} ${shiftCode}</span>`}</div></div>
-        <div class="info-card"><div class="label">📝 Notatka</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="Dodaj notatkę..."></div></div>
+        <div class="info-card"><div class="label">${t('infoStatus')}</div><div class="value" style="color:#e67e22;">${t('infoUrlop')}</div></div>
+        <div class="info-card"><div class="label">${t('infoPlannedShift')}</div><div class="value">${isWolne(shiftCode) ? t('infoFree') : `<span class="shift-chip ${shiftCode}">${shiftEmoji[shiftCode]} ${shiftCode}</span>`}</div></div>
+        <div class="info-card"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>
       </div>`;
   } else if (isWolne(shiftCode)) {
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
       ${urlopStats}
       <div class="info-grid">
-        <div class="info-card"><div class="label">Status</div><div class="value">🏖️ Wolne</div></div>
+        <div class="info-card"><div class="label">${t('infoStatus')}</div><div class="value">${t('infoFree')}</div></div>
         ${cycleInfo}
-        <div class="info-card"><div class="label">📝 Notatka</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="Dodaj notatkę..."></div></div>
+        <div class="info-card"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>
       </div>`;
   } else {
     const info = getRelief(currentYear, currentMonth, selectedDay, selectedShift, shiftCode);
     function formatWhen(y, m, d) {
       if (y === currentYear && m === currentMonth && d === selectedDay) return '';
-      if (y === currentYear && m === currentMonth && d === selectedDay - 1) return ', wczoraj';
-      if (y === currentYear && m === currentMonth && d === selectedDay + 1) return ', jutro';
+      if (y === currentYear && m === currentMonth && d === selectedDay - 1) return ', ' + t('dayBefore');
+      if (y === currentYear && m === currentMonth && d === selectedDay + 1) return ', ' + t('dayAfter');
       return `, ${d} ${monthNames[m-1]}${y !== currentYear ? ' '+y : ''}`;
     }
     const prevText = info.prevBrig ? `<span class="badge ${info.prevBrig}">${info.prevBrig}</span> <small>(${info.prevType}${formatWhen(info.prevYear, info.prevMonth, info.prevDay)})</small>` : '<em>—</em>';
@@ -613,14 +613,14 @@ function renderInfo() {
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
       ${urlopStats}
       <div class="info-grid">
-        <div class="info-card"><div class="label">Zmiana</div><div class="value"><span class="shift-chip ${shiftCode}">${shiftEmoji[shiftCode]} ${shiftCode}</span> ${shiftFullName[shiftCode]}</div></div>
-        <div class="info-card"><div class="label">⬅️ Kto przekazał zmianę</div><div class="value">${prevText}</div></div>
-        <div class="info-card"><div class="label">➡️ Kto przejmie zmianę</div><div class="value">${nextText}</div></div>
+        <div class="info-card"><div class="label">${t('infoShift')}</div><div class="value"><span class="shift-chip ${shiftCode}">${shiftEmoji[shiftCode]} ${shiftCode}</span> ${shiftFullName[shiftCode]}</div></div>
+        <div class="info-card"><div class="label">${t('infoPrevShift')}</div><div class="value">${prevText}</div></div>
+        <div class="info-card"><div class="label">${t('infoNextShift')}</div><div class="value">${nextText}</div></div>
         ${liveInfo}
         ${cycleInfo}
         ${toWolneInfo}
         ${overtimeInfo}
-        <div class="info-card"><div class="label">📝 Notatka</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="Dodaj notatkę..."></div></div>
+        <div class="info-card"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>
       </div>`;
   }
 
@@ -630,23 +630,23 @@ function renderInfo() {
       const brigade = editLimitBtn.dataset.brigade;
       const currentLimit = getVacationLimit(brigade);
       const body = `
-        <p>Podaj nową liczbę dni urlopu dla brygady <strong>${brigade}</strong>:</p>
+        <p>${t('vacationLimitBody', { brig: brigade })}</p>
         <input id="vacationLimitInput" type="number" min="0" step="1" value="${currentLimit}" style="width:100%; padding:10px; border:1px solid var(--border-cell); border-radius:8px; font-size:16px;">
       `;
       showModal({
-        title: 'Ustaw limit urlopu',
+        title: t('vacationLimitTitle'),
         body,
         buttons: [
-          { text: 'Anuluj', class: 'secondary' },
-          { text: 'Zapisz', class: 'primary', onClick: () => {
+          { text: t('vacationLimitCancel'), class: 'secondary' },
+          { text: t('vacationLimitSave'), class: 'primary', onClick: () => {
               const input = document.getElementById('vacationLimitInput');
               const parsed = Number(input.value);
               if (!Number.isFinite(parsed) || parsed < 0) {
-                showToast('error', 'Wpisz liczbę dni większą lub równą 0');
+                showToast('error', t('vacationLimitInvalid'));
                 return;
               }
               setVacationLimit(brigade, parsed);
-              showToast('success', `Limit urlopów dla brygady ${brigade}: ${parsed} dni`);
+              showToast('success', t('vacationLimitSet', { brig: brigade, n: parsed }));
               renderInfo();
             }
           }
@@ -664,7 +664,7 @@ function renderInfo() {
       else delete notes[key];
       saveNotes(notes);
       renderCalendar();
-      showToast('success', 'Notatka zapisana');
+      showToast('success', t('infoNoteSaved'));
     });
   }
 }
@@ -673,6 +673,6 @@ function getLiveShiftInfo() {
   const now = new Date();
   if (now.getFullYear() !== currentYear) return '';
   const timer = getLiveTimer(getShiftAt(currentYear, now.getMonth()+1, now.getDate(), selectedShift), currentYear, now.getMonth()+1, now.getDate());
-  if (timer) return `<div class="info-card" style="border:2px solid #27ae60;"><div class="label">⏱️ TRWA ZMIANA</div><div class="value" style="color:#27ae60;">${timer}</div></div>`;
+  if (timer) return `<div class="info-card" style="border:2px solid #27ae60;"><div class="label">${t('infoLiveShift')}</div><div class="value" style="color:#27ae60;">${timer}</div></div>`;
   return '';
 }

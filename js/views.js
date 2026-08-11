@@ -7,10 +7,10 @@ let weekStartDate = null;
 /* === WEEK VIEW === */
 function ensureWeekStart() {
   if (!weekStartDate) {
-    const t = new Date();
-    const dow = t.getDay();
+    const t2 = new Date();
+    const dow = t2.getDay();
     const daysToMon = dow === 0 ? 6 : dow - 1;
-    weekStartDate = new Date(t); weekStartDate.setDate(t.getDate() - daysToMon);
+    weekStartDate = new Date(t2); weekStartDate.setDate(t2.getDate() - daysToMon);
     weekStartDate.setHours(0,0,0,0);
   }
 }
@@ -23,7 +23,7 @@ function renderWeekView() {
   const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
 
   const rangeTxt = `${monday.getDate()} ${monthNamesShort[monday.getMonth()]} – ${sunday.getDate()} ${monthNamesShort[sunday.getMonth()]} ${monday.getFullYear() !== sunday.getFullYear() ? monday.getFullYear()+'/'+sunday.getFullYear() : monday.getFullYear()}`;
-  document.getElementById('weekTitle').textContent = `📆 ${rangeTxt} · Brygada ${selectedShift}`;
+  document.getElementById('weekTitle').textContent = `📆 ${rangeTxt} · ${t('brigade')} ${selectedShift}`;
 
   for (let i = 0; i < 7; i++) {
     const dt = new Date(monday); dt.setDate(monday.getDate() + i);
@@ -37,9 +37,9 @@ function renderWeekView() {
 
     let shiftHtml;
     if (onU) {
-      shiftHtml = `<div class="wdc-shift U"><span class="wdc-emoji">🌴</span><span class="wdc-label">URLOP</span></div>`;
+      shiftHtml = `<div class="wdc-shift U"><span class="wdc-emoji">🌴</span><span class="wdc-label">${t('vacation')}</span></div>`;
     } else if (isWolne(s)) {
-      shiftHtml = `<div class="wdc-shift W"><span class="wdc-emoji">🏖️</span><span class="wdc-label">Wolne</span></div>`;
+      shiftHtml = `<div class="wdc-shift W"><span class="wdc-emoji">🏖️</span><span class="wdc-label">${t('dayOff')}</span></div>`;
     } else {
       const [sh, eh] = shiftHours[s];
       const scheduledTime = `${String(sh).padStart(2,'0')}:00 – ${String(eh%24).padStart(2,'0')}:00`;
@@ -125,12 +125,12 @@ function renderYearView() {
       el.textContent = d;
       if (today.getFullYear() === currentYear && today.getMonth()+1 === m && today.getDate() === d) el.classList.add('mToday');
       if (yHolidays[m+'-'+d]) el.classList.add('mHoliday');
-      el.title = `${d} ${monthNames[m-1]}: ${onU ? '🌴 URLOP' : (shiftFullName[s]||'Wolne')}`;
+      el.title = `${d} ${monthNames[m-1]}: ${onU ? '🌴 ' + t('vacation') : (shiftFullName[s]||t('dayOff'))}`;
       el.onclick = (ev) => {
         ev.stopPropagation();
         if (editMode) {
           if (editPaletteMode === 'OT') {
-            showToast('warn', 'Nadgodziny dodawaj w widoku Miesiąc');
+            showToast('warn', t('overtimeAddInMonthView'));
             return;
           }
           const val = editPaletteMode === 'CYCLE' ? undefined : editPaletteMode;
@@ -175,8 +175,8 @@ function renderTableView(showAllYear) {
   const title = document.createElement('div');
   title.className = 'table-view-title';
   title.textContent = showAllYear
-    ? `📋 Cały rok ${currentYear} — wszystkie brygady`
-    : `📋 ${monthNames[currentMonth-1]} ${currentYear} — wszystkie brygady`;
+    ? `📋 ${t('wholeYear')} ${currentYear} — ${t('allBrigades')}`
+    : `📋 ${monthNames[currentMonth-1]} ${currentYear} — ${t('allBrigades')}`;
   tv.appendChild(title);
 
   if (showAllYear) {
@@ -217,7 +217,7 @@ function buildMonthTable(month) {
   const trHead = document.createElement('tr');
   const cornerTh = document.createElement('th');
   cornerTh.className = 'brig-label';
-  cornerTh.textContent = 'Br.\\Dz.';
+  cornerTh.textContent = t('brigadeDayHeader');
   cornerTh.style.fontSize = '11px';
   trHead.appendChild(cornerTh);
   for (let d = 1; d <= dim; d++) {
@@ -255,11 +255,11 @@ function buildMonthTable(month) {
       if (dow === 0 || dow === 6) td.classList.add('weekend-col');
       if (today.getFullYear() === currentYear && today.getMonth()+1 === month && today.getDate() === d) td.classList.add('today-col');
       if (brig === selectedShift) td.classList.add('my-brigade');
-      td.title = `${brig} • ${d} ${monthNames[month-1]}: ${onU ? '🌴' : (shiftFullName[s]||'Wolne')}`;
+      td.title = `${brig} • ${d} ${monthNames[month-1]}: ${onU ? '🌴' : (shiftFullName[s]||t('dayOff'))}`;
       td.onclick = () => {
         if (editMode) {
           if (editPaletteMode === 'OT') {
-            showToast('warn', 'Nadgodziny dodawaj w widoku Miesiąc');
+            showToast('warn', t('overtimeAddInMonthView'));
             return;
           }
           const val = editPaletteMode === 'CYCLE' ? undefined : editPaletteMode;
@@ -295,11 +295,11 @@ function renderEmptyState(container) {
   container.innerHTML = `
     <div class="empty-state">
       <div class="es-emoji">📅</div>
-      <h3>Rok ${currentYear} jest pusty</h3>
-      <p>Ten rok nie ma jeszcze fabrycznych danych.<br>Wypełnij go ręcznie w trybie edycji lub zaimportuj plik JSON.</p>
+      <h3>${t('yearIsEmptyTitle')} ${currentYear}</h3>
+      <p>${t('yearIsEmptyDescription')}</p>
       <div class="es-actions">
-        <button class="btn-primary" onclick="document.getElementById('editModeToggle').click()">✏️ Włącz edycję</button>
-        <button class="btn-secondary" onclick="document.getElementById('importDataBtn').click()">📂 Import JSON</button>
+        <button class="btn-primary" onclick="document.getElementById('editModeToggle').click()">✏️ ${t('enableEdit')}</button>
+        <button class="btn-secondary" onclick="document.getElementById('importDataBtn').click()">📂 ${t('importJson')}</button>
       </div>
     </div>
   `;

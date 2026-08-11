@@ -44,10 +44,10 @@ function initGDriveTokenClient() {
           gDriveTokenExpiry = Date.now() + (resp.expires_in || 3600) * 1000;
           localStorage.setItem('grafik_drive_token', gDriveToken);
           localStorage.setItem('grafik_drive_token_expiry', String(gDriveTokenExpiry));
-          showToast('success', '☁️ Zaliczono do Google');
+          showToast('success', `☁️ ${t('driveLoggedIn')}`);
           updateDriveUI();
         } else {
-          showToast('error', '☁️ Logowanie nieudane');
+          showToast('error', `☁️ ${t('driveLoginFailed')}`);
         }
       },
     });
@@ -87,22 +87,22 @@ async function findDriveFile() {
   // Szukamy WSZYSTKICH plików o naszej nazwie w App Data
   const query = `name='${DRIVE_FILE_NAME}' and trashed=false`;
   const url = `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${encodeURIComponent(query)}&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc`;
-  
+
   const resp = await driveFetch(url);
   if (!resp.ok) {
     console.error('[SYNC] findDriveFile error:', resp.status);
     return null;
   }
-  
+
   const data = await resp.json();
   const files = data.files || [];
-  
+
   if (files.length === 0) return null;
-  
+
   // Najnowszy plik — pierwszy na liście (orderBy=modifiedTime desc)
   const newest = files[0];
   console.log('[SYNC] Najnowszy plik:', newest.id, newest.modifiedTime);
-  
+
   // Usuwamy duplikaty (wszystkie oprócz pierwszego)
   if (files.length > 1) {
     console.log('[SYNC] Znaleziono duplikatów:', files.length - 1, '— usuwam...');
@@ -115,13 +115,13 @@ async function findDriveFile() {
       }
     }
   }
-  
+
   return newest;
 }
 
 /* === ZAPIS (create lub update) === */
 async function uploadToDrive(force = false) {
-  if (!isDriveTokenValid()) { showToast('warn', '☁️ Najpierw zaloguj się do Google Drive'); return false; }
+  if (!isDriveTokenValid()) { showToast('warn', `☁️ ${t('driveLoginRequired')}`); return false; }
 
   // Budujemy dane do zapisu
   const payload = {
@@ -161,8 +161,8 @@ async function uploadToDrive(force = false) {
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({}));
         console.error('[SYNC] Create error:', err);
-        const errText = (err && err.error && err.error.message) || err.message || JSON.stringify(err) || 'nieznany błąd';
-        showToast('error', '☁️ Błąd tworzenia pliku w Drive: ' + errText);
+        const errText = (err && err.error && err.error.message) || err.message || JSON.stringify(err) || t('unknownError');
+        showToast('error', `☁️ ${t('driveCreateFileError')}: ` + errText);
         return false;
       }
       const data = await resp.json();
@@ -177,28 +177,28 @@ async function uploadToDrive(force = false) {
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({}));
         console.error('[SYNC] Update error:', err);
-        showToast('error', '☁️ Błąd aktualizacji pliku w Drive');
+        showToast('error', `☁️ ${t('driveUpdateFileError')}`);
         return false;
       }
     }
-    showToast('success', '☁️ Zapisano w Google Drive');
+    showToast('success', `☁️ ${t('driveSaved')}`);
     updateDriveUI();
     return true;
   } catch (e) {
     console.error('[SYNC] upload:', e);
-    showToast('error', '☁️ Błąd synchronizacji');
+    showToast('error', `☁️ ${t('driveSyncError')}`);
     return false;
   }
 }
 
 /* === ODCZYT === */
 async function downloadFromDrive(confirmOverwrite = false) {
-  if (!isDriveTokenValid()) { showToast('warn', '☁️ Najpierw zaloguj się do Google Drive'); return false; }
+  if (!isDriveTokenValid()) { showToast('warn', `☁️ ${t('driveLoginRequired')}`); return false; }
   try {
     console.log('[SYNC] downloadFromDrive start', { confirmOverwrite, gDriveFileId });
     if (!gDriveFileId) {
       const found = await findDriveFile();
-      if (!found) { showToast('info', '☁️ Brak pliku w Google Drive — nic do pobrania'); return false; }
+      if (!found) { showToast('info', `☁️ ${t('driveNoFileToDownload')}`); return false; }
       gDriveFileId = found.id;
       localStorage.setItem('grafik_drive_file_id', gDriveFileId);
       console.log('[SYNC] downloadFromDrive found gDriveFileId', gDriveFileId);
@@ -212,13 +212,13 @@ async function downloadFromDrive(confirmOverwrite = false) {
       contentLength: resp.headers && resp.headers.get ? resp.headers.get('content-length') : null
     });
     if (!resp.ok) {
-      showToast('error', '☁️ Błąd pobierania pliku z Drive');
+      showToast('error', `☁️ ${t('driveDownloadFileError')}`);
       return false;
     }
     const data = await resp.json();
     console.log('[SYNC] downloadFromDrive parsed data', data && typeof data === 'object' ? { keys: Object.keys(data) } : typeof data);
     if (!data || typeof data !== 'object') {
-      showToast('error', '☁️ Nieprawidłowy format danych w Drive');
+      showToast('error', `☁️ ${t('driveInvalidDataFormat')}`);
       return false;
     }
 
@@ -341,24 +341,24 @@ const doApply = () => {
   }
 
   console.log('[SYNC] downloadFromDrive doApply end', { applyErrors: applyErrors.length ? applyErrors : null });
-  
+
   if (applyErrors.length) {
-    showToast('warn', '☁️ Dane pobrane, ale były błędy: ' + applyErrors.join(', '));
+    showToast('warn', `☁️ ${t('driveDownloadedWithErrors')}: ` + applyErrors.join(', '));
   } else {
-    showToast('success', '☁️ Dane pobrane z Google Drive');
+    showToast('success', `☁️ ${t('driveDownloaded')}`);
   }
   updateDriveUI();
 };
 
     if (confirmOverwrite) {
-      showConfirm('☁️ Pobrać dane z Google Drive?', 'Dane lokalne zostaną nadpisane. Kontynuować?', doApply, { primaryText: 'Pobierz', primaryClass: 'primary' });
+      showConfirm(`☁️ ${t('driveDownloadConfirmTitle')}`, t('driveDownloadConfirmBody'), doApply, { primaryText: t('download'), primaryClass: 'primary' });
     } else {
       doApply();
     }
     return true;
   } catch (e) {
     console.error('[SYNC] download:', e);
-    showToast('error', '☁️ Błąd pobierania z Drive');
+    showToast('error', `☁️ ${t('driveDownloadError')}`);
     return false;
   }
 }
@@ -376,26 +376,26 @@ function updateDriveUI() {
   const authBtn = document.getElementById('userAuthBtn');
 
   if (logged) {
-    item.title = 'Zalogowano — kliknij aby synchronizować';
+    item.title = t('driveLoggedInHint');
     if (check) check.style.display = 'inline';
-    if (label) label.textContent = 'Google Drive ☁️ (zalogowano)';
+    if (label) label.textContent = `Google Drive ☁️ (${t('loggedIn')})`;
     item.classList.remove('drive-error');
     if (logoutBtn) logoutBtn.style.display = 'flex';
     if (syncItem) syncItem.style.display = 'flex';
     if (authBtn) {
       authBtn.textContent = '🚪';
-      authBtn.title = 'Wyloguj z Google Drive';
+      authBtn.title = t('logoutFromDrive');
       authBtn.classList.add('auth-logged-in');
     }
   } else {
     if (check) check.style.display = 'none';
-    if (label) label.textContent = 'Google Drive ☁️ (zaloguj)';
-    item.title = 'Kliknij aby zalogować się do Google Drive';
+    if (label) label.textContent = `Google Drive ☁️ (${t('login')})`;
+    item.title = t('driveLoggedOutHint');
     if (logoutBtn) logoutBtn.style.display = 'none';
     if (syncItem) syncItem.style.display = 'none';
     if (authBtn) {
       authBtn.textContent = '👤';
-      authBtn.title = 'Zaloguj do Google Drive';
+      authBtn.title = t('loginToDrive');
       authBtn.classList.remove('auth-logged-in');
     }
   }
@@ -404,16 +404,16 @@ function updateDriveUI() {
 /* === USTAWIANIE CLIENT ID === */
 function askForClientId() {
   showModal({
-    title: '☁️ Google Drive — konfiguracja',
+    title: `☁️ ${t('driveConfigTitle')}`,
     body: `
-      <p>Aby synchronizować dane przez Google Drive, potrzebny jest <b>Client ID</b> z Google Cloud Console.</p>
-      <p><b>Jak zdobyć Client ID:</b></p>
+      <p>${t('driveConfigIntro')}</p>
+      <p><b>${t('driveConfigHowTo')}</b></p>
       <ol style="margin:8px 0; padding-left:22px; font-size:13px;">
-        <li>Wejdź na <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:var(--text-header);">Google Cloud Console → Credentials</a></li>
-        <li>Stwórz projekt i włącz <b>Google Drive API</b></li>
-        <li>Utwórz <b>OAuth 2.0 Client ID</b> (typ: Web application)</li>
-        <li>W "Authorized JavaScript origins" wpisz adres swojej aplikacji (np. <code>http://localhost:8000</code>)</li>
-        <li>Skopiuj Client ID poniżej</li>
+        <li>${t('driveConfigStep1')} <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:var(--text-header);">Google Cloud Console → Credentials</a></li>
+        <li>${t('driveConfigStep2')}</li>
+        <li>${t('driveConfigStep3')}</li>
+        <li>${t('driveConfigStep4')} <code>http://localhost:8000</code></li>
+        <li>${t('driveConfigStep5')}</li>
       </ol>
       <div style="margin-top:12px;">
         <label style="font-weight:600; font-size:13px; display:block; margin-bottom:4px;">OAuth Client ID:</label>
@@ -421,20 +421,20 @@ function askForClientId() {
                style="width:100%; padding:8px 12px; border:1px solid var(--border-cell); border-radius:8px; background:var(--bg-container); color:var(--text-main); font-size:14px;"
                value="${gDriveClientId}">
       </div>
-      <p style="font-size:12px; color:var(--text-muted); margin-top:10px;">⚠️ Client ID z sekcji "Authorized JavaScript origins" — nie "Client secret".</p>
+      <p style="font-size:12px; color:var(--text-muted); margin-top:10px;">⚠️ ${t('driveConfigNote')}</p>
     `,
     buttons: [
       {
-        text: 'Zapisz',
+        text: t('save'),
         class: 'primary',
         onClick: () => {
           const input = document.getElementById('driveClientIdInput');
           const val = input ? input.value.trim() : '';
-          if (!val) { showToast('warn', 'Wpisz Client ID'); return; }
+          if (!val) { showToast('warn', t('enterClientId')); return; }
           gDriveClientId = val;
           localStorage.setItem(DRIVE_CLIENT_ID_KEY, val);
           initGDriveTokenClient();
-          showToast('success', '☁️ Client ID zapisany');
+          showToast('success', `☁️ ${t('driveClientIdSaved')}`);
         }
       }
     ]
@@ -444,37 +444,37 @@ function askForClientId() {
 /* === LOGOWANIE === */
 function loginDrive() {
   if (!gDriveClientId) {
-    showToast('warn', '☁️ Najpierw skonfiguruj Client ID w ustawieniach');
+    showToast('warn', `☁️ ${t('driveConfigureClientIdFirst')}`);
     askForClientId();
     return;
   }
   if (!gDriveTokenClient) initGDriveTokenClient();
-  if (!gDriveTokenClient) { showToast('error', '☁️ Nie można zainicjować logowania — sprawdź Client ID'); return; }
+  if (!gDriveTokenClient) { showToast('error', `☁️ ${t('driveCannotInitLogin')}`); return; }
   gDriveTokenClient.requestAccessToken();
 }
 
 /* === GŁÓWNE MENU: synchronizuj === */
 async function syncWithDrive() {
   if (!isDriveTokenValid()) {
-    showToast('warn', '☁️ Najpierw zaloguj się do Google Drive');
+    showToast('warn', `☁️ ${t('driveLoginRequired')}`);
     loginDrive();
     return;
   }
   // Zalogowano: zapytaj użytkownika
   showConfirm(
-    '☁️ Synchronizacja z Google Drive',
-    'Co chcesz zrobić?',
+    `☁️ ${t('driveSyncTitle')}`,
+    t('driveSyncBody'),
     () => uploadToDrive(true),
-    { primaryText: '📤 Wyślij do Drive', primaryClass: 'primary' }
+    { primaryText: `📤 ${t('sendToDrive')}`, primaryClass: 'primary' }
   );
   // Dwa przyciski
   setTimeout(() => {
     const footer = document.getElementById('modalFooter');
     if (!footer) return;
     footer.innerHTML = `
-      <button class="modal-btn secondary" onclick="downloadFromDrive(true)">📥 Pobierz z Drive</button>
-      <button class="modal-btn primary" onclick="uploadToDrive(true)">📤 Wyślij do Drive</button>
-      <button class="modal-btn secondary" onclick="hideModal()">Anuluj</button>
+      <button class="modal-btn secondary" onclick="downloadFromDrive(true)">📥 ${t('downloadFromDrive')}</button>
+      <button class="modal-btn primary" onclick="uploadToDrive(true)">📤 ${t('sendToDrive')}</button>
+      <button class="modal-btn secondary" onclick="hideModal()">${t('cancel')}</button>
     `;
   }, 50);
 }
@@ -487,7 +487,7 @@ function logoutDrive() {
   localStorage.removeItem('grafik_drive_token');
   localStorage.removeItem('grafik_drive_token_expiry');
   localStorage.removeItem('grafik_drive_file_id');
-  showToast('info', '☁️ Wylogowano z Google Drive');
+  showToast('info', `☁️ ${t('driveLoggedOut')}`);
   updateDriveUI();
 }
 
@@ -532,7 +532,7 @@ function initSync() {
     syncItem.onclick = () => {
       closeSideMenu();
       if (!isDriveTokenValid()) {
-        showToast('warn', '☁️ Najpierw zaloguj się do Google Drive');
+        showToast('warn', `☁️ ${t('driveLoginRequired')}`);
         loginDrive();
         return;
       }

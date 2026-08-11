@@ -46,7 +46,7 @@ function exportICS() {
   a.href = url;
   a.download = `grafik_${selectedShift}_${currentYear}.ics`;
   a.click();
-  showToast('success', 'Kalendarz wyeksportowany');
+  showToast('success', t('exportSuccess'));
 }
 /* === PRINT HEADER/FOOTER === */
 function addPrintHeader() {
@@ -56,9 +56,9 @@ function addPrintHeader() {
   header.className = 'print-header';
   const today = new Date();
   const dateStr = `${today.getDate()} ${monthNames[today.getMonth()]} ${today.getFullYear()}`;
-  const viewName = { dashboard: 'Dashboard', week: 'Tydzień', month: 'Miesiąc', table: 'Tabela' }[currentView] || '';
-  const yearSuffix = yearMode ? ' — cały rok' : '';
-  header.textContent = `🏭 Grafik Gillette — ${viewName}${yearSuffix} • Brygada ${selectedShift} • ${dateStr}`;
+  const viewName = { dashboard: t('printHeaderDashboard'), week: t('printHeaderWeek'), month: t('printHeaderMonth'), table: t('printHeaderTable') }[currentView] || '';
+  const yearSuffix = yearMode ? t('printYearSuffix') : '';
+  header.textContent = `🏭 ${t('appName')} — ${viewName}${yearSuffix} • Brygada ${selectedShift} • ${dateStr}`;
   document.body.prepend(header);
 }
 function addPrintFooter() {
@@ -66,7 +66,7 @@ function addPrintFooter() {
   if (existing) existing.remove();
   const footer = document.createElement('div');
   footer.className = 'print-footer';
-  footer.textContent = `Wygenerowano: ${new Date().toLocaleString('pl-PL')} • Grafik Gillette`;
+  footer.textContent = `${t('printGenerated')}: ${new Date().toLocaleString('pl-PL')} • ${t('appName')}`;
   document.body.appendChild(footer);
 }
 window.addEventListener('beforeprint', () => {
@@ -112,17 +112,17 @@ function buildShareUrl() {
 function buildShareText() {
     // Опис того, чим ділимося (для тексту повідомлення)
     const viewNames = {
-        dashboard: 'Widok główny',
-        week: 'Tydzień',
-        month: yearMode ? `Rok ${currentYear}` : `${monthNames[currentMonth-1]} ${currentYear}`,
-        table: yearMode ? `Tabela — cały rok ${currentYear}` : `Tabela — ${monthNames[currentMonth-1]} ${currentYear}`
+        dashboard: t('viewDashboard'),
+        week: t('viewWeek'),
+        month: yearMode ? t('yearViewTitle', { year: currentYear }) : `${monthNames[currentMonth-1]} ${currentYear}`,
+        table: yearMode ? t('yearViewTitle', { year: currentYear }) : t('monthViewTitle', { month: monthNames[currentMonth-1], year: currentYear })
     };
     
     let text = `📅 ${viewNames[currentView]}`;
     
     if (currentView === 'week') {
         const d = selectedDay || new Date().getDate();
-        text = `📆 Tydzień ${d} ${monthNames[currentMonth-1]} ${currentYear}`;
+        text = `📆 ${t('viewWeek')} ${d} ${monthNames[currentMonth-1]} ${currentYear}`;
     } else if (currentView === 'month' && selectedDay && !yearMode) {
         text = `📅 ${selectedDay} ${monthNames[currentMonth-1]} ${currentYear}`;
     }
@@ -141,21 +141,21 @@ function shareCurrent() {
     
     // Локальний файл: копіюємо текст без URL
     if (isLocal) {
-        const content = `${text}\n🏭 Grafik Gillette`;
+        const content = `${text}\n🏭 ${t('appName')}`;
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(content)
-                .then(() => showToast('success', 'Skopiowano do schowka'))
-                .catch(() => showToast('error', 'Kopiowanie niemożliwe'));
+                .then(() => showToast('success', t('shareCopied')))
+                .catch(() => showToast('error', t('shareCopyFailed')));
         } else {
-            showToast('error', 'Kopiowanie niemożliwe');
+            showToast('error', t('shareCopyFailed'));
         }
         return;
     }
     
     // Native share (mobile)
     if (navigator.share) {
-        navigator.share({ title: 'Grafik Gillette', text, url })
-            .then(() => showToast('success', 'Udostępniono'))
+        navigator.share({ title: t('appName'), text, url })
+            .then(() => showToast('success', t('shareSuccess')))
             .catch(() => copyToClipboard(url));
     } else {
         copyToClipboard(url);
@@ -165,23 +165,23 @@ function shareCurrent() {
 function copyToClipboard(url) {
     if (navigator.clipboard) {
         navigator.clipboard.writeText(url)
-            .then(() => showToast('success', 'Link skopiowany do schowka'))
-            .catch(() => showToast('error', 'Nie udało się skopiować linku'));
+            .then(() => showToast('success', t('shareLinkCopied')))
+            .catch(() => showToast('error', t('shareLinkFailed')));
     } else {
-        showToast('error', 'Nie udało się skopiować linku');
+        showToast('error', t('shareLinkFailed'));
     }
 }
 
 /* === EXPORT/IMPORT JSON === */
 document.getElementById('exportDataBtn').onclick = () => {
-  const data = { _meta: { app: 'Grafik Gillette', v: 3.1, date: new Date().toISOString() }, customSchedule, urlops, notes, overtimes, prefs };
+  const data = { _meta: { app: t('appName'), v: 3.1, date: new Date().toISOString() }, customSchedule, urlops, notes, overtimes, prefs };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   a.download = `grafik_backup_${new Date().toISOString().slice(0,10)}.json`;
   a.click();
-  showToast('success', 'Backup pobrany');
+  showToast('success', t('exportJsonSuccess'));
 };
 
 bindClick('menuIcs', () => { closeSideMenu(); exportICS(); });
@@ -190,27 +190,27 @@ bindClick('menuShare', () => { closeSideMenu(); shareCurrent(); });
 
 /* === IMPORT === */
 function validateImportedData(data) {
-  if (!data || typeof data !== 'object') throw new Error('Dane nie są obiektem');
-  if (!data.customSchedule && !data.urlops && !data.notes && !data.overtimes) throw new Error('Brak znanych kluczy danych w pliku');
+  if (!data || typeof data !== 'object') throw new Error(t('importDataError'));
+  if (!data.customSchedule && !data.urlops && !data.notes && !data.overtimes) throw new Error(t('importMissingKeys'));
 
   const brigades = ['A', 'B', 'C', 'D'];
 
   if (data.customSchedule) {
-    if (typeof data.customSchedule !== 'object') throw new Error('Nieprawidłowa struktura customSchedule');
+    if (typeof data.customSchedule !== 'object') throw new Error(t('importInvalidSchedule'));
     for (const year in data.customSchedule) {
-      if (isNaN(parseInt(year, 10))) throw new Error(`Nieprawidłowy rok w customSchedule: ${year}`);
+      if (isNaN(parseInt(year, 10))) throw new Error(t('importInvalidYear', { year }));
       const months = data.customSchedule[year];
-      if (typeof months !== 'object') throw new Error(`Nieprawidłowa struktura miesięcy dla roku ${year}`);
+      if (typeof months !== 'object') throw new Error(t('importInvalidMonths', { year }));
       for (let m = 1; m <= 12; m++) {
         if (!months[m]) continue;
         const monthData = months[m];
         brigades.forEach(b => {
           if (monthData[b]) {
-            if (!Array.isArray(monthData[b])) throw new Error(`Dane brygady ${b} w miesiącu ${m}/${year} muszą być tablicą`);
+            if (!Array.isArray(monthData[b])) throw new Error(t('importInvalidBrigade', { brig: b, m, year }));
             const daysInMonth = new Date(year, m, 0).getDate();
-            if (monthData[b].length !== daysInMonth) throw new Error(`Błędna liczba dni dla brygady ${b} w ${m}/${year}: jest ${monthData[b].length}, powinno być ${daysInMonth}`);
+            if (monthData[b].length !== daysInMonth) throw new Error(t('importInvalidDays', { brig: b, m, year, actual: monthData[b].length, expected: daysInMonth }));
             monthData[b].forEach((dayVal, idx) => {
-              if (typeof dayVal !== 'string') throw new Error(`Nieprawidłowa wartość dnia ${idx+1} dla brygady ${b} w ${m}/${year}`);
+              if (typeof dayVal !== 'string') throw new Error(t('importInvalidDayValue', { idx: idx+1, brig: b, m, year }));
             });
           }
         });
@@ -219,34 +219,34 @@ function validateImportedData(data) {
   }
 
   if (data.urlops) {
-    if (typeof data.urlops !== 'object') throw new Error('Nieprawidłowa struktura urlops');
+    if (typeof data.urlops !== 'object') throw new Error(t('importInvalidUrlops'));
     brigades.forEach(b => {
       if (data.urlops[b]) {
-        if (!Array.isArray(data.urlops[b])) throw new Error(`Urlopy brygady ${b} muszą być tablicą`);
+        if (!Array.isArray(data.urlops[b])) throw new Error(t('importUrlopsArray', { brig: b }));
         data.urlops[b].forEach(d => {
-          if (typeof d !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(d)) throw new Error(`Nieprawidłowy format daty urlopu: ${d}`);
+          if (typeof d !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(d)) throw new Error(t('importInvalidUrlopDate', { date: d }));
         });
       }
     });
   }
 
   if (data.overtimes) {
-    if (typeof data.overtimes !== 'object') throw new Error('Nieprawidłowa struktura overtimes');
+    if (typeof data.overtimes !== 'object') throw new Error(t('importInvalidOvertimes'));
     for (const k in data.overtimes) {
       const ot = data.overtimes[k];
-      if (!ot || typeof ot !== 'object') throw new Error(`Nieprawidłowy wpis nadgodzin dla klucza ${k}`);
+      if (!ot || typeof ot !== 'object') throw new Error(t('importInvalidOtEntry', { key: k }));
       ['przed', 'po'].forEach(p => {
         if (ot[p]) {
-          if (typeof ot[p] !== 'object' || typeof ot[p].hours !== 'number') throw new Error(`Nieprawidłowa wartość ${p} w nadgodzinach dla ${k}`);
+          if (typeof ot[p] !== 'object' || typeof ot[p].hours !== 'number') throw new Error(t('importInvalidOtValue', { pos: p, key: k }));
         }
       });
     }
   }
 
   if (data.notes) {
-    if (typeof data.notes !== 'object') throw new Error('Nieprawidłowa struktura notes');
+    if (typeof data.notes !== 'object') throw new Error(t('importInvalidNotes'));
     for (const k in data.notes) {
-      if (typeof data.notes[k] !== 'string') throw new Error(`Notatka dla ${k} musi być tekstem`);
+      if (typeof data.notes[k] !== 'string') throw new Error(t('importInvalidNote', { key: k }));
     }
   }
 }
@@ -261,21 +261,21 @@ document.getElementById('importFile').onchange = (e) => {
       const data = JSON.parse(ev.target.result);
       validateImportedData(data);
       showConfirm(
-        '⚠️ Zastąpić aktualne dane?',
-        'Import nadpisze Twoje grafiki, urlopy, nadgodziny i notatki.',
+        t('importReplaceTitle'),
+        t('importReplaceBody'),
         () => {
           if (data.customSchedule) { customSchedule = data.customSchedule; saveCustomSchedule(customSchedule); }
           if (data.urlops) { Object.keys(urlops).forEach(k => delete urlops[k]); Object.assign(urlops, data.urlops); saveUrlops(urlops); }
           if (data.notes) { Object.keys(notes).forEach(k => delete notes[k]); Object.assign(notes, data.notes); saveNotes(notes); }
           if (data.overtimes) { overtimes = data.overtimes; saveOvertimes(overtimes); }
-          showToast('success', 'Dane wczytane');
+          showToast('success', t('importSuccess'));
           refreshViews();
         },
-        { primaryText: 'Importuj', primaryClass: 'primary' }
+        { primaryText: t('importBtn'), primaryClass: 'primary' }
       );
     } catch(err) { 
-      const msg = err instanceof SyntaxError ? 'Błąd składni JSON' : err.message;
-      showToast('error', 'Błąd importu: ' + msg); 
+      const msg = err instanceof SyntaxError ? t('importJsonError') : err.message;
+      showToast('error', t('importError', { msg })); 
     }
   };
   reader.readAsText(file);
@@ -288,23 +288,23 @@ bindClick('menuVacationLimit', () => {
   closeSideMenu();
   const currentLimit = getVacationLimit(selectedShift);
   const body = `
-    <p>Podaj nową liczbę dni urlopu dla brygady <strong>${selectedShift}</strong>:</p>
+    <p>${t('vacationLimitBody', { brig: selectedShift })}</p>
     <input id="vacationLimitInput" type="number" min="0" step="1" value="${currentLimit}" style="width:100%; padding:10px; border:1px solid var(--border-cell); border-radius:8px; font-size:16px;">
   `;
   showModal({
-    title: 'Ustaw limit urlopu',
+    title: t('vacationLimitTitle'),
     body,
     buttons: [
-      { text: 'Anuluj', class: 'secondary' },
-      { text: 'Zapisz', class: 'primary', onClick: () => {
+      { text: t('vacationLimitCancel'), class: 'secondary' },
+      { text: t('vacationLimitSave'), class: 'primary', onClick: () => {
           const input = document.getElementById('vacationLimitInput');
           const parsed = Number(input.value);
           if (!Number.isFinite(parsed) || parsed < 0) {
-            showToast('error', 'Wpisz liczbę dni większą lub równą 0');
+            showToast('error', t('vacationLimitInvalid'));
             return;
           }
           setVacationLimit(selectedShift, parsed);
-          showToast('success', `Limit urlopów dla brygady ${selectedShift}: ${parsed} dni`);
+          showToast('success', t('vacationLimitSet', { brig: selectedShift, n: parsed }));
           refreshViews();
         }
       }
@@ -315,35 +315,36 @@ bindClick('menuVacationLimit', () => {
 /* === CZYSZCZENIE ROKU / RESET === */
 bindClick('clearYearBtn', () => {
   showConfirm(
-    `🗑 Wyczyścić rok ${currentYear}?`,
-    'Usunięte zostaną: zapisane zmiany + bufor dla tego roku. Urlopy i nadgodziny pozostaną. Dane fabryczne wrócą (jeśli istnieją).',
+    t('clearYearTitle', { year: currentYear }),
+    t('clearYearBody'),
     () => {
       delete customSchedule[currentYear];
       saveCustomSchedule(customSchedule);
       Object.keys(pendingChanges).forEach(k => {
         if (parseInt(k.split('-')[0], 10) === currentYear) { delete pendingChanges[k]; delete pendingOriginals[k]; }
       });
+      undoStack = []; redoStack = [];
       updateDirtyIndicator();
       refreshViews();
-      showToast('warn', `Rok ${currentYear} wyczyszczony`);
+      showToast('warn', t('yearCleared', { year: currentYear }));
     },
-    { primaryText: '🗑 Wyczyść', primaryClass: 'danger' }
+    { primaryText: t('clearYearBtn'), primaryClass: 'danger' }
   );
 });
 
 bindClick('resetCustomBtn', () => {
   showConfirm(
-    '↺ Reset wszystkich edycji?',
-    'Usunięte zostaną WSZYSTKIE Twoje edycje (wszystkie lata + bufor). Fabryczne dane wrócą. Urlopy, nadgodziny i notatki pozostaną.',
+    t('resetTitle'),
+    t('resetBody'),
     () => {
       customSchedule = {};
       saveCustomSchedule(customSchedule);
-      pendingChanges = {}; pendingOriginals = {}; undoStack = [];
+      pendingChanges = {}; pendingOriginals = {}; undoStack = []; redoStack = [];
       updateDirtyIndicator();
       refreshViews();
-      showToast('warn', 'Wszystkie zmiany zresetowane');
+      showToast('warn', t('resetSuccess'));
     },
-    { primaryText: '↺ Reset', primaryClass: 'danger' }
+    { primaryText: t('resetBtn'), primaryClass: 'danger' }
   );
 });
 

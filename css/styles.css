@@ -79,6 +79,49 @@ body {
   gap: 10px;
   margin-bottom: 15px;
 }
+
+/* === LANGUAGE DROPDOWN === */
+.lang-dropdown {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  background: var(--bg-container);
+  border: 2px solid var(--border-cell);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 8px 30px var(--shadow-heavy);
+  z-index: 100;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+}
+.lang-dropdown.show { display: flex; }
+.lang-option {
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+  text-align: left;
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.lang-option:hover {
+  background: var(--bg-controls);
+  color: var(--text-header);
+  transform: translateX(2px);
+}
+.lang-option.active {
+  background: var(--text-header);
+  color: #fff;
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
 .top-bar h1 {
   text-align: center;
   color: var(--text-header);

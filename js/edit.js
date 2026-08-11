@@ -44,7 +44,7 @@ function applyEdit(year, month, day, brigade, forcedValue) {
 }
 
 function undoLastEdit() {
-  if (undoStack.length === 0) { showToast('info', 'Nie ma czego cofnąć'); return false; }
+  if (undoStack.length === 0) { showToast('info', t('undoNothing')); return false; }
   
   const k = undoStack[undoStack.length - 1].k;
   const currentVal = pendingChanges.hasOwnProperty(k) ? pendingChanges[k] : pendingOriginals[k];
@@ -67,7 +67,7 @@ function undoLastEdit() {
 }
 
 function redoLastEdit() {
-  if (redoStack.length === 0) { showToast('info', 'Nie ma czego powtórzyć'); return false; }
+  if (redoStack.length === 0) { showToast('info', t('redoNothing')); return false; }
   
   const last = redoStack.pop();
   const k = last.k;
@@ -90,10 +90,11 @@ function redoLastEdit() {
 
 function saveAllPendingChanges() {
   const count = Object.keys(pendingChanges).length;
-  if (count === 0) { showToast('info', 'Brak zmian do zapisania'); return false; }
+  if (count === 0) { showToast('info', t('noChangesToSave')); return false; }
+  const unit = count === 1 ? t('changeSingular') : t('changePlural');
   showConfirm(
-    `💾 Zapisać ${count} ${count === 1 ? 'zmianę' : 'zmian'}?`,
-    'Zmiany zostaną trwale zapisane w Twojej przeglądarce.',
+    t('saveConfirmTitle', { n: count, unit }),
+    t('saveConfirmBody'),
     () => {
       Object.keys(pendingChanges).forEach(k => {
         const segments = k.split('-');
@@ -111,9 +112,9 @@ function saveAllPendingChanges() {
       redoStack = [];
       updateDirtyIndicator();
       refreshViews();
-      showToast('success', `Zapisano ${count} ${count === 1 ? 'zmianę' : 'zmian'}`);
+      showToast('success', t('saveSuccess', { n: count, unit }));
     },
-    { primaryText: '💾 Zapisz', primaryClass: 'success' }
+    { primaryText: t('saveConfirmBtn'), primaryClass: 'success' }
   );
   return true;
 }
@@ -121,9 +122,10 @@ function saveAllPendingChanges() {
 function discardAllPendingChanges() {
   const count = Object.keys(pendingChanges).length;
   if (count === 0) return true;
+  const unit = count === 1 ? t('changeSingular') : t('changePlural');
   showConfirm(
-    `↶ Cofnąć wszystkie niezapisane zmiany?`,
-    `Zostaną odrzucone ${count} ${count === 1 ? 'zmiana' : 'zmian'}.`,
+    t('discardConfirmTitle'),
+    t('discardConfirmBody', { n: count, unit }),
     () => {
       pendingChanges = {};
       pendingOriginals = {};
@@ -131,9 +133,9 @@ function discardAllPendingChanges() {
       redoStack = [];
       updateDirtyIndicator();
       refreshViews();
-      showToast('info', 'Zmiany cofnięte');
+      showToast('info', t('discardSuccess'));
     },
-    { primaryText: '↶ Cofnij', primaryClass: 'danger' }
+    { primaryText: t('discardConfirmBtn'), primaryClass: 'danger' }
   );
   return true;
 }

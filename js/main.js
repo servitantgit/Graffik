@@ -156,17 +156,17 @@ function updateYearPicker() {
   const yp = document.getElementById('yearPicker');
   if (hasFactoryData(currentYear) || hasCustomData(currentYear)) {
     yp.classList.remove('no-data');
-    yp.title = hasCustomData(currentYear) ? `Rok ${currentYear} — z Twoimi zmianami` : `Rok ${currentYear} — dane fabryczne`;
+    yp.title = hasCustomData(currentYear) ? t('yearWithChanges', { year: currentYear }) : t('yearFactoryData', { year: currentYear });
   } else {
     yp.classList.add('no-data');
-    yp.title = `Rok ${currentYear} — brak danych, użyj ✏️`;
+    yp.title = t('yearNoData', { year: currentYear });
   }
 }
 function updateEditModeUI() {
   document.body.classList.toggle('edit-active', editMode);
   const btn = document.getElementById('editModeToggle');
   btn.classList.toggle('edit-active', editMode);
-  btn.title = editMode ? 'Wyłącz tryb edycji (E)' : 'Włącz tryb edycji (E)';
+  btn.title = editMode ? t('editModeOn') : t('editModeOff');
   document.getElementById('editBanner').classList.toggle('show', editMode);
   document.getElementById('editPalette').classList.toggle('show', editMode);
   updateDirtyIndicator();
@@ -177,24 +177,24 @@ document.getElementById('editModeToggle').onclick = () => {
   if (!editMode) {
     if (!prefs.skipEditConfirm) {
       showConfirm(
-        '✏️ Włączyć tryb edycji?',
-        'Kliknięcia w komórki zmienią zmiany.<br><br>Wybierz "malowaną" zmianę w palecie na dole (lub użyj skrótu R/P/N/W).<br>Aby dodać <b>nadgodziny</b> — wybierz <b>⏱</b> (lub klawisz O).<br><br>Zmiany <b>NIE zapisują się automatycznie</b> — trzeba kliknąć <b>💾 Zapisz</b>.',
-        () => { editMode = true; refreshViews(); showToast('info', 'Tryb edycji WŁ. Skróty: R/P/N/W/C/O', 4000); },
-        { primaryText: '✏️ Włącz', primaryClass: 'primary' }
+        t('enableEditTitle'),
+        t('enableEditBody'),
+        () => { editMode = true; refreshViews(); showToast('info', t('editModeOnToast'), 4000); },
+        { primaryText: t('enableEditConfirm'), primaryClass: 'primary' }
       );
     } else {
       editMode = true;
       refreshViews();
-      showToast('info', 'Tryb edycji WŁ');
+      showToast('info', t('editModeOnShort'));
     }
   } else {
     const pc = Object.keys(pendingChanges).length;
     if (pc > 0) {
       showConfirm(
-        `⚠️ Masz ${pc} niezapisanych zmian`,
-        'Wybierz co zrobić:',
-        () => { pendingChanges = {}; pendingOriginals = {}; undoStack = []; redoStack = []; editMode = false; refreshViews(); showToast('warn', 'Zmiany odrzucone'); },
-        { primaryText: 'Odrzuć i wyjdź', primaryClass: 'danger' }
+        t('unsavedChangesTitle', { n: pc }),
+        t('unsavedChangesBody'),
+        () => { pendingChanges = {}; pendingOriginals = {}; undoStack = []; redoStack = []; editMode = false; refreshViews(); showToast('warn', t('changesDiscarded')); },
+        { primaryText: t('discardAndExit'), primaryClass: 'danger' }
       );
     } else {
       editMode = false;
@@ -249,10 +249,10 @@ function goToYear(delta, keepMonth) {
   const pFY = Object.keys(pendingChanges).filter(k => parseInt(k.split('-')[0], 10) === currentYear).length;
   if (editMode && pFY > 0) {
     showConfirm(
-      `⚠️ ${pFY} niezapisanych zmian dla ${currentYear}`,
-      'Zmiany pozostaną w buforze, ale nie będą widoczne po przełączeniu roku.',
+      t('yearSwitchTitle', { n: pFY, year: currentYear }),
+      t('yearSwitchBody'),
       () => { currentYear = newYear; if (!keepMonth) selectedDay = null; prefs.year = currentYear; savePrefs(prefs); refreshViews(); },
-      { primaryText: 'Przełącz', primaryClass: 'primary' }
+      { primaryText: t('yearSwitchBtn'), primaryClass: 'primary' }
     );
     return;
   }
@@ -383,4 +383,27 @@ if (!prefs.welcomed) {
     prefs.welcomed = true;
     savePrefs(prefs);
   }, 500);
+}
+
+/* === LANGUAGE TOGGLE === */
+const langToggleBtn = document.getElementById('langToggleBtn');
+const langDropdown = document.getElementById('langDropdown');
+if (langToggleBtn && langDropdown) {
+  langToggleBtn.onclick = () => {
+    langDropdown.classList.toggle('show');
+  };
+  // Закрываем выпадающий список при клике вне него
+  document.addEventListener('click', (e) => {
+    if (!langToggleBtn.contains(e.target) && !langDropdown.contains(e.target)) {
+      langDropdown.classList.remove('show');
+    }
+  });
+  // Обработчики для опций языка
+  document.querySelectorAll('.lang-option').forEach(opt => {
+    opt.onclick = () => {
+      const lang = opt.dataset.lang;
+      setLanguage(lang);
+      langDropdown.classList.remove('show');
+    };
+  });
 }

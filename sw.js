@@ -18,6 +18,7 @@ const ASSETS = [
   './js/actions.js',
   './js/pwa.js',
   './js/sync.js',
+  './js/i18n.js',
   './js/main.js',
   './icons/icon-192.png',
   './icons/icon-512.png',

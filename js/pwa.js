@@ -42,18 +42,18 @@ function setupInstallPrompt() {
       installItem.onclick = () => {
         closeSideMenu();
         showModal({
-          title: '📲 Zainstaluj aplikację',
+          title: `📲 ${t('installApp')}`,
           body: `
-            <p>Aby zainstalować aplikację na <b>iPhone / iPad</b>:</p>
+            <p>${t('installAppIosIntro')}</p>
             <ol style="margin:8px 0; padding-left:22px; font-size:13px;">
-              <li>Dotknij przycisku <b>Udostępnij</b> <span style="font-size:16px;">⬆️</span> na dole Safari</li>
-              <li>Przewiń w dół i wybierz <b>„Dodaj do ekranu głównego"</b></li>
-              <li>Dotknij <b>„Dodaj"</b> w prawym górnym rogu</li>
+              <li>${t('installAppIosStep1')}</li>
+              <li>${t('installAppIosStep2')}</li>
+              <li>${t('installAppIosStep3')}</li>
             </ol>
-            <p style="font-size:12px; color:var(--text-muted);">Po dodaniu aplikacja pojawi się jako ikona na ekranie głównym.</p>
+            <p style="font-size:12px; color:var(--text-muted);">${t('installAppIosNote')}</p>
           `,
           buttons: [
-            { text: 'OK, rozumiem', class: 'primary' }
+            { text: t('gotIt'), class: 'primary' }
           ]
         });
       };
@@ -72,15 +72,15 @@ function setupInstallPrompt() {
   window.addEventListener('appinstalled', () => {
     deferredInstallPrompt = null;
     installItem.style.display = 'none';
-    showToast('success', '✅ Aplikacja została zainstalowana!');
+    showToast('success', `✅ ${t('appInstalled')}`);
   });
 
   installItem.onclick = async () => {
     if (!deferredInstallPrompt) return;
     deferredInstallPrompt.prompt();
     const choice = await deferredInstallPrompt.userChoice;
-    if (choice.outcome === 'accepted') showToast('success', '✅ Instalacja rozpoczęta');
-    else showToast('info', 'Instalacja anulowana');
+    if (choice.outcome === 'accepted') showToast('success', `✅ ${t('installStarted')}`);
+    else showToast('info', t('installCancelled'));
     deferredInstallPrompt = null;
     installItem.style.display = 'none';
   };
@@ -101,16 +101,16 @@ function updateNotificationUI() {
   if (!('Notification' in window)) {
     item.classList.add('disabled');
     item.style.opacity = '0.4';
-    if (label) label.textContent = 'Powiadomienia (brak wsparcia)';
+    if (label) label.textContent = t('notificationsNotSupported');
     return;
   }
 
   const enabled = areNotificationsEnabled();
   if (check) check.style.display = enabled ? 'inline' : 'none';
-  if (label) label.textContent = 'Powiadomienia o zmianach';
+  if (label) label.textContent = t('notificationsAboutShifts');
   item.title = enabled
-    ? 'Powiadomienia WŁĄCZONE — kliknij, aby wyłączyć'
-    : 'Powiadomienia WYŁĄCZONE — kliknij, aby włączyć';
+    ? t('notificationsEnabledHint')
+    : t('notificationsDisabledHint');
 
   // Upewnij się, że prefs.notificationsLead istnieje
   if (typeof prefs.notificationsLead === 'undefined') prefs.notificationsLead = 1;
@@ -121,14 +121,14 @@ function updateNotificationUI() {
 
   // Kontener z przyciskami — pokazujemy tylko gdy notifications ON
   let leadContainer = document.getElementById('notifLeadContainer');
-  
+
   if (enabled) {
     if (!leadContainer) {
       leadContainer = document.createElement('div');
       leadContainer.id = 'notifLeadContainer';
       leadContainer.className = 'notif-lead-buttons';
       leadContainer.innerHTML = `
-        <div class="notif-lead-label">⏰ Przypomnij za:</div>
+        <div class="notif-lead-label">⏰ ${t('remindMeIn')}:</div>
         <div class="notif-lead-btns">
           <button type="button" class="notif-lead-btn" data-lead="1">1h</button>
           <button type="button" class="notif-lead-btn" data-lead="2">2h</button>
@@ -146,8 +146,8 @@ function updateNotificationUI() {
           prefs.notificationsLead = val;
           savePrefs(prefs);
           updateLeadButtonsActive();
-          const timeText = val === 1 ? 'godzinę' : `${val} godziny`;
-          showToast('info', `⏰ Powiadomienie za ${timeText} przed zmianą`);
+          const timeText = val === 1 ? t('hourSingular') : `${val} ${t('hoursPlural')}`;
+          showToast('info', `⏰ ${t('notificationLeadToast')} ${timeText} ${t('beforeShift')}`);
         });
       });
     }
@@ -168,17 +168,17 @@ function updateLeadButtonsActive() {
 
 function requestNotificationPermission() {
   if (!('Notification' in window)) {
-    showToast('warn', 'Ta przeglądarka nie obsługuje powiadomień');
+    showToast('warn', t('browserNoNotificationSupport'));
     return;
   }
   if (Notification.permission === 'denied') {
-    showToast('error', 'Powiadomienia zablokowane w ustawieniach przeglądarki');
+    showToast('error', t('notificationsBlockedInBrowser'));
     return;
   }
   if (Notification.permission === 'granted') {
     prefs.notifications = true;
     savePrefs(prefs);
-    showToast('success', '🔔 Powiadomienia WŁĄCZONE');
+    showToast('success', `🔔 ${t('notificationsEnabled')}`);
     updateNotificationUI();
     return;
   }
@@ -187,18 +187,18 @@ function requestNotificationPermission() {
     if (permission === 'granted') {
       prefs.notifications = true;
       savePrefs(prefs);
-      showToast('success', '🔔 Powiadomienia WŁĄCZONE');
+      showToast('success', `🔔 ${t('notificationsEnabled')}`);
       // testowe powiadomienie
       try {
-        new Notification('🔔 Grafik Gillette', {
-          body: 'Powiadomienia działają! Będziesz dostawać przypomnienia o rozpoczęciu zmiany.',
+        new Notification(`🔔 ${t('appName')}`, {
+          body: t('notificationsTestBody'),
           icon: './icons/icon-192.png'
         });
       } catch (e) { /* ignoruj */ }
     } else {
       prefs.notifications = false;
       savePrefs(prefs);
-      showToast('warn', 'Powiadomienia wyłączone');
+      showToast('warn', t('notificationsDisabled'));
     }
     updateNotificationUI();
   });
@@ -208,7 +208,7 @@ function toggleNotifications() {
   if (areNotificationsEnabled()) {
     prefs.notifications = false;
     savePrefs(prefs);
-    showToast('info', '🔕 Powiadomienia WYŁĄCZONE');
+    showToast('info', `🔕 ${t('notificationsEnabled')}`);
     updateNotificationUI();
   } else {
     requestNotificationPermission();
@@ -241,14 +241,11 @@ function notifyCurrentShift() {
 
     const [sh, eh] = hours;
     const timeRange = `${String(sh).padStart(2,'0')}:00 – ${String(eh % 24).padStart(2,'0')}:00`;
-    const names = {
-      R: '🌅 Rano',
-      P: '🌤️ Popołudnie',
-      N: '🌙 Noc'
-    };
+    // Używamy istniejących nazw zmian (shiftLongNames / shiftEmoji z data.js) zamiast duplikować tłumaczenia
+    const shiftLabel = `${shiftEmoji[s] || ''} ${shiftLongNames[s] || s}`;
 
-    const title = `⏰ Zmiana ${s} — ${names[s] || s}`;
-    const body = `Brygada ${selectedShift} • ${d} ${monthNames[m-1]} ${y}\n${timeRange}`;
+    const title = `⏰ ${t('shift')} ${s} — ${shiftLabel}`;
+    const body = `${t('brigade')} ${selectedShift} • ${d} ${monthNames[m-1]} ${y}\n${timeRange}`;
     const notification = new Notification(title, {
       body: body,
       icon: './icons/icon-192.png',
