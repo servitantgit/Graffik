@@ -21,12 +21,12 @@
 <div class="container">
   <!-- TOP BAR -->
   <div class="top-bar">
-    <button class="icon-btn" id="editModeToggle" title="Tryb edycji (E)">✏️</button>
-    <h1>🏭 Grafik Gillette</h1>
-    <button class="icon-btn" id="userAuthBtn" title="Zaloguj do Google Drive">👤</button>
-    <button class="icon-btn" id="themeToggleBtn" title="Przełącz motyw (jasny/ciemny)">🌙</button>
-    <button class="icon-btn" id="menuBtn" title="Menu">☰</button>
-    <button class="icon-btn" id="langToggleBtn" title="Język">🌐</button>
+    <button class="icon-btn" id="editModeToggle" data-i18n-title="editMode" title="Tryb edycji (E)">✏️</button>
+    <h1 data-i18n="appName">🏭 Grafik Gillette</h1>
+    <button class="icon-btn" id="userAuthBtn" data-i18n-title="profile" title="Zaloguj do Google Drive">👤</button>
+    <button class="icon-btn" id="themeToggleBtn" data-i18n-title="theme" title="Przełącz motyw (jasny/ciemny)">🌙</button>
+    <button class="icon-btn" id="menuBtn" data-i18n-title="menu" title="Menu">☰</button>
+    <button class="icon-btn" id="langToggleBtn" data-i18n-title="language" title="Język">🌐</button>
   </div>
 
   <!-- LANGUAGE DROPDOWN -->
@@ -39,70 +39,70 @@
   <!-- MAIN CONTROLS -->
   <div class="controls-main">
     <div class="shift-buttons" id="shiftBtns">
-      <button class="shift-btn A active" data-shift="A" title="Ctrl+klik = porównaj">A</button>
-      <button class="shift-btn B" data-shift="B" title="Ctrl+klik = porównaj">B</button>
-      <button class="shift-btn C" data-shift="C" title="Ctrl+klik = porównaj">C</button>
-      <button class="shift-btn D" data-shift="D" title="Ctrl+klik = porównaj">D</button>
+      <button class="shift-btn A active" data-shift="A" data-i18n-title="compareHint" title="Ctrl+klik = porównaj">A</button>
+      <button class="shift-btn B" data-shift="B" data-i18n-title="compareHint" title="Ctrl+klik = porównaj">B</button>
+      <button class="shift-btn C" data-shift="C" data-i18n-title="compareHint" title="Ctrl+klik = porównaj">C</button>
+      <button class="shift-btn D" data-shift="D" data-i18n-title="compareHint" title="Ctrl+klik = porównaj">D</button>
     </div>
-    <div class="year-picker" id="yearPicker" title="Zmień rok">
+    <div class="year-picker" id="yearPicker" data-i18n-title="changeYear" title="Zmień rok">
       <button id="prevYearBtn">‹</button>
       <span class="year-current" id="yearCurrent">2026</span>
       <button id="nextYearBtn">›</button>
     </div>
-    <button class="btn-primary" id="todayBtn">📅 Dziś</button>
-    <button class="btn-secondary" id="searchToggleBtn">🔍</button>
+    <button class="btn-primary" id="todayBtn" data-i18n="today">📅 Dziś</button>
+    <button class="btn-secondary" id="searchToggleBtn" data-i18n="searchBtn">🔍</button>
   </div>
 
   <!-- VIEW SWITCHER -->
   <div class="view-switcher" id="viewSwitcher">
-    <button class="view-btn" data-view="dashboard">🏠 Dashboard</button>
-    <button class="view-btn" data-view="week">📆 Tydzień</button>
-    <button class="view-btn" data-view="month">📅 Miesiąc</button>
-    <button class="view-btn" data-view="table">📋 Tabela</button>
-    <label class="year-toggle" id="yearToggleLabel" title="Rozszerz do całego roku">
+    <button class="view-btn" data-view="dashboard" data-i18n="viewDashboard">🏠 Dashboard</button>
+    <button class="view-btn" data-view="week" data-i18n="viewWeek">📆 Tydzień</button>
+    <button class="view-btn" data-view="month" data-i18n="viewMonth">📅 Miesiąc</button>
+    <button class="view-btn" data-view="table" data-i18n="viewTable">📋 Tabela</button>
+    <label class="year-toggle" id="yearToggleLabel" data-i18n-title="yearToggle" title="Rozszerz do całego roku">
       <input type="checkbox" id="yearToggle">
-      <span>📊 Rok</span>
+      <span data-i18n="yearToggle">📊 Rok</span>
     </label>
   </div>
 
   <!-- EDIT BANNER -->
   <div class="edit-banner" id="editBanner">
     <div class="edit-banner-text">
-      ✏️ <b>Tryb edycji</b>
+      ✏️ <b data-i18n="editBannerTitle">Tryb edycji</b>
       <span id="dirtyIndicator" style="display:none;">● <span id="dirtyCount">0</span></span>
-      <br><small style="opacity:.9;">Skróty: R P N W = zmiana • O = nadgodziny • Ctrl+Z = cofnij • Ctrl+S = zapisz • Esc = wyjdź</small>
+      <br><small style="opacity:.9;" data-i18n="editBannerHint">Skróty: R P N W = zmiana • O = nadgodziny • Ctrl+Z = cofnij • Ctrl+S = zapisz • Esc = wyjdź</small>
     </div>
     <div class="edit-banner-actions">
-      <button id="undoBtn" title="Cofnij ostatnią zmianę (Ctrl+Z)">↶ Undo</button>
-      <button id="redoBtn" title="Ponów cofniętą zmianę (Ctrl+Y)">↷ Redo</button>
-      <button id="saveChangesBtn" class="save" title="Zapisz zmiany w przeglądarce (Ctrl+S)">💾 Zapisz</button>
-      <button id="discardChangesBtn">↶ Odrzuć wszystko</button>
-      <button id="menuVacationLimit">🌴 Limit urlopu</button>
-      <button id="exportDataBtn">📥 JSON</button>
-      <button id="importDataBtn">📂 Import</button>
-      <button id="clearYearBtn" class="danger">🗑 Rok</button>
-      <button id="resetCustomBtn" class="danger">↺ Reset</button>
+      <button id="undoBtn" data-i18n="undoBtn" data-i18n-title="undoHint" title="Cofnij ostatnią zmianę (Ctrl+Z)">↶ Undo</button>
+      <button id="redoBtn" data-i18n="redoBtn" data-i18n-title="redoHint" title="Ponów cofniętą zmianę (Ctrl+Y)">↷ Redo</button>
+      <button id="saveChangesBtn" class="save" data-i18n="saveBtn" data-i18n-title="saveHint" title="Zapisz zmiany w przeglądarce (Ctrl+S)">💾 Zapisz</button>
+      <button id="discardChangesBtn" data-i18n="discardBtn">↶ Odrzuć wszystko</button>
+      <button id="menuVacationLimit" data-i18n="vacationLimitBtn">🌴 Limit urlopu</button>
+      <button id="exportDataBtn" data-i18n="exportBtn">📥 JSON</button>
+      <button id="importDataBtn" data-i18n="importBtn">📂 Import</button>
+      <button id="clearYearBtn" class="danger" data-i18n="clearYearBtn">🗑 Rok</button>
+      <button id="resetCustomBtn" class="danger" data-i18n="resetBtn">↺ Reset</button>
     </div>
   </div>
   <input type="file" id="importFile" accept="application/json,.json" style="display:none">
 
   <!-- SEARCH BOX -->
   <div class="search-box" id="searchBox" style="display:none;">
-    <label>Typ zmiany:
+    <label data-i18n="searchTypeLabel">Typ zmiany:
       <select id="searchType">
-        <option value="">— wszystkie —</option>
+        <option value="" data-i18n="searchAllTypes">— wszystkie —</option>
         <option value="R">R – Rano</option>
         <option value="P">P – Popołudnie</option>
         <option value="N">N – Noc</option>
-        <option value="W">Wolne</option>
-        <option value="W3">Wolne (min. 3 dni z rzędu)</option>
-        <option value="U">🌴 Urlop</option>
+        <option value="W" data-i18n="searchFree">Wolne</option>
+        <option value="W3" data-i18n="searchFree3Days">Wolne (min. 3 dni z rzędu)</option>
+        <option value="U" data-i18n="searchVacation">🌴 Urlop</option>
       </select>
     </label>
-    <label>Miesiąc:
-      <select id="searchMonth"><option value="0">Cały rok</option></select>
+    <label data-i18n="searchMonthLabel">Miesiąc:
+      <select id="searchMonth"><option value="0" data-i18n="searchAllTypes">Cały rok</option></select>
     </label>
-    <button class="btn-primary" id="searchBtn">Szukaj</button>
+    <button class="btn-primary" id="searchBtn" data-i18n="searchBtn">Szukaj</button>
     <div class="search-results" id="searchResults"></div>
   </div>
 
@@ -170,136 +170,135 @@
 
 <!-- SIDE MENU -->
 <div class="side-menu-overlay" id="sideMenuOverlay"></div>
-<div class="side-menu" id="sideMenu">
-  <h3>
-    ☰ Menu
-    <button class="side-menu-close" id="sideMenuClose">×</button>
-  </h3>
+  <div class="side-menu" id="sideMenu">
+    <h3>
+      <span data-i18n="menu">☰ Menu</span>
+      <button class="side-menu-close" id="sideMenuClose">×</button>
+    </h3>
 
+    <div class="menu-section">
+      <div class="menu-section-title" data-i18n="menuDrive">☁️ Google Drive</div>
+      <button class="menu-item" id="menuDriveSync">
+        <span class="mi-icon">☁️</span>
+        <span data-i18n="menuDrive">Google Drive ☁️ (zaloguj)</span>
+        <span class="mi-check" style="display:none;">✓</span>
+      </button>
+      <button class="menu-item" id="menuSyncNow" style="display:none;">
+        <span class="mi-icon">🔄</span>
+        <span data-i18n="menuSyncNow">Synchronizuj teraz</span>
+      </button>
+      <button class="menu-item" id="menuDriveLogout" style="display:none;">
+        <span class="mi-icon">🚪</span>
+        <span data-i18n="menuDriveLogout">Wyloguj z Google Drive</span>
+      </button>
+    </div>
 
-  <div class="menu-section">
-    <div class="menu-section-title">☁️ Google Drive</div>
-    <button class="menu-item" id="menuDriveSync">
-      <span class="mi-icon">☁️</span>
-      <span>Google Drive ☁️ (zaloguj)</span>
-      <span class="mi-check" style="display:none;">✓</span>
-    </button>
-    <button class="menu-item" id="menuSyncNow" style="display:none;">
-      <span class="mi-icon">🔄</span>
-      <span>Synchronizuj teraz</span>
-    </button>
-    <button class="menu-item" id="menuDriveLogout" style="display:none;">
-      <span class="mi-icon">🚪</span>
-      <span>Wyloguj z Google Drive</span>
-    </button>
+    <div class="menu-section">
+      <div class="menu-section-title" data-i18n="menuExport">📤 Eksport</div>
+      <button class="menu-item" id="menuIcs">
+        <span class="mi-icon">📥</span>
+        <span data-i18n="menuIcs">Eksport do kalendarza (.ics)</span>
+      </button>
+      <button class="menu-item" id="menuPrint">
+        <span class="mi-icon">🖨️</span>
+        <span data-i18n="menuPrint">Drukuj</span>
+      </button>
+      <button class="menu-item" id="menuShare">
+        <span class="mi-icon">🔗</span>
+        <span data-i18n="menuShare">Udostępnij widok</span>
+      </button>
+    </div>
+
+    <div class="menu-section">
+      <div class="menu-section-title" data-i18n="menuNotifications">🔔 Powiadomienia</div>
+      <button class="menu-item" id="menuNotifications">
+        <span class="mi-icon">🔔</span>
+        <span data-i18n="menuNotifications">Powiadomienia o zmianach</span>
+        <span class="mi-check" style="display:none;">✓</span>
+      </button>
+      <button class="menu-item" id="menuInstallApp" style="display:none;">
+        <span class="mi-icon">📲</span>
+        <span data-i18n="menuInstallApp">Zainstaluj aplikację</span>
+      </button>
+    </div>
+
+    <div class="menu-section">
+      <div class="menu-section-title">ℹ️ Info</div>
+      <button class="menu-item" id="menuHelp">
+        <span class="mi-icon">❓</span>
+        <span data-i18n="menuHelp">Pomoc / FAQ</span>
+      </button>
+    </div>
   </div>
-
-  <div class="menu-section">
-    <div class="menu-section-title">📤 Eksport</div>
-    <button class="menu-item" id="menuIcs">
-      <span class="mi-icon">📥</span>
-      <span>Eksport do kalendarza (.ics)</span>
-    </button>
-    <button class="menu-item" id="menuPrint">
-      <span class="mi-icon">🖨️</span>
-      <span>Drukuj</span>
-    </button>
-    <button class="menu-item" id="menuShare">
-      <span class="mi-icon">🔗</span>
-      <span>Udostępnij widok</span>
-    </button>
-  </div>
-
-  <div class="menu-section">
-    <div class="menu-section-title">🔔 Powiadomienia</div>
-    <button class="menu-item" id="menuNotifications">
-      <span class="mi-icon">🔔</span>
-      <span>Powiadomienia o zmianach</span>
-      <span class="mi-check" style="display:none;">✓</span>
-    </button>
-    <button class="menu-item" id="menuInstallApp" style="display:none;">
-      <span class="mi-icon">📲</span>
-      <span>Zainstaluj aplikację</span>
-    </button>
-  </div>
-
-  <div class="menu-section">
-    <div class="menu-section-title">ℹ️ Info</div>
-    <button class="menu-item" id="menuHelp">
-      <span class="mi-icon">❓</span>
-      <span>Pomoc / FAQ</span>
-    </button>
-  </div>
-</div>
 
 
 <!-- TOAST CONTAINER -->
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- MODAL (uniwersalny) -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 id="modalTitle">Tytuł</h3>
-      <button class="modal-close" id="modalClose">×</button>
+  <!-- MODAL (uniwersalny) -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle" data-i18n="ok">Tytuł</h3>
+        <button class="modal-close" id="modalClose" data-i18n="close">×</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer" id="modalFooter"></div>
     </div>
-    <div class="modal-body" id="modalBody"></div>
-    <div class="modal-footer" id="modalFooter"></div>
   </div>
-</div>
 
-<!-- MODAL NADGODZIN -->
-<div class="modal-overlay" id="otOverlay">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 id="otTitle">Nadgodziny</h3>
-      <button class="modal-close" id="otClose">×</button>
-    </div>
-    <div class="modal-body">
-      <div id="otContext" style="padding:10px 14px; background:var(--bg-cell); border-radius:10px; margin-bottom:15px; font-size:13px;"></div>
+  <!-- MODAL NADGODZIN -->
+  <div class="modal-overlay" id="otOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="otTitle" data-i18n="otTitle">Nadgodziny</h3>
+        <button class="modal-close" id="otClose" data-i18n="close">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="otContext" style="padding:10px 14px; background:var(--bg-cell); border-radius:10px; margin-bottom:15px; font-size:13px;"></div>
 
-      <div style="margin-bottom:12px;">
-        <label style="font-weight:600; font-size:13px; color:var(--text-muted); display:block; margin-bottom:8px;">Ile godzin?</label>
-        <div class="ot-quick-buttons" id="otQuickBtns">
-          <button type="button" class="ot-qbtn" data-h="1">1h</button>
-          <button type="button" class="ot-qbtn" data-h="2">2h</button>
-          <button type="button" class="ot-qbtn" data-h="3">3h</button>
-          <button type="button" class="ot-qbtn" data-h="4">4h</button>
-          <button type="button" class="ot-qbtn" data-h="5">5h</button>
-          <button type="button" class="ot-qbtn" data-h="6">6h</button>
-          <button type="button" class="ot-qbtn" data-h="7">7h</button>
-          <button type="button" class="ot-qbtn" data-h="8">8h</button>
+        <div style="margin-bottom:12px;">
+          <label style="font-weight:600; font-size:13px; color:var(--text-muted); display:block; margin-bottom:8px;" data-i18n="otHoursLabel">Ile godzin?</label>
+          <div class="ot-quick-buttons" id="otQuickBtns">
+            <button type="button" class="ot-qbtn" data-h="1">1h</button>
+            <button type="button" class="ot-qbtn" data-h="2">2h</button>
+            <button type="button" class="ot-qbtn" data-h="3">3h</button>
+            <button type="button" class="ot-qbtn" data-h="4">4h</button>
+            <button type="button" class="ot-qbtn" data-h="5">5h</button>
+            <button type="button" class="ot-qbtn" data-h="6">6h</button>
+            <button type="button" class="ot-qbtn" data-h="7">7h</button>
+            <button type="button" class="ot-qbtn" data-h="8">8h</button>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; margin-top:8px; flex-wrap:wrap;">
+            <label style="font-size:13px; color:var(--text-muted);" data-i18n="otOrCustom">lub własnie:</label>
+            <input type="number" id="otCustomHours" min="0.5" max="24" step="0.5" data-i18n-placeholder="otNotePlaceholder"
+                   style="width:90px; padding:6px 10px; border:1px solid var(--border-cell); border-radius:6px; background:var(--bg-container); color:var(--text-main); font-size:14px;">
+            <span style="color:var(--text-muted); font-size:13px;" data-i18n="otHoursUnit">godzin</span>
+          </div>
         </div>
-        <div style="display:flex; align-items:center; gap:8px; margin-top:8px; flex-wrap:wrap;">
-          <label style="font-size:13px; color:var(--text-muted);">lub własnie:</label>
-          <input type="number" id="otCustomHours" min="0.5" max="24" step="0.5" placeholder="np. 4.5"
-                 style="width:90px; padding:6px 10px; border:1px solid var(--border-cell); border-radius:6px; background:var(--bg-container); color:var(--text-main); font-size:14px;">
-          <span style="color:var(--text-muted); font-size:13px;">godzin</span>
+
+        <div id="otPreview" style="padding:12px; background:var(--bg-info); border-radius:10px; margin:12px 0; font-size:13px; display:none;"></div>
+
+        <div style="margin-top:12px;">
+          <label style="font-weight:600; font-size:13px; color:var(--text-muted); display:block; margin-bottom:4px;" data-i18n="otNote">📝 Notatka (opcjonalne)</label>
+          <input type="text" id="otNote" class="note-input" data-i18n-placeholder="otNotePlaceholder">
         </div>
       </div>
-
-      <div id="otPreview" style="padding:12px; background:var(--bg-info); border-radius:10px; margin:12px 0; font-size:13px; display:none;"></div>
-
-      <div style="margin-top:12px;">
-        <label style="font-weight:600; font-size:13px; color:var(--text-muted); display:block; margin-bottom:4px;">📝 Notatka (opcjonalne)</label>
-        <input type="text" id="otNote" class="note-input" placeholder="np. Zastępstwo za Kowalskiego">
-      </div>
+      <div class="modal-footer" id="otFooter"></div>
     </div>
-    <div class="modal-footer" id="otFooter"></div>
   </div>
-</div>
 
-<!-- FAQ MODAL -->
-<div class="modal-overlay" id="faqOverlay">
-  <div class="modal" style="max-width:800px;">
-    <div class="modal-header">
-      <h3>❓ Pomoc — Grafik Gillette (FAQ v3)</h3>
-      <button class="modal-close" id="faqClose">×</button>
-    </div>
-    <div class="modal-body">
-      <p class="faq-intro" style="color:var(--text-muted); font-size:13px; margin-bottom:15px;">
-        Kliknij pytanie, aby zobaczyć odpowiedź. Poniżej znajdziesz szczegółowy opis zakładek, możliwości i tego, co aplikacja pokazuje.
-      </p>
+  <!-- FAQ MODAL -->
+  <div class="modal-overlay" id="faqOverlay">
+    <div class="modal" style="max-width:800px;">
+      <div class="modal-header">
+        <h3 data-i18n="faqTitle">❓ Pomoc — Grafik Gillette (FAQ v3)</h3>
+        <button class="modal-close" id="faqClose" data-i18n="close">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="faq-intro" style="color:var(--text-muted); font-size:13px; margin-bottom:15px;" data-i18n="faqIntro">
+          Kliknij pytanie, aby zobaczyć odpowiedź. Poniżej znajdziesz szczegółowy opis zakładek, możliwości i tego, co aplikacja pokazuje.
+        </p>
       <div class="faq-list" style="display:flex; flex-direction:column; gap:8px;">
     
         <details class="faq-item" open>
@@ -560,7 +559,7 @@
     
     </div>
     <div class="modal-footer">
-      <button class="modal-btn primary" onclick="document.getElementById('faqOverlay').classList.remove('show')">Rozumiem</button>
+      <button class="modal-btn primary" onclick="document.getElementById('faqOverlay').classList.remove('show')" data-i18n="faqOk">Rozumiem</button>
     </div>
   </div>
 </div>
