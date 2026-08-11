@@ -407,3 +407,6 @@ if (langToggleBtn && langDropdown) {
     };
   });
 }
+
+/* === ПРИМЕНЕНИЕ ЛОКАЛИЗАЦИИ === */
+applyTranslations();

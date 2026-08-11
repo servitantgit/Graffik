@@ -1667,4 +1667,4 @@ function applyTranslations() {
 
 /* === ИНИЦИАЛИЗАЦИЯ === */
 currentLang = detectLanguage();
-applyTranslations();
+// Примечание: applyTranslations() будет вызван из main.js после загрузки всех модулей
