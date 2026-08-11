@@ -91,9 +91,9 @@
     <label data-i18n="searchTypeLabel">Typ zmiany:
       <select id="searchType">
         <option value="" data-i18n="searchAllTypes">— wszystkie —</option>
-        <option value="R">R – Rano</option>
-        <option value="P">P – Popołudnie</option>
-        <option value="N">N – Noc</option>
+        <option value="R" data-i18n="shiftROption">R – Rano</option>
+        <option value="P" data-i18n="shiftPOption">P – Popołudnie</option>
+        <option value="N" data-i18n="shiftNOption">N – Noc</option>
         <option value="W" data-i18n="searchFree">Wolne</option>
         <option value="W3" data-i18n="searchFree3Days">Wolne (min. 3 dni z rzędu)</option>
         <option value="U" data-i18n="searchVacation">🌴 Urlop</option>
@@ -112,9 +112,9 @@
   <!-- MONTH VIEW -->
   <div id="monthView" style="display:none;">
     <div class="month-nav">
-      <button id="prevMonthBtn" title="Poprzedni miesiąc (←)">‹</button>
+      <button id="prevMonthBtn" data-i18n-title="prevMonth" title="Poprzedni miesiąc (←)">‹</button>
       <div class="month-title" id="monthTitle"></div>
-      <button id="nextMonthBtn" title="Następny miesiąc (→)">›</button>
+      <button id="nextMonthBtn" data-i18n-title="nextMonth" title="Następny miesiąc (→)">›</button>
     </div>
     <div class="month-hours" id="monthHours"></div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
@@ -124,12 +124,12 @@
       <span class="lg-R">🌅 R (6-14)</span>
       <span class="lg-P">🌤️ P (14-22)</span>
       <span class="lg-N">🌙 N (22-6)</span>
-      <span class="lg-W">— Wolne</span>
-      <span class="lg-U">🌴 Urlop</span>
+      <span class="lg-W" data-i18n="legendFree">— Wolne</span>
+      <span class="lg-U" data-i18n="legendVacation">🌴 Urlop</span>
     </div>
     <div class="info-panel" id="infoPanel">
-      <h3>ℹ️ Wybierz dzień w kalendarzu</h3>
-      <p>Kliknij dowolny dzień, aby zobaczyć szczegóły.</p>
+      <h3 data-i18n="infoPanelTitle">ℹ️ Wybierz dzień w kalendarzu</h3>
+      <p data-i18n="infoPanelHint">Kliknij dowolny dzień, aby zobaczyć szczegóły.</p>
     </div>
   </div>
 
@@ -160,12 +160,12 @@
 
 <!-- FLOATING EDIT PALETTE -->
 <div class="edit-palette" id="editPalette">
-  <button class="palette-btn p-R" data-shift="R" title="Rano (R)">R<span class="pb-hotkey">R</span></button>
-  <button class="palette-btn p-P" data-shift="P" title="Popołudnie (P)">P<span class="pb-hotkey">P</span></button>
-  <button class="palette-btn p-N" data-shift="N" title="Noc (N)">N<span class="pb-hotkey">N</span></button>
-  <button class="palette-btn p-W" data-shift="" title="Wolne (W)">—<span class="pb-hotkey">W</span></button>
-  <button class="palette-btn p-CYCLE active" data-shift="CYCLE" title="Cykl">🔄<span class="pb-hotkey">C</span></button>
-  <button class="palette-btn p-OT" data-shift="OT" title="Nadgodziny (O)">⏱<span class="pb-hotkey">O</span></button>
+  <button class="palette-btn p-R" data-shift="R" data-i18n-title="paletteTitleR" title="Rano (R)">R<span class="pb-hotkey">R</span></button>
+  <button class="palette-btn p-P" data-shift="P" data-i18n-title="paletteTitleP" title="Popołudnie (P)">P<span class="pb-hotkey">P</span></button>
+  <button class="palette-btn p-N" data-shift="N" data-i18n-title="paletteTitleN" title="Noc (N)">N<span class="pb-hotkey">N</span></button>
+  <button class="palette-btn p-W" data-shift="" data-i18n-title="paletteTitleW" title="Wolne (W)">—<span class="pb-hotkey">W</span></button>
+  <button class="palette-btn p-CYCLE active" data-shift="CYCLE" data-i18n-title="cycleMode" title="Cykl">🔄<span class="pb-hotkey">C</span></button>
+  <button class="palette-btn p-OT" data-shift="OT" data-i18n-title="overtime" title="Nadgodziny (O)">⏱<span class="pb-hotkey">O</span></button>
 </div>
 
 <!-- SIDE MENU -->
