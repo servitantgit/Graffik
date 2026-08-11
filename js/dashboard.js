@@ -22,14 +22,13 @@ function renderDashboard() {
       <div class="dtc-shift">🌴 ${t('infoUrlop')}</div>
       <div class="dtc-time">${t('vacation')}</div>
     `;
-  } else if (isWolne(shiftCode)) {
-    cardCls = 'card-W';
-    todayCard = `
-      <div class="dtc-label">${t('todayLabel')}</div>
-      <div class="dtc-shift">${t('infoFree')}</div>
-      <div class="dtc-time">${t('dayOffHint') || ''}</div>
-    `;
-  } else {
+} else if (isWolne(shiftCode)) {
+  cardCls = 'card-W';
+  todayCard = `
+    <div class="dtc-label">${t('todayLabel')}</div>
+    <div class="dtc-shift">${t('infoFree')}</div>
+  `;
+} else {
     cardCls = 'card-' + shiftCode;
     const [sh, eh] = shiftHours[shiftCode];
     let startTxt = `${String(sh).padStart(2,'0')}:00`;
