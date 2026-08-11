@@ -207,8 +207,8 @@ function renderDashboard() {
     </div>
 
     <div class="dash-cta">
-      <button class="btn-primary" onclick="switchView('month')">${t('seeMonth')}</button>
       <button class="btn-secondary" onclick="switchView('week')">${t('seeWeek')}</button>
+      <button class="btn-primary" onclick="switchView('month')">${t('seeMonth')}</button>
     </div>
   `;
 }
