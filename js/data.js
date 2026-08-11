@@ -86,10 +86,24 @@ const factoryMonthHours = {
 };
 
 /* === 2. KONSTANTY === */
-const monthNames = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
-const monthNamesShort = ['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
-const dayNames = ['Pon','Wt','Śr','Cz','Pt','Sob','Nd'];
-const dayNamesFull = ['Niedziela','Poniedziałek','Wtorek','Środa','Czwartek','Piątek','Sobota'];
+let monthNames = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
+let monthNamesShort = ['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
+let dayNames = ['Pon','Wt','Śr','Cz','Pt','Sob','Nd'];
+let dayNamesFull = ['Niedziela','Poniedziałek','Wtorek','Środa','Czwartek','Piątek','Sobota'];
+
+function updateLocalizedNames() {
+  const lang = currentLang || 'pl';
+  monthNames = [
+    t('month1'), t('month2'), t('month3'), t('month4'), t('month5'), t('month6'),
+    t('month7'), t('month8'), t('month9'), t('month10'), t('month11'), t('month12')
+  ];
+  monthNamesShort = [
+    t('month1Short'), t('month2Short'), t('month3Short'), t('month4Short'), t('month5Short'), t('month6Short'),
+    t('month7Short'), t('month8Short'), t('month9Short'), t('month10Short'), t('month11Short'), t('month12Short')
+  ];
+  dayNames = [t('dayMon'), t('dayTue'), t('dayWed'), t('dayThu'), t('dayFri'), t('daySat'), t('daySun')];
+  dayNamesFull = [t('daySunday'), t('dayMonday'), t('dayTuesday'), t('dayWednesday'), t('dayThursday'), t('dayFriday'), t('daySaturday')];
+}
 const shiftFullName = { R: 'Rano (6:00–14:00)', P: 'Popołudnie (14:00–22:00)', N: 'Noc (22:00–6:00)', '': 'Wolne' };
 const shiftLongNames = { R: 'Rano', P: 'Popołudnie', N: 'Noc' };
 const shiftEmoji = { R: '🌅', P: '🌤️', N: '🌙', '': '🏖️' };

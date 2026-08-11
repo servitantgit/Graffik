@@ -258,17 +258,17 @@ function getLiveTimer(shift, y, m, d) {
     if (yOT.po) yEndMin += yOT.po.hours * 60;
     if (nowMinutes < yEndMin) {
       const rem = yEndMin - nowMinutes;
-      return `⏱️ Kończy się za ${Math.floor(rem/60)}h ${rem%60}min`;
+      return t('timerEndsIn', { h: Math.floor(rem/60), m: rem%60 });
     }
     return null;
   }
 
   if (nowMinutes >= startMin && nowMinutes < endMin) {
     const rem = endMin - nowMinutes;
-    return `⏱️ Kończy się za ${Math.floor(rem/60)}h ${rem%60}min`;
+    return t('timerEndsIn', { h: Math.floor(rem/60), m: rem%60 });
   }
   if (nowMinutes < startMin && (startMin - nowMinutes) <= 60) {
-    return `⏰ Zacznie się za ${startMin - nowMinutes} min`;
+    return t('timerStartsIn', { m: startMin - nowMinutes });
   }
   return null;
 }
