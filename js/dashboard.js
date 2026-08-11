@@ -206,10 +206,6 @@ function renderDashboard() {
       <div class="dash-upcoming-list">${upcomingHtml}</div>
     </div>
 
-    <div class="dash-cta">
-      <button class="btn-secondary" onclick="switchView('week')">${t('seeWeek')}</button>
-      <button class="btn-primary" onclick="switchView('month')">${t('seeMonth')}</button>
-    </div>
   `;
 }
 
