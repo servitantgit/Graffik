@@ -87,7 +87,10 @@ function renderCalendar(direction) {
 
     const shiftEl = document.createElement('div');
     shiftEl.className = 'day-shift';
-    if (onUrlop) shiftEl.innerHTML = `<span style="font-size:14px;">${t('infoUrlop')}</span>`;
+    if (onUrlop) {
+    shiftEl.textContent = '';
+    shiftEl.title = t('vacation');
+    }
     else if (isWolne(shiftCode)) shiftEl.textContent = '—';
     else shiftEl.innerHTML = `<span class="shift-emoji">${shiftEmoji[shiftCode]}</span>${shiftCode}`;
     cell.appendChild(shiftEl);
