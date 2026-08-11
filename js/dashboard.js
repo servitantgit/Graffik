@@ -27,7 +27,7 @@ function renderDashboard() {
     todayCard = `
       <div class="dtc-label">${t('todayLabel')}</div>
       <div class="dtc-shift">${t('infoFree')}</div>
-      <div class="dtc-time">${t('dayOff')}</div>
+      <div class="dtc-time">${t('dayOffHint') || ''}</div>
     `;
   } else {
     cardCls = 'card-' + shiftCode;
