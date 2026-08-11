@@ -177,14 +177,18 @@ function getCycleRange(year, month, day, brigade) {
   return { start, end, length: end - start + 1, type: shift };
 }
 function daysToNextWolne(year, month, day, brigade) {
-  if (isWolne(getShiftAt(year, month, day, brigade)) || isUrlop(year, month, day, brigade)) {
-    return { days: 0, year: year, month: month, day: day };
-  }
   let y = year, m = month, d = day, count = 0;
   while (count < 60) {
-    d++; count++;
-    if (d > daysInMonthCal(y, m)) { d = 1; m++; if (m > 12) { m = 1; y++; } }
-    if (isWolne(getShiftAt(y, m, d, brigade)) || isUrlop(y, m, d, brigade)) return { days: count, year: y, month: m, day: d };
+    d++;
+    count++;
+    if (d > daysInMonthCal(y, m)) {
+      d = 1;
+      m++;
+      if (m > 12) { m = 1; y++; }
+    }
+    if (isWolne(getShiftAt(y, m, d, brigade)) || isUrlop(y, m, d, brigade)) {
+      return { days: count, year: y, month: m, day: d };
+    }
   }
   return null;
 }
