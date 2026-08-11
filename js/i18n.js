@@ -1577,6 +1577,171 @@ function t(key, params) {
   return text;
 }
 
+function renderFAQ() {
+  const container = document.querySelector('.faq-list');
+  if (!container) return;
+
+  const faqItems = [
+    {
+      title: t('faqStartTitle'),
+      content: `
+        <ol>
+          <li>${t('faqStart1')}</li>
+          <li>${t('faqStart2')}</li>
+          <li>${t('faqStart3')}</li>
+          <li>${t('faqStart4')}</li>
+        </ol>
+        <p>${t('faqStartNote')}</p>
+      `
+    },
+    {
+      title: t('faqViewsTitle'),
+      content: `
+        <p>${t('faqViewsDesc')}</p>
+        <ul>
+          <li>${t('faqViewsDashboard')}</li>
+          <li>${t('faqViewsWeek')}</li>
+          <li>${t('faqViewsMonth')}</li>
+          <li>${t('faqViewsTable')}</li>
+          <li>${t('faqViewsYear')}</li>
+        </ul>
+        <p>${t('faqViewsNote')}</p>
+      `
+    },
+    {
+      title: t('faqFeaturesTitle'),
+      content: `
+        <p>${t('faqFeaturesDesc')}</p>
+        <ul>
+          <li>${t('faqFeaturesShift')}</li>
+          <li>${t('faqFeaturesLive')}</li>
+          <li>${t('faqFeaturesVacation')}</li>
+          <li>${t('faqFeaturesOvertime')}</li>
+          <li>${t('faqFeaturesNotes')}</li>
+          <li>${t('faqFeaturesSearch')}</li>
+          <li>${t('faqFeaturesCompare')}</li>
+          <li>${t('faqFeaturesExport')}</li>
+          <li>${t('faqFeaturesPrint')}</li>
+        </ul>
+        <p>${t('faqFeaturesNote')}</p>
+      `
+    },
+    {
+      title: t('faqOvertimeTitle'),
+      content: `
+        <ol>
+          <li>${t('faqOvertime1')}</li>
+          <li>${t('faqOvertime2')}</li>
+          <li>${t('faqOvertime3')}
+            <ul>
+              <li>${t('faqOvertime3a')}</li>
+              <li>${t('faqOvertime3b')}</li>
+            </ul>
+          </li>
+          <li>${t('faqOvertime4')}</li>
+        </ol>
+        <p>${t('faqOvertimeCategory')}</p>
+        <ul>
+          <li>${t('faqOvertimeCat200')}</li>
+          <li>${t('faqOvertimeCat100')}</li>
+          <li>${t('faqOvertimeCat50')}</li>
+        </ul>
+        <p>${t('faqOvertimeNote')}</p>
+      `
+    },
+    {
+      title: t('faqVacationTitle'),
+      content: `
+        <p>${t('faqVacationDesc')}</p>
+        <p>${t('faqVacationRemove')}</p>
+        <p>${t('faqVacationStats')}</p>
+      `
+    },
+    {
+      title: t('faqNotesTitle'),
+      content: `
+        <p>${t('faqNotesDesc')}</p>
+        <p>${t('faqNotesIcon')}</p>
+      `
+    },
+    {
+      title: t('faqKeyboardTitle'),
+      content: `
+        <b>${t('faqKeyboardEdit')}</b>
+        <ul>
+          <li>${t('faqKeyboardEdit1')}</li>
+          <li>${t('faqKeyboardEdit2')}</li>
+          <li>${t('faqKeyboardEdit3')}</li>
+          <li>${t('faqKeyboardEdit4')}</li>
+          <li>${t('faqKeyboardEdit5')}</li>
+        </ul>
+        <b>${t('faqKeyboardNav')}</b>
+        <ul>
+          <li>${t('faqKeyboardNav1')}</li>
+          <li>${t('faqKeyboardNav2')}</li>
+          <li>${t('faqKeyboardNav3')}</li>
+        </ul>
+      `
+    },
+    {
+      title: t('faqSaveTitle'),
+      content: `
+        <p>${t('faqSaveDesc')}</p>
+        <p>${t('faqSaveNote')}</p>
+      `
+    },
+    {
+      title: t('faqSyncTitle'),
+      content: `
+        <p>${t('faqSyncDesc')}</p>
+        <ol>
+          <li>${t('faqSync1')}</li>
+          <li>${t('faqSync2')}</li>
+          <li>${t('faqSync3')}</li>
+        </ol>
+        <p>${t('faqSyncNote')}</p>
+      `
+    },
+    {
+      title: t('faqExportTitle'),
+      content: `<p>${t('faqExportDesc')}</p>`
+    },
+    {
+      title: t('faqInstallTitle'),
+      content: `
+        <p>${t('faqInstallDesc')}</p>
+        <ol>
+          <li>${t('faqInstall1')}</li>
+          <li>${t('faqInstall2')}</li>
+          <li>${t('faqInstall3')}</li>
+          <li>${t('faqInstall4')}</li>
+        </ol>
+        <p>${t('faqInstallNote')}</p>
+        <p>${t('faqInstallMenuNote')}</p>
+      `
+    },
+    {
+      title: t('faqBugTitle'),
+      content: `
+        <div style="background:linear-gradient(135deg, #667eea, #764ba2); color:#fff; padding:15px; border-radius:10px; text-align:center;">
+          <b>${t('faqBugDesc')}</b><br>
+          <a href="mailto:${t('faqBugEmail')}?subject=Grafik Gillette" style="color:#fff; font-weight:bold; text-decoration:none;">${t('faqBugEmail')}</a>
+        </div>
+        <p>${t('faqBugNote')}</p>
+      `
+    }
+  ];
+
+  container.innerHTML = faqItems.map((item, idx) => `
+    <details class="faq-item" ${idx === 0 ? 'open' : ''}>
+      <summary>${item.title}</summary>
+      <div class="faq-answer">
+        ${item.content}
+      </div>
+    </details>
+  `).join('');
+}
+
 function applyTranslations() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
@@ -1603,7 +1768,7 @@ function applyTranslations() {
   }
 
   if (typeof refreshViews === 'function') refreshViews();
-  if (typeof renderFAQ === 'function') renderFAQ();
+  renderFAQ();
 }
 
 /* === ИНИЦИАЛИЗАЦИЯ === */
