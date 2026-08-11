@@ -18,16 +18,16 @@ function renderDashboard() {
   if (onUrlop) {
     cardCls = 'card-U';
     todayCard = `
-      <div class="dtc-label">Dziś</div>
-      <div class="dtc-shift">🌴 URLOP</div>
-      <div class="dtc-time">Miłego wypoczynku!</div>
+      <div class="dtc-label">${t('todayLabel')}</div>
+      <div class="dtc-shift">🌴 ${t('infoUrlop')}</div>
+      <div class="dtc-time">${t('vacation')}</div>
     `;
   } else if (isWolne(shiftCode)) {
     cardCls = 'card-W';
     todayCard = `
-      <div class="dtc-label">Dziś</div>
-      <div class="dtc-shift">🏖️ WOLNE</div>
-      <div class="dtc-time">Dzień dla Ciebie</div>
+      <div class="dtc-label">${t('todayLabel')}</div>
+      <div class="dtc-shift">${t('infoFree')}</div>
+      <div class="dtc-time">${t('dayOff')}</div>
     `;
   } else {
     cardCls = 'card-' + shiftCode;
@@ -52,11 +52,11 @@ function renderDashboard() {
         const dom = cat.h200 > 0 ? '+200%' : cat.h100 > 0 ? '+100%' : '+50%';
         parts.push(`${otToday.po.hours}h ${dom} ➡`);
       }
-      otInfo = `<div style="margin-top:8px; padding:8px 12px; background:rgba(0,0,0,0.35); border-radius:8px; font-size:13px; font-weight:600; color:#fff;">⏱ Nadgodziny: ${parts.join(' · ')}<br><span style="font-size:12px; font-weight:700; color:#fff;">Faktyczny czas: ${actualTime}</span></div>`;
+      otInfo = `<div style="margin-top:8px; padding:8px 12px; background:rgba(0,0,0,0.35); border-radius:8px; font-size:13px; font-weight:600; color:#fff;">⏱ ${t('infoOvertime')}: ${parts.join(' · ')}<br><span style="font-size:12px; font-weight:700; color:#fff;">${t('infoTime')} ${actualTime}</span></div>`;
     }
 
     todayCard = `
-      <div class="dtc-label">Dziś ${holidayName ? '· 🎉 ' + holidayName : ''}</div>
+      <div class="dtc-label">${t('todayLabel')} ${holidayName ? '· 🎉 ' + holidayName : ''}</div>
       <div class="dtc-shift">${shiftEmoji[shiftCode]} ${shiftFullName[shiftCode].split(' ')[0]}</div>
       <div class="dtc-time">${startTxt} – ${endTxt}</div>
       ${otInfo}
@@ -70,9 +70,9 @@ function renderDashboard() {
   const tOnU = isUrlop(tY, tM, tD, selectedShift);
   let tomorrowShift;
   if (tOnU) {
-    tomorrowShift = '🌴 Urlop';
+    tomorrowShift = `🌴 ${t('vacation')}`;
   } else if (isWolne(tShift)) {
-    tomorrowShift = '🏖️ Wolne';
+    tomorrowShift = `🏖️ ${t('free')}`;
   } else {
     const [sh, eh] = shiftHours[tShift];
     const timeRange = `${String(sh).padStart(2,'0')}-${String(eh % 24).padStart(2,'0')}`;
@@ -81,7 +81,7 @@ function renderDashboard() {
     let otIcon = '';
     if (otTomorrow.przed || otTomorrow.po) {
       const actualTime = getActualWorkTime(tY, tM, tD, selectedShift, tShift);
-      otIcon = ` <span style="color:#f1c40f;" title="Nadgodziny">⏱</span> <small style="color:var(--text-muted);">${actualTime}</small>`;
+      otIcon = ` <span style="color:#f1c40f;" title="${t('infoOvertime')}">⏱</span> <small style="color:var(--text-muted);">${actualTime}</small>`;
     } else {
       otIcon = ` <small>(${timeRange})</small>`;
     }
@@ -90,10 +90,10 @@ function renderDashboard() {
 
   const wolneInfo = daysToNextWolne(y, m, d, selectedShift);
   let nextWolneTxt;
-  if (!wolneInfo) nextWolneTxt = 'Nieznane';
-  else if (wolneInfo.days === 0) nextWolneTxt = '🏖️ Dziś!';
-  else if (wolneInfo.days === 1) nextWolneTxt = `Jutro (${wolneInfo.day} ${monthNamesShort[wolneInfo.month-1]})`;
-  else nextWolneTxt = `Za ${wolneInfo.days} dni (${wolneInfo.day} ${monthNamesShort[wolneInfo.month-1]})`;
+  if (!wolneInfo) nextWolneTxt = t('unknown');
+  else if (wolneInfo.days === 0) nextWolneTxt = `🏖️ ${t('todayLabel')}!`;
+  else if (wolneInfo.days === 1) nextWolneTxt = `${t('tomorrow')} (${wolneInfo.day} ${monthNamesShort[wolneInfo.month-1]})`;
+  else nextWolneTxt = `${t('inDays', { n: wolneInfo.days })} (${wolneInfo.day} ${monthNamesShort[wolneInfo.month-1]})`;
 
   const weekCounts = { R: 0, P: 0, N: 0, W: 0, U: 0 };
   const weekOT = { h50: 0, h100: 0, h200: 0 };
@@ -154,9 +154,9 @@ function renderDashboard() {
 
   dv.innerHTML = `
     <div class="dash-hero">
-      <div class="dash-greeting">Cześć! 👋</div>
+      <div class="dash-greeting">${t('greeting')}</div>
       <div class="dash-date">${dayName}, ${d} ${monthNames[m-1]} ${y}</div>
-      <div class="dash-brigade">Brygada ${selectedShift}</div>
+      <div class="dash-brigade">${t('brigade')} ${selectedShift}</div>
     </div>
 
     <div class="dash-today-card ${cardCls}">
@@ -167,49 +167,49 @@ function renderDashboard() {
       <div class="dash-stat-card">
         <div class="dsc-icon">📅</div>
         <div class="dsc-info">
-          <div class="dsc-label">Jutro</div>
+          <div class="dsc-label">${t('tomorrow')}</div>
           <div class="dsc-value">${tomorrowShift}</div>
         </div>
       </div>
       <div class="dash-stat-card">
         <div class="dsc-icon">🏖️</div>
         <div class="dsc-info">
-          <div class="dsc-label">Do wolnego</div>
+          <div class="dsc-label">${t('nextDayOff')}</div>
           <div class="dsc-value">${nextWolneTxt}</div>
         </div>
       </div>
       <div class="dash-stat-card">
         <div class="dsc-icon">📊</div>
         <div class="dsc-info">
-          <div class="dsc-label">Ten tydzień</div>
+          <div class="dsc-label">${t('thisWeek')}</div>
           <div class="dsc-value">${weekHours}h${weekOTTotal > 0 ? ` <small style="color:#f1c40f;">(+${weekOTTotal}h ⏱)</small>` : ''} · ${weekCounts.R}🌅 ${weekCounts.P}🌤️ ${weekCounts.N}🌙</div>
         </div>
       </div>
       <div class="dash-stat-card">
         <div class="dsc-icon">🌴</div>
         <div class="dsc-info">
-          <div class="dsc-label">Urlop ${y}</div>
-          <div class="dsc-value">${usedUrlop} / ${limit} dni</div>
+          <div class="dsc-label">${t('vacation')} ${y}</div>
+          <div class="dsc-value">${usedUrlop} / ${limit} ${t('dayOff')}</div>
         </div>
       </div>
       ${totalOT > 0 ? `
       <div class="dash-stat-card" style="border:2px solid #f1c40f;">
         <div class="dsc-icon">⏱</div>
         <div class="dsc-info">
-          <div class="dsc-label">Nadgodziny (${monthNamesShort[m-1]})</div>
+          <div class="dsc-label">${t('infoOvertime')} (${monthNamesShort[m-1]})</div>
           <div class="dsc-value">${totalOT}h <small>(${otMonthSum.h50}+${otMonthSum.h100}+${otMonthSum.h200})</small></div>
         </div>
       </div>` : ''}
     </div>
 
     <div class="dash-upcoming">
-      <h4>📆 Najbliższe 7 dni</h4>
+      <h4>📆 ${t('upcomingDays')}</h4>
       <div class="dash-upcoming-list">${upcomingHtml}</div>
     </div>
 
     <div class="dash-cta">
-      <button class="btn-primary" onclick="switchView('month')">📅 Zobacz miesiąc</button>
-      <button class="btn-secondary" onclick="switchView('week')">📆 Zobacz tydzień</button>
+      <button class="btn-primary" onclick="switchView('month')">📅 ${t('seeMonth')}</button>
+      <button class="btn-secondary" onclick="switchView('week')">📆 ${t('seeWeek')}</button>
     </div>
   `;
 }
