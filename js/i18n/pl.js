@@ -299,18 +299,23 @@ window.translations.pl = {
     faqBugEmail: 'tantsiura.s@pg.com',
     faqBugNote: 'Przy zgłoszeniu błędu warto podać rok, datę, brygadę, przeglądarkę i krótki opis problemu.',
     
-    // === MENU ===
-    menuTheme: 'Motyw',
-    menuDrive: 'Google Drive',
+    // === MENU (заголовки секцій — без іконок, іконки в HTML не мають) ===
+    menuSectionDrive: 'Google Drive',
+    menuSectionExport: 'Eksport',
+    menuSectionNotifications: 'Powiadomienia',
+    menuSectionInfo: 'Info',
+    
+    // === MENU (пункти — без іконок, іконки в HTML через <span class="mi-icon">) ===
+    menuDrive: 'Google Drive (zaloguj)',
     menuSyncNow: 'Synchronizuj teraz',
     menuDriveLogout: 'Wyloguj z Google Drive',
-    menuExport: 'Eksport',
     menuIcs: 'Eksport do kalendarza (.ics)',
     menuPrint: 'Drukuj',
     menuShare: 'Udostępnij widok',
     menuNotifications: 'Powiadomienia o zmianach',
     menuInstallApp: 'Zainstaluj aplikację',
     menuHelp: 'Pomoc / FAQ',
+    menuTheme: 'Motyw',
     installPrompt: 'Zainstaluj aplikację',
     
     cancel: 'Anuluj',

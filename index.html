@@ -156,7 +156,7 @@
     </h3>
 
     <div class="menu-section">
-      <div class="menu-section-title" data-i18n="menuDrive">☁️ Google Drive</div>
+      <div class="menu-section-title" data-i18n="menuSectionDrive">Google Drive</div>
       <button class="menu-item" id="menuDriveSync">
         <span class="mi-icon">☁️</span>
         <span data-i18n="menuDrive">Google Drive ☁️ (zaloguj)</span>
@@ -173,7 +173,7 @@
     </div>
 
     <div class="menu-section">
-      <div class="menu-section-title" data-i18n="menuExport">📤 Eksport</div>
+      <div class="menu-section-title" data-i18n="menuSectionExport">Eksport</div>
       <button class="menu-item" id="menuIcs">
         <span class="mi-icon">📥</span>
         <span data-i18n="menuIcs">Eksport do kalendarza (.ics)</span>
@@ -189,7 +189,7 @@
     </div>
 
     <div class="menu-section">
-      <div class="menu-section-title" data-i18n="menuNotifications">🔔 Powiadomienia</div>
+      <div class="menu-section-title" data-i18n="menuSectionNotifications">Powiadomienia</div>
       <button class="menu-item" id="menuNotifications">
         <span class="mi-icon">🔔</span>
         <span data-i18n="menuNotifications">Powiadomienia o zmianach</span>
@@ -202,7 +202,7 @@
     </div>
 
     <div class="menu-section">
-      <div class="menu-section-title">ℹ️ Info</div>
+      <div class="menu-section-title" data-i18n="menuSectionInfo">Info</div>
       <button class="menu-item" id="menuHelp">
         <span class="mi-icon">❓</span>
         <span data-i18n="menuHelp">Pomoc / FAQ</span>
@@ -219,7 +219,7 @@
     <div class="modal">
       <div class="modal-header">
         <h3 id="modalTitle" data-i18n="ok">Tytuł</h3>
-        <button class="modal-close" id="modalClose" data-i18n="close">×</button>
+        <button class="modal-close" id="modalClose" aria-label="Close">×</button>
       </div>
       <div class="modal-body" id="modalBody"></div>
       <div class="modal-footer" id="modalFooter"></div>
@@ -231,7 +231,7 @@
     <div class="modal">
       <div class="modal-header">
         <h3 id="otTitle" data-i18n="otTitle">Nadgodziny</h3>
-        <button class="modal-close" id="otClose" data-i18n="close">×</button>
+        <button class="modal-close" id="otClose" aria-label="Close">×</button>
       </div>
       <div class="modal-body">
         <div id="otContext" style="padding:10px 14px; background:var(--bg-cell); border-radius:10px; margin-bottom:15px; font-size:13px;"></div>
@@ -272,7 +272,7 @@
     <div class="modal" style="max-width:800px;">
       <div class="modal-header">
         <h3 data-i18n="faqTitle">❓ Pomoc — Grafik Gillette (FAQ v3)</h3>
-        <button class="modal-close" id="faqClose" data-i18n="close">×</button>
+        <button class="modal-close" id="faqClose" aria-label="Close">×</button>
       </div>
       <div class="modal-body">
         <p class="faq-intro" style="color:var(--text-muted); font-size:13px; margin-bottom:15px;" data-i18n="faqIntro">

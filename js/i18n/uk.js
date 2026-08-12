@@ -353,18 +353,23 @@ window.translations.uk = {
     faqBugEmail: 'tantsiura.s@pg.com',
     faqBugNote: 'При повідомленні про помилку вкажіть рік, дату, бригаду, браузер і короткий опис проблеми.',
 
-    // === MENU ===
-    menuTheme: 'Тема',
-    menuDrive: 'Google Drive',
+    // === MENU (заголовки секцій) ===
+    menuSectionDrive: 'Google Drive',
+    menuSectionExport: 'Експорт',
+    menuSectionNotifications: 'Сповіщення',
+    menuSectionInfo: 'Інфо',
+    
+    // === MENU (пункти) ===
+    menuDrive: 'Google Drive (увійти)',
     menuSyncNow: 'Синхронізувати зараз',
     menuDriveLogout: 'Вийти з Google Drive',
-    menuExport: 'Експорт',
     menuIcs: 'Експорт до календаря (.ics)',
     menuPrint: 'Друк',
     menuShare: 'Поділитись видом',
     menuNotifications: 'Сповіщення про зміни',
     menuInstallApp: 'Встановити додаток',
     menuHelp: 'Довідка / FAQ',
+    menuTheme: 'Тема',
     installPrompt: 'Встановити додаток',
 
     // === GENERIC ===

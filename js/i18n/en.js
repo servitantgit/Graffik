@@ -353,18 +353,23 @@ window.translations.en = {
     faqBugEmail: 'tantsiura.s@pg.com',
     faqBugNote: 'When reporting a bug, please provide the year, date, brigade, browser and a short description of the problem.',
 
-    // === MENU ===
-    menuTheme: 'Theme',
-    menuDrive: 'Google Drive',
+    // === MENU (section titles) ===
+    menuSectionDrive: 'Google Drive',
+    menuSectionExport: 'Export',
+    menuSectionNotifications: 'Notifications',
+    menuSectionInfo: 'Info',
+    
+    // === MENU (items) ===
+    menuDrive: 'Google Drive (log in)',
     menuSyncNow: 'Sync now',
     menuDriveLogout: 'Log out of Google Drive',
-    menuExport: 'Export',
     menuIcs: 'Export to calendar (.ics)',
     menuPrint: 'Print',
     menuShare: 'Share view',
     menuNotifications: 'Shift notifications',
     menuInstallApp: 'Install app',
     menuHelp: 'Help / FAQ',
+    menuTheme: 'Theme',
     installPrompt: 'Install app',
 
     // === GENERIC ===
