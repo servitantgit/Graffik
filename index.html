@@ -25,15 +25,15 @@
     <h1 data-i18n="appName">🏭 Grafik Gillette</h1>
     <button class="icon-btn" id="userAuthBtn" data-i18n-title="profile" title="Zaloguj do Google Drive">👤</button>
     <button class="icon-btn" id="themeToggleBtn" data-i18n-title="theme" title="Przełącz motyw (jasny/ciemny)">🌙</button>
-    <button class="icon-btn" id="langToggleBtn" data-i18n-title="language" title="Język">🌐</button>
+    <div class="lang-wrapper" style="position: relative;">
+      <button class="icon-btn" id="langToggleBtn" data-i18n-title="language" title="Język">🌐</button>
+      <div class="lang-dropdown" id="langDropdown">
+        <button class="lang-option" data-lang="pl" title="Polski">🇵🇱 Polski</button>
+        <button class="lang-option" data-lang="en" title="English">🇺🇸 English</button>
+        <button class="lang-option" data-lang="uk" title="Українська">🇺🇦 Українська</button>
+      </div>
+    </div>
     <button class="icon-btn" id="menuBtn" data-i18n-title="menu" title="Menu">☰</button>
-  </div>
-
-  <!-- LANGUAGE DROPDOWN -->
-  <div class="lang-dropdown" id="langDropdown">
-    <button class="lang-option" data-lang="pl" title="Polski">🇵🇱 Polski</button>
-    <button class="lang-option" data-lang="en" title="English">🇺🇸 English</button>
-    <button class="lang-option" data-lang="uk" title="Українська">🇺🇦 Українська</button>
   </div>
 
   <!-- MAIN CONTROLS -->
