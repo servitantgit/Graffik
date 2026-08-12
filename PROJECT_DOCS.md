@@ -6,9 +6,10 @@ Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą p
 
 - **Typ projektu**: Vanilla JavaScript PWA, brak frameworków, brak build system
 - **Skrypty**: Klasyczne (bez ES modules), dzielone przez global scope
-- **CSS**: Inline w `<style>` w index.html (jeden plik dla wszystkiego)
+- **CSS**: Wydzielony do osobnego pliku `css/styles.css`
 - **Hosting**: GitHub Pages (https://servitantgit.github.io/Graffik/)
-- **Kolejność ładowania skryptów**: Ważna — data.js → core.js → ui.js → edit.js → dashboard.js → calendar.js → views.js → actions.js → pwa.js → sync.js → main.js
+- **Kolejność ładowania skryptów**: Ważna — data.js → overtime-logic.js → core.js → ui.js → edit.js → dashboard.js → calendar.js → views.js → actions.js → pwa.js → sync.js → i18n.js → main.js
+- **Wielojęzyczność (i18n)**: pl (domyślny), en, uk — system tłumaczeń w `js/i18n.js`
 
 ## 2. Modele danych
 
@@ -21,6 +22,7 @@ Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą p
   view: 'month',                 // Aktywny widok
   yearMode: false,               // Tryb Rok
   theme: 'light' | 'dark',       // Motyw (TYLKO te dwie wartości)
+  lang: 'pl' | 'en' | 'uk',      // Aktywny język (auto-detekcja przy pierwszym uruchomieniu)
   notifications: false,          // Powiadomienia włączone
   notificationsLead: 1,          // Wyprzedzenie powiadomień (godziny)
   vacationLimits: { A: 26, B: 26, C: 26, D: 26 },  // Limity urlopów
@@ -98,6 +100,12 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - `buildHolidays(year)` — polskie święta
 - `daysInMonthCal`, `isWolne`, `escapeHtml`
 
+### js/overtime-logic.js — Moduł 1.5: Logika nadgodzin (wydzielona)
+- `categorizeOvertime()` — kategoryzacja nadgodzin (+50%/+100%/+200%)
+- `calcOvertimeTime()` — obliczanie czasu początku/końca nadgodzin
+- `getActualWorkTime()` — rzeczywisty czas pracy z uwzględnieniem nadgodzin
+- Wydzielone z core.js dla lepszej separacji odpowiedzialności
+
 ### js/core.js — Moduł 2: Storage + logika biznesowa
 - `loadPrefs/savePrefs`, `loadCustomSchedule/saveCustomSchedule`
 - `loadUrlops/saveUrlops`, `loadNotes/saveNotes`, `loadOvertimes/saveOvertimes`
@@ -123,13 +131,15 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 
 ### js/edit.js — Moduł 4: Tryb edycji
 - `pendingChanges`, `pendingOriginals` — bufor zmian
-- `undoStack`, `redoStack` — historia cofania
+- `undoStack`, `redoStack` — historia cofania (Ctrl+Z / Ctrl+Y)
+- Przyciski UI: #undoBtn, #redoBtn w edit banner
 - `applyEdit(y, m, d, brig, val)` — aplikuje edycję do bufora
 - `undoLastEdit` — cofa ostatnią zmianę
 - `redoLastEdit` — przywraca cofniętą zmianę
 - `saveAllPendingChanges` — zapis bufora do customSchedule
 - `discardAllPendingChanges` — czyszczenie bufora
 - `updateDirtyIndicator` — licznik niezapisanych zmian
+- `redoLastEdit()` — przywraca cofniętą zmianę (Ctrl+Y lub Ctrl+Shift+Z)
 
 ### js/dashboard.js — Moduł 5: Widok Dashboard
 - `renderDashboard()` — cały widok Dashboard
@@ -172,6 +182,7 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - Menu handlers: `menuIcs`, `menuPrint`, `menuShare`, `menuVacationLimit`
 - `searchToggleBtn`, `searchBtn` — wyszukiwanie
 - `clearYearBtn`, `resetCustomBtn` — czyszczenie danych
+- `validateImportedData(data)` — walidacja struktury JSON przy imporcie (typy, formaty dat, długości tablic)
 
 ### js/pwa.js — Moduł 9: PWA + Powiadomienia
 - `registerServiceWorker()` — rejestracja SW
@@ -190,6 +201,17 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - `downloadFromDrive()` — pobieranie i pełne zastąpienie lokalnych danych
 - `uploadToDrive()` — wysyłanie danych do Drive
 - Obsługa konfliktów (brak merge — last-write-wins)
+
+### js/i18n.js — Moduł 10.5: Wielojęzyczność (i18n)
+- `SUPPORTED_LANGS = ['pl', 'en', 'uk']`
+- `translations` — pełny obiekt z tłumaczeń dla 3 języków
+- `currentLang` — aktywny język
+- `detectLanguage()` — wykrywa język z prefs lub przeglądarki
+- `setLanguage(lang)` — zmiana języka + zapisanie w prefs
+- `t(key, params)` — pobranie tłumaczenia z podstawianiem parametrów `{key}`
+- `applyTranslations()` — aplikuje tłumaczenia do wszystkich elementów `[data-i18n]`, `[data-i18n-title]`, `[data-i18n-placeholder]`
+- `renderFAQ()` — dynamiczne generowanie FAQ z tłumaczeń
+- HTML używa atrybutów: `data-i18n="key"`, `data-i18n-title="key"`, `data-i18n-placeholder="key"`
 
 ### js/main.js — Moduł 11: Stan + Init
 - Globalne zmienne stanu (wszystkie z sekcji 2)
@@ -244,6 +266,18 @@ function bindClick(id, handler) {
 ```
 Używany dla wszystkich przycisków w side menu i edit banner.
 
+### Wielojęzyczność
+- Wszystkie teksty użytkownika **muszą** przechodzić przez funkcję `t(key)`
+- Elementy HTML powinny mieć atrybut `data-i18n="key"` zamiast statycznego tekstu
+- Nowe klucze dodawać do WSZYSTKICH 3 języków w `js/i18n.js` (pl, en, uk)
+- Placeholders w tłumaczeniach: `{param}` zamieniane przez drugi argument `t(key, {param: value})`
+- FAQ jest generowane dynamicznie — nie edytować bezpośrednio w HTML
+
+### CSS
+- Wszystkie style w `css/styles.css`
+- Podłączony w index.html: `<link rel="stylesheet" href="css/styles.css">`
+- Zmienne CSS (custom properties) w :root i body.theme-dark
+
 ## 5. Znane zagadnienia (Known issues)
 
 - Zmienne stanu są globalne — potencjalne konflikty przy dużych zmianach
@@ -251,6 +285,8 @@ Używany dla wszystkich przycisków w side menu i edit banner.
 - Brak testów jednostkowych automatycznych (poza `test_core.js` dla obliczeń)
 - Synchronizacja Google Drive: brak merge/diff — last-write-wins (patrz sekcja 6)
 - `goToMonth` musi być exposed na `window` (patrz `window.goToMonth = goToMonth`)
+- Service Worker jest podstawowy (bez auto-update / toast notification) — użytkownicy widzą nową wersję dopiero przy drugiej wizycie
+- Klucze tłumaczeń są rozproszone po całym kodzie — brak central registry, wymaga uważnego syncowania między 3 językami
 
 ## 6. Strategia konfliktów synchronizacji
 
@@ -282,6 +318,15 @@ System **nie obsługuje bezpiecznej synchronizacji z wielu urządzeń jednocześ
 - Poprawiono UX Rok mode: klik na dzień prowadzi do widoku Miesiąca
 - Naprawiono ReferenceError: `goToMonth` (expose na window)
 - Dodano przycisk "Drukuj" w bocznym menu
+- Dodano wielojęzyczność (i18n) — pl/en/uk
+- Wydzielono CSS do osobnego pliku `css/styles.css`
+- Wydzielono logikę nadgodzin do `js/overtime-logic.js`
+- Dodano przyciski Undo/Redo w edit banner
+- Dodano walidację struktury JSON przy imporcie
+- FAQ generowane dynamicznie z i18n
+- Usunięto pozostałości sekcji "Motyw" z bocznego menu
+- Poprawiono duplikaty ikon kalendarza i dni wolnych
+- Ulepszono widok urlopów i pozycję przycisków na dashboardzie
 
 ## 8. Backlog / TODO na przyszłość
 
@@ -293,6 +338,10 @@ System **nie obsługuje bezpiecznej synchronizacji z wielu urządzeń jednocześ
 - [ ] Testy automatyczne (Vitest/Jest)
 - [ ] Mechanizm merge/diff dla Google Drive sync
 - [ ] Wersjonowanie plików w chmurze
+- [x] Wielojęzyczność (pl/en/uk) ✅
+- [x] Wydzielenie CSS ✅
+- [ ] Zaawansowany Service Worker z auto-update i toast "🔄 Nowa wersja"
+- [ ] Centralny rejestr kluczy i18n z ostrzeżeniami o brakujących tłumaczeniach
 
 ## 9. Szybkie odwołania
 
