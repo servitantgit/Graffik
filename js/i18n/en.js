@@ -293,7 +293,6 @@ window.translations.en = {
     faqFeaturesVacation: 'Vacation management — the user can mark vacation days and check their count for the current year.',
     faqFeaturesOvertime: 'Adding overtime to selected days, with automatic calculation of the premium level.',
     faqFeaturesNotes: 'Notes for days — you can save additional information for specific dates.',
-    faqFeaturesSearch: 'Day search — the application can find shifts, days off, blocks of free time and vacations.',
     faqFeaturesCompare: 'Brigade comparison — you can see when two brigades have the same shift.',
     faqFeaturesExport: 'Export to calendar and JSON backup — data can be saved or transferred to other tools.',
     faqFeaturesPrint: 'Printing and sharing the selected view or a specific day.',

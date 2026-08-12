@@ -239,7 +239,6 @@ window.translations.pl = {
     faqFeaturesVacation: 'Obsługę urlopów — użytkownik może oznaczać dni urlopowe i sprawdzać ich liczenie w bieżącym roku.',
     faqFeaturesOvertime: 'Dodawanie nadgodzin do wybranych dni, z automatycznym policzeniem poziomu premii.',
     faqFeaturesNotes: 'Notatki do dni — można zapisywać dodatkowe informacje dla konkretnych dat.',
-    faqFeaturesSearch: 'Wyszukiwanie dni — aplikacja potrafi znaleźć zmiany, dni wolne, blok wolnego i urlopy.',
     faqFeaturesCompare: 'Porównywanie brygad — można zobaczyć, kiedy dwie brygady mają tę samą zmianę.',
     faqFeaturesExport: 'Eksport do kalendarza i backup JSON — dane można zapisać lub przenieść do innych narzędzi.',
     faqFeaturesPrint: 'Drukowanie i udostępnianie wybranego widoku albo konkretnego dnia.',

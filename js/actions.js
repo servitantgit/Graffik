@@ -1,5 +1,5 @@
 /* ================================================================
-   GRAFIK GILLETTE — Moduł 8: AKCJE (ICS, JSON, SHARE, SEARCH, MENU)
+   GRAFIK GILLETTE — Moduł 8: AKCJE (ICS, JSON, SHARE, MENU)
    ================================================================ */
 
 function bindClick(id, handler) {

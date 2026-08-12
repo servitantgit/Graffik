@@ -180,7 +180,6 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - Import/eksport JSON: `exportDataBtn`, `importDataBtn`, `importFile`
 - `addPrintHeader()`, `addPrintFooter()` — nagłówek/stopka druku
 - Menu handlers: `menuIcs`, `menuPrint`, `menuShare`, `menuVacationLimit`
-- `searchToggleBtn`, `searchBtn` — wyszukiwanie
 - `clearYearBtn`, `resetCustomBtn` — czyszczenie danych
 - `validateImportedData(data)` — walidacja struktury JSON przy imporcie (typy, formaty dat, długości tablic)
 

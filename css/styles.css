@@ -1985,7 +1985,7 @@ small { color: var(--text-muted); font-weight: normal; }
   .day-cell.cell-N, .brigade-table td.tc-N, .mini-day.mN { background: var(--color-N-grad) !important; }
   .day-cell.cell-W, .brigade-table td.tc-W, .mini-day.mW { background: var(--color-W) !important; color: var(--color-W-text) !important; }
   .day-cell.urlop, .brigade-table td.tc-U, .mini-day.mU { background: var(--color-U-grad) !important; color: #fff !important; }
-  .top-bar, .controls-main, .view-switcher, .search-box, .modal-overlay,
+  .top-bar, .controls-main, .view-switcher, .modal-overlay,
   .toast-container, .edit-banner, .edit-palette, .side-menu-overlay, .side-menu,
   .dashboard, .month-nav button, .progress-bar, .progress-label, .info-panel { display: none !important; }
   .month-nav { justify-content: space-between; }

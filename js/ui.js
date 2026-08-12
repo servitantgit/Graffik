@@ -138,7 +138,6 @@ function renderFAQ() {
           <li><b>${t('faqFeaturesVacation')}</b></li>
           <li><b>${t('faqFeaturesOvertime')}</b></li>
           <li><b>${t('faqFeaturesNotes')}</b></li>
-          <li><b>${t('faqFeaturesSearch')}</b></li>
           <li><b>${t('faqFeaturesCompare')}</b></li>
           <li><b>${t('faqFeaturesExport')}</b></li>
           <li><b>${t('faqFeaturesPrint')}</b></li>
