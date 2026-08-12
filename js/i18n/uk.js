@@ -96,18 +96,6 @@ window.translations.uk = {
     resetBody: 'Буде видалено ВСІ ваші редагування (всі роки + буфер). Заводські дані повернуться. Відпустки, понаднормові й нотатки залишаться.',
     resetSuccess: 'Всі зміни скинуто',
 
-    // === SEARCH ===
-    searchTypeLabel: 'Тип зміни:',
-    searchMonthLabel: 'Місяць:',
-    searchAllTypes: '— всі —',
-    searchFree: 'Вихідний',
-    searchFree3Days: 'Вихідний (мін. 3 дні поспіль)',
-    searchVacation: '🌴 Відпустка',
-    searchPlaceholder: 'Пошук...',
-    searchBtn: 'Пошук',
-    searchNoResults: 'Немає результатів',
-    searchFound: 'Знайдено: {n}',
-    searchDayOff: 'Вихідних днів',
 
     // === EMPTY STATE ===
     emptyYearTitle: 'Рік {year} порожній',

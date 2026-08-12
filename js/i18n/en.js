@@ -96,18 +96,6 @@ window.translations.en = {
     resetBody: 'Will delete ALL your edits (all years + buffer). Factory data will return. Vacations, overtime and notes will remain.',
     resetSuccess: 'All changes reset',
 
-    // === SEARCH ===
-    searchTypeLabel: 'Shift type:',
-    searchMonthLabel: 'Month:',
-    searchAllTypes: '— all —',
-    searchFree: 'Free',
-    searchFree3Days: 'Free (min. 3 consecutive days)',
-    searchVacation: '🌴 Vacation',
-    searchPlaceholder: 'Search...',
-    searchBtn: 'Search',
-    searchNoResults: 'No results',
-    searchFound: 'Found: {n}',
-    searchDayOff: 'Days off',
 
     // === EMPTY STATE ===
     emptyYearTitle: 'Year {year} is empty',

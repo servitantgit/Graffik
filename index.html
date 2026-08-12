@@ -50,8 +50,7 @@
       <button id="nextYearBtn">›</button>
     </div>
     <button class="btn-primary" id="todayBtn" data-i18n="today">📅 Dziś</button>
-    <button class="btn-secondary" id="searchToggleBtn" data-i18n="searchBtn">🔍</button>
-  </div>
+    </div>
 
   <!-- VIEW SWITCHER -->
   <div class="view-switcher" id="viewSwitcher">
@@ -85,26 +84,6 @@
     </div>
   </div>
   <input type="file" id="importFile" accept="application/json,.json" style="display:none">
-
-  <!-- SEARCH BOX -->
-  <div class="search-box" id="searchBox" style="display:none;">
-    <label data-i18n="searchTypeLabel">Typ zmiany:
-      <select id="searchType">
-        <option value="" data-i18n="searchAllTypes">— wszystkie —</option>
-        <option value="R" data-i18n="shiftROption">R – Rano</option>
-        <option value="P" data-i18n="shiftPOption">P – Popołudnie</option>
-        <option value="N" data-i18n="shiftNOption">N – Noc</option>
-        <option value="W" data-i18n="searchFree">Wolne</option>
-        <option value="W3" data-i18n="searchFree3Days">Wolne (min. 3 dni z rzędu)</option>
-        <option value="U" data-i18n="searchVacation">🌴 Urlop</option>
-      </select>
-    </label>
-    <label data-i18n="searchMonthLabel">Miesiąc:
-      <select id="searchMonth"><option value="0" data-i18n="searchAllTypes">Cały rok</option></select>
-    </label>
-    <button class="btn-primary" id="searchBtn" data-i18n="searchBtn">Szukaj</button>
-    <div class="search-results" id="searchResults"></div>
-  </div>
 
   <!-- DASHBOARD -->
   <div id="dashboardView" class="dashboard"></div>
