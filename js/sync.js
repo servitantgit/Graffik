@@ -395,7 +395,7 @@ function updateDriveUI() {
     if (syncItem) syncItem.style.display = 'none';
     if (authBtn) {
       authBtn.textContent = '👤';
-      authBtn.title = t('loginToDrive');
+      authBtn.title = t('login');
       authBtn.classList.remove('auth-logged-in');
     }
   }
@@ -460,23 +460,16 @@ async function syncWithDrive() {
     loginDrive();
     return;
   }
-  // Zalogowano: zapytaj użytkownika
-  showConfirm(
-    `☁️ ${t('driveSyncTitle')}`,
-    t('driveSyncBody'),
-    () => uploadToDrive(true),
-    { primaryText: `📤 ${t('sendToDrive')}`, primaryClass: 'primary' }
-  );
-  // Dwa przyciski
-  setTimeout(() => {
-    const footer = document.getElementById('modalFooter');
-    if (!footer) return;
-    footer.innerHTML = `
-      <button class="modal-btn secondary" onclick="downloadFromDrive(true)">📥 ${t('downloadFromDrive')}</button>
-      <button class="modal-btn primary" onclick="uploadToDrive(true)">📤 ${t('sendToDrive')}</button>
-      <button class="modal-btn secondary" onclick="hideModal()">${t('cancel')}</button>
-    `;
-  }, 50);
+  // Zalogowano: pokazujemy modal z 3 przyciskami
+  showModal({
+    title: `☁️ ${t('driveSyncTitle')}`,
+    body: `<p>${t('driveSyncBody')}</p>`,
+    buttons: [
+      { text: t('cancel'), class: 'secondary' },
+      { text: t('download'), class: 'secondary', onClick: () => downloadFromDrive(true), closeOnClick: true },
+      { text: t('sendToDrive'), class: 'primary', onClick: () => uploadToDrive(true), closeOnClick: true }
+    ]
+  });
 }
 
 /* === LOGOUT === */
