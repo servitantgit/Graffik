@@ -130,7 +130,7 @@ function renderYearView() {
         ev.stopPropagation();
         if (editMode) {
           if (editPaletteMode === 'OT') {
-            showToast('warn', t('overtimeAddInMonthView'));
+            showToast('warn', t('otAddInMonthView'));
             return;
           }
           const val = editPaletteMode === 'CYCLE' ? undefined : editPaletteMode;
@@ -259,7 +259,7 @@ function buildMonthTable(month) {
       td.onclick = () => {
         if (editMode) {
           if (editPaletteMode === 'OT') {
-            showToast('warn', t('overtimeAddInMonthView'));
+            showToast('warn', t('otAddInMonthView'));
             return;
           }
           const val = editPaletteMode === 'CYCLE' ? undefined : editPaletteMode;
