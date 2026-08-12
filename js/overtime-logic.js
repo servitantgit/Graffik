@@ -24,15 +24,24 @@ function buildHolidays(year) {
   const monPas = new Date(eDate); monPas.setDate(eDate.getDate() + 1);
   const pentecost = new Date(eDate); pentecost.setDate(eDate.getDate() + 49);
   const corpus = new Date(eDate); corpus.setDate(eDate.getDate() + 60);
+
+  // t() доступна після завантаження i18n; fallback = польська (для тестів / раннього виклику)
+  const L = (key, fallback) => (typeof t === 'function' ? t(key) : fallback);
+
   return {
-    '1-1': 'Nowy Rok', '1-6': 'Trzech Króli',
-    [`${e.month}-${e.day}`]: 'Wielkanoc',
-    [`${monPas.getMonth()+1}-${monPas.getDate()}`]: 'Poniedziałek Wielkanocny',
-    '5-1': 'Święto Pracy', '5-3': 'Święto Konstytucji',
-    [`${pentecost.getMonth()+1}-${pentecost.getDate()}`]: 'Zesłanie Ducha Świętego',
-    [`${corpus.getMonth()+1}-${corpus.getDate()}`]: 'Boże Ciało',
-    '8-15': 'Wniebowzięcie NMP', '11-1': 'Wszystkich Świętych',
-    '11-11': 'Święto Niepodległości', '12-25': 'Boże Narodzenie', '12-26': '2. Dzień Bożego Narodzenia'
+    '1-1': L('holidayNewYear', 'Nowy Rok'),
+    '1-6': L('holidayEpiphany', 'Trzech Króli'),
+    [`${e.month}-${e.day}`]: L('holidayEaster', 'Wielkanoc'),
+    [`${monPas.getMonth() + 1}-${monPas.getDate()}`]: L('holidayEasterMonday', 'Poniedziałek Wielkanocny'),
+    '5-1': L('holidayLabor', 'Święto Pracy'),
+    '5-3': L('holidayConstitution', 'Święto Konstytucji'),
+    [`${pentecost.getMonth() + 1}-${pentecost.getDate()}`]: L('holidayPentecost', 'Zesłanie Ducha Świętego'),
+    [`${corpus.getMonth() + 1}-${corpus.getDate()}`]: L('holidayCorpus', 'Boże Ciało'),
+    '8-15': L('holidayAssumption', 'Wniebowzięcie NMP'),
+    '11-1': L('holidayAllSaints', 'Wszystkich Świętych'),
+    '11-11': L('holidayIndependence', 'Święto Niepodległości'),
+    '12-25': L('holidayChristmas1', 'Boże Narodzenie'),
+    '12-26': L('holidayChristmas2', '2. Dzień Bożego Narodzenia')
   };
 }
 
