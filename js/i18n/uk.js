@@ -176,7 +176,7 @@ window.translations.uk = {
     otWeekBefore: '⬅ ДО',
     otWeekAfter: 'ПІСЛЯ ➡',
     otAddInMonthView: 'Додавайте понаднормові у виді Місяць',
-    otOnlyOnShift: 'Pонаднормові можна додати лише в день зі зміною',
+    otOnlyOnShift: 'Понаднормові можна додати лише в день зі зміною',
 
     // === WEEKEND / HOLIDAY OVERTIME ===
     otWeekendTitle: 'Робота у вихідний',
