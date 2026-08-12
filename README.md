@@ -10,7 +10,35 @@ Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w system
 
 ## 📸 Zrzuty ekranu
 
-*Coming soon — miejsce na zrzuty ekranu Dashboard, Miesiąc, Tydzień, Tabela*
+Kliknij dowolny zrzut, aby zobaczyć w pełnym rozmiarze.
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="screenshots/1.jpg"><img src="screenshots/1.jpg" width="180" alt="Dashboard"/></a><br>
+      <sub><b>🏠 Dashboard</b></sub>
+    </td>
+    <td align="center">
+      <a href="screenshots/2.jpg"><img src="screenshots/2.jpg" width="180" alt="Tydzień"/></a><br>
+      <sub><b>📆 Tydzień</b></sub>
+    </td>
+    <td align="center">
+      <a href="screenshots/3.jpg"><img src="screenshots/3.jpg" width="180" alt="Miesiąc"/></a><br>
+      <sub><b>📅 Miesiąc</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <a href="screenshots/4.jpg"><img src="screenshots/4.jpg" width="180" alt="Tabela"/></a><br>
+      <sub><b>📋 Tabela</b></sub>
+    </td>
+    <td align="center">
+      <a href="screenshots/5.jpg"><img src="screenshots/5.jpg" width="180" alt="Rok"/></a><br>
+      <sub><b>📊 Rok</b></sub>
+    </td>
+    <td></td>
+  </tr>
+</table>
 
 ## ✨ Główne funkcje
 
@@ -223,7 +251,7 @@ MIT License (lub wewnętrzne narzędzie fabryczne — wg wyboru autora)
 
 ## 🙏 Autor
 
-**Sergii Tantsiura**  
+**Servitant**  
 📧 [tantsiura.s@pg.com](mailto:tantsiura.s@pg.com)
 
 ---
