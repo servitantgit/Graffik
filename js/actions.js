@@ -235,7 +235,7 @@ function validateImportedData(data) {
     for (const k in data.overtimes) {
       const ot = data.overtimes[k];
       if (!ot || typeof ot !== 'object') throw new Error(t('importInvalidOtEntry', { key: k }));
-      ['przed', 'po'].forEach(p => {
+      ['przed', 'po', 'weekend'].forEach(p => {
         if (ot[p]) {
           if (typeof ot[p] !== 'object' || typeof ot[p].hours !== 'number') throw new Error(t('importInvalidOtValue', { pos: p, key: k }));
         }
