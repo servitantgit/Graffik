@@ -161,6 +161,17 @@ window.translations.pl = {
     otWeekBefore: '⬅ PRZED',
     otWeekAfter: 'PO ➡',
     otAddInMonthView: 'Nadgodziny dodawaj w widoku Miesiąc',
+
+    // === WEEKEND / HOLIDAY OVERTIME ===
+    otWeekendTitle: 'Praca w dzień wolny',
+    otWeekendLabel: 'Praca',
+    otWeekendType: 'Typ dnia',
+    otWeekendHoliday: '🎉 Święto państwowe',
+    otWeekendSunday: '📅 Niedziela',
+    otWeekendDayOff: '🏖️ Dzień wolny',
+    otRate: 'Stawka',
+    otDeleteWeekend: 'Usunąć zapis pracy w dzień wolny?',
+
     vacationLimitTitle: 'Ustaw limit urlopu',
     vacationLimitBody: 'Podaj nową liczbę dni urlopu dla brygady <strong>{brig}</strong>:',
     vacationLimitSave: 'Zapisz',

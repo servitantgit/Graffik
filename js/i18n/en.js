@@ -178,6 +178,16 @@ window.translations.en = {
     otAddInMonthView: 'Add overtime in Month view',
     otOnlyOnShift: 'Overtime can only be added to a day with a shift',
 
+    // === WEEKEND / HOLIDAY OVERTIME ===
+    otWeekendTitle: 'Work on day off',
+    otWeekendLabel: 'Work',
+    otWeekendType: 'Day type',
+    otWeekendHoliday: '🎉 Public holiday',
+    otWeekendSunday: '📅 Sunday',
+    otWeekendDayOff: '🏖️ Day off',
+    otRate: 'Rate',
+    otDeleteWeekend: 'Delete work on day off entry?',
+
     // === VACATION ===
     vacationLimitTitle: 'Set vacation limit',
     vacationLimitBody: 'Enter new number of vacation days for brigade <strong>{brig}</strong>:',

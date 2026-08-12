@@ -37,6 +37,20 @@ function buildHolidays(year) {
 }
 
 function categorizeOvertime(year, month, day, shift, position, hours) {
+  if (position === 'weekend') {
+    const yHolidays = buildHolidays(year);
+    const isHoliday = !!yHolidays[month + '-' + day];
+    const dow = new Date(year, month - 1, day).getDay();
+    const isSunday = dow === 0;
+
+    if (isHoliday) {
+      // Święto państwowe — cała praca +200%
+      return { h50: 0, h100: 0, h200: hours };
+    }
+    // Niedziela lub inny dzień wolny — cała praca +100%
+    return { h50: 0, h100: hours, h200: 0 };
+  }
+
   const yHolidays = buildHolidays(year);
   const isHoliday = !!yHolidays[month + '-' + day];
   const dow = new Date(year, month - 1, day).getDay();

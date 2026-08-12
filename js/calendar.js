@@ -126,6 +126,20 @@ function renderCalendar(direction) {
       }
     }
 
+    // Weekend/holiday overtime marker
+    if (isWolne(shiftCode) && !onUrlop) {
+      const otWeekend = getOvertimes(currentYear, currentMonth, d, selectedShift);
+      if (otWeekend.weekend) {
+        cell.classList.add('has-ot');
+        const cat = categorizeOvertime(currentYear, currentMonth, d, null, 'weekend', otWeekend.weekend.hours);
+        const dominant = cat.h200 > 0 ? '200' : '100';
+        const stripW = document.createElement('div');
+        stripW.className = `ot-weekend-strip ot-${dominant}`;
+        stripW.textContent = `🛠 ${otWeekend.weekend.hours}h +${dominant}%`;
+        cell.appendChild(stripW);
+      }
+    }
+
     const noteKey = `${currentYear}-${currentMonth}-${d}-${selectedShift}`;
     if (notes[noteKey]) {
       const nEl = document.createElement('div');
@@ -139,18 +153,18 @@ function renderCalendar(direction) {
       addReliefPopups(cell, d, shiftCode, onUrlop);
     }
     // Popupy nadgodzin - w trybie edycji z paletą OT
-    if (selectedDay === d && editMode && editPaletteMode === 'OT' && !isWolne(shiftCode) && !onUrlop) {
-      addOvertimePopups(cell, d, shiftCode);
+    if (selectedDay === d && editMode && editPaletteMode === 'OT' && !onUrlop) {
+      if (isWolne(shiftCode)) {
+        addWeekendOvertimePopup(cell, d);
+      } else {
+        addOvertimePopups(cell, d, shiftCode);
+      }
     }
 
     cell.addEventListener('click', () => {
       if (editMode) {
         if (editPaletteMode === 'OT') {
-          const shiftHere = getShiftAtWithPending(currentYear, currentMonth, d, selectedShift);
-          if (isWolne(shiftHere)) {
-            showToast('warn', t('otOnlyOnShift'));
-            return;
-          }
+          // Weekend/holiday overtime też dozwolone — nie blokujemy
           selectedDay = d;
           renderCalendar();
           renderInfo();
@@ -321,22 +335,81 @@ function addOvertimePopups(cell, d, shift) {
   cell.appendChild(botPopup);
 }
 
+/* === POPUP NADGODZIN WEEKEND/HOLIDAY === */
+function addWeekendOvertimePopup(cell, d) {
+  const ot = getOvertimes(currentYear, currentMonth, d, selectedShift);
+  const popup = document.createElement('div');
+  popup.className = 'ot-popup ot-top ot-weekend';
+
+  if (ot.weekend) {
+    const cat = categorizeOvertime(currentYear, currentMonth, d, null, 'weekend', ot.weekend.hours);
+    const dom = cat.h200 > 0 ? '+200%' : '+100%';
+    popup.innerHTML = `
+      <div class="otp-label">🛠 ${t('otWeekendLabel')}</div>
+      <div class="otp-content">${ot.weekend.hours}h · ${dom}</div>
+      <div class="otp-actions">
+        <button data-act="edit-weekend">✏️</button>
+        <button data-act="del-weekend">🗑</button>
+      </div>
+    `;
+  } else {
+    popup.innerHTML = `
+      <div class="otp-label">🛠 ${t('otWeekendLabel')}</div>
+      <div class="otp-content">${t('otAdd')}</div>
+    `;
+  }
+
+  popup.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    const target = ev.target;
+    if (target.dataset && target.dataset.act === 'del-weekend') {
+      showConfirm(t('otDeleteWeekend'), '', () => {
+        removeOvertime(currentYear, currentMonth, d, selectedShift, 'weekend');
+        showToast('success', t('removed'));
+        refreshViews();
+      }, { primaryText: t('otDeleteBtn'), primaryClass: 'danger' });
+      return;
+    }
+    openOvertimeModal(d, null, 'weekend', ot.weekend);
+  });
+  cell.appendChild(popup);
+}
+
 /* === MODAL NADGODZIN === */
 let otModalContext = null;
 
 function openOvertimeModal(day, shift, position, existing) {
   otModalContext = { day, shift, position };
   const overlay = document.getElementById('otOverlay');
-  const posLabel = position === 'przed' ? t('otPositionBefore') : t('otPositionAfter');
-  const [sh, eh] = shiftHours[shift];
-  const shiftTimeStr = `${String(sh).padStart(2,'0')}:00-${String(eh%24).padStart(2,'0')}:00`;
 
-  document.getElementById('otTitle').textContent = `${t('otTitle')} ${posLabel} ${shift}`;
-  document.getElementById('otContext').innerHTML = `
-    <b>${t('infoDate')}</b> ${day} ${monthNames[currentMonth-1]} ${currentYear}<br>
-    <b>${t('infoShiftLabel')}</b> ${shift} (${shiftTimeStr})<br>
-    <b>${t('infoPosition')}</b> ${posLabel}
-  `;
+  if (position === 'weekend') {
+    // Weekend / holiday overtime
+    const yHolidays = buildHolidays(currentYear);
+    const isHoliday = !!yHolidays[currentMonth + '-' + day];
+    const dowLocal = new Date(currentYear, currentMonth-1, day).getDay();
+    const dayType = isHoliday
+      ? t('otWeekendHoliday')
+      : (dowLocal === 0 ? t('otWeekendSunday') : t('otWeekendDayOff'));
+
+    document.getElementById('otTitle').textContent = t('otWeekendTitle');
+    document.getElementById('otContext').innerHTML = `
+      <b>📅 ${t('infoDate')}</b> ${day} ${monthNames[currentMonth-1]} ${currentYear}<br>
+      <b>🛠 ${t('otWeekendType')}:</b> ${dayType}<br>
+      <b>💰 ${t('otRate')}:</b> ${isHoliday ? '+200%' : '+100%'}
+    `;
+  } else {
+    // Existing logic for 'przed'/'po'
+    const posLabel = position === 'przed' ? t('otPositionBefore') : t('otPositionAfter');
+    const [sh, eh] = shiftHours[shift];
+    const shiftTimeStr = `${String(sh).padStart(2,'0')}:00-${String(eh%24).padStart(2,'0')}:00`;
+
+    document.getElementById('otTitle').textContent = `${t('otTitle')} ${posLabel} ${shift}`;
+    document.getElementById('otContext').innerHTML = `
+      <b>${t('infoDate')}</b> ${day} ${monthNames[currentMonth-1]} ${currentYear}<br>
+      <b>${t('infoShiftLabel')}</b> ${shift} (${shiftTimeStr})<br>
+      <b>${t('infoPosition')}</b> ${posLabel}
+    `;
+  }
   document.getElementById('otNote').value = existing ? existing.note || '' : '';
   document.getElementById('otCustomHours').value = '';
 

@@ -176,7 +176,17 @@ window.translations.uk = {
     otWeekBefore: '⬅ ДО',
     otWeekAfter: 'ПІСЛЯ ➡',
     otAddInMonthView: 'Додавайте понаднормові у виді Місяць',
-    otOnlyOnShift: 'Понаднормові можна додати лише в день зі зміною',
+    otOnlyOnShift: 'Pонаднормові можна додати лише в день зі зміною',
+
+    // === WEEKEND / HOLIDAY OVERTIME ===
+    otWeekendTitle: 'Робота у вихідний',
+    otWeekendLabel: 'Робота',
+    otWeekendType: 'Тип дня',
+    otWeekendHoliday: '🎉 Державне свято',
+    otWeekendSunday: '📅 Неділя',
+    otWeekendDayOff: '🏖️ Вихідний',
+    otRate: 'Ставка',
+    otDeleteWeekend: 'Видалити запис роботи у вихідний?',
 
     // === VACATION ===
     vacationLimitTitle: 'Встановити ліміт відпустки',
