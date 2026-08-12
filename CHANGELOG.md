@@ -6,6 +6,42 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 
 ## [Unreleased]
 
+## [3.4.0] - 2026-08-12
+
+### Dodane
+- **Wielojęzyczność (i18n)** — obsługa 3 języków: polski, angielski, ukraiński
+- Przełącznik języka 🌐 w górnym pasku (dropdown z flagami krajów)
+- Automatyczne wykrywanie języka przeglądarki przy pierwszym uruchomieniu
+- System tłumaczeń `t(key, params)` z placeholderami `{name}`
+- Modułowa struktura i18n: `js/i18n/pl.js` + `en.js` + `uk.js` + `i18n.js` (logika)
+- **Nadgodziny w dniach wolnych i świętach**:
+  - Nowy typ 'weekend' — praca w niedzielę, sobotę, dzień wolny za grafik
+  - Automatyczna kategoryzacja: święto państwowe → +200%, niedziela/wolne → +100%
+  - Osobny popup w kolorze teal (odróżnia się od zwykłych PRZED/PO)
+  - Wizualny pasek na komórce dnia wolnego pokazujący godziny + stawkę
+  - Zakres godzin: 1-13h (zwiększone z poprzednich 1-8h)
+  - Uwzględnione w podsumowaniu miesięcznym nadgodzin
+- Klucze tłumaczeń dla `otWeekend*`, `otRate` w pl/en/uk
+- Genitive month names dla poprawnego formatowania dat (np. "12 sierpnia 2026" zamiast "12 Sierpień 2026")
+
+### Zmienione
+- Podzielono monolityczny plik `js/i18n.js` (1776 linii, 3 języki) na 4 mniejsze pliki
+- Usunięto duplikaty kluczy tłumaczeń (shiftR, month1-12, dayMon-Sun występowały 2 razy)
+- Rozdzielono klucze menu na `menuSection*` (nagłówki) i `menu*` (pozycje) — naprawia duplikowanie ikon
+- Modal-close (×) nie jest już tłumaczony (`data-i18n="close"` usunięty) — hint był zastępowany słowem "Zamknij"/"Закрити"
+- Zaktualizowano cache Service Worker do wersji v5
+
+### Usunięte
+- **Funkcja wyszukiwania (search)** — nie była potrzebna, kalendarz i tak pokazuje wszystko wizualnie
+- Blokada dodawania nadgodzin w dni wolne (toast "Nadgodziny tylko do dnia ze zmianą")
+- Emoji ikon z wartości kluczy menu (ikony są w HTML jako `<span class="mi-icon">`)
+
+### Naprawione
+- Duplikowane ikony w bocznym menu (były w HTML I w wartościach tłumaczeń)
+- Przycisk × w modalach był zastępowany słowem tłumaczenia — teraz zawsze symbol ×
+- Nieprawidłowa forma nazwy miesiąca w dacie ("12 Sierpień" → "12 sierpnia")
+- 404 błąd dla `js/i18n.js` po refactorze (plik został przeniesiony do `js/i18n/i18n.js`)
+
 ## [3.3.0] - 2026-08-12
 
 ### Dodane
@@ -70,6 +106,7 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 
 Historia wcześniejszych wersji nie była śledzona.
 
-[Unreleased]: https://github.com/servitantgit/Graffik/compare/v3.3.0...HEAD
+[Unreleased]: https://github.com/servitantgit/Graffik/compare/v3.4.0...HEAD
+[3.4.0]: https://github.com/servitantgit/Graffik/releases/tag/v3.4.0
 [3.3.0]: https://github.com/servitantgit/Graffik/releases/tag/v3.3.0
 [3.2.0]: https://github.com/servitantgit/Graffik/releases/tag/v3.2.0

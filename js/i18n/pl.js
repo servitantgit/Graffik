@@ -265,6 +265,8 @@ window.translations.pl = {
     faqOvertimeCat200: '+200% — jeśli dzień jest świętem',
     faqOvertimeCat100: '+100% — gdy nadgodziny są w nocy (22:00–6:00) albo w niedzielę',
     faqOvertimeCat50: '+50% — zwykłe nadgodziny dzienne',
+    faqOvertimeWeekend: '🛠 Praca w dzień wolny lub święto — dodatkowa opcja:',
+    faqOvertimeWeekendDesc: 'W dniach wolnych/świętach popup jest inny (kolor teal) — jedno pole na 8-13 godzin. Automatyczna kategoryzacja: święto → +200%, niedziela/wolne → +100%.',
     faqOvertimeNote: 'Komórka zostaje wizualnie podzielona na części, a pod nią widoczny jest rzeczywisty czas pracy. W widoku miesiąca pojawia się także podsumowanie miesięczne.',
     faqVacationTitle: '🌴 Jak zaznaczać urlopy i kiedy są liczone?',
     faqVacationDesc: 'W widoku 📅 Miesiąc kliknij wybrany dzień i wybierz popup 🌴 +, aby dodać urlop.',

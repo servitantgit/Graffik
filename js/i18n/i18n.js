@@ -121,6 +121,8 @@ function renderFAQ() {
                     <li>${t('faqOvertimeCat100')}</li>
                     <li>${t('faqOvertimeCat50')}</li>
                 </ul>
+                <p><strong>${t('faqOvertimeWeekend')}</strong></p>
+                <p>${t('faqOvertimeWeekendDesc')}</p>
                 <p>${t('faqOvertimeNote')}</p>
             `
         },

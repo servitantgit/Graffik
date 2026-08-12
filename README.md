@@ -19,7 +19,7 @@ Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w system
 - 📈 **Tryb Rok** — rozszerza Miesiąc/Tabelę na cały rok (12 mini-kalendarzy/tabel)
 - ✏️ **Edycja grafiku** z historią cofania (undo/redo)
 - 🌴 **Urlopy** z limitem per brygada i automatycznym liczeniem dni roboczych
-- ⏱ **Nadgodziny** z auto-kategoryzacją (+50%/+100%/+200%)
+- ⏱ **Nadgodziny** z auto-kategoryzacją (+50%/+100%/+200%) — dla dni roboczych ORAZ dni wolnych/świąt
 - 📝 **Notatki** do dowolnych dni
 - 🔍 **Wyszukiwanie** zmian, wolnych, urlopów
 - ⚖️ **Porównywanie brygad** (Ctrl+klik)
@@ -94,7 +94,7 @@ Funkcja **🔗 Udostępnij widok** w bocznym menu tworzy link do dokładnie tego
 ### Stos technologiczny
 - **Vanilla JavaScript** (ES2020+, bez frameworków, bez build system)
 - **HTML5 + CSS3** (Custom Properties, Flexbox, Grid)
-- **i18n**: własny prosty system tłumaczeń w `js/i18n.js` (3 języki)
+- **i18n**: własny prosty system tłumaczeń w `js/i18n/` (3 języki, bez zależności zewnętrznych)
 - **PWA**: Service Worker + Web App Manifest
 - **Google Drive API** (OAuth 2.0)
 - **Hosting**: GitHub Pages
@@ -136,7 +136,11 @@ Następnie otwórz: `http://localhost:8000`
     │   ├── actions.js      # Eksport .ics, share, import/eksport JSON, walidacja
     │   ├── pwa.js          # Service Worker, powiadomienia
     │   ├── sync.js         # Google Drive sync
-    │   ├── i18n.js         # Wielojęzyczność (pl/en/uk)
+    │   ├── i18n/           # 🆕 Wielojęzyczność
+    │   │   ├── pl.js       # Polski
+    │   │   ├── en.js       # Angielski
+    │   │   ├── uk.js       # Ukraiński
+    │   │   └── i18n.js     # Logika (t, setLanguage, renderFAQ)
     │   └── main.js         # Stan aplikacji, events, init
     ├── icons/
     │   ├── icon-192.png
@@ -154,7 +158,7 @@ Następnie otwórz: `http://localhost:8000`
 |-------|-----------|
 | `R` / `P` / `N` / `W` | Wybór zmiany do malowania |
 | `C` | Tryb cyklu (rotacja zmian) |
-| `O` | Tryb nadgodzin |
+| `O` | Tryb nadgodzin (przed/po zmianie ORAZ praca w dzień wolny/święto) |
 | `Ctrl+Z` | Cofnij ostatnią zmianę |
 | `Ctrl+Y` / `Ctrl+Shift+Z` | Ponów cofniętą zmianę |
 | `Ctrl+S` | Zapisz wszystkie zmiany |
@@ -181,7 +185,13 @@ Aplikacja obsługuje 3 języki (wybór przyciskiem 🌐 w górnym pasku):
 - 🇺🇸 **English**
 - 🇺🇦 **Українська**
 
-Język jest automatycznie wykrywany z ustawień przeglądarki przy pierwszym uruchomieniu, a wybrany zapisywany w localStorage.
+Język jest automatycznie wykrywany z ustawień przeglądarki przy pierwszym uruchomieniu.
+Wybrany język zapisuje się w localStorage i zostaje po restarcie.
+
+**Dla developerów** — dodawanie nowych tłumaczeń:
+1. Otwórz `js/i18n/pl.js` (lub en.js/uk.js) — dodaj nowy klucz z wartością
+2. **Ważne**: dodaj ten sam klucz w WSZYSTKICH 3 plikach
+3. W HTML używaj `data-i18n="klucz"` lub w JS: `t('klucz')` / `t('klucz', {param: 'wartość'})`
 
 ## 💾 Przechowywanie danych
 

@@ -8,8 +8,8 @@ Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą p
 - **Skrypty**: Klasyczne (bez ES modules), dzielone przez global scope
 - **CSS**: Wydzielony do osobnego pliku `css/styles.css`
 - **Hosting**: GitHub Pages (https://servitantgit.github.io/Graffik/)
-- **Kolejność ładowania skryptów**: Ważna — data.js → overtime-logic.js → core.js → ui.js → edit.js → dashboard.js → calendar.js → views.js → actions.js → pwa.js → sync.js → i18n.js → main.js
-- **Wielojęzyczność (i18n)**: pl (domyślny), en, uk — system tłumaczeń w `js/i18n.js`
+- **Kolejność ładowania skryptów**: Ważna — data.js → overtime-logic.js → core.js → ui.js → edit.js → dashboard.js → calendar.js → views.js → actions.js → pwa.js → sync.js → i18n/pl.js → i18n/en.js → i18n/uk.js → i18n/i18n.js → main.js
+- **Wielojęzyczność (i18n)**: 3 języki (pl/en/uk), modułowa struktura w `js/i18n/`
 
 ## 2. Modele danych
 
@@ -66,8 +66,9 @@ Przykład: `{ 2026: { 8: { A: 'RRPPNNWW...', B: 'PPNNRRWW...' } } }`
     [year]: {
       [month]: {
         [day]: {
-          przed: { hours: 2, note: 'przed zmianą' },
-          po: { hours: 3, note: 'po zmianie' }
+          przed: { hours: 2, note: 'przed zmianą' },      // dni robocze
+          po: { hours: 3, note: 'po zmianie' },           // dni robocze
+          weekend: { hours: 8, note: 'praca w niedzielę' } // dni wolne / święta
         }
       }
     }
@@ -100,11 +101,13 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - `buildHolidays(year)` — polskie święta
 - `daysInMonthCal`, `isWolne`, `escapeHtml`
 
-### js/overtime-logic.js — Moduł 1.5: Logika nadgodzin (wydzielona)
-- `categorizeOvertime()` — kategoryzacja nadgodzin (+50%/+100%/+200%)
-- `calcOvertimeTime()` — obliczanie czasu początku/końca nadgodzin
-- `getActualWorkTime()` — rzeczywisty czas pracy z uwzględnieniem nadgodzin
-- Wydzielone z core.js dla lepszej separacji odpowiedzialności
+### js/overtime-logic.js — Moduł 1.5: Logika nadgodzin
+- `categorizeOvertime(y, m, d, shift, position, hours)` — kategoryzacja
+  - position: 'przed' | 'po' | 'weekend'
+  - 'weekend' → święto=+200%, niedziela/wolne=+100%
+- `calcOvertimeTime()` — obliczanie czasu początku/końca (dla przed/po)
+- `getActualWorkTime()` — rzeczywisty czas pracy
+- `getMonthOvertimeSummary()` — sumowanie miesięczne (uwzględnia przed/po/weekend)
 
 ### js/core.js — Moduł 2: Storage + logika biznesowa
 - `loadPrefs/savePrefs`, `loadCustomSchedule/saveCustomSchedule`
@@ -201,16 +204,19 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - `uploadToDrive()` — wysyłanie danych do Drive
 - Obsługa konfliktów (brak merge — last-write-wins)
 
-### js/i18n.js — Moduł 10.5: Wielojęzyczność (i18n)
-- `SUPPORTED_LANGS = ['pl', 'en', 'uk']`
-- `translations` — pełny obiekt z tłumaczeń dla 3 języków
-- `currentLang` — aktywny język
-- `detectLanguage()` — wykrywa język z prefs lub przeglądarki
-- `setLanguage(lang)` — zmiana języka + zapisanie w prefs
-- `t(key, params)` — pobranie tłumaczenia z podstawianiem parametrów `{key}`
-- `applyTranslations()` — aplikuje tłumaczenia do wszystkich elementów `[data-i18n]`, `[data-i18n-title]`, `[data-i18n-placeholder]`
-- `renderFAQ()` — dynamiczne generowanie FAQ z tłumaczeń
-- HTML używa atrybutów: `data-i18n="key"`, `data-i18n-title="key"`, `data-i18n-placeholder="key"`
+### js/i18n/ — Moduł i18n (wielojęzyczność)
+Folder z 4 plikami:
+- **js/i18n/pl.js** — polski (window.translations.pl)
+- **js/i18n/en.js** — angielski (window.translations.en)
+- **js/i18n/uk.js** — ukraiński (window.translations.uk)
+- **js/i18n/i18n.js** — logika:
+  - `SUPPORTED_LANGS = ['pl', 'en', 'uk']`
+  - `currentLang` — aktywny język
+  - `detectLanguage()` — z prefs.lang lub navigator.language
+  - `setLanguage(lang)` — zmiana + savePrefs
+  - `t(key, params)` — pobranie tłumaczenia z placeholderami `{key}`
+  - `applyTranslations()` — aplikuje do wszystkich `[data-i18n]`, `[data-i18n-title]`, `[data-i18n-placeholder]`
+  - `renderFAQ()` — dynamiczne generowanie FAQ z tłumaczeń
 
 ### js/main.js — Moduł 11: Stan + Init
 - Globalne zmienne stanu (wszystkie z sekcji 2)
@@ -265,12 +271,24 @@ function bindClick(id, handler) {
 ```
 Używany dla wszystkich przycisków w side menu i edit banner.
 
-### Wielojęzyczność
-- Wszystkie teksty użytkownika **muszą** przechodzić przez funkcję `t(key)`
-- Elementy HTML powinny mieć atrybut `data-i18n="key"` zamiast statycznego tekstu
-- Nowe klucze dodawać do WSZYSTKICH 3 języków w `js/i18n.js` (pl, en, uk)
+### Wielojęzyczność (i18n)
+- Wszystkie teksty użytkownika muszą przechodzić przez funkcję `t(key)`
+- Elementy HTML używają atrybutów:
+  - `data-i18n="key"` — dla textContent/innerHTML
+  - `data-i18n-title="key"` — dla atrybutu title
+  - `data-i18n-placeholder="key"` — dla atrybutu placeholder
+- Nowe klucze dodawać do WSZYSTKICH 3 języków (pl/en/uk)
 - Placeholders w tłumaczeniach: `{param}` zamieniane przez drugi argument `t(key, {param: value})`
-- FAQ jest generowane dynamicznie — nie edytować bezpośrednio w HTML
+- FAQ generowane dynamicznie w `renderFAQ()` z js/i18n/i18n.js — nie edytować w HTML
+- **NIE tłumaczyć** uniwersalnych symboli (×, →, ✓, emoji ikon menu)
+- Ikony w bocznym menu są w HTML (`<span class="mi-icon">`), NIE w wartościach tłumaczeń
+
+### Nadgodziny — trzy typy pozycji
+- `'przed'` — przed rozpoczęciem zmiany (dni robocze, 1-6h typowo)
+- `'po'` — po zakończeniu zmiany (dni robocze, 1-6h typowo)
+- `'weekend'` — praca w dzień wolny/święto (8-13h max)
+- Weekend NIE potrzebuje `shift` — przekazuj `null`
+- Kategoryzacja weekend: automatyczna z buildHolidays() i sprawdzenia dow===0 (niedziela)
 
 ### CSS
 - Wszystkie style w `css/styles.css`
@@ -285,7 +303,8 @@ Używany dla wszystkich przycisków w side menu i edit banner.
 - Synchronizacja Google Drive: brak merge/diff — last-write-wins (patrz sekcja 6)
 - `goToMonth` musi być exposed na `window` (patrz `window.goToMonth = goToMonth`)
 - Service Worker jest podstawowy (bez auto-update / toast notification) — użytkownicy widzą nową wersję dopiero przy drugiej wizycie
-- Klucze tłumaczeń są rozproszone po całym kodzie — brak central registry, wymaga uważnego syncowania między 3 językami
+- Klucze i18n są rozproszone po 3 plikach — brak central registry i validacji brakujących kluczy
+- Genitive month names są zdublowane w kodzie (monthNames dla nagłówków vs monthNamesGenitive dla dat)
 
 ## 6. Strategia konfliktów synchronizacji
 
@@ -326,6 +345,14 @@ System **nie obsługuje bezpiecznej synchronizacji z wielu urządzeń jednocześ
 - Usunięto pozostałości sekcji "Motyw" z bocznego menu
 - Poprawiono duplikaty ikon kalendarza i dni wolnych
 - Ulepszono widok urlopów i pozycję przycisków na dashboardzie
+- Wprowadzono wielojęzyczność (i18n): pl/en/uk z modułową strukturą js/i18n/
+- Refactor: monolithic i18n.js (1776 lines) → 4 osobne pliki (~500 linii każdy)
+- Usunięto zduplikowane klucze tłumaczeń (shiftR, month1-12, dayMon-Sun)
+- Dodano typ nadgodzin 'weekend' (praca w dni wolne/święta) z auto-kategoryzacją
+- Rozdzielono klucze menu (menuSection* vs menu*) — naprawiono duplikowane ikony
+- Dodano genitive month names dla poprawnych dat po polsku/ukraińsku
+- Usunięto niepotrzebną funkcję wyszukiwania (search)
+- Naprawiono modal × zastępowany słowem "Zamknij"/"Закрити"
 
 ## 8. Backlog / TODO na przyszłość
 
@@ -337,10 +364,13 @@ System **nie obsługuje bezpiecznej synchronizacji z wielu urządzeń jednocześ
 - [ ] Testy automatyczne (Vitest/Jest)
 - [ ] Mechanizm merge/diff dla Google Drive sync
 - [ ] Wersjonowanie plików w chmurze
-- [x] Wielojęzyczność (pl/en/uk) ✅
-- [x] Wydzielenie CSS ✅
-- [ ] Zaawansowany Service Worker z auto-update i toast "🔄 Nowa wersja"
-- [ ] Centralny rejestr kluczy i18n z ostrzeżeniami o brakujących tłumaczeniach
+- [x] Wielojęzyczność (pl/en/uk) ✅ v3.4.0
+- [x] Split i18n na osobne pliki dla mów ✅ v3.4.0
+- [x] Obsługa nadgodzin w dni wolne/święta ✅ v3.4.0
+- [x] Wydzielenie CSS z index.html do osobnego pliku ✅ (wcześniej)
+- [ ] Central rejestr kluczy i18n z ostrzeżeniami o brakujących tłumaczeniach
+- [ ] Testy automatyczne dla kategoryzacji nadgodzin
+- [ ] Zaawansowany Service Worker z auto-update + toast "🔄 Nowa wersja"
 
 ## 9. Szybkie odwołania
 

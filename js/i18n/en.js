@@ -318,6 +318,8 @@ window.translations.en = {
     faqOvertimeCat200: '+200% — if the day is a holiday',
     faqOvertimeCat100: '+100% — when overtime is at night (22:00–6:00) or on Sunday',
     faqOvertimeCat50: '+50% — regular daytime overtime',
+    faqOvertimeWeekend: '🛠 Work on day off or holiday — additional option:',
+    faqOvertimeWeekendDesc: 'On days off/holidays a different popup appears (teal color) — single field for 8-13 hours. Auto-categorization: holiday → +200%, Sunday/day off → +100%.',
     faqOvertimeNote: 'The cell is visually split into parts, and below it the actual working time is shown. A monthly summary also appears in the month view.',
     faqVacationTitle: '🌴 How to mark vacations and when are they counted?',
     faqVacationDesc: 'In the 📅 Month view, click the selected day and choose the 🌴 + popup to add a vacation.',
