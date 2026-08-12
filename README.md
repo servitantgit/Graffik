@@ -24,6 +24,7 @@ Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w system
 - 🔍 **Wyszukiwanie** zmian, wolnych, urlopów
 - ⚖️ **Porównywanie brygad** (Ctrl+klik)
 - 🎨 **2 motywy**: jasny/ciemny (przełącznik w top-bar)
+- 🌐 **Wielojęzyczność**: polski, angielski, ukraiński (przełącznik 🌐 w top-bar)
 - 📱 **PWA** — instalacja na telefonie, tryb offline, powiadomienia
 - ☁️ **Google Drive sync** — dane między urządzeniami
 - 🔗 **Kontekstowe udostępnianie** — link do dokładnie tego widoku
@@ -93,6 +94,7 @@ Funkcja **🔗 Udostępnij widok** w bocznym menu tworzy link do dokładnie tego
 ### Stos technologiczny
 - **Vanilla JavaScript** (ES2020+, bez frameworków, bez build system)
 - **HTML5 + CSS3** (Custom Properties, Flexbox, Grid)
+- **i18n**: własny prosty system tłumaczeń w `js/i18n.js` (3 języki)
 - **PWA**: Service Worker + Web App Manifest
 - **Google Drive API** (OAuth 2.0)
 - **Hosting**: GitHub Pages
@@ -115,30 +117,35 @@ Następnie otwórz: `http://localhost:8000`
 
 ### Struktura projektu
 
-```
-Graffik/
-├── index.html          # HTML + CSS (w <style>)
-├── manifest.json       # PWA manifest
-├── sw.js              # Service Worker
-├── js/
-│   ├── data.js        # Stałe, factorySchedule
-│   ├── core.js        # Biznes-logika (getShiftAt, isWolne, isUrlop)
-│   ├── ui.js          # Toast, Modal, Confirm, escapeHtml
-│   ├── edit.js        # Tryb edycji, undo/redo, applyEdit
-│   ├── dashboard.js   # Renderowanie Dashboard
-│   ├── calendar.js    # Kalendarz, popupy, nadgodziny
-│   ├── views.js       # Tydzień, Rok, Tabela
-│   ├── actions.js     # Eksport .ics, share, import/export JSON
-│   ├── pwa.js         # Service Worker, powiadomienia
-│   ├── sync.js        # Google Drive sync
-│   └── main.js        # Stan aplikacji, events, init
-├── icons/
-│   ├── icon-192.png
-│   ├── icon-512.png
-│   └── icon-512-maskable.png
-├── PROJECT_DOCS.md    # Dokumentacja techniczna
-└── README.md
-```
+    ```
+    Graffik/
+    ├── index.html          # HTML (bez inline CSS)
+    ├── manifest.json       # PWA manifest
+    ├── sw.js               # Service Worker
+    ├── css/
+    │   └── styles.css      # Wszystkie style (wcześniej inline)
+    ├── js/
+    │   ├── data.js         # Stałe, factorySchedule
+    │   ├── overtime-logic.js # Logika nadgodzin (kategoryzacja +50%/100%/200%)
+    │   ├── core.js         # Biznes-logika (getShiftAt, isWolne, isUrlop)
+    │   ├── ui.js           # Toast, Modal, Confirm, motyw
+    │   ├── edit.js         # Tryb edycji, undo/redo
+    │   ├── dashboard.js    # Renderowanie Dashboard
+    │   ├── calendar.js     # Kalendarz, popupy, nadgodziny
+    │   ├── views.js        # Tydzień, Rok, Tabela
+    │   ├── actions.js      # Eksport .ics, share, import/eksport JSON, walidacja
+    │   ├── pwa.js          # Service Worker, powiadomienia
+    │   ├── sync.js         # Google Drive sync
+    │   ├── i18n.js         # Wielojęzyczność (pl/en/uk)
+    │   └── main.js         # Stan aplikacji, events, init
+    ├── icons/
+    │   ├── icon-192.png
+    │   ├── icon-512.png
+    │   └── icon-512-maskable.png
+    ├── CHANGELOG.md
+    ├── PROJECT_DOCS.md
+    └── README.md
+    ```
 
 ## ⌨️ Skróty klawiszowe
 
@@ -165,6 +172,16 @@ Graffik/
 |-------|-----------|
 | `Klik` | Zmień aktywną brygadę |
 | `Ctrl + klik` | Porównaj z inną brygadą (podświetla wspólne zmiany) |
+
+## 🌐 Języki
+
+Aplikacja obsługuje 3 języki (wybór przyciskiem 🌐 w górnym pasku):
+
+- 🇵🇱 **Polski** (domyślny)
+- 🇺🇸 **English**
+- 🇺🇦 **Українська**
+
+Język jest automatycznie wykrywany z ustawień przeglądarki przy pierwszym uruchomieniu, a wybrany zapisywany w localStorage.
 
 ## 💾 Przechowywanie danych
 
