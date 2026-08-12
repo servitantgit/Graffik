@@ -154,7 +154,7 @@ function renderDashboard() {
   dv.innerHTML = `
     <div class="dash-hero">
       <div class="dash-greeting">${t('greeting')}</div>
-      <div class="dash-date">${dayName}, ${d} ${monthNames[m-1]} ${y}</div>
+      <div class="dash-date">${dayName}, ${d} ${monthNamesGenitive[m-1]} ${y}</div>
       <div class="dash-brigade">${t('brigade')} ${selectedShift}</div>
     </div>
 

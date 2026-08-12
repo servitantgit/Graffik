@@ -432,6 +432,20 @@ window.translations.uk = {
     month11Short: 'Лис',
     month12Short: 'Гру',
 
+    // === MONTHS (родовий відмінок — для дат "12 серпня 2026") ===
+    month1Genitive: 'січня',
+    month2Genitive: 'лютого',
+    month3Genitive: 'березня',
+    month4Genitive: 'квітня',
+    month5Genitive: 'травня',
+    month6Genitive: 'червня',
+    month7Genitive: 'липня',
+    month8Genitive: 'серпня',
+    month9Genitive: 'вересня',
+    month10Genitive: 'жовтня',
+    month11Genitive: 'листопада',
+    month12Genitive: 'грудня',
+
     // === HOLIDAYS ===
     holidayNewYear: 'Новий рік',
     holidayEpiphany: 'Богоявлення',

@@ -88,6 +88,7 @@ const factoryMonthHours = {
 /* === 2. KONSTANTY === */
 let monthNames = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
 let monthNamesShort = ['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
+let monthNamesGenitive = ['stycznia','lutego','marca','kwietnia','maja','czerwca','lipca','sierpnia','września','października','listopada','grudnia'];
 let dayNames = ['Pon','Wt','Śr','Cz','Pt','Sob','Nd'];
 let dayNamesFull = ['Niedziela','Poniedziałek','Wtorek','Środa','Czwartek','Piątek','Sobota'];
 
@@ -100,6 +101,10 @@ function updateLocalizedNames() {
   monthNamesShort = [
     t('month1Short'), t('month2Short'), t('month3Short'), t('month4Short'), t('month5Short'), t('month6Short'),
     t('month7Short'), t('month8Short'), t('month9Short'), t('month10Short'), t('month11Short'), t('month12Short')
+  ];
+  monthNamesGenitive = [
+    t('month1Genitive'), t('month2Genitive'), t('month3Genitive'), t('month4Genitive'), t('month5Genitive'), t('month6Genitive'),
+    t('month7Genitive'), t('month8Genitive'), t('month9Genitive'), t('month10Genitive'), t('month11Genitive'), t('month12Genitive')
   ];
   dayNames = [t('dayMon'), t('dayTue'), t('dayWed'), t('dayThu'), t('dayFri'), t('daySat'), t('daySun')];
   dayNamesFull = [t('daySunday'), t('dayMonday'), t('dayTuesday'), t('dayWednesday'), t('dayThursday'), t('dayFriday'), t('daySaturday')];

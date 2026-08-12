@@ -432,6 +432,20 @@ window.translations.en = {
     month11Short: 'Nov',
     month12Short: 'Dec',
 
+    // === MONTHS (for dates — same as nominative in English) ===
+    month1Genitive: 'January',
+    month2Genitive: 'February',
+    month3Genitive: 'March',
+    month4Genitive: 'April',
+    month5Genitive: 'May',
+    month6Genitive: 'June',
+    month7Genitive: 'July',
+    month8Genitive: 'August',
+    month9Genitive: 'September',
+    month10Genitive: 'October',
+    month11Genitive: 'November',
+    month12Genitive: 'December',
+
     // === HOLIDAYS ===
     holidayNewYear: 'New Year',
     holidayEpiphany: 'Epiphany',
