@@ -29,11 +29,11 @@ Kliknij dowolny zrzut, aby zobaczyć w pełnym rozmiarze.
   </tr>
   <tr>
     <td align="center">
-      <a href="screenshots/4.jpg"><img src="screenshots/4.jpg" width="180" alt="Tabela"/></a><br>
+      <a href="screenshots/4.jpg"><img src="screenshots/4.jpg" width="180" alt="Miesiąc Rok"/></a><br>
       <sub><b>📋 Tabela</b></sub>
     </td>
     <td align="center">
-      <a href="screenshots/5.jpg"><img src="screenshots/5.jpg" width="180" alt="Rok"/></a><br>
+      <a href="screenshots/5.jpg"><img src="screenshots/5.jpg" width="180" alt="Tabela Rok"/></a><br>
       <sub><b>📊 Rok</b></sub>
     </td>
     <td></td>
@@ -252,7 +252,7 @@ MIT License (lub wewnętrzne narzędzie fabryczne — wg wyboru autora)
 ## 🙏 Autor
 
 **Servitant**  
-📧 [tantsiura.s@pg.com](mailto:tantsiura.s@pg.com)
+📧 [servitant@gmail.com](mailto:servitant@gmail.com)
 
 ---
 
