@@ -1,1776 +1,255 @@
 /* ================================================================
-   GRAFIK GILLETTE — Moduł: i18n (lokalizacja)
-   Obsługiwane języki: pl (domyślny), en, uk
+   GRAFIK GILLETTE — Moduł i18n: Logika lokalizacji
+   Słowniki tłumaczeń: pl.js / en.js / uk.js (ładowane wcześniej)
    ================================================================ */
 
 const SUPPORTED_LANGS = ['pl', 'en', 'uk'];
-
-const translations = {
-  pl: {
-    appName: 'Grafik Gillette',
-    appNameShort: 'Grafik',
-    editMode: 'Tryb edycji (E)',
-    editModeOn: 'Wyłącz tryb edycji (E)',
-    editModeOff: 'Włącz tryb edycji (E)',
-    profile: 'Zaloguj do Google Drive',
-    theme: 'Przełącz motyw',
-    menu: 'Menu',
-    language: 'Język',
-    compareHint: 'Ctrl+klik = porównaj',
-    changeYear: 'Zmień rok',
-    today: '📅 Dziś',
-    searchBtn: '🔍',
-    prevMonth: 'Poprzedni miesiąc (←)',
-    nextMonth: 'Następny miesiąc (→)',
-    prevWeek: '‹',
-    nextWeek: '›',
-    shiftR: 'Rano (R)',
-    shiftP: 'Popołudnie (P)',
-    shiftN: 'Noc (N)',
-    shiftW: 'Wolne',
-    shiftROption: 'R – Rano',
-    shiftPOption: 'P – Popołudnie',
-    shiftNOption: 'N – Noc',
-    legendFree: '— Wolne',
-    legendVacation: '🌴 Urlop',
-    paletteTitleR: 'Rano (R)',
-    paletteTitleP: 'Popołudnie (P)',
-    paletteTitleN: 'Noc (N)',
-    paletteTitleW: 'Wolne (W)',
-    cycleMode: 'Cykl',
-    overtime: 'Nadgodziny (O)',
-    undoHint: 'Cofnij ostatnią zmianę (Ctrl+Z)',
-    redoHint: 'Ponów cofniętą zmianę (Ctrl+Y)',
-    saveHint: 'Zapisz zmiany w przeglądarce (Ctrl+S)',
-    yearToggle: 'Rozszerz do całego roku',
-    searchTypeLabel: 'Typ zmiany:',
-    searchMonthLabel: 'Miesiąc:',
-    searchAllTypes: '— wszystkie —',
-    searchFree: 'Wolne',
-    searchFree3Days: 'Wolne (min. 3 dni z rzędu)',
-    searchVacation: '🌴 Urlop',
-    otHoursLabel: 'Ile godzin?',
-    otOrCustom: 'lub własnie:',
-    otHoursUnit: 'godzin',
-    otNote: '📝 Notatka (opcjonalne)',
-    otNotePlaceholder: 'np. Zastępstwo za Kowalskiego',
-    faqTitle: '❓ Pomoc — Grafik Gillette (FAQ v3)',
-    faqIntro: 'Kliknij pytanie, aby zobaczyć odpowiedź. Poniżej znajdziesz szczegółowy opis zakładek, możliwości i tego, co aplikacja pokazuje.',
-    faqOk: 'Rozumiem',
-    welcome: '👋 Witaj! Kliknij ☰ Menu → Pomoc, aby zobaczyć wszystkie funkcje.',
-    greeting: 'Cześć! 👋',
-    tomorrow: 'Jutro',
-    nextDayOff: 'Do wolnego',
-    thisWeek: 'Ten tydzień',
-    vacation: 'Urlop',
-    upcomingDays: 'Najbliższe 7 dni',
-    seeMonth: '📅 Zobacz miesiąc',
-    seeWeek: '📆 Zobacz tydzień',
-    unknown: 'Nieznane',
-    todayLabel: 'Dziś!',
-    daysAgo: 'wczoraj',
-    dayBefore: 'wczoraj',
-    dayAfter: 'jutro',
-    inDays: 'Za {n} dni',
-    editBannerTitle: 'Tryb edycji',
-    editBannerHint: 'Skróty: R P N W = zmiana • O = nadgodziny • Ctrl+Z = cofnij • Ctrl+S = zapisz • Esc = wyjdź',
-    undoBtn: '↶ Cofnij',
-    redoBtn: '↷ Ponów',
-    saveBtn: '💾 Zapisz',
-    discardBtn: '↶ Odrzuć wszystko',
-    vacationLimitBtn: '🌴 Limit urlopu',
-    exportBtn: '📥 JSON',
-    importBtn: '📂 Import',
-    clearYearBtn: '🗑 Rok',
-    resetBtn: '↺ Reset',
-    undoNothing: 'Nie ma czego cofnąć',
-    redoNothing: 'Nie ma czego powtórzyć',
-    noChangesToSave: 'Brak zmian do zapisania',
-    changesDiscarded: 'Zmiany odrzucone',
-    editModeOnToast: 'Tryb edycji WŁ. Skróty: R/P/N/W/C/O',
-    editModeOnShort: 'Tryb edycji WŁ',
-    enableEditTitle: '✏️ Włączyć tryb edycji?',
-    enableEditBody: 'Kliknięcia w komórki zmienią zmiany.<br><br>Wybierz "malowaną" zmianę w palecie na dole (lub użyj skrótu R/P/N/W).<br>Aby dodać <b>nadgodziny</b> — wybierz <b>⏱</b> (lub klawisz O).<br><br>Zmiany <b>NIE zapisują się automatycznie</b> — trzeba kliknąć <b>💾 Zapisz</b>.',
-    enableEditConfirm: '✏️ Włącz',
-    unsavedChangesTitle: '⚠️ Masz {n} niezapisanych zmian',
-    unsavedChangesBody: 'Wybierz co zrobić:',
-    discardAndExit: 'Odrzuć i wyjdź',
-    saveConfirmTitle: '💾 Zapisać {n} {unit}?',
-    saveConfirmBody: 'Zmiany zostaną trwale zapisane w Twojej przeglądarce.',
-    saveConfirmBtn: '💾 Zapisz',
-    saveSuccess: 'Zapisano {n} {unit}',
-    changeSingular: 'zmianę',
-    changePlural: 'zmian',
-    discardConfirmTitle: '↶ Cofnąć wszystkie niezapisane zmiany?',
-    discardConfirmBody: 'Zostaną odrzucone {n} {unit}.',
-    discardConfirmBtn: '↶ Cofnij',
-    discardSuccess: 'Zmiany cofnięte',
-    yearWithChanges: 'Rok {year} — z Twoimi zmianami',
-    yearFactoryData: 'Rok {year} — dane fabryczne',
-    yearNoData: 'Rok {year} — brak danych, użyj ✏️',
-    yearSwitchTitle: '⚠️ {n} niezapisanych zmian dla {year}',
-    yearSwitchBody: 'Zmiany pozostaną w buforze, ale nie będą widoczne po przełączeniu roku.',
-    yearSwitchBtn: 'Przełącz',
-    clearYearTitle: '🗑 Wyczyścić rok {year}?',
-    clearYearBody: 'Usunięte zostaną: zapisane zmiany + bufor dla tego roku. Urlopy i nadgodziny pozostaną. Dane fabryczne wrócą (jeśli istnieją).',
-    clearYearBtn: '🗑 Wyczyść',
-    yearCleared: 'Rok {year} wyczyszczony',
-    resetTitle: '↺ Zresetować wszystkie edycje?',
-    resetBody: 'Usunięte zostaną WSZYSTKIE Twoje edycje (wszystkie lata + bufor). Fabryczne dane wrócą. Urlopy, nadgodziny i notatki pozostaną.',
-    resetBtn: '↺ Reset',
-    resetSuccess: 'Wszystkie zmiany zresetowane',
-    searchPlaceholder: 'Szukaj...',
-    searchBtn: 'Szukaj',
-    searchNoResults: 'Brak wyników',
-    searchFound: 'Znaleziono: {n}',
-    searchDayOff: 'Dni wolnego',
-    emptyYearTitle: 'Rok {year} jest pusty',
-    emptyYearBody: 'Ten rok nie ma jeszcze fabrycznych danych.<br>Wypełnij go ręcznie w trybie edycji lub zaimportuj plik JSON.',
-    emptyEnableEdit: '✏️ Włącz edycję',
-    emptyImport: '📂 Import JSON',
-    infoPanelTitle: 'ℹ️ Wybierz dzień w kalendarzu',
-    infoPanelHint: 'Kliknij dowolny dzień, aby zobaczyć szczegóły.',
-    infoStatus: 'Status',
-    infoPlannedShift: 'Zaplanowana zmiana',
-    infoNote: '📝 Notatka',
-    infoNotePlaceholder: 'Dodaj notatkę...',
-    infoNoteSaved: 'Notatka zapisana',
-    infoShift: 'Zmiana',
-    infoPrevShift: '⬅️ Kto przekazał zmianę',
-    infoNextShift: '➡️ Kto przejmie zmianę',
-    infoCycle: '🔁 Blok',
-    infoCycleOf: '{n} z {total}',
-    infoNextDayOff: '🏖️ Do wolnego',
-    infoOvertime: '⏱ Nadgodziny',
-    infoLiveShift: '⏱️ TRWA ZMIANA',
-    infoUrlop: '🌴 URLOP',
-    infoFree: '🏖️ Wolne',
-    infoUrlopStats: '🌴 Urlop {brig} ({year}):',
-    infoUrlopMarked: 'Zaznaczone',
-    infoUrlopWorking: 'Robocze',
-    infoUrlopLimitEdit: 'Zmień limit urlopów dla {brig}',
-    otBefore: '⏱ PRZED',
-    otAfter: '⏱ PO',
-    otAdd: '+ Dodaj',
-    otDeleteBefore: 'Usunąć nadgodziny PRZED?',
-    otDeleteAfter: 'Usunąć nadgodziny PO?',
-    otDeleteBtn: 'Usuń',
-    otSaveBtn: '💾 Zapisz',
-    otCancelBtn: 'Anuluj',
-    otTitle: 'Nadgodziny',
-    otPositionBefore: 'PRZED',
-    otPositionAfter: 'PO',
-    otTime: 'Czas',
-    otHours: 'godzin',
-    otPreview: '📊 Podgląd',
-    otCrossesMidnight: '⚠️ Przechodzi przez północ',
-    otCategory50: '🟡 +50%',
-    otCategory100: '🟣 +100%',
-    otCategory200: '🔴 +200%',
-    otPayment: '💰 Razem płatne',
-    otSaved: 'Zapisano {h}h nadgodzin',
-    otDeleted: 'Nadgodziny usunięte',
-    otSelectHours: 'Wybierz liczbę godzin',
-    otMonthSummary: '⏱ Nadgodziny w miesiącu',
-    otMonthEntry: 'wpis',
-    otMonthEntries: 'wpisów',
-    otMonthTotal: '📊 Razem',
-    otMonthWorked: 'przepracowane',
-    otMonthPaid: '💰 płatne',
-    otWeekBefore: '⬅ PRZED',
-    otWeekAfter: 'PO ➡',
-    otAddInMonthView: 'Nadgodziny dodawaj w widoku Miesiąc',
-    vacationLimitTitle: 'Ustaw limit urlopu',
-    vacationLimitBody: 'Podaj nową liczbę dni urlopu dla brygady <strong>{brig}</strong>:',
-    vacationLimitSave: 'Zapisz',
-    vacationLimitCancel: 'Anuluj',
-    vacationLimitInvalid: 'Wpisz liczbę dni większą lub równą 0',
-    vacationLimitSet: 'Limit urlopów dla brygady {brig}: {n} dni',
-    exportSuccess: 'Kalendarz wyeksportowany',
-    exportJsonSuccess: 'Backup pobrany',
-    importReplaceTitle: '⚠️ Zastąpić aktualne dane?',
-    importReplaceBody: 'Import nadpisze Twoje grafiki, urlopy, nadgodziny i notatki.',
-    importBtn: 'Importuj',
-    importSuccess: 'Dane wczytane',
-    importJsonError: 'Błąd składni JSON',
-    importError: 'Błąd importu: {msg}',
-    importDataError: 'Dane nie są obiektem',
-    importMissingKeys: 'Brak znanych kluczy danych w pliku',
-    importInvalidSchedule: 'Nieprawidłowa struktura customSchedule',
-    importInvalidYear: 'Nieprawidłowy rok w customSchedule: {year}',
-    importInvalidMonths: 'Nieprawidłowa struktura miesięcy dla roku {year}',
-    importInvalidBrigade: 'Dane brygady {brig} w miesiącu {m}/{year} muszą być tablicą',
-    importInvalidDays: 'Błędna liczba dni dla brygady {brig} w {m}/{year}: jest {actual}, powinno być {expected}',
-    importInvalidDayValue: 'Nieprawidłowa wartość dnia {idx} dla brygady {brig} w {m}/{year}',
-    importInvalidUrlops: 'Nieprawidłowa struktura urlops',
-    importUrlopsArray: 'Urlopy brygady {brig} muszą być tablicą',
-    importInvalidUrlopDate: 'Nieprawidłowy format daty urlopu: {date}',
-    importInvalidOvertimes: 'Nieprawidłowa struktura overtimes',
-    importInvalidOtEntry: 'Nieprawidłowy wpis nadgodzin dla klucza {key}',
-    importInvalidOtValue: 'Nieprawidłowa wartość {pos} w nadgodzinach dla {key}',
-    importInvalidNotes: 'Nieprawidłowa struktura notes',
-    importInvalidNote: 'Notatka dla {key} musi być tekstem',
-    shareCopied: 'Skopiowano do schowka',
-    shareCopyFailed: 'Kopiowanie niemożliwe',
-    shareSuccess: 'Udostępniono',
-    shareLinkCopied: 'Link skopiowany do schowka',
-    shareLinkFailed: 'Nie udało się skopiować linku',
-    shareApp: 'Grafik Gillette',
-    printHeaderDashboard: 'Dashboard',
-    printHeaderWeek: 'Tydzień',
-    printHeaderMonth: 'Miesiąc',
-    printHeaderTable: 'Tabela',
-    printYearSuffix: ' — cały rok',
-    printGenerated: 'Wygenerowano',
-    viewDashboard: '🏠 Dashboard',
-    viewWeek: '📆 Tydzień',
-    viewMonth: '📅 Miesiąc',
-    viewTable: '📋 Tabela',
-    viewYear: '📊 Rok',
-    weekTitle: '📆 {range} · Brygada {brig}',
-    yearViewTitle: '📋 Cały rok {year} — wszystkie brygady',
-    monthViewTitle: '📋 {month} {year} — wszystkie brygady',
-    tableCorner: 'Br.\\Dz.',
-    vacation: 'Urlop',
-    free: 'Wolne',
-    shiftR: 'Rano',
-    shiftP: 'Popołudnie',
-    shiftN: 'Noc',
-    shiftW: 'Wolne',
-    faqStartTitle: '🚀 Jak zacząć pracę z aplikacją?',
-    faqStart1: 'Wybierz swoją brygadę (A/B/C/D)',
-    faqStart2: 'Wybierz rok strzałkami ‹ ›',
-    faqStart3: 'Uruchom 🏠 Dashboard, bo jest najlepszy do szybkiego przeglądu',
-    faqStart4: 'Jeżeli chcesz wprowadzać zmiany, przejdź do trybu edycji przyciskiem ✏️',
-    faqStartNote: 'Ustawienia zapisują się automatycznie w przeglądarce, więc po powrocie do aplikacji wracasz do ostatniego stanu.',
-    faqViewsTitle: '📋 Jakie są główne zakładki i co każda z nich pokazuje?',
-    faqViewsDesc: 'Aplikacja ma kilka głównych widoków, które służą do różnych zadań:',
-    faqViewsDashboard: '🏠 Dashboard — ekran startowy. Pokazuje dzisiejszą zmianę, najbliższe dni, podsumowanie tygodnia, status urlopów i szybkie przejścia do innych widoków.',
-    faqViewsWeek: '📆 Tydzień — pokazuje grafik na 7 dni w większej, bardziej uporządkowanej formie, przydatnej do planowania najbliższych dni.',
-    faqViewsMonth: '📅 Miesiąc — główny kalendarz. Tutaj widać zmiany, dni wolne, urlopy, notatki, nadgodziny i dodatkowe popupy z informacją o poprzedniej i następnej zmianie.',
-    faqViewsTable: '📋 Tabela — pokazuje wszystkie 4 brygady w jednym miesiącu, co ułatwia porównanie grafików między brygadami.',
-    faqViewsYear: '📊 Rok — rozszerza widok miesiąca lub tabeli na cały rok i pokazuje 12 mini-kalendarzy albo 12 tabel.',
-    faqViewsNote: 'Każda zakładka odpowiada innemu celowi: szybki przegląd, planowanie, edycja i analiza całego okresu.',
-    faqFeaturesTitle: '🧩 Jakie są najważniejsze możliwości programu?',
-    faqFeaturesDesc: 'Program potrafi robić znacznie więcej niż tylko pokazywać grafik. Oto jego najważniejsze możliwości:',
-    faqFeaturesShift: 'Pokazywanie zmian dla każdej brygady: rano, popołudnie, noc oraz dni wolne.',
-    faqFeaturesLive: 'Wyświetlanie aktualnej i najbliższej zmiany z timerem, który informuje, kiedy zmiana się zaczyna lub kończy.',
-    faqFeaturesVacation: 'Obsługę urlopów — użytkownik może oznaczać dni urlopowe i sprawdzać ich liczenie w bieżącym roku.',
-    faqFeaturesOvertime: 'Dodawanie nadgodzin do wybranych dni, z automatycznym policzeniem poziomu premii.',
-    faqFeaturesNotes: 'Notatki do dni — można zapisywać dodatkowe informacje dla konkretnych dat.',
-    faqFeaturesSearch: 'Wyszukiwanie dni — aplikacja potrafi znaleźć zmiany, dni wolne, blok wolnego i urlopy.',
-    faqFeaturesCompare: 'Porównywanie brygad — można zobaczyć, kiedy dwie brygady mają tę samą zmianę.',
-    faqFeaturesExport: 'Eksport do kalendarza i backup JSON — dane można zapisać lub przenieść do innych narzędzi.',
-    faqFeaturesPrint: 'Drukowanie i udostępnianie wybranego widoku albo konkretnego dnia.',
-    faqFeaturesNote: 'W praktyce aplikacja łączy funkcje grafiku, planera, kalendarza i prostego narzędzia do analizy zmian.',
-    faqOvertimeTitle: '⏱ Jak dodawać nadgodziny?',
-    faqOvertime1: 'Włącz ✏️ tryb edycji',
-    faqOvertime2: 'W palecie na dole wybierz ⏱ lub naciśnij klawisz O',
-    faqOvertime3: 'Kliknij dzień z zmianą — pojawią się dwa popupy:',
-    faqOvertime3a: '⏱ PRZED — nadgodziny przed zmianą',
-    faqOvertime3b: '⏱ PO — nadgodziny po zmianie',
-    faqOvertime4: 'Kliknij popup i wpisz liczbę godzin w oknie modalnym',
-    faqOvertimeCategory: 'Kategoria nadgodzin jest obliczana automatycznie:',
-    faqOvertimeCat200: '+200% — jeśli dzień jest świętem',
-    faqOvertimeCat100: '+100% — gdy nadgodziny są w nocy (22:00–6:00) albo w niedzielę',
-    faqOvertimeCat50: '+50% — zwykłe nadgodziny dzienne',
-    faqOvertimeNote: 'Komórka zostaje wizualnie podzielona na części, a pod nią widoczny jest rzeczywisty czas pracy. W widoku miesiąca pojawia się także podsumowanie miesięczne.',
-    faqVacationTitle: '🌴 Jak zaznaczać urlopy i kiedy są liczone?',
-    faqVacationDesc: 'W widoku 📅 Miesiąc kliknij wybrany dzień i wybierz popup 🌴 +, aby dodać urlop.',
-    faqVacationRemove: 'Aby usunąć urlop, kliknij ponownie ten sam dzień i wybierz czerwony 🌴 ❌.',
-    faqVacationStats: 'Statystyka pokazuje liczbę zaznaczonych dni oraz dni roboczych w bieżącym roku. Tylko dni robocze są liczone do limitu.',
-    faqNotesTitle: '📝 Jak działają notatki do dni?',
-    faqNotesDesc: 'W widoku miesiąca wybierz dzień, a w dolnym panelu wpisz notatkę. Po kliknięciu poza pole lub po naciśnięciu Tab notatka zostaje zapisana.',
-    faqNotesIcon: 'Na komórce dnia pojawi się ikona 📝 — najedź na nią, aby przeczytać treść.',
-    faqKeyboardTitle: '⌨️ Jakie są skróty klawiszowe?',
-    faqKeyboardEdit: 'W trybie edycji:',
-    faqKeyboardEdit1: 'R / P / N / W — wybór zmiany do malowania',
-    faqKeyboardEdit2: 'C — tryb cyklu',
-    faqKeyboardEdit3: 'O — tryb nadgodzin',
-    faqKeyboardEdit4: 'Ctrl+Z — cofnij ostatnią zmianę',
-    faqKeyboardEdit5: 'Ctrl+S — zapisz wszystkie zmiany',
-    faqKeyboardNav: 'Nawigacja:',
-    faqKeyboardNav1: '← / → — poprzedni/następny miesiąc',
-    faqKeyboardNav2: 'Esc — zamknij popup lub wyjdź z edycji',
-    faqKeyboardNav3: 'E — włącz/wyłącz edycję',
-    faqSaveTitle: '💾 Jak zapisują się dane?',
-    faqSaveDesc: 'Grafiki zapisują się po kliknięciu 💾 Zapisz w żółtym banerze.',
-    faqSaveNote: 'Urlopy, nadgodziny i notatki zapisują się automatycznie. Regularnie rób backup przez 📥 JSON, żeby nie stracić danych po czyszczeniu przeglądarki.',
-    faqSyncTitle: '☁️ Jak działa synchronizacja z Google Drive?',
-    faqSyncDesc: 'Synchronizacja pozwala przenieść dane aplikacji między urządzeniami przez Google Drive.',
-    faqSync1: 'W menu wybierz Google Drive. Jeśli nie jesteś zalogowany, aplikacja poprosi o zalogowanie.',
-    faqSync2: 'Możesz wysłać dane do Drive lub pobrać zapisane dane z Drive.',
-    faqSync3: 'Synchronizowane dane obejmują: ustawienia grafiku, urlopy, nadgodziny, notatki i limity urlopów.',
-    faqSync4: 'Przy pobieraniu danych aplikacja pyta o potwierdzenie nadpisania lokalnych danych.',
-    faqSync5: 'Przycisk synchronizacji widoczny jest tylko po zalogowaniu; po wylogowaniu dostępny jest tylko przycisk logowania.',
-    faqSyncNote: 'To nowy sposób na przechowywanie grafiku w chmurze bez ręcznego eksportu.',
-    faqExportTitle: '📥 Czy można eksportować grafik do innych aplikacji?',
-    faqExportDesc: 'Tak. W menu dostępny jest eksport .ics do kalendarza oraz backup JSON. Plik .ics można zaimportować do Google Calendar, Outlooka, iPhone’a i wielu innych aplikacji kalendarzowych.',
-    faqInstallTitle: '📲 Jak zainstalować aplikację na iPhone / iPad?',
-    faqInstallDesc: 'Aplikacja jest dostępna jako PWA (Progressive Web App). Na urządzeniach Apple nie ma natywnego okna instalacji, ale możesz dodać ją do ekranu głównego:',
-    faqInstall1: 'Otwórz tę stronę w Safari (nie w innej przeglądarce)',
-    faqInstall2: 'Dotknij przycisku Udostępnij ⬆️ u dołu ekranu',
-    faqInstall3: 'Przewiń w dół i wybierz „Dodaj do ekranu głównego"',
-    faqInstall4: 'Dotknij „Dodaj" w prawym górnym rogu',
-    faqInstallNote: 'Po dodaniu ikona aplikacji pojawi się na ekranie głównym. Uruchamiając ją stąd, otworzy się w pełnoekranowym trybie bez paska adresu.',
-    faqInstallMenuNote: 'W menu aplikacji (☰ Menu → Zainstaluj aplikację) dostępna jest także szczegółowa instrukcja krok po kroku.',
-    faqBugTitle: '🐛 Jak zgłosić problem lub sugestię?',
-    faqBugDesc: '📧 Kontakt:',
-    faqBugEmail: 'tantsiura.s@pg.com',
-    faqBugNote: 'Przy zgłoszeniu błędu warto podać rok, datę, brygadę, przeglądarkę i krótki opis problemu.',
-    menuTheme: '🎨 Motyw',
-    menuDrive: '☁️ Google Drive',
-    menuSyncNow: '🔄 Synchronizuj teraz',
-    menuDriveLogout: '🚪 Wyloguj z Google Drive',
-    menuExport: '📤 Eksport',
-    menuIcs: '📥 Eksport do kalendarza (.ics)',
-    menuPrint: '🖨️ Drukuj',
-    menuShare: '🔗 Udostępnij dzień',
-    menuNotifications: '🔔 Powiadomienia o zmianach',
-    menuInstallApp: '📲 Zainstaluj aplikację',
-    menuHelp: '❓ Pomoc / FAQ',
-    installPrompt: '📲 Zainstaluj aplikację',
-    cancel: 'Anuluj',
-    ok: 'OK',
-    close: 'Zamknij',
-    save: 'Zapisz',
-    delete: 'Usuń',
-    yes: 'Tak',
-    no: 'Nie',
-    dayMon: 'Pon',
-    dayTue: 'Wt',
-    dayWed: 'Śr',
-    dayThu: 'Cz',
-    dayFri: 'Pt',
-    daySat: 'Sob',
-    daySun: 'Nd',
-    dayMonday: 'Poniedziałek',
-    dayTuesday: 'Wtorek',
-    dayWednesday: 'Środa',
-    dayThursday: 'Czwartek',
-    dayFriday: 'Piątek',
-    daySaturday: 'Sobota',
-    daySunday: 'Niedziela',
-    month1: 'Styczeń',
-    month2: 'Luty',
-    month3: 'Marzec',
-    month4: 'Kwiecień',
-    month5: 'Maj',
-    month6: 'Czerwiec',
-    month7: 'Lipiec',
-    month8: 'Sierpień',
-    month9: 'Wrzesień',
-    month10: 'Październik',
-    month11: 'Listopad',
-    month12: 'Grudzień',
-    month1Short: 'Sty',
-    month2Short: 'Lut',
-    month3Short: 'Mar',
-    month4Short: 'Kwi',
-    month5Short: 'Maj',
-    month6Short: 'Cze',
-    month7Short: 'Lip',
-    month8Short: 'Sie',
-    month9Short: 'Wrz',
-    month10Short: 'Paź',
-    month11Short: 'Lis',
-    month12Short: 'Gru',
-    shiftR: 'Rano (6:00–14:00)',
-    shiftP: 'Popołudnie (14:00–22:00)',
-    shiftN: 'Noc (22:00–6:00)',
-    shiftEmpty: 'Wolne',
-    shiftRShort: 'Rano',
-    shiftPShort: 'Popołudnie',
-    shiftNShort: 'Noc',
-    holidayNewYear: 'Nowy Rok',
-    holidayEpiphany: 'Trzech Króli',
-    holidayEaster: 'Wielkanoc',
-    holidayEasterMonday: 'Poniedziałek Wielkanocny',
-    holidayLabor: 'Święto Pracy',
-    holidayConstitution: 'Święto Konstytucji',
-    holidayPentecost: 'Zesłanie Ducha Świętego',
-    holidayCorpus: 'Boże Ciało',
-    holidayAssumption: 'Wniebowzięcie NMP',
-    holidayAllSaints: 'Wszystkich Świętych',
-    holidayIndependence: 'Święto Niepodległości',
-    holidayChristmas1: 'Boże Narodzenie',
-    holidayChristmas2: '2. Dzień Bożego Narodzenia',
-    paletteSelected: 'Wybrano: {name}',
-    paletteChanged: 'Paleta: {name}',
-    otOnlyOnShift: 'Nadgodziny można dodać tylko do dnia ze zmianą',
-    urlopRemoved: 'Urlop usunięty',
-    urlopAdded: 'Urlop dodany',
-    removed: 'Usunięto',
-    infoDate: '📅 Data:',
-    infoShiftLabel: '🏭 Zmiana:',
-    infoPosition: '📍 Pozycja:',
-    infoPaid: 'zapłaty',
-    infoTime: '⏰ Czas:',
-    infoBrigadeHours: 'Brygada {brig}: {worked}h / {total}h ({pct}%)',
-    infoDayTooltip: '{d} {month}: {status}',
-    infoTableTooltip: '{brig} • {d} {month}: {status}',
-    infoStatusFree: '🏖️ Wolne',
-    brigade: 'Brygada',
-    dayOff: 'Wolne',
-    wholeYear: 'Cały rok',
-    allBrigades: 'wszystkie brygady',
-    brigadeDayHeader: 'Br.\\Dz.',
-    yearIsEmptyTitle: 'Rok {year} jest pusty',
-    yearIsEmptyDescription: 'Ten rok nie ma jeszcze fabrycznych danych.<br>Wypełnij go ręcznie w trybie edycji lub zaimportuj plik JSON.',
-    enableEdit: '✏️ Włącz edycję',
-    importJson: '📂 Import JSON',
-    driveLoggedIn: 'Zalogowano do Google Drive',
-    driveLoginFailed: 'Błąd logowania do Google Drive',
-    driveLoginRequired: 'Wymagane logowanie do Google Drive',
-    unknownError: 'Nieznany błąd',
-    driveCreateFileError: 'Błąd tworzenia pliku',
-    driveUpdateFileError: 'Błąd aktualizacji pliku',
-    driveSaved: 'Zapisano w Drive',
-    driveSyncError: 'Błąd synchronizacji',
-    driveNoFileToDownload: 'Brak pliku do pobrania',
-    driveDownloadFileError: 'Błąd pobierania pliku',
-    driveInvalidDataFormat: 'Nieprawidłowy format danych',
-    driveDownloadedWithErrors: 'Pobrano z błędami',
-    driveDownloaded: 'Pobrano z Drive',
-    driveDownloadConfirmTitle: 'Pobrać dane z Drive?',
-    driveDownloadConfirmBody: 'Spowoduje to nadpisanie lokalnych danych.',
-    download: '📥 Pobierz',
-    driveDownloadError: 'Błąd pobierania',
-    driveLoggedInHint: 'Zalogowano do Google Drive',
-    loggedIn: 'zalogowano',
-    logoutFromDrive: 'Wyloguj z Google Drive',
-    login: 'zaloguj',
-    driveLoggedOutHint: 'Wylogowano z Google Drive',
-    driveConfigTitle: 'Konfiguracja Google Drive',
-    driveConfigIntro: 'Aby korzystać z synchronizacji, skonfiguruj aplikację w Google Cloud Console.',
-    driveConfigHowTo: 'Jak skonfigurować:',
-    driveConfigStep1: 'Przejdź do Google Cloud Console → Credentials',
-    driveConfigStep2: 'Utwórz OAuth 2.0 Client ID',
-    driveConfigStep3: 'Dodaj http://localhost:8000 do Authorized origins',
-    driveConfigStep4: 'Dodaj http://localhost:8000 do Authorized redirect URIs',
-    driveConfigStep5: 'Skopiuj Client ID poniżej',
-    driveConfigNote: 'Uwaga: ta funkcja wymaga konfiguracji Google Cloud Project.',
-    enterClientId: 'Wpisz Client ID',
-    driveClientIdSaved: 'Client ID zapisany',
-    driveConfigureClientIdFirst: 'Najpierw skonfiguruj Client ID',
-    driveCannotInitLogin: 'Nie można zainicjować logowania',
-    driveSyncTitle: 'Synchronizacja z Google Drive',
-    driveSyncBody: 'Czy chcesz wysłać dane do Drive lub pobrać z Drive?',
-    sendToDrive: '📤 Wyślij do Drive',
-    driveLoggedOut: 'Wylogowano z Google Drive',
-    installApp: '📲 Zainstaluj aplikację',
-    installAppIosIntro: 'Aby zainstalować aplikację na iPhone/iPad:',
-    installAppIosStep1: 'Otwórz tę stronę w Safari',
-    installAppIosStep2: 'Dotknij przycisku Udostępnij ⬆️',
-    installAppIosStep3: 'Wybierz "Dodaj do ekranu głównego"',
-    installAppIosNote: 'Po instalacji aplikacja będzie dostępna offline i w pełnym ekranie.',
-    gotIt: 'Rozumiem',
-    appInstalled: 'Aplikacja zainstalowana',
-    installStarted: 'Instalacja rozpoczęta',
-    installCancelled: 'Instalacja anulowana',
-    notificationsNotSupported: 'Powiadomienia nie są obsługiwane',
-    notificationsAboutShifts: 'Powiadomienia o zmianach',
-    notificationsEnabledHint: 'Powiadomienia włączone',
-    notificationsDisabledHint: 'Powiadomienia wyłączone',
-    remindMeIn: 'Przypomnij za:',
-    hourSingular: 'godzinę',
-    hoursPlural: 'godzin',
-    notificationLeadToast: 'Przypomnienie',
-    beforeShift: 'przed zmianą',
-    browserNoNotificationSupport: 'Przeglądarka nie obsługuje powiadomień',
-    notificationsBlockedInBrowser: 'Powiadomienia zablokowane w przeglądarce',
-    notificationsEnabled: 'Powiadomienia włączone',
-    notificationsTestBody: 'To jest test powiadomienia',
-    notificationsDisabled: 'Powiadomienia wyłączone',
-    shift: 'Zmiana',
-    timerEndsIn: '⏱️ Kończy się za {h}h {m}min',
-    timerStartsIn: '⏰ Zacznie się za {m} min',
-    month1: 'Styczeń',
-    month2: 'Luty',
-    month3: 'Marzec',
-    month4: 'Kwiecień',
-    month5: 'Maj',
-    month6: 'Czerwiec',
-    month7: 'Lipiec',
-    month8: 'Sierpień',
-    month9: 'Wrzesień',
-    month10: 'Październik',
-    month11: 'Listopad',
-    month12: 'Grudzień',
-    month1Short: 'Sty',
-    month2Short: 'Lut',
-    month3Short: 'Mar',
-    month4Short: 'Kwi',
-    month5Short: 'Maj',
-    month6Short: 'Cze',
-    month7Short: 'Lip',
-    month8Short: 'Sie',
-    month9Short: 'Wrz',
-    month10Short: 'Paź',
-    month11Short: 'Lis',
-    month12Short: 'Gru',
-    dayMon: 'Pon',
-    dayTue: 'Wt',
-    dayWed: 'Śr',
-    dayThu: 'Cz',
-    dayFri: 'Pt',
-    daySat: 'Sob',
-    daySun: 'Nd',
-    dayMonday: 'Poniedziałek',
-    dayTuesday: 'Wtorek',
-    dayWednesday: 'Środa',
-    dayThursday: 'Czwartek',
-    dayFriday: 'Piątek',
-    daySaturday: 'Sobota',
-    daySunday: 'Niedziela'
-  },
-
-  en: {
-    appName: 'Grafik Gillette',
-    appNameShort: 'Grafik',
-    editMode: 'Edit mode (E)',
-    editModeOn: 'Turn off edit mode (E)',
-    editModeOff: 'Turn on edit mode (E)',
-    profile: 'Log in to Google Drive',
-    theme: 'Toggle theme',
-    menu: 'Menu',
-    language: 'Language',
-    compareHint: 'Ctrl+click = compare',
-    changeYear: 'Change year',
-    today: '📅 Today',
-    searchBtn: '🔍',
-    prevMonth: 'Previous month (←)',
-    nextMonth: 'Next month (→)',
-    prevWeek: '‹',
-    nextWeek: '›',
-    shiftR: 'Morning (R)',
-    shiftP: 'Afternoon (P)',
-    shiftN: 'Night (N)',
-    shiftW: 'Free (W)',
-    shiftROption: 'R – Morning',
-    shiftPOption: 'P – Afternoon',
-    shiftNOption: 'N – Night',
-    legendFree: '— Free',
-    legendVacation: '🌴 Vacation',
-    paletteTitleR: 'Morning (R)',
-    paletteTitleP: 'Afternoon (P)',
-    paletteTitleN: 'Night (N)',
-    paletteTitleW: 'Free (W)',
-    cycleMode: 'Cycle',
-    overtime: 'Overtime (O)',
-    undoHint: 'Undo last change (Ctrl+Z)',
-    redoHint: 'Redo last change (Ctrl+Y)',
-    saveHint: 'Save changes (Ctrl+S)',
-    yearToggle: 'Expand to full year',
-    searchTypeLabel: 'Shift type:',
-    searchMonthLabel: 'Month:',
-    searchAllTypes: '— all —',
-    searchFree: 'Free',
-    searchFree3Days: 'Free (min. 3 consecutive days)',
-    searchVacation: '🌴 Vacation',
-    otHoursLabel: 'How many hours?',
-    otOrCustom: 'or custom:',
-    otHoursUnit: 'hours',
-    otNote: '📝 Note (optional)',
-    otNotePlaceholder: 'e.g. Covering for Kowalski',
-    faqTitle: '❓ Help — Grafik Gillette (FAQ v3)',
-    faqIntro: 'Click a question to see the answer. Below you will find a detailed description of tabs, features and what the application shows.',
-    faqOk: 'I understand',
-    welcome: '👋 Welcome! Click ☰ Menu → Help to see all features.',
-    greeting: 'Hello! 👋',
-    tomorrow: 'Tomorrow',
-    nextDayOff: 'Next day off',
-    thisWeek: 'This week',
-    vacation: 'Vacation',
-    upcomingDays: 'Next 7 days',
-    seeMonth: '📅 See month',
-    seeWeek: '📆 See week',
-    unknown: 'Unknown',
-    todayLabel: 'Today!',
-    daysAgo: 'yesterday',
-    dayBefore: 'yesterday',
-    dayAfter: 'tomorrow',
-    inDays: 'In {n} days',
-    editBannerTitle: 'Edit mode',
-    editBannerHint: 'Shortcuts: R P N W = shift • O = overtime • Ctrl+Z = undo • Ctrl+S = save • Esc = exit',
-    undoBtn: '↶ Undo',
-    redoBtn: '↷ Redo',
-    saveBtn: '💾 Save',
-    discardBtn: '↶ Discard all',
-    vacationLimitBtn: '🌴 Vacation limit',
-    exportBtn: '📥 JSON',
-    importBtn: '📂 Import',
-    clearYearBtn: '🗑 Year',
-    resetBtn: '↺ Reset',
-    undoNothing: 'Nothing to undo',
-    redoNothing: 'Nothing to redo',
-    noChangesToSave: 'No changes to save',
-    changesDiscarded: 'Changes discarded',
-    editModeOnToast: 'Edit mode ON. Shortcuts: R/P/N/W/C/O',
-    editModeOnShort: 'Edit mode ON',
-    enableEditTitle: '✏️ Enable edit mode?',
-    enableEditBody: 'Clicks on cells will change shifts.<br><br>Select a shift to paint in the palette at the bottom (or use shortcut R/P/N/W).<br>To add <b>overtime</b> — select <b>⏱</b> (or press key O).<br><br>Changes are <b>NOT saved automatically</b> — click <b>💾 Save</b>.',
-    enableEditConfirm: '✏️ Enable',
-    unsavedChangesTitle: '⚠️ You have {n} unsaved changes',
-    unsavedChangesBody: 'Choose what to do:',
-    discardAndExit: 'Discard and exit',
-    saveConfirmTitle: '💾 Save {n} {unit}?',
-    saveConfirmBody: 'Changes will be permanently saved in your browser.',
-    saveConfirmBtn: '💾 Save',
-    saveSuccess: 'Saved {n} {unit}',
-    changeSingular: 'change',
-    changePlural: 'changes',
-    discardConfirmTitle: '↶ Discard all unsaved changes?',
-    discardConfirmBody: 'Will discard {n} {unit}.',
-    discardConfirmBtn: '↶ Discard',
-    discardSuccess: 'Changes discarded',
-    yearWithChanges: 'Year {year} — with your changes',
-    yearFactoryData: 'Year {year} — factory data',
-    yearNoData: 'Year {year} — no data, use ✏️',
-    yearSwitchTitle: '⚠️ {n} unsaved changes for {year}',
-    yearSwitchBody: 'Changes will remain in the buffer, but will not be visible after switching the year.',
-    yearSwitchBtn: 'Switch',
-    clearYearTitle: '🗑 Clear year {year}?',
-    clearYearBody: 'Will be deleted: saved changes + buffer for this year. Vacations and overtime will remain. Factory data will return (if available).',
-    clearYearBtn: '🗑 Clear',
-    yearCleared: 'Year {year} cleared',
-    resetTitle: '↺ Reset all edits?',
-    resetBody: 'Will delete ALL your edits (all years + buffer). Factory data will return. Vacations, overtime and notes will remain.',
-    resetBtn: '↺ Reset',
-    resetSuccess: 'All changes reset',
-    searchPlaceholder: 'Search...',
-    searchBtn: 'Search',
-    searchNoResults: 'No results',
-    searchFound: 'Found: {n}',
-    searchDayOff: 'Days off',
-    emptyYearTitle: 'Year {year} is empty',
-    emptyYearBody: 'This year has no factory data yet.<br>Fill it manually in edit mode or import a JSON file.',
-    emptyEnableEdit: '✏️ Enable edit',
-    emptyImport: '📂 Import JSON',
-    infoPanelTitle: 'ℹ️ Select a day in the calendar',
-    infoPanelHint: 'Click any day to see details.',
-    infoStatus: 'Status',
-    infoPlannedShift: 'Planned shift',
-    infoNote: '📝 Note',
-    infoNotePlaceholder: 'Add a note...',
-    infoNoteSaved: 'Note saved',
-    infoShift: 'Shift',
-    infoPrevShift: '⬅️ Who handed over the shift',
-    infoNextShift: '➡️ Who will take over the shift',
-    infoCycle: '🔁 Block',
-    infoCycleOf: '{n} of {total}',
-    infoNextDayOff: '🏖️ Next day off',
-    infoOvertime: '⏱ Overtime',
-    infoLiveShift: '⏱️ SHIFT IN PROGRESS',
-    infoUrlop: '🌴 VACATION',
-    infoFree: '🏖️ Free',
-    infoUrlopStats: '🌴 Vacation {brig} ({year}):',
-    infoUrlopMarked: 'Marked',
-    infoUrlopWorking: 'Working',
-    infoUrlopLimitEdit: 'Change vacation limit for {brig}',
-    otBefore: '⏱ BEFORE',
-    otAfter: '⏱ AFTER',
-    otAdd: '+ Add',
-    otDeleteBefore: 'Delete BEFORE overtime?',
-    otDeleteAfter: 'Delete AFTER overtime?',
-    otDeleteBtn: 'Delete',
-    otSaveBtn: '💾 Save',
-    otCancelBtn: 'Cancel',
-    otTitle: 'Overtime',
-    otPositionBefore: 'BEFORE',
-    otPositionAfter: 'AFTER',
-    otTime: 'Time',
-    otHours: 'hours',
-    otPreview: '📊 Preview',
-    otCrossesMidnight: '⚠️ Crosses midnight',
-    otCategory50: '🟡 +50%',
-    otCategory100: '🟣 +100%',
-    otCategory200: '🔴 +200%',
-    otPayment: '💰 Total paid',
-    otSaved: 'Saved {h}h overtime',
-    otDeleted: 'Overtime deleted',
-    otSelectHours: 'Select number of hours',
-    otMonthSummary: '⏱ Overtime this month',
-    otMonthEntry: 'entry',
-    otMonthEntries: 'entries',
-    otMonthTotal: '📊 Total',
-    otMonthWorked: 'worked',
-    otMonthPaid: '💰 paid',
-    otWeekBefore: '⬅ BEFORE',
-    otWeekAfter: 'AFTER ➡',
-    otAddInMonthView: 'Add overtime in Month view',
-    vacationLimitTitle: 'Set vacation limit',
-    vacationLimitBody: 'Enter new number of vacation days for brigade <strong>{brig}</strong>:',
-    vacationLimitSave: 'Save',
-    vacationLimitCancel: 'Cancel',
-    vacationLimitInvalid: 'Enter a number of days >= 0',
-    vacationLimitSet: 'Vacation limit for brigade {brig}: {n} days',
-    exportSuccess: 'Calendar exported',
-    exportJsonSuccess: 'Backup downloaded',
-    importReplaceTitle: '⚠️ Replace current data?',
-    importReplaceBody: 'Import will overwrite your schedules, vacations, overtime and notes.',
-    importSuccess: 'Data loaded',
-    importJsonError: 'JSON syntax error',
-    importError: 'Import error: {msg}',
-    importDataError: 'Data is not an object',
-    importMissingKeys: 'No known data keys found in file',
-    importInvalidSchedule: 'Invalid customSchedule structure',
-    importInvalidYear: 'Invalid year in customSchedule: {year}',
-    importInvalidMonths: 'Invalid months structure for year {year}',
-    importInvalidBrigade: 'Brigade {brig} data in month {m}/{year} must be an array',
-    importInvalidDays: 'Invalid number of days for brigade {brig} in {m}/{year}: got {actual}, expected {expected}',
-    importInvalidDayValue: 'Invalid value for day {idx} of brigade {brig} in {m}/{year}',
-    importInvalidUrlops: 'Invalid urlops structure',
-    importUrlopsArray: 'Vacations for brigade {brig} must be an array',
-    importInvalidUrlopDate: 'Invalid vacation date format: {date}',
-    importInvalidOvertimes: 'Invalid overtimes structure',
-    importInvalidOtEntry: 'Invalid overtime entry for key {key}',
-    importInvalidOtValue: 'Invalid value {pos} in overtime for {key}',
-    importInvalidNotes: 'Invalid notes structure',
-    importInvalidNote: 'Note for {key} must be text',
-    shareCopied: 'Copied to clipboard',
-    shareCopyFailed: 'Copy not possible',
-    shareSuccess: 'Shared',
-    shareLinkCopied: 'Link copied to clipboard',
-    shareLinkFailed: 'Failed to copy link',
-    shareApp: 'Grafik Gillette',
-    printHeaderDashboard: 'Dashboard',
-    printHeaderWeek: 'Week',
-    printHeaderMonth: 'Month',
-    printHeaderTable: 'Table',
-    printYearSuffix: ' — full year',
-    printGenerated: 'Generated',
-    viewDashboard: '🏠 Dashboard',
-    viewWeek: '📆 Week',
-    viewMonth: '📅 Month',
-    viewTable: '📋 Table',
-    viewYear: '📊 Year',
-    yearToggle: '📊 Year',
-    yearViewTitle: '📋 Full year {year} — all brigades',
-    tableCorner: 'Brigade\\Day',
-    shiftR: 'Morning',
-    shiftP: 'Afternoon',
-    shiftN: 'Night',
-    shiftW: 'Free',
-    faqViewsTitle: '📋 What are the main tabs and what does each show?',
-    faqViewsDesc: 'The application has several main views, each serving different purposes:',
-    faqViewsWeek: '📆 Week — shows the schedule for 7 days in a larger, more organized form, useful for planning the coming days.',
-    faqViewsTable: '📋 Table — shows all 4 brigades in one month, making it easy to compare schedules between brigades.',
-    faqViewsYear: '📊 Year — expands the month or table view to the entire year and shows 12 mini-calendars or 12 tables.',
-    faqViewsNote: 'Each tab serves a different purpose: quick overview, planning, editing and analysis of the entire period.',
-    faqFeaturesTitle: '🧩 What are the key features of the program?',
-    faqFeaturesDesc: 'The program can do much more than just show the schedule. Here are its key features:',
-    faqFeaturesShift: 'Displaying shifts for each brigade: morning, afternoon, night and days off.',
-    faqFeaturesLive: 'Displaying the current and upcoming shift with a timer that tells when the shift starts or ends.',
-    faqFeaturesVacation: 'Vacation management — the user can mark vacation days and check their count for the current year.',
-    faqFeaturesOvertime: 'Adding overtime to selected days, with automatic calculation of the premium level.',
-    faqFeaturesNotes: 'Notes for days — you can save additional information for specific dates.',
-    faqFeaturesSearch: 'Day search — the application can find shifts, days off, blocks of free time and vacations.',
-    faqFeaturesCompare: 'Brigade comparison — you can see when two brigades have the same shift.',
-    faqFeaturesExport: 'Export to calendar and JSON backup — data can be saved or transferred to other tools.',
-    faqFeaturesPrint: 'Printing and sharing the selected view or a specific day.',
-    faqFeaturesNote: 'In practice, the application combines the functions of a schedule, planner, calendar and a simple analysis tool for shifts.',
-    faqOvertimeTitle: '⏱ How to add overtime?',
-    faqOvertime1: 'Enable ✏️ edit mode',
-    faqOvertime2: 'In the palette at the bottom select ⏱ or press key O',
-    faqOvertime3: 'Click a day with a shift — two popups will appear:',
-    faqOvertime3a: '⏱ BEFORE — overtime before the shift',
-    faqOvertime3b: '⏱ AFTER — overtime after the shift',
-    faqOvertime4: 'Click the popup and enter the number of hours in the modal window',
-    faqOvertimeCategory: 'The overtime category is calculated automatically:',
-    faqOvertimeCat200: '+200% — if the day is a holiday',
-    faqOvertimeCat100: '+100% — when overtime is at night (22:00–6:00) or on Sunday',
-    faqOvertimeCat50: '+50% — regular daytime overtime',
-    faqOvertimeNote: 'The cell is visually split into parts, and below it the actual working time is shown. A monthly summary also appears in the month view.',
-    faqVacationTitle: '🌴 How to mark vacations and when are they counted?',
-    faqVacationDesc: 'In the 📅 Month view, click the selected day and choose the 🌴 + popup to add a vacation.',
-    faqVacationRemove: 'To remove a vacation, click the same day again and select the red 🌴 ❌.',
-    faqVacationStats: 'The statistics show the number of marked days and working days in the current year. Only working days are counted towards the limit.',
-    faqNotesTitle: '📝 How do day notes work?',
-    faqNotesDesc: 'In the month view, select a day and type a note in the bottom panel. After clicking outside the field or pressing Tab, the note is saved.',
-    faqNotesIcon: 'A 📝 icon will appear on the day cell — hover over it to read the content.',
-    faqKeyboardTitle: '⌨️ What are the keyboard shortcuts?',
-    faqKeyboardEdit: 'In edit mode:',
-    faqKeyboardEdit1: 'R / P / N / W — select shift to paint',
-    faqKeyboardEdit2: 'C — cycle mode',
-    faqKeyboardEdit3: 'O — overtime mode',
-    faqKeyboardEdit4: 'Ctrl+Z — undo last change',
-    faqKeyboardEdit5: 'Ctrl+S — save all changes',
-    faqKeyboardNav: 'Navigation:',
-    faqKeyboardNav1: '← / → — previous/next month',
-    faqKeyboardNav2: 'Esc — close popup or exit edit mode',
-    faqKeyboardNav3: 'E — enable/disable edit',
-    faqSaveTitle: '💾 How is data saved?',
-    faqSaveDesc: 'Schedules are saved by clicking 💾 Save in the yellow banner.',
-    faqSaveNote: 'Vacations, overtime and notes are saved automatically. Regularly back up via 📥 JSON so you don\'t lose data after clearing the browser.',
-    faqSyncTitle: '☁️ How does Google Drive sync work?',
-    faqSyncDesc: 'Sync allows you to transfer app data between devices via Google Drive.',
-    faqSync1: 'In the menu, select Google Drive. If you are not logged in, the app will ask you to log in.',
-    faqSync2: 'You can send data to Drive or download saved data from Drive.',
-    faqSync3: 'Synced data includes: schedule settings, vacations, overtime, notes and vacation limits.',
-    faqSync4: 'When downloading data, the app asks for confirmation to overwrite local data.',
-    faqSync5: 'The sync button is visible only after logging in; after logging out, only the login button is available.',
-    faqSyncNote: 'This is a new way to store the schedule in the cloud without manual export.',
-    faqExportTitle: '📥 Can I export the schedule to other apps?',
-    faqExportDesc: 'Yes. The menu offers .ics calendar export and JSON backup. The .ics file can be imported into Google Calendar, Outlook, iPhone and many other calendar apps.',
-    faqInstallTitle: '📲 How to install the app on iPhone / iPad?',
-    faqInstallDesc: 'The app is available as a PWA (Progressive Web App). On Apple devices there is no native install window, but you can add it to your home screen:',
-    faqInstall1: 'Open this site in Safari (not in another browser)',
-    faqInstall2: 'Tap the Share button ⬆️ at the bottom of the screen',
-    faqInstall3: 'Scroll down and select "Add to Home Screen"',
-    faqInstall4: 'Tap "Add" in the top right corner',
-    faqInstallNote: 'After adding, the app icon will appear on your home screen. Launching it from there will open it in full-screen mode without the address bar.',
-    faqInstallMenuNote: 'In the app menu (☰ Menu → Install app) a detailed step-by-step instruction is also available.',
-    faqBugTitle: '🐛 How to report a bug or suggestion?',
-    faqBugDesc: '📧 Contact:',
-    faqBugEmail: 'tantsiura.s@pg.com',
-    faqBugNote: 'When reporting a bug, please provide the year, date, brigade, browser and a short description of the problem.',
-    menuTheme: '🎨 Theme',
-    menuDrive: '☁️ Google Drive',
-    menuSyncNow: '🔄 Sync now',
-    menuDriveLogout: '🚪 Log out of Google Drive',
-    menuExport: '📤 Export',
-    menuIcs: '📥 Export to calendar (.ics)',
-    menuPrint: '🖨️ Print',
-    menuShare: '🔗 Share day',
-    menuNotifications: '🔔 Shift notifications',
-    menuInstallApp: '📲 Install app',
-    menuHelp: '❓ Help / FAQ',
-    installPrompt: '📲 Install app',
-    cancel: 'Cancel',
-    ok: 'OK',
-    close: 'Close',
-    save: 'Save',
-    delete: 'Delete',
-    yes: 'Yes',
-    no: 'No',
-    dayMon: 'Mon',
-    dayTue: 'Tue',
-    dayWed: 'Wed',
-    dayThu: 'Thu',
-    dayFri: 'Fri',
-    daySat: 'Sat',
-    daySun: 'Sun',
-    dayMonday: 'Monday',
-    dayTuesday: 'Tuesday',
-    dayWednesday: 'Wednesday',
-    dayThursday: 'Thursday',
-    dayFriday: 'Friday',
-    daySaturday: 'Saturday',
-    daySunday: 'Sunday',
-    month1: 'January',
-    month2: 'February',
-    month3: 'March',
-    month4: 'April',
-    month5: 'May',
-    month6: 'June',
-    month7: 'July',
-    month8: 'August',
-    month9: 'September',
-    month10: 'October',
-    month11: 'November',
-    month12: 'December',
-    month1Short: 'Jan',
-    month2Short: 'Feb',
-    month3Short: 'Mar',
-    month4Short: 'Apr',
-    month5Short: 'May',
-    month6Short: 'Jun',
-    month7Short: 'Jul',
-    month8Short: 'Aug',
-    month9Short: 'Sep',
-    month10Short: 'Oct',
-    month11Short: 'Nov',
-    month12Short: 'Dec',
-    shiftR: 'Morning (6:00–14:00)',
-    shiftP: 'Afternoon (14:00–22:00)',
-    shiftN: 'Night (22:00–6:00)',
-    shiftEmpty: 'Free',
-    shiftRShort: 'Morning',
-    shiftPShort: 'Afternoon',
-    shiftNShort: 'Night',
-    holidayNewYear: 'New Year',
-    holidayEpiphany: 'Epiphany',
-    holidayEaster: 'Easter',
-    holidayEasterMonday: 'Easter Monday',
-    holidayLabor: 'Labor Day',
-    holidayConstitution: 'Constitution Day',
-    holidayPentecost: 'Pentecost',
-    holidayCorpus: 'Corpus Christi',
-    holidayAssumption: 'Assumption of Mary',
-    holidayAllSaints: 'All Saints\' Day',
-    holidayIndependence: 'Independence Day',
-    holidayChristmas1: 'Christmas',
-    holidayChristmas2: 'Second Day of Christmas',
-    paletteSelected: 'Selected: {name}',
-    paletteChanged: 'Palette: {name}',
-    otOnlyOnShift: 'Overtime can only be added to a day with a shift',
-    urlopRemoved: 'Vacation removed',
-    urlopAdded: 'Vacation added',
-    removed: 'Removed',
-    infoDate: '📅 Date:',
-    infoShiftLabel: '🏭 Shift:',
-    infoPosition: '📍 Position:',
-    infoPaid: 'paid',
-    infoTime: '⏰ Time:',
-    infoBrigadeHours: 'Brigade {brig}: {worked}h / {total}h ({pct}%)',
-    infoDayTooltip: '{d} {month}: {status}',
-    infoTableTooltip: '{brig} • {d} {month}: {status}',
-    infoStatusFree: '🏖️ Free',
-    brigade: 'Brigade',
-    dayOff: 'Free',
-    wholeYear: 'Full year',
-    allBrigades: 'all brigades',
-    brigadeDayHeader: 'Brigade\\Day',
-    yearIsEmptyTitle: 'Year {year} is empty',
-    yearIsEmptyDescription: 'This year has no factory data yet.<br>Fill it manually in edit mode or import a JSON file.',
-    enableEdit: '✏️ Enable edit',
-    importJson: '📂 Import JSON',
-    driveLoginFailed: 'Login failed',
-    driveLoginRequired: 'Login required',
-    unknownError: 'Unknown error',
-    driveCreateFileError: 'Error creating file',
-    driveUpdateFileError: 'Error updating file',
-    driveSaved: 'Saved to Drive',
-    driveSyncError: 'Sync error',
-    driveNoFileToDownload: 'No file to download',
-    driveDownloadFileError: 'Error downloading file',
-    driveInvalidDataFormat: 'Invalid data format',
-    driveDownloadedWithErrors: 'Downloaded with errors',
-    driveDownloaded: 'Downloaded from Drive',
-    driveDownloadConfirmTitle: 'Download from Drive?',
-    driveDownloadConfirmBody: 'This will overwrite local data.',
-    driveDownloadError: 'Download error',
-    driveLoggedInHint: 'Logged in to Google Drive',
-    loggedIn: 'logged in',
-    logoutFromDrive: 'Log out from Google Drive',
-    login: 'login',
-    driveLoggedOutHint: 'Logged out from Google Drive',
-    driveConfigTitle: 'Google Drive Configuration',
-    driveConfigIntro: 'To use sync, configure the app in Google Cloud Console.',
-    driveConfigHowTo: 'How to configure:',
-    driveConfigStep1: 'Go to Google Cloud Console → Credentials',
-    driveConfigStep2: 'Create OAuth 2.0 Client ID',
-    driveConfigStep3: 'Add http://localhost:8000 to Authorized origins',
-    driveConfigStep4: 'Add http://localhost:8000 to Authorized redirect URIs',
-    driveConfigStep5: 'Copy the Client ID below',
-    driveConfigNote: 'Note: this feature requires Google Cloud Project configuration.',
-    driveClientIdSaved: 'Client ID saved',
-    driveConfigureClientIdFirst: 'Configure Client ID first',
-    driveCannotInitLogin: 'Cannot initialize login',
-    driveSyncTitle: 'Sync with Google Drive',
-    driveSyncBody: 'Do you want to send data to Drive or download from Drive?',
-    sendToDrive: '📤 Send to Drive',
-    driveLoggedOut: 'Logged out from Google Drive',
-    installAppIosIntro: 'To install on iPhone/iPad:',
-    installAppIosStep1: 'Open this page in Safari',
-    installAppIosStep2: 'Tap Share button ⬆️',
-    installAppIosStep3: 'Select "Add to Home Screen"',
-    installAppIosNote: 'After installation, the app will be available offline and in full screen.',
-    appInstalled: 'App installed',
-    installStarted: 'Installation started',
-    installCancelled: 'Installation cancelled',
-    notificationsNotSupported: 'Notifications not supported',
-    notificationsAboutShifts: 'Shift notifications',
-    notificationsEnabledHint: 'Notifications enabled',
-    notificationsDisabledHint: 'Notifications disabled',
-    remindMeIn: 'Remind me in:',
-    hourSingular: 'hour',
-    hoursPlural: 'hours',
-    notificationLeadToast: 'Reminder',
-    beforeShift: 'before shift',
-    browserNoNotificationSupport: 'Browser does not support notifications',
-    notificationsBlockedInBrowser: 'Notifications blocked in browser',
-    notificationsEnabled: 'Notifications enabled',
-    notificationsTestBody: 'This is a test notification',
-    notificationsDisabled: 'Notifications disabled',
-    shift: 'Shift',
-    timerEndsIn: '⏱️ Ends in {h}h {m}min',
-    timerStartsIn: '⏰ Starts in {m} min',
-    month1: 'January',
-    month2: 'February',
-    month3: 'March',
-    month4: 'April',
-    month5: 'May',
-    month6: 'June',
-    month7: 'July',
-    month8: 'August',
-    month9: 'September',
-    month10: 'October',
-    month11: 'November',
-    month12: 'December',
-    month1Short: 'Jan',
-    month2Short: 'Feb',
-    month3Short: 'Mar',
-    month4Short: 'Apr',
-    month5Short: 'May',
-    month6Short: 'Jun',
-    month7Short: 'Jul',
-    month8Short: 'Aug',
-    month9Short: 'Sep',
-    month10Short: 'Oct',
-    month11Short: 'Nov',
-    month12Short: 'Dec',
-    dayMon: 'Mon',
-    dayTue: 'Tue',
-    dayWed: 'Wed',
-    dayThu: 'Thu',
-    dayFri: 'Fri',
-    daySat: 'Sat',
-    daySun: 'Sun',
-    dayMonday: 'Monday',
-    dayTuesday: 'Tuesday',
-    dayWednesday: 'Wednesday',
-    dayThursday: 'Thursday',
-    dayFriday: 'Friday',
-    daySaturday: 'Saturday',
-    daySunday: 'Sunday'
-  },
-
-  uk: {
-    appName: 'Grafik Gillette',
-    appNameShort: 'Grafik',
-    editMode: 'Режим редагування (E)',
-    editModeOn: 'Вимкнути режим редагування (E)',
-    editModeOff: 'Увімкнути режим редагування (E)',
-    profile: 'Увійти в Google Drive',
-    theme: 'Перемкнути тему',
-    menu: 'Меню',
-    language: 'Мова',
-    compareHint: 'Ctrl+клік = порівняти',
-    changeYear: 'Змінити рік',
-    today: '📅 Сьогодні',
-    searchBtn: '🔍',
-    prevMonth: 'Попередній місяць (←)',
-    nextMonth: 'Наступний місяць (→)',
-    prevWeek: '‹',
-    nextWeek: '›',
-    shiftR: 'Ранок (R)',
-    shiftP: 'Пополудню (P)',
-    shiftN: 'Ніч (N)',
-    shiftW: 'Вихідний (W)',
-    shiftROption: 'R – Ранок',
-    shiftPOption: 'P – Пополудню',
-    shiftNOption: 'N – Ніч',
-    legendFree: '— Вихідний',
-    legendVacation: '🌴 Відпустка',
-    paletteTitleR: 'Ранок (R)',
-    paletteTitleP: 'Пополудню (P)',
-    paletteTitleN: 'Ніч (N)',
-    paletteTitleW: 'Вихідний (W)',
-    cycleMode: 'Цикл',
-    overtime: 'Надгодини (O)',
-    undoHint: 'Скасувати зміну (Ctrl+Z)',
-    redoHint: 'Повторити зміну (Ctrl+Y)',
-    saveHint: 'Зберегти зміни (Ctrl+S)',
-    yearToggle: 'Розширити на весь рік',
-    searchTypeLabel: 'Тип зміни:',
-    searchMonthLabel: 'Місяць:',
-    searchAllTypes: '— всі —',
-    searchFree: 'Вихідний',
-    searchFree3Days: 'Вихідний (мін. 3 дні поспіль)',
-    searchVacation: '🌴 Відпустка',
-    otHoursLabel: 'Скільки годин?',
-    otOrCustom: 'або власну:',
-    otHoursUnit: 'годин',
-    otNote: '📝 Нотатка (необов\'язково)',
-    otNotePlaceholder: 'напр. Заміна за Ковальського',
-    faqTitle: '❓ Довідка — Grafik Gillette (FAQ v3)',
-    faqIntro: 'Натисніть на запитання, щоб побачити відповідь. Нижче ви знайдете докладний опис вкладок, функцій та те, що показує додаток.',
-    faqOk: 'Розумію',
-    welcome: '👋 Вітаю! Натисніть ☰ Меню → Довідка, щоб побачити всі функції.',
-    greeting: 'Привіт! 👋',
-    tomorrow: 'Завтра',
-    nextDayOff: 'Наступний вихідний',
-    thisWeek: 'Цей тиждень',
-    vacation: 'Відпустка',
-    upcomingDays: 'Наступні 7 днів',
-    seeMonth: '📅 Переглянути місяць',
-    seeWeek: '📆 Переглянути тиждень',
-    unknown: 'Невідоме',
-    todayLabel: 'Сьогодні!',
-    daysAgo: 'вчора',
-    dayBefore: 'вчора',
-    dayAfter: 'завтра',
-    inDays: 'Через {n} днів',
-    editBannerTitle: 'Режим редагування',
-    editBannerHint: 'Скорочення: R P N W = зміна • O = надгодини • Ctrl+Z = скасувати • Ctrl+S = зберегти • Esc = вихід',
-    undoBtn: '↶ Скасувати',
-    redoBtn: '↷ Повторити',
-    saveBtn: '💾 Зберегти',
-    discardBtn: '↶ Відхилити все',
-    vacationLimitBtn: '🌴 Ліміт відпустки',
-    exportBtn: '📥 JSON',
-    importBtn: '📂 Імпорт',
-    clearYearBtn: '🗑 Рік',
-    resetBtn: '↺ Скинути',
-    undoNothing: 'Немає чого скасовувати',
-    redoNothing: 'Немає чого повторити',
-    noChangesToSave: 'Немає змін для збереження',
-    changesDiscarded: 'Зміни відхилені',
-    editModeOnToast: 'Режим редагування ВКЛ. Скорочення: R/P/N/W/C/O',
-    editModeOnShort: 'Режим редагування ВКЛ',
-    enableEditTitle: '✏️ Увімкнути режим редагування?',
-    enableEditBody: 'Кліки по коміркам змінять зміни.<br><br>Виберіть зміну для малювання у палеті внизу (або використовуйте скорочення R/P/N/W).<br>Щоб додати <b>надгодини</b> — виберіть <b>⏱</b> (або натисніть клавішу O).<br><br>Зміни <b>НЕ зберігаються автоматично</b> — потрібно натиснути <b>💾 Зберегти</b>.',
-    enableEditConfirm: '✏️ Увімкнути',
-    unsavedChangesTitle: '⚠️ У вас {n} незбережених змін',
-    unsavedChangesBody: 'Виберіть, що робити:',
-    discardAndExit: 'Відхилити та вийти',
-    saveConfirmTitle: '💾 Зберегти {n} {unit}?',
-    saveConfirmBody: 'Зміни будуть назавжди збережені у вашому браузері.',
-    saveConfirmBtn: '💾 Зберегти',
-    saveSuccess: 'Збережено {n} {unit}',
-    changeSingular: 'зміну',
-    changePlural: 'змін',
-    discardConfirmTitle: '↶ Відхилити всі незбережені зміни?',
-    discardConfirmBody: 'Буде відхилено {n} {unit}.',
-    discardConfirmBtn: '↶ Відхилити',
-    discardSuccess: 'Зміни відхилені',
-    yearWithChanges: 'Рік {year} — з вашими змінами',
-    yearFactoryData: 'Рік {year} — заводські дані',
-    yearNoData: 'Рік {year} — немає даних, використовуйте ✏️',
-    yearSwitchTitle: '⚠️ {n} незбережених змін для {year}',
-    yearSwitchBody: 'Зміни залишуться у буфері, але не будуть видимими після перемикання року.',
-    yearSwitchBtn: 'Перемкнути',
-    clearYearTitle: '🗑 Очистити рік {year}?',
-    clearYearBody: 'Буде видалено: збережені зміни + буфер для цього року. Відпустки та надгодини залишаться. Заводські дані повернуться (якщо є).',
-    clearYearBtn: '🗑 Очистити',
-    yearCleared: 'Рік {year} очищений',
-    resetTitle: '↺ Скинути всі редагування?',
-    resetBody: 'Буде видалено ВСІ ваші редагування (всі роки + буфер). Заводські дані повернуться. Відпустки, надгодини та нотатки залишаться.',
-    resetBtn: '↺ Скинути',
-    resetSuccess: 'Всі зміни скинуті',
-    searchPlaceholder: 'Шукати...',
-    searchBtn: 'Шукати',
-    searchNoResults: 'Немає результатів',
-    searchFound: 'Знайдено: {n}',
-    searchDayOff: 'Вихідні дні',
-    emptyYearTitle: 'Рік {year} порожній',
-    emptyYearBody: 'Цього року ще немає заводських даних.<br>Заповніть його вручну у режимі редагування або імпортуйте JSON-файл.',
-    emptyEnableEdit: '✏️ Увімкнути редагування',
-    emptyImport: '📂 Імпорт JSON',
-    infoPanelTitle: 'ℹ️ Виберіть день у календарі',
-    infoPanelHint: 'Клікніть будь-який день, щоб побачити деталі.',
-    infoStatus: 'Статус',
-    infoPlannedShift: 'Запланована зміна',
-    infoNote: '📝 Нотатка',
-    infoNotePlaceholder: 'Додати нотатку...',
-    infoNoteSaved: 'Нотатка збережена',
-    infoShift: 'Зміна',
-    infoPrevShift: '⬅️ Попередня зміна',
-    infoNextShift: '➡️ Наступна зміна',
-    infoCycle: '🔁 Блок',
-    infoCycleOf: '{n} з {total}',
-    infoNextDayOff: '🏖️ Наступний вихідний',
-    infoOvertime: '⏱ Надгодини',
-    infoLiveShift: '⏱️ ЗМІНА В ТЕЧЕННІ',
-    infoUrlop: '🌴 ВІДПУСТКА',
-    infoFree: '🏖️ Вихідний',
-    infoUrlopStats: '🌴 Відпустка {brig} ({year}):',
-    infoUrlopMarked: 'Відмічено',
-    infoUrlopWorking: 'Робочі',
-    infoUrlopLimitEdit: 'Змінити ліміт відпустки для {brig}',
-    otBefore: '⏱ ДО',
-    otAfter: '⏱ ПІСЛЯ',
-    otAdd: '+ Додати',
-    otDeleteBefore: 'Видалити надгодини ДО?',
-    otDeleteAfter: 'Видалити надгодини ПІСЛЯ?',
-    otDeleteBtn: 'Видалити',
-    otSaveBtn: '💾 Зберегти',
-    otCancelBtn: 'Скасувати',
-    otTitle: 'Надгодини',
-    otPositionBefore: 'ДО',
-    otPositionAfter: 'ПІСЛЯ',
-    otTime: 'Час',
-    otHours: 'годин',
-    otPreview: '📊 Попередній перегляд',
-    otCrossesMidnight: '⚠️ Перетинає північ',
-    otCategory50: '🟡 +50%',
-    otCategory100: '🟣 +100%',
-    otCategory200: '🔴 +200%',
-    otPayment: '💰 Всього оплачено',
-    otSaved: 'Збережено {h} год надгодин',
-    otDeleted: 'Надгодини видалено',
-    otSelectHours: 'Виберіть кількість годин',
-    otMonthSummary: '⏱ Надгодини цього місяця',
-    otMonthEntry: 'запис',
-    otMonthEntries: 'записів',
-    otMonthTotal: '📊 Всього',
-    otMonthWorked: 'відпрацьовано',
-    otMonthPaid: '💰 оплачено',
-    otWeekBefore: '⬅ ДО',
-    otWeekAfter: 'ПІСЛЯ ➡',
-    otAddInMonthView: 'Додавайте надгодини у вигляді Місяць',
-    vacationLimitTitle: 'Встановити ліміт відпустки',
-    vacationLimitBody: 'Введіть нову кількість днів відпустки для бригади <strong>{brig}</strong>:',
-    vacationLimitSave: 'Зберегти',
-    vacationLimitCancel: 'Скасувати',
-    vacationLimitInvalid: 'Введіть кількість днів >= 0',
-    vacationLimitSet: 'Ліміт відпустки для бригади {brig}: {n} днів',
-    exportSuccess: 'Календар експортовано',
-    exportJsonSuccess: 'Резервна копія завантажена',
-    importReplaceTitle: '⚠️ Замінити поточні дані?',
-    importReplaceBody: 'Імпорт перезапише ваші графіки, відпустки, надгодини та нотатки.',
-    importSuccess: 'Дані завантажено',
-    importJsonError: 'Помилка синтаксису JSON',
-    importError: 'Помилка імпорту: {msg}',
-    importDataError: 'Дані не є об\'єктом',
-    importMissingKeys: 'У файлі не знайдено відомих ключів даних',
-    importInvalidSchedule: 'Недійсна структура customSchedule',
-    importInvalidYear: 'Недійсний рік у customSchedule: {year}',
-    importInvalidMonths: 'Недійсна структура місяців для року {year}',
-    importInvalidBrigade: 'Дані бригади {brig} у місяці {m}/{year} мають бути масивом',
-    importInvalidDays: 'Недійсна кількість днів для бригади {brig} у {m}/{year}: отримано {actual}, очікувалося {expected}',
-    importInvalidDayValue: 'Недійсне значення дня {idx} для бригади {brig} у {m}/{year}',
-    importInvalidUrlops: 'Недійсна структура urlops',
-    importUrlopsArray: 'Відпустки бригади {brig} мають бути масивом',
-    importInvalidUrlopDate: 'Недійсний формат дати відпустки: {date}',
-    importInvalidOvertimes: 'Недійсна структура overtimes',
-    importInvalidOtEntry: 'Недійсний запис надгодин для ключа {key}',
-    importInvalidOtValue: 'Недійсне значення {pos} у надгодинах для {key}',
-    importInvalidNotes: 'Недійсна структура notes',
-    importInvalidNote: 'Нотатка для {key} має бути текстом',
-    shareCopied: 'Скопійовано в буфер обміну',
-    shareCopyFailed: 'Копіювання неможливе',
-    shareSuccess: 'Поділитися',
-    shareLinkCopied: 'Посилання скопійовано в буфер обміну',
-    shareLinkFailed: 'Не вдалося скопіювати посилання',
-    shareApp: 'Grafik Gillette',
-    printHeaderDashboard: 'Dashboard',
-    printHeaderWeek: 'Тиждень',
-    printHeaderMonth: 'Місяць',
-    printHeaderTable: 'Таблиця',
-    printYearSuffix: ' — повний рік',
-    printGenerated: 'Згенеровано',
-    viewDashboard: '🏠 Dashboard',
-    viewWeek: '📆 Тиждень',
-    viewMonth: '📅 Місяць',
-    viewTable: '📋 Таблиця',
-    viewYear: '📊 Рік',
-    yearToggle: '📊 Рік',
-    weekTitle: '📆 {range} · Бригада {brig}',
-    yearViewTitle: '📋 Повний рік {year} — всі бригади',
-    monthViewTitle: '📋 {month} {year} — всі бригади',
-    tableCorner: 'Бригада\\День',
-    shiftR: 'Ранок',
-    shiftP: 'Пополудню',
-    shiftN: 'Ніч',
-    shiftW: 'Вихідний',
-    faqStartTitle: '🚀 Як почати роботу з додатком?',
-    faqStart1: 'Виберіть свою бригаду (A/B/C/D)',
-    faqStart2: 'Виберіть рік стрілками ‹ ›',
-    faqStart3: 'Відкрийте 🏠 Dashboard, він найкращий для швидкого огляду',
-    faqStart4: 'Якщо хочете вносити зміни, перейдіть у режим редагування кнопкою ✏️',
-    faqStartNote: 'Налаштування зберігаються автоматично у браузері, тому при поверненні до додатка ви повернетесь до останнього стану.',
-    faqViewsTitle: '📋 Які головні вкладки та що показує кожна?',
-    faqViewsDesc: 'Додаток має кілька головних виглядів, кожен з яких служить різним цілям:',
-    faqViewsDashboard: '🏠 Dashboard — домашній екран. Показує поточну зміну, майбуття дні, тижневий підсумок, статус відпустки та швидкі посилання на інші вигляди.',
-    faqViewsWeek: '📆 Тиждень — показує графік на 7 днів у більшому, більш організованому вигляді, що корисно для планування майбутніх днів.',
-    faqViewsMonth: '📅 Місяць — головний календар. Тут ви бачите зміни, вихідні дні, відпустки, нотатки, надгодини та додаткові випливаючі підказки з інформацією про попередню та наступну зміну.',
-    faqViewsTable: '📋 Таблиця — показує всі 4 бригади в одному місяці, що полегшує порівняння графіків між бригадами.',
-    faqViewsYear: '📊 Рік — розширює вигляд місяця або таблиці на весь рік і показує 12 міні-календарів або 12 таблиці.',
-    faqViewsNote: 'Кожна вкладка відповідає іншій меті: швидкий огляд, планування, редагування та аналіз всього періоду.',
-    faqFeaturesTitle: '🧩 Які найважливіші функції програми?',
-    faqFeaturesDesc: 'Програма може робити набагато більше, ніж просто показувати графік. Ось її найважливіші функції:',
-    faqFeaturesShift: 'Відображення змін для кожної бригади: ранок, пополудню, ніч та вихідні дні.',
-    faqFeaturesLive: 'Відображення поточної та майбутньої зміни з таймером, який повідомляє, коли зміна починається або закінчується.',
-    faqFeaturesVacation: 'Управління відпустками — користувач може відмічати дні відпустки та перевіряти їх кількість у поточному році.',
-    faqFeaturesOvertime: 'Додавання надгодин до вибраних днів із автоматичним розрахунком рівня премії.',
-    faqFeaturesNotes: 'Нотатки до днів — ви можете зберігати додаткову інформацію для конкретних дат.',
-    faqFeaturesSearch: 'Пошук днів — додаток може знайти зміни, вихідні дні, блоки вільного часу та відпочинки.',
-    faqFeaturesCompare: 'Порівняння бригад — ви можете побачити, коли дві бригади мають однакову зміну.',
-    faqFeaturesExport: 'Експорт у календар та резервне копіювання JSON — дані можна зберегти або перенести до інших інструментів.',
-    faqFeaturesPrint: 'Друк і поділ додатком вибраного вигляду або конкретного дня.',
-    faqFeaturesNote: 'Насправді додаток поєднує функції графіка, планувальника, календаря та простого інструмента для аналізу змін.',
-    faqOvertimeTitle: '⏱ Як додавати надгодини?',
-    faqOvertime1: 'Увімкніть ✏️ режим редагування',
-    faqOvertime2: 'У палеті внизу виберіть ⏱ або натисніть клавішу O',
-    faqOvertime3: 'Натисніть на день зі зміною — з’являться дві підказки:',
-    faqOvertime3a: '⏱ ДО — надгодини перед зміною',
-    faqOvertime3b: '⏱ ПІСЛЯ — надгодини після зміни',
-    faqOvertime4: 'Натисніть на підказку та введіть кількість годин у вікні модального відкриття',
-    faqOvertimeCategory: 'Категорія надгодин обчислюється автоматично:',
-    faqOvertimeCat200: '+200% — якщо день є святочним',
-    faqOvertimeCat100: '+100% — коли надгодини вночі (22:00–6:00) або в неділю',
-    faqOvertimeCat50: '+50% — звичайні денні надгодини',
-    faqOvertimeNote: 'Комірка візуально розбивається на частини, а під нею відображається фактичний робочий час. У вигляді місяця також відображається місячний підсумок.',
-    faqVacationTitle: '🌴 Як відмічати відпустки та коли вони рахуються?',
-    faqVacationDesc: 'У вигляді 📅 Місяць натисніть вибраний день і виберіть випливаючу підказку 🌴 +, щоб додати відпустку.',
-    faqVacationRemove: 'Щоб видалити відпустку, натисніть той самий день ще раз і виберіть червону 🌴 ❌.',
-    faqVacationStats: 'Статистика показує кількість відмічених днів та робочих днів у поточному році. Лише робочі дні рахуються до ліміту.',
-    faqNotesTitle: '📝 Як працюють нотатки до днів?',
-    faqNotesDesc: 'У вигляді місяця виберіть день і введіть нотатку у нижній панелі. Після кліку поза полем або натискання Tab нотатка зберігається.',
-    faqNotesIcon: 'На комірці дня з’явиться іконка 📝 — наведіть курсор, щоб прочитати вміст.',
-    faqKeyboardTitle: '⌨️ Які є скорочення клавіатури?',
-    faqKeyboardEdit: 'У режимі редагування:',
-    faqKeyboardEdit1: 'R / P / N / W — вибір зміни для малювання',
-    faqKeyboardEdit2: 'C — режим циклу',
-    faqKeyboardEdit3: 'O — режим надгодин',
-    faqKeyboardEdit4: 'Ctrl+Z — скасувати останню зміну',
-    faqKeyboardEdit5: 'Ctrl+S — зберегти всі зміни',
-    faqKeyboardNav: 'Навігація:',
-    faqKeyboardNav1: '← / → — попередній/наступний місяць',
-    faqKeyboardNav2: 'Esc — закрити підказку або вийти з редагування',
-    faqKeyboardNav3: 'E — увімкнути/вимкнути редагування',
-    faqSaveTitle: '💾 Як зберігаються дані?',
-    faqSaveDesc: 'Графіки зберігаються за допомогою кнопки 💾 Зберегти у жовтневому банері.',
-    faqSaveNote: 'Відпустки, надгодини та нотатки зберігаються автоматично. Регулярно робіть резервну копію через 📥 JSON, щоб не втратити дані після очищення браузера.',
-    faqSyncTitle: '☁️ Як працює синхронізація з Google Drive?',
-    faqSyncDesc: 'Синхронізація дозволяє перенести дані додатка між пристроями через Google Drive.',
-    faqSync1: 'У меню виберіть Google Drive. Якщо ви не ввійшли, додаток попросить ввійти.',
-    faqSync2: 'Ви можете надіслати дані до Drive або завантажити збережені дані з Drive.',
-    faqSync3: 'Синхронізовані дані включають: налаштування графіка, відпустки, надгодини, нотатки та ліміти відпустки.',
-    faqSync4: 'При завантаженні даних додаток запитує підтвердження перезапису локальних даних.',
-    faqSync5: 'Кнопка синхронізації видна лише після входу; після виходу доступна лише кнопка входу.',
-    faqSyncNote: 'Це новий спосіб зберігання графіка у хмарі без ручного експорту.',
-    faqExportTitle: '📥 Чи можна експортувати графік у інші додатки?',
-    faqExportDesc: 'Так. У меню доступний експорт .ics у календар та резервне копіювання JSON. Файл .ics можна імпортувати у Google Calendar, Outlook, iPhone та багатькі інші календарні додатки.',
-    faqInstallTitle: '📲 Як встановити додаток на iPhone / iPad?',
-    faqInstallDesc: 'Додаток доступний як PWA (Progressive Web App). На пристроях Apple немає вбудованого вікна встановлення, але ви можете додати його на домашній екран:',
-    faqInstall1: 'Відкрийте цей сайт у Safari (не у іншому браузері)',
-    faqInstall2: 'Натисніть кнопку Поділитися ⬆️ у нижній частині екрана',
-    faqInstall3: 'Прокрутіть вниз і виберіть "Додати на домашній екран"',
-    faqInstall4: 'Натисніть "Додати" у правому верхньому куті',
-    faqInstallNote: 'Після додавання іконка додатка з’явиться на домашньому екрані. Запуск звідти відкриє його у повноекранному режимі без адресного рядка.',
-    faqInstallMenuNote: 'У меню додатка (☰ Меню → Встановити додаток) також доступна докладна інструкція крок за кроком.',
-    faqBugTitle: '🐛 Як повідомити про помилку або пропозицію?',
-    faqBugDesc: '📧 Контакт:',
-    faqBugEmail: 'tantsiura.s@pg.com',
-    faqBugNote: 'При повідомленні про помилку вкажіть рік, дату, бригаду, браузер і короткий опис проблеми.',
-    menuTheme: '🎨 Тема',
-    menuDrive: '☁️ Google Drive',
-    menuSyncNow: '🔄 Синхронізувати зараз',
-    menuDriveLogout: '🚪 Вийти з Google Drive',
-    menuExport: '📤 Експорт',
-    menuIcs: '📥 Експорт у календар (.ics)',
-    menuPrint: '🖨️ Друк',
-    menuShare: '🔗 Поділитися днем',
-    menuNotifications: '🔔 Сповіщення про зміни',
-    menuInstallApp: '📲 Встановити додаток',
-    menuHelp: '❓ Довідка / FAQ',
-    installPrompt: '📲 Встановити додаток',
-    cancel: 'Скасувати',
-    ok: 'ОК',
-    close: 'Закрити',
-    save: 'Зберегти',
-    delete: 'Видалити',
-    yes: 'Так',
-    no: 'Ні',
-    dayMon: 'Пн',
-    dayTue: 'Вт',
-    dayWed: 'Ср',
-    dayThu: 'Чт',
-    dayFri: 'Пт',
-    daySat: 'Сб',
-    daySun: 'Нд',
-    dayMonday: 'Понеділок',
-    dayTuesday: 'Вівторок',
-    dayWednesday: 'Середа',
-    dayThursday: 'Четвер',
-    dayFriday: 'П’ятниця',
-    daySaturday: 'Субота',
-    daySunday: 'Неділя',
-    month1: 'Січень',
-    month2: 'Лютий',
-    month3: 'Березень',
-    month4: 'Квітень',
-    month5: 'Травень',
-    month6: 'Червень',
-    month7: 'Липень',
-    month8: 'Серпень',
-    month9: 'Вересень',
-    month10: 'Жовтень',
-    month11: 'Листопад',
-    month12: 'Грудень',
-    month1Short: 'Січ',
-    month2Short: 'Лют',
-    month3Short: 'Бер',
-    month4Short: 'Квіт',
-    month5Short: 'Трав',
-    month6Short: 'Черв',
-    month7Short: 'Лип',
-    month8Short: 'Серп',
-    month9Short: 'Вер',
-    month10Short: 'Жовт',
-    month11Short: 'Лист',
-    month12Short: 'Груд',
-    shiftR: 'Ранок (6:00–14:00)',
-    shiftP: 'Пополудню (14:00–22:00)',
-    shiftN: 'Ніч (22:00–6:00)',
-    shiftEmpty: 'Вихідний',
-    shiftRShort: 'Ранок',
-    shiftPShort: 'Пополудню',
-    shiftNShort: 'Ніч',
-    holidayNewYear: 'Новий рік',
-    holidayEpiphany: 'Богоявлення',
-    holidayEaster: 'Великдень',
-    holidayEasterMonday: 'Великий понеділок',
-    holidayLabor: 'День праці',
-    holidayConstitution: 'День Конституції',
-    holidayPentecost: 'Зелені свята',
-    holidayCorpus: 'Тіло і Кров Христові',
-    holidayAssumption: 'Вознесіння Богородиці',
-    holidayAllSaints: 'День усіх святих',
-    holidayIndependence: 'День незалежності',
-    holidayChristmas1: 'Різдво',
-    holidayChristmas2: 'Другий день Різдва',
-    paletteSelected: 'Вибрано: {name}',
-    paletteChanged: 'Палітра: {name}',
-    otOnlyOnShift: 'Надгодини можна додати лише до дня зі зміною',
-    urlopRemoved: 'Відпустку видалено',
-    urlopAdded: 'Відпустку додано',
-    removed: 'Видалено',
-    infoDate: '📅 Дата:',
-    infoShiftLabel: '🏭 Зміна:',
-    infoPosition: '📍 Позиція:',
-    infoPaid: 'оплачено',
-    infoTime: '⏰ Час:',
-    infoBrigadeHours: 'Бригада {brig}: {worked}год / {total}год ({pct}%)',
-    infoDayTooltip: '{d} {month}: {status}',
-    infoTableTooltip: '{brig} • {d} {month}: {status}',
-    infoStatusFree: '🏖️ Вихідний',
-    brigade: 'Бригада',
-    dayOff: 'Вихідний',
-    wholeYear: 'Повний рік',
-    allBrigades: 'всі бригади',
-    brigadeDayHeader: 'Бриг.\\Ден.',
-    yearIsEmptyTitle: 'Рік {year} порожній',
-    yearIsEmptyDescription: 'Цього року ще немає заводських даних.<br>Заповніть його вручну у режимі редагування або імпортуйте JSON-файл.',
-    enableEdit: '✏️ Увімкнути редагування',
-    importJson: '📂 Імпорт JSON',
-    driveLoggedIn: 'Увійшли до Google Drive',
-    driveLoginFailed: 'Помилка входу',
-    driveLoginRequired: 'Потрібен вхід',
-    unknownError: 'Невідома помилка',
-    driveCreateFileError: 'Помилка створення файлу',
-    driveUpdateFileError: 'Помилка оновлення файлу',
-    driveSaved: 'Збережено в Drive',
-    driveSyncError: 'Помилка синхронізації',
-    driveNoFileToDownload: 'Немає файлу для завантаження',
-    driveDownloadFileError: 'Помилка завантаження',
-    driveInvalidDataFormat: 'Невірний формат даних',
-    driveDownloadedWithErrors: 'Завантажено з помилками',
-    driveDownloaded: 'Завантажено з Drive',
-    driveDownloadConfirmTitle: 'Завантажити з Drive?',
-    driveDownloadConfirmBody: 'Це перезапише локальні дані.',
-    download: '📥 Завантажити',
-    driveDownloadError: 'Помилка завантаження',
-    driveLoggedInHint: 'Увійшли до Google Drive',
-    loggedIn: 'увійшли',
-    logoutFromDrive: 'Вийти з Google Drive',
-    login: 'увійти',
-    driveLoggedOutHint: 'Вийшли з Google Drive',
-    driveConfigTitle: 'Налаштування Google Drive',
-    driveConfigIntro: 'Щоб використовувати синхронізацію, налаштуйте додаток в Google Cloud Console.',
-    driveConfigHowTo: 'Як налаштувати:',
-    driveConfigStep1: 'Перейдіть до Google Cloud Console → Credentials',
-    driveConfigStep2: 'Створіть OAuth 2.0 Client ID',
-    driveConfigStep3: 'Додайте http://localhost:8000 до Authorized origins',
-    driveConfigStep4: 'Додайте http://localhost:8000 до Authorized redirect URIs',
-    driveConfigStep5: 'Скопіюйте Client ID нижче',
-    driveConfigNote: 'Увага: ця функція вимагає налаштування Google Cloud Project.',
-    enterClientId: 'Введіть Client ID',
-    driveClientIdSaved: 'Client ID збережено',
-    driveConfigureClientIdFirst: 'Спочатку налаштуйте Client ID',
-    driveCannotInitLogin: 'Не вдалося ініціалізувати вхід',
-    driveSyncTitle: 'Синхронізація з Google Drive',
-    driveSyncBody: 'Чи хочете надіслати дані в Drive або завантажити з Drive?',
-    sendToDrive: '📤 Надіслати в Drive',
-    driveLoggedOut: 'Вийшли з Google Drive',
-    installApp: '📲 Встановити додаток',
-    installAppIosIntro: 'Щоб встановити на iPhone/iPad:',
-    installAppIosStep1: 'Відкрийте цю сторінку в Safari',
-    installAppIosStep2: 'Натисніть кнопку Поділитися ⬆️',
-    installAppIosStep3: 'Виберіть "Додати на домашній екран"',
-    installAppIosNote: 'Після встановлення додаток буде доступний офлайн і в повному екрані.',
-    gotIt: 'Розумію',
-    appInstalled: 'Додаток встановлено',
-    installStarted: 'Встановлення розпочато',
-    installCancelled: 'Встановлення скасовано',
-    notificationsNotSupported: 'Сповіщення не підтримуються',
-    notificationsAboutShifts: 'Сповіщення про зміни',
-    notificationsEnabledHint: 'Сповіщення увімкнено',
-    notificationsDisabledHint: 'Сповіщення вимкнено',
-    remindMeIn: 'Нагадати за:',
-    hourSingular: 'годину',
-    hoursPlural: 'годин',
-    notificationLeadToast: 'Нагадування',
-    beforeShift: 'до зміни',
-    browserNoNotificationSupport: 'Браузер не підтримує сповіщення',
-    notificationsBlockedInBrowser: 'Сповіщення заблоковано в браузері',
-    notificationsEnabled: 'Сповіщення увімкнено',
-    notificationsTestBody: 'Це тестове сповіщення',
-    notificationsDisabled: 'Сповіщення вимкнено',
-    shift: 'Зміна',
-    timerEndsIn: '⏱️ Закінчується за {h}г {m}хв',
-    timerStartsIn: '⏰ Почнеться за {m} хв',
-    month1: 'Січень',
-    month2: 'Лютий',
-    month3: 'Березень',
-    month4: 'Квітень',
-    month5: 'Травень',
-    month6: 'Червень',
-    month7: 'Липень',
-    month8: 'Серпень',
-    month9: 'Вересень',
-    month10: 'Жовтень',
-    month11: 'Листопад',
-    month12: 'Грудень',
-    month1Short: 'Січ',
-    month2Short: 'Лют',
-    month3Short: 'Бер',
-    month4Short: 'Квіт',
-    month5Short: 'Трав',
-    month6Short: 'Черв',
-    month7Short: 'Лип',
-    month8Short: 'Серп',
-    month9Short: 'Вер',
-    month10Short: 'Жовт',
-    month11Short: 'Лист',
-    month12Short: 'Груд',
-    dayMon: 'Пн',
-    dayTue: 'Вт',
-    dayWed: 'Ср',
-    dayThu: 'Чт',
-    dayFri: 'Пт',
-    daySat: 'Сб',
-    daySun: 'Нд',
-    dayMonday: 'Понеділок',
-    dayTuesday: 'Вівторок',
-    dayWednesday: 'Середа',
-    dayThursday: 'Четвер',
-    dayFriday: 'П’ятниця',
-    daySaturday: 'Субота',
-    daySunday: 'Неділя'
-  }
-};
 
 /* === AKTYWNY JĘZYK === */
 let currentLang = 'pl';
 
 function detectLanguage() {
-  const saved = prefs.lang;
-  if (SUPPORTED_LANGS.includes(saved)) return saved;
-  const browserLang = (navigator.language || '').toLowerCase();
-  if (browserLang.startsWith('uk')) return 'uk';
-  if (browserLang.startsWith('en')) return 'en';
-  return 'pl';
+    const saved = prefs.lang;
+    if (SUPPORTED_LANGS.includes(saved)) return saved;
+    const browserLang = (navigator.language || '').toLowerCase();
+    if (browserLang.startsWith('uk')) return 'uk';
+    if (browserLang.startsWith('en')) return 'en';
+    return 'pl';
 }
 
 function setLanguage(lang) {
-  if (!SUPPORTED_LANGS.includes(lang)) lang = 'pl';
-  currentLang = lang;
-  prefs.lang = lang;
-  savePrefs(prefs);
-  if (typeof updateLocalizedNames === 'function') updateLocalizedNames();
-  applyTranslations();
+    if (!SUPPORTED_LANGS.includes(lang)) lang = 'pl';
+    currentLang = lang;
+    prefs.lang = lang;
+    savePrefs(prefs);
+    if (typeof updateLocalizedNames === 'function') updateLocalizedNames();
+    applyTranslations();
 }
 
+/* === POBIERZ TŁUMACZENIE === */
 function t(key, params) {
-  const langObj = translations[currentLang] || translations.pl;
-  let text = langObj[key] !== undefined ? langObj[key] : translations.pl[key] !== undefined ? translations.pl[key] : key;
-  if (params) {
-    Object.keys(params).forEach(p => {
-      text = text.replace(new RegExp('{' + p + '}', 'g'), params[p]);
-    });
-  }
-  return text;
+    const translations = window.translations || {};
+    const langObj = translations[currentLang] || translations.pl || {};
+    const fallback = translations.pl || {};
+    let text = langObj[key] !== undefined ? langObj[key] : (fallback[key] !== undefined ? fallback[key] : key);
+    if (params) {
+        Object.keys(params).forEach(p => {
+            text = text.replace(new RegExp('{' + p + '}', 'g'), params[p]);
+        });
+    }
+    return text;
 }
 
+/* === RENDER FAQ === */
 function renderFAQ() {
-  const container = document.querySelector('.faq-list');
-  if (!container) return;
+    const container = document.querySelector('.faq-list');
+    if (!container) return;
 
-  const faqItems = [
-    {
-      title: t('faqStartTitle'),
-      content: `
-        <ol>
-          <li>${t('faqStart1')}</li>
-          <li>${t('faqStart2')}</li>
-          <li>${t('faqStart3')}</li>
-          <li>${t('faqStart4')}</li>
-        </ol>
-        <p>${t('faqStartNote')}</p>
-      `
-    },
-    {
-      title: t('faqViewsTitle'),
-      content: `
-        <p>${t('faqViewsDesc')}</p>
-        <ul>
-          <li>${t('faqViewsDashboard')}</li>
-          <li>${t('faqViewsWeek')}</li>
-          <li>${t('faqViewsMonth')}</li>
-          <li>${t('faqViewsTable')}</li>
-          <li>${t('faqViewsYear')}</li>
-        </ul>
-        <p>${t('faqViewsNote')}</p>
-      `
-    },
-    {
-      title: t('faqFeaturesTitle'),
-      content: `
-        <p>${t('faqFeaturesDesc')}</p>
-        <ul>
-          <li>${t('faqFeaturesShift')}</li>
-          <li>${t('faqFeaturesLive')}</li>
-          <li>${t('faqFeaturesVacation')}</li>
-          <li>${t('faqFeaturesOvertime')}</li>
-          <li>${t('faqFeaturesNotes')}</li>
-          <li>${t('faqFeaturesSearch')}</li>
-          <li>${t('faqFeaturesCompare')}</li>
-          <li>${t('faqFeaturesExport')}</li>
-          <li>${t('faqFeaturesPrint')}</li>
-        </ul>
-        <p>${t('faqFeaturesNote')}</p>
-      `
-    },
-    {
-      title: t('faqOvertimeTitle'),
-      content: `
-        <ol>
-          <li>${t('faqOvertime1')}</li>
-          <li>${t('faqOvertime2')}</li>
-          <li>${t('faqOvertime3')}
-            <ul>
-              <li>${t('faqOvertime3a')}</li>
-              <li>${t('faqOvertime3b')}</li>
-            </ul>
-          </li>
-          <li>${t('faqOvertime4')}</li>
-        </ol>
-        <p>${t('faqOvertimeCategory')}</p>
-        <ul>
-          <li>${t('faqOvertimeCat200')}</li>
-          <li>${t('faqOvertimeCat100')}</li>
-          <li>${t('faqOvertimeCat50')}</li>
-        </ul>
-        <p>${t('faqOvertimeNote')}</p>
-      `
-    },
-    {
-      title: t('faqVacationTitle'),
-      content: `
-        <p>${t('faqVacationDesc')}</p>
-        <p>${t('faqVacationRemove')}</p>
-        <p>${t('faqVacationStats')}</p>
-      `
-    },
-    {
-      title: t('faqNotesTitle'),
-      content: `
-        <p>${t('faqNotesDesc')}</p>
-        <p>${t('faqNotesIcon')}</p>
-      `
-    },
-    {
-      title: t('faqKeyboardTitle'),
-      content: `
-        <b>${t('faqKeyboardEdit')}</b>
-        <ul>
-          <li>${t('faqKeyboardEdit1')}</li>
-          <li>${t('faqKeyboardEdit2')}</li>
-          <li>${t('faqKeyboardEdit3')}</li>
-          <li>${t('faqKeyboardEdit4')}</li>
-          <li>${t('faqKeyboardEdit5')}</li>
-        </ul>
-        <b>${t('faqKeyboardNav')}</b>
-        <ul>
-          <li>${t('faqKeyboardNav1')}</li>
-          <li>${t('faqKeyboardNav2')}</li>
-          <li>${t('faqKeyboardNav3')}</li>
-        </ul>
-      `
-    },
-    {
-      title: t('faqSaveTitle'),
-      content: `
-        <p>${t('faqSaveDesc')}</p>
-        <p>${t('faqSaveNote')}</p>
-      `
-    },
-    {
-      title: t('faqSyncTitle'),
-      content: `
-        <p>${t('faqSyncDesc')}</p>
-        <ol>
-          <li>${t('faqSync1')}</li>
-          <li>${t('faqSync2')}</li>
-          <li>${t('faqSync3')}</li>
-        </ol>
-        <p>${t('faqSyncNote')}</p>
-      `
-    },
-    {
-      title: t('faqExportTitle'),
-      content: `<p>${t('faqExportDesc')}</p>`
-    },
-    {
-      title: t('faqInstallTitle'),
-      content: `
-        <p>${t('faqInstallDesc')}</p>
-        <ol>
-          <li>${t('faqInstall1')}</li>
-          <li>${t('faqInstall2')}</li>
-          <li>${t('faqInstall3')}</li>
-          <li>${t('faqInstall4')}</li>
-        </ol>
-        <p>${t('faqInstallNote')}</p>
-        <p>${t('faqInstallMenuNote')}</p>
-      `
-    },
-    {
-      title: t('faqBugTitle'),
-      content: `
-        <div style="background:linear-gradient(135deg, #667eea, #764ba2); color:#fff; padding:15px; border-radius:10px; text-align:center;">
-          <b>${t('faqBugDesc')}</b><br>
-          <a href="mailto:${t('faqBugEmail')}?subject=Grafik Gillette" style="color:#fff; font-weight:bold; text-decoration:none;">${t('faqBugEmail')}</a>
-        </div>
-        <p>${t('faqBugNote')}</p>
-      `
-    }
-  ];
+    const faqItems = [
+        {
+            title: t('faqStartTitle'),
+            content: `
+                <ol>
+                    <li>${t('faqStart1')}</li>
+                    <li>${t('faqStart2')}</li>
+                    <li>${t('faqStart3')}</li>
+                    <li>${t('faqStart4')}</li>
+                </ol>
+                <p>${t('faqStartNote')}</p>
+            `
+        },
+        {
+            title: t('faqLangTitle'),
+            content: `
+                <p>${t('faqLangDesc')}</p>
+                <ul>
+                    <li>${t('faqLangPl')}</li>
+                    <li>${t('faqLangEn')}</li>
+                    <li>${t('faqLangUk')}</li>
+                </ul>
+                <p>${t('faqLangNote')}</p>
+            `
+        },
+        {
+            title: t('faqViewsTitle'),
+            content: `
+                <p>${t('faqViewsDesc')}</p>
+                <ul>
+                    <li>${t('faqViewsDashboard')}</li>
+                    <li>${t('faqViewsWeek')}</li>
+                    <li>${t('faqViewsMonth')}</li>
+                    <li>${t('faqViewsTable')}</li>
+                    <li>${t('faqViewsYear')}</li>
+                </ul>
+                <p>${t('faqViewsNote')}</p>
+            `
+        },
+        {
+            title: t('faqFeaturesTitle'),
+            content: `
+                <p>${t('faqFeaturesDesc')}</p>
+                <ul>
+                    <li>${t('faqFeaturesShift')}</li>
+                    <li>${t('faqFeaturesLive')}</li>
+                    <li>${t('faqFeaturesVacation')}</li>
+                    <li>${t('faqFeaturesOvertime')}</li>
+                    <li>${t('faqFeaturesNotes')}</li>
+                    <li>${t('faqFeaturesSearch')}</li>
+                    <li>${t('faqFeaturesCompare')}</li>
+                    <li>${t('faqFeaturesExport')}</li>
+                    <li>${t('faqFeaturesPrint')}</li>
+                </ul>
+                <p>${t('faqFeaturesNote')}</p>
+            `
+        },
+        {
+            title: t('faqOvertimeTitle'),
+            content: `
+                <ol>
+                    <li>${t('faqOvertime1')}</li>
+                    <li>${t('faqOvertime2')}</li>
+                    <li>${t('faqOvertime3')}
+                        <ul>
+                            <li>${t('faqOvertime3a')}</li>
+                            <li>${t('faqOvertime3b')}</li>
+                        </ul>
+                    </li>
+                    <li>${t('faqOvertime4')}</li>
+                </ol>
+                <p>${t('faqOvertimeCategory')}</p>
+                <ul>
+                    <li>${t('faqOvertimeCat200')}</li>
+                    <li>${t('faqOvertimeCat100')}</li>
+                    <li>${t('faqOvertimeCat50')}</li>
+                </ul>
+                <p>${t('faqOvertimeNote')}</p>
+            `
+        },
+        {
+            title: t('faqVacationTitle'),
+            content: `
+                <p>${t('faqVacationDesc')}</p>
+                <p>${t('faqVacationRemove')}</p>
+                <p>${t('faqVacationStats')}</p>
+            `
+        },
+        {
+            title: t('faqNotesTitle'),
+            content: `
+                <p>${t('faqNotesDesc')}</p>
+                <p>${t('faqNotesIcon')}</p>
+            `
+        },
+        {
+            title: t('faqKeyboardTitle'),
+            content: `
+                <b>${t('faqKeyboardEdit')}</b>
+                <ul>
+                    <li>${t('faqKeyboardEdit1')}</li>
+                    <li>${t('faqKeyboardEdit2')}</li>
+                    <li>${t('faqKeyboardEdit3')}</li>
+                    <li>${t('faqKeyboardEdit4')}</li>
+                    <li>${t('faqKeyboardEdit5')}</li>
+                </ul>
+                <b>${t('faqKeyboardNav')}</b>
+                <ul>
+                    <li>${t('faqKeyboardNav1')}</li>
+                    <li>${t('faqKeyboardNav2')}</li>
+                    <li>${t('faqKeyboardNav3')}</li>
+                </ul>
+            `
+        },
+        {
+            title: t('faqSaveTitle'),
+            content: `
+                <p>${t('faqSaveDesc')}</p>
+                <p>${t('faqSaveNote')}</p>
+            `
+        },
+        {
+            title: t('faqSyncTitle'),
+            content: `
+                <p>${t('faqSyncDesc')}</p>
+                <ol>
+                    <li>${t('faqSync1')}</li>
+                    <li>${t('faqSync2')}</li>
+                    <li>${t('faqSync3')}</li>
+                    <li>${t('faqSync4')}</li>
+                    <li>${t('faqSync5')}</li>
+                </ol>
+                <p>${t('faqSyncNote')}</p>
+            `
+        },
+        {
+            title: t('faqExportTitle'),
+            content: `<p>${t('faqExportDesc')}</p>`
+        },
+        {
+            title: t('faqInstallTitle'),
+            content: `
+                <p>${t('faqInstallDesc')}</p>
+                <ol>
+                    <li>${t('faqInstall1')}</li>
+                    <li>${t('faqInstall2')}</li>
+                    <li>${t('faqInstall3')}</li>
+                    <li>${t('faqInstall4')}</li>
+                </ol>
+                <p>${t('faqInstallNote')}</p>
+                <p>${t('faqInstallMenuNote')}</p>
+            `
+        },
+        {
+            title: t('faqBugTitle'),
+            content: `
+                <div style="background:linear-gradient(135deg, #667eea, #764ba2); color:#fff; padding:15px; border-radius:10px; text-align:center;">
+                    <b>${t('faqBugDesc')}</b><br>
+                    <a href="mailto:${t('faqBugEmail')}?subject=Grafik Gillette" style="color:#fff; font-weight:bold; text-decoration:none;">${t('faqBugEmail')}</a>
+                </div>
+                <p>${t('faqBugNote')}</p>
+            `
+        }
+    ];
 
-  container.innerHTML = faqItems.map((item, idx) => `
-    <details class="faq-item" ${idx === 0 ? 'open' : ''}>
-      <summary>${item.title}</summary>
-      <div class="faq-answer">
-        ${item.content}
-      </div>
-    </details>
-  `).join('');
+    container.innerHTML = faqItems.map((item, idx) => `
+        <details class="faq-item" ${idx === 0 ? 'open' : ''}>
+            <summary>${item.title}</summary>
+            <div class="faq-answer">
+                ${item.content}
+            </div>
+        </details>
+    `).join('');
 }
 
+/* === ZASTOSUJ TŁUMACZENIA DO DOM === */
 function applyTranslations() {
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    const val = t(key);
-    if (el.tagName === 'INPUT' || el.tagName === 'BUTTON' || el.tagName === 'SELECT') {
-      el.textContent = val;
-    } else {
-      el.innerHTML = val;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const val = t(key);
+        if (el.tagName === 'INPUT' || el.tagName === 'BUTTON' || el.tagName === 'SELECT') {
+            el.textContent = val;
+        } else {
+            el.innerHTML = val;
+        }
+    });
+
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        el.title = t(el.getAttribute('data-i18n-title'));
+    });
+
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+    });
+
+    const langIcon = document.getElementById('langToggleBtn');
+    if (langIcon) {
+        const flags = { pl: '🇵🇱', en: '🇺🇸', uk: '🇺🇦' };
+        langIcon.textContent = flags[currentLang] || '🌐';
     }
-  });
 
-  document.querySelectorAll('[data-i18n-title]').forEach(el => {
-    el.title = t(el.getAttribute('data-i18n-title'));
-  });
-
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-    el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
-  });
-
-  const langIcon = document.getElementById('langToggleBtn');
-  if (langIcon) {
-    const flags = { pl: '🇵🇱', en: '🇺🇸', uk: '🇺🇦' };
-    langIcon.textContent = flags[currentLang] || '🌐';
-  }
-
-  if (typeof refreshViews === 'function') refreshViews();
-  renderFAQ();
+    if (typeof refreshViews === 'function') refreshViews();
+    renderFAQ();
 }
 
-/* === ИНИЦИАЛИЗАЦИЯ === */
+/* === INICJALIZACJA === */
 currentLang = detectLanguage();
 if (typeof updateLocalizedNames === 'function') updateLocalizedNames();
