@@ -1,0 +1,50 @@
+# === OS ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === EDITORS ===
+# VS Code — commit only shared config files
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# IntelliJ IDEA / WebStorm
+.idea/
+*.iml
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# === NODE (future-proof) ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json.bak
+
+# === BUILD (future-proof) ===
+dist/
+build/
+.cache/
+
+# === LOGS ===
+*.log
+logs/
+
+# === TEMP ===
+*.tmp
+*.temp
+.tmp/
+
+# === PYTHON (tools/*.py) ===
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# === ENVIRONMENT ===
+.env
+.env.local
+.env.*.local

@@ -14,6 +14,7 @@ Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą p
 ## 2. Modele danych
 
 ### prefs (localStorage: `gillette_prefs_v1`)
+
 ```javascript
 {
   year: 2026,                    // Aktualny rok
@@ -33,6 +34,7 @@ Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą p
 ```
 
 ### customSchedule (localStorage: `gillette_custom_schedule_v2`)
+
 ```javascript
 {
   [year]: {
@@ -42,9 +44,11 @@ Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą p
   }
 }
 ```
+
 Przykład: `{ 2026: { 8: { A: 'RRPPNNWW...', B: 'PPNNRRWW...' } } }`
 
 ### urlops (localStorage: `gillette_urlops_v1`)
+
 ```javascript
 {
   [brigade]: ['2026-08-10', '2026-08-11', ...]  // Tablica stringów dat
@@ -52,6 +56,7 @@ Przykład: `{ 2026: { 8: { A: 'RRPPNNWW...', B: 'PPNNRRWW...' } } }`
 ```
 
 ### notes (localStorage: `gillette_notes_v1`)
+
 ```javascript
 {
   '2026-8-10-C': 'treść notatki',
@@ -60,6 +65,7 @@ Przykład: `{ 2026: { 8: { A: 'RRPPNNWW...', B: 'PPNNRRWW...' } } }`
 ```
 
 ### overtimes (localStorage: `gillette_overtimes_v1`)
+
 ```javascript
 {
   [brigade]: {
@@ -77,6 +83,7 @@ Przykład: `{ 2026: { 8: { A: 'RRPPNNWW...', B: 'PPNNRRWW...' } } }`
 ```
 
 ### pendingChanges (w pamięci, tylko w trybie edycji)
+
 ```javascript
 {
   '2026-8-10-C': 'R',           // Klucz: 'rok-miesiąc-dzień-brygada', wartość: nowa zmiana
@@ -85,7 +92,9 @@ Przykład: `{ 2026: { 8: { A: 'RRPPNNWW...', B: 'PPNNRRWW...' } } }`
 ```
 
 ### AppState
+
 Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
+
 - `currentYear`, `currentMonth`, `selectedShift`, `compareShift`
 - `selectedDay`, `currentView`, `yearMode`
 - `editMode`, `editPaletteMode`, `popupFadeTimer`
@@ -94,6 +103,7 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 ## 3. Mapa plików JS (co gdzie)
 
 ### js/data.js — Moduł 1: Dane statyczne
+
 - `factorySchedule` — grafik fabryczny 2026 (i inne lata)
 - `monthNames`, `monthNamesShort`, `dayNames`, `dayNamesFull`
 - `shiftHours`, `shiftEmoji`, `shiftFullName`, `shiftLongNames`
@@ -102,6 +112,7 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - `daysInMonthCal`, `isWolne`, `escapeHtml`
 
 ### js/overtime-logic.js — Moduł 1.5: Logika nadgodzin
+
 - `categorizeOvertime(y, m, d, shift, position, hours)` — kategoryzacja
   - position: 'przed' | 'po' | 'weekend'
   - 'weekend' → święto=+200%, niedziela/wolne=+100%
@@ -110,6 +121,7 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - `getMonthOvertimeSummary()` — sumowanie miesięczne (uwzględnia przed/po/weekend)
 
 ### js/core.js — Moduł 2: Storage + logika biznesowa
+
 - `loadPrefs/savePrefs`, `loadCustomSchedule/saveCustomSchedule`
 - `loadUrlops/saveUrlops`, `loadNotes/saveNotes`, `loadOvertimes/saveOvertimes`
 - `getShiftAt(y, m, d, brig)` — źródło zmiany dla danego dnia
@@ -124,6 +136,7 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - `getElementByIdSafe` — bezpieczny dostęp do DOM
 
 ### js/ui.js — Moduł 3: UI helpers
+
 - `showToast(type, msg, duration)` — powiadomienia toast
 - `showModal({title, body, buttons})` — uniwersalne okno modalne
 - `showConfirm(title, body, onConfirm, opts)` — potwierdzenie z 2 przyciskami
@@ -133,6 +146,7 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - Bindings: `themeToggleBtn`, `menuBtn`, `sideMenuClose`, `faqHelp`
 
 ### js/edit.js — Moduł 4: Tryb edycji
+
 - `pendingChanges`, `pendingOriginals` — bufor zmian
 - `undoStack`, `redoStack` — historia cofania (Ctrl+Z / Ctrl+Y)
 - Przyciski UI: #undoBtn, #redoBtn w edit banner
@@ -145,6 +159,7 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - `redoLastEdit()` — przywraca cofniętą zmianę (Ctrl+Y lub Ctrl+Shift+Z)
 
 ### js/dashboard.js — Moduł 5: Widok Dashboard
+
 - `renderDashboard()` — cały widok Dashboard
   - Hero section z powitaniem i datą
   - Karta dzisiejszej zmiany z live timerem
@@ -153,6 +168,7 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
   - Quick actions
 
 ### js/calendar.js — Moduł 6: Widok Miesiąc
+
 - `renderCalendar(direction)` — generowanie siatki kalendarza
 - `addReliefPopups(cell, d, shiftCode, onUrlop)` — popupy z brygadą przekazującą/przejmującą
 - `addOvertimePopups(cell, d, shift)` — popupy PRZED/PO w trybie nadgodzin
@@ -165,6 +181,7 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - `getLiveShiftInfo()` — info o aktualnej zmianie
 
 ### js/views.js — Moduł 7: Widoki Tydzień, Rok, Tabela
+
 - `renderWeekView()` — widok tygodnia (7 dni)
 - `ensureWeekStart()` — ustawia początek tygodnia na poniedziałek
 - `prevWeek()`, `nextWeek()` — nawigacja tygodniowa
@@ -174,6 +191,7 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - `renderEmptyState(container)` — placeholder gdy brak danych
 
 ### js/actions.js — Moduł 8: Akcje
+
 - `bindClick(id, handler)` — bezpieczny helper (console.warn jeśli brak elementu)
 - `exportICS()` — eksport do kalendarza .ics
 - `shareCurrent()` — kontekstowe udostępnianie widoku
@@ -187,6 +205,7 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - `validateImportedData(data)` — walidacja struktury JSON przy imporcie (typy, formaty dat, długości tablic)
 
 ### js/pwa.js — Moduł 9: PWA + Powiadomienia
+
 - `registerServiceWorker()` — rejestracja SW
 - `setupInstallPrompt()` — prompt instalacji PWA
 - `isIOS`, `isStandalone` — detekcja środowiska
@@ -198,6 +217,7 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - Timer sprawdzania rozpoczęcia zmiany (setInterval 60s)
 
 ### js/sync.js — Moduł 10: Google Drive
+
 - Logowanie/wylogowanie (OAuth 2.0)
 - `findDriveFile()` — wyszukiwanie pliku w Drive (najnowszy po modifiedTime)
 - `downloadFromDrive()` — pobieranie i pełne zastąpienie lokalnych danych
@@ -205,7 +225,9 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - Obsługa konfliktów (brak merge — last-write-wins)
 
 ### js/i18n/ — Moduł i18n (wielojęzyczność)
+
 Folder z 4 plikami:
+
 - **js/i18n/pl.js** — polski (window.translations.pl)
 - **js/i18n/en.js** — angielski (window.translations.en)
 - **js/i18n/uk.js** — ukraiński (window.translations.uk)
@@ -219,6 +241,7 @@ Folder z 4 plikami:
   - `renderFAQ()` — dynamiczne generowanie FAQ z tłumaczeń
 
 ### js/main.js — Moduł 11: Stan + Init
+
 - Globalne zmienne stanu (wszystkie z sekcji 2)
 - `applyUrlParams()` — parsowanie URL params (view/y/m/d/brig/rok)
 - `switchView(view)` — przełączanie widoków
@@ -235,21 +258,25 @@ Folder z 4 plikami:
 ## 4. Ważne konwencje
 
 ### Klasy CSS
+
 - Komórki dni: `.cell-R`, `.cell-P`, `.cell-N`, `.cell-W`, `.cell-U`
 - Stany komórek: `.selected`, `.today`, `.urlop`, `.dirty-edit`, `.cycle-start`, `.cycle-middle`, `.cycle-end`, `.compare-match`
 - Pozycja w tygodniu: `.col-first` (Poniedziałek), `.col-last` (Niedziela) — dla popupów
 - Tryb edycji: `body.edit-active .day-cell:not(.empty)`
 
 ### Motywy
+
 - Tylko 2 motywy: `:root` (jasny domyślny) i `body.theme-dark` (ciemny)
 - Przełącznik: `#themeToggleBtn` w top-bar
 - Ikona: 🌙 gdy jasny (można przełączyć na ciemny), ☀️ gdy ciemny
 - Funkcje: `applyTheme(themeName)`, `toggleTheme()`
 
 ### URL params (po refaktoringu Share)
+
 Wspierane parametry: `view`, `y`, `m`, `d`, `brig`, `rok`
 
 Przykłady:
+
 - `?view=month&y=2026&m=8&d=10&brig=C` — dzień 10 sierpnia, brygada C
 - `?view=month&y=2026&m=8&brig=C` — cały sierpień, brygada C
 - `?view=month&y=2026&brig=C&rok=1` — Rok view, brygada C
@@ -259,6 +286,7 @@ Przykłady:
 Po załadowaniu URL jest czyszczony przez `history.replaceState` (dla czystości).
 
 ### bindClick helper (js/actions.js)
+
 ```javascript
 function bindClick(id, handler) {
   const el = document.getElementById(id);
@@ -269,9 +297,11 @@ function bindClick(id, handler) {
   }
 }
 ```
+
 Używany dla wszystkich przycisków w side menu i edit banner.
 
 ### Wielojęzyczność (i18n)
+
 - Wszystkie teksty użytkownika muszą przechodzić przez funkcję `t(key)`
 - Elementy HTML używają atrybutów:
   - `data-i18n="key"` — dla textContent/innerHTML
@@ -284,6 +314,7 @@ Używany dla wszystkich przycisków w side menu i edit banner.
 - Ikony w bocznym menu są w HTML (`<span class="mi-icon">`), NIE w wartościach tłumaczeń
 
 ### Nadgodziny — trzy typy pozycji
+
 - `'przed'` — przed rozpoczęciem zmiany (dni robocze, 1-6h typowo)
 - `'po'` — po zakończeniu zmiany (dni robocze, 1-6h typowo)
 - `'weekend'` — praca w dzień wolny/święto (8-13h max)
@@ -291,6 +322,7 @@ Używany dla wszystkich przycisków w side menu i edit banner.
 - Kategoryzacja weekend: automatyczna z buildHolidays() i sprawdzenia dow===0 (niedziela)
 
 ### CSS
+
 - Wszystkie style w `css/styles.css`
 - Podłączony w index.html: `<link rel="stylesheet" href="css/styles.css">`
 - Zmienne CSS (custom properties) w :root i body.theme-dark
@@ -305,23 +337,30 @@ Używany dla wszystkich przycisków w side menu i edit banner.
 - Service Worker jest podstawowy (bez auto-update / toast notification) — użytkownicy widzą nową wersję dopiero przy drugiej wizycie
 - Klucze i18n są rozproszone po 3 plikach — brak central registry i validacji brakujących kluczy
 - Genitive month names są zdublowane w kodzie (monthNames dla nagłówków vs monthNamesGenitive dla dat)
+- Testowanie funkcji `getLiveTimer()` wymaga mockowania `Date`, `getShiftAt`, `isUrlop`, `getOvertimes` jednocześnie — pojedynczy mock jednej zależności może dawać fałszywe wyniki
+- Kompatybilność `chrome-extension://` z Service Worker — wymaga jawnego filtra protokołu w handlerze `fetch`
 
 ## 6. Strategia konfliktów synchronizacji
 
 ### 6.1. Wybór pliku w chmurze (`findDriveFile()`)
+
 Funkcja `findDriveFile()` w `js/sync.js` wyszukuje pliki w folderze aplikacji na Google Drive i **wybiera wyłącznie najnowszy plik** według pola `modifiedTime`. Starsze duplikaty są pomijane. System **nie porównuje zawartości** plików.
 
 ### 6.2. Pobieranie danych z chmury (`downloadFromDrive()`)
+
 Po pobraniu pliku funkcja `downloadFromDrive()` **w pełni zastępuje lokalny stan** danymi z chmury. Nie ma mechanizmu merge, diff ani scalania zmian.
 
 ### 6.3. Synchronizacja z wielu urządzeń (tryb offline)
+
 System **nie obsługuje bezpiecznej synchronizacji z wielu urządzeń jednocześnie**. Jeśli użytkownik edytuje dane na dwóch urządzeniach:
+
 1. Oba urządzenia pracują z własną wersją w `localStorage`
 2. Po synchronizacji **wygraje urządzenie, które zapisało plik jako ostatnie**
 3. **Zmiany z drugiego urządzenia zostaną bezpowrotnie utracone**
-4. Jedynym ostrzeżeniem jest dialog `showConfirm` z tekstem *"Dane lokalne zostaną nadpisane"*
+4. Jedynym ostrzeżeniem jest dialog `showConfirm` z tekstem _"Dane lokalne zostaną nadpisane"_
 
 ### 6.4. Zalecenia
+
 - **Nie obiecuj użytkownikom "bezpiecznej synchronizacji z wielu urządzeń"**
 - Wymaga to znaczącej przebudowy (wersjonowanie, historia zmian, trzyustawowe scalanie)
 - Rozważ wersjonowanie plików w chmurze lub jaśniejsze ostrzeżenia o utracie danych
@@ -353,6 +392,14 @@ System **nie obsługuje bezpiecznej synchronizacji z wielu urządzeń jednocześ
 - Dodano genitive month names dla poprawnych dat po polsku/ukraińsku
 - Usunięto niepotrzebną funkcję wyszukiwania (search)
 - Naprawiono modal × zastępowany słowem "Zamknij"/"Закрити"
+- **v3.5.0 (2026-08-13):** Naprawiono kolizję `t` w handlerach popupów overtime (`calendar.js`) i w `todayBtn` (`main.js`)
+- **v3.5.0:** Naprawiono timer nocnej zmiany po północy — teraz sprawdza zmianę wczorajszą (`getLiveTimer` w `dashboard.js`)
+- **v3.5.0:** Refactor `main.js` — 12 miejsc z bezpośrednim DOM binding zamieniono na `bindClick()`/`bindEvent()`
+- **v3.5.0:** Dodano ikonę 🌙 w timerze dla wczorajszej nocnej zmiany (klucz i18n `timerNightEndsIn`)
+- **v3.5.0:** Mobile UX — ochrona przed przypadkowym tap-em na popupy przez 400ms po zmianie `selectedDay`
+- **v3.5.0:** Filtr protokołu w Service Worker — ignoruje żądania `chrome-extension://` i `moz-extension://`
+- **v3.5.0:** Usunięty martwy kod w `overtime-logic.js` (zmienne `dow`, `isSunday`)
+- **v3.5.0:** Konfiguracja Prettier + `.vscode/settings.json` + rozbudowany `.gitignore`
 
 ## 8. Backlog / TODO na przyszłość
 
@@ -371,18 +418,28 @@ System **nie obsługuje bezpiecznej synchronizacji z wielu urządzeń jednocześ
 - [ ] Central rejestr kluczy i18n z ostrzeżeniami o brakujących tłumaczeniach
 - [ ] Testy automatyczne dla kategoryzacji nadgodzin
 - [ ] Zaawansowany Service Worker z auto-update + toast "🔄 Nowa wersja"
+- [x] Naprawa kolizji `t` z i18n w handlerach popupów ✅ v3.5.0
+- [x] Naprawa timera nocnej zmiany po północy ✅ v3.5.0
+- [x] Safe DOM binding (`bindClick`/`bindEvent`) w `main.js` ✅ v3.5.0
+- [x] 🌙 wskaźnik dla wczorajszej nocnej zmiany ✅ v3.5.0
+- [x] Mobile UX: ochrona popupów po `selectedDay` ✅ v3.5.0
+- [x] Filtr protokołu w Service Worker (chrome-extension) ✅ v3.5.0
+- [x] Konfiguracja Prettier ✅ v3.5.0
 
 ## 9. Szybkie odwołania
 
 ### Pliki konfiguracyjne
+
 - `manifest.json` — PWA manifest (nazwa, kolory, ikony)
 - `sw.js` — Service Worker (cache strategy)
 - `.agent.md` — Instrukcje dla AI-asystentów
 
 ### Dokumentacja użytkownika
+
 - FAQ w aplikacji: ☰ Menu → ❓ Pomoc
 - README.md — dla użytkowników końcowych
 
 ### Kontakt
+
 - Email: tantsiura.s@pg.com
 - Demo: https://servitantgit.github.io/Graffik/
