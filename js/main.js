@@ -14,6 +14,16 @@ let editMode = false;
 let editPaletteMode = 'CYCLE';
 let popupFadeTimer = null;
 
+/* === HELPER: Bezpieczne bindowanie eventów === */
+function bindEvent(id, event, handler) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener(event, handler);
+  } else {
+    console.warn(`[main.js] Element #${id} not found — event "${event}" not bound`);
+  }
+}
+
 /* === URL PARAMS === */
 (function applyUrlParams() {
   const p = new URLSearchParams(window.location.search);
@@ -99,11 +109,12 @@ function updateYearToggleState() {
 document.querySelectorAll('#viewSwitcher .view-btn').forEach((b) => {
   b.onclick = () => switchView(b.dataset.view);
 });
-document.getElementById('yearToggle').addEventListener('change', (e) => {
+bindEvent('yearToggle', 'change', (e) => {
   yearMode = e.target.checked;
   prefs.yearMode = yearMode;
   savePrefs(prefs);
-  document.getElementById('yearToggleLabel').classList.toggle('active', yearMode);
+  const label = document.getElementById('yearToggleLabel');
+  if (label) label.classList.toggle('active', yearMode);
   refreshViews();
 });
 
@@ -196,7 +207,7 @@ function updateEditModeUI() {
 }
 
 /* === EDIT MODE === */
-document.getElementById('editModeToggle').onclick = () => {
+bindClick('editModeToggle', () => {
   if (!editMode) {
     if (!prefs.skipEditConfirm) {
       showConfirm(
@@ -236,7 +247,7 @@ document.getElementById('editModeToggle').onclick = () => {
       refreshViews();
     }
   }
-};
+});
 
 document.querySelectorAll('.palette-btn').forEach((btn) => {
   btn.onclick = () => {
@@ -266,10 +277,10 @@ function setPaletteMode(mode) {
   if (mode === 'OT' && selectedDay) refreshViews();
 }
 
-document.getElementById('saveChangesBtn').onclick = saveAllPendingChanges;
-document.getElementById('discardChangesBtn').onclick = discardAllPendingChanges;
-document.getElementById('undoBtn').onclick = undoLastEdit;
-document.getElementById('redoBtn').onclick = redoLastEdit;
+bindClick('saveChangesBtn', saveAllPendingChanges);
+bindClick('discardChangesBtn', discardAllPendingChanges);
+bindClick('undoBtn', undoLastEdit);
+bindClick('redoBtn', redoLastEdit);
 
 /* === NAWIGACJA === */
 function goToMonth(delta) {
@@ -315,10 +326,10 @@ function goToYear(delta, keepMonth) {
   savePrefs(prefs);
   refreshViews();
 }
-document.getElementById('prevMonthBtn').onclick = () => goToMonth(-1);
-document.getElementById('nextMonthBtn').onclick = () => goToMonth(1);
-document.getElementById('prevYearBtn').onclick = () => goToYear(-1);
-document.getElementById('nextYearBtn').onclick = () => goToYear(1);
+bindClick('prevMonthBtn', () => goToMonth(-1));
+bindClick('nextMonthBtn', () => goToMonth(1));
+bindClick('prevYearBtn', () => goToYear(-1));
+bindClick('nextYearBtn', () => goToYear(1));
 
 /* === KEYBOARD === */
 document.addEventListener('keydown', (e) => {
@@ -471,7 +482,7 @@ document.querySelectorAll('.shift-btn').forEach((btn) => {
 });
 
 /* === DZIŚ === */
-document.getElementById('todayBtn').onclick = () => {
+bindClick('todayBtn', () => {
   const today = new Date(); // ← перейменував `t` (бо колізія з i18n t()!)
   currentYear = today.getFullYear();
   currentMonth = today.getMonth() + 1;
@@ -483,7 +494,7 @@ document.getElementById('todayBtn').onclick = () => {
   savePrefs(prefs);
   if (currentView === 'dashboard') refreshViews();
   else switchView('month');
-};
+});
 
 /* === beforeunload === */
 window.addEventListener('beforeunload', (e) => {
