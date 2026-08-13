@@ -26,13 +26,14 @@ const ASSETS = [
   './js/main.js',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  './icons/icon-512-maskable.png'
+  './icons/icon-512-maskable.png',
 ];
 
 /* === INSTALL: cache'ujemy wszystkie zasoby === */
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    caches
+      .open(CACHE_NAME)
       .then((cache) => cache.addAll(ASSETS))
       .then(() => self.skipWaiting())
   );
@@ -41,24 +42,27 @@ self.addEventListener('install', (event) => {
 /* === ACTIVATE: usuwamy stare cache === */
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys()
-      .then((keys) => Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      ))
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
+      )
       .then(() => self.clients.claim())
   );
 });
 
 /* === FETCH: najpierw sieć, potem cache (stale-while-revalidate) === */
 self.addEventListener('fetch', (event) => {
-  // Nie cache'ujemy zapytań non-GET
   if (event.request.method !== 'GET') return;
+
+  // Ignoruj żądania z rozszerzeń przeglądarki (chrome-extension://, moz-extension:// itp.)
+  const url = new URL(event.request.url);
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const fetchPromise = fetch(event.request)
         .then((response) => {
-          // Cache'ujemy tylko udane odpowiedzi
           if (response && response.status === 200 && response.type === 'basic') {
             const clone = response.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
@@ -85,23 +89,23 @@ self.addEventListener('push', (event) => {
     badge: './icons/icon-192.png',
     vibrate: [200, 100, 200],
     data: { url: data.url || './' },
-    tag: 'grafik-reminder'
+    tag: 'grafik-reminder',
   };
-  event.waitUntil(
-    self.registration.showNotification(data.title || '⏰ Grafik Gillette', options)
-  );
+  event.waitUntil(self.registration.showNotification(data.title || '⏰ Grafik Gillette', options));
 });
 
 /* === NOTIFICATION CLICK: otwieramy aplikację === */
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const url = event.notification.data && event.notification.data.url
-    ? event.notification.data.url
-    : './';
+  const url =
+    event.notification.data && event.notification.data.url ? event.notification.data.url : './';
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
-        if ('focus' in client) { client.navigate(url); return client.focus(); }
+        if ('focus' in client) {
+          client.navigate(url);
+          return client.focus();
+        }
       }
       if (clients.openWindow) return clients.openWindow(url);
     })
