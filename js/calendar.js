@@ -1,6 +1,9 @@
 /* ================================================================
    GRAFIK GILLETTE — Moduł 6: KALENDARZ MIESIĄCA + INFO + NADGODZINY
    ================================================================ */
+/* === STAN: Kiedy selectedDay został ustawiony (dla mobile UX) === */
+let selectedDayTimestamp = 0;
+const POPUP_ACTIVATE_DELAY = 400; // ms — czas, po którym popupy stają się klikalne
 
 /* === RENDER MONTH VIEW === */
 function renderCalendar(direction) {
@@ -200,8 +203,8 @@ function renderCalendar(direction) {
     cell.addEventListener('click', () => {
       if (editMode) {
         if (editPaletteMode === 'OT') {
-          // Weekend/holiday overtime też dozwolone — nie blokujemy
           selectedDay = d;
+          selectedDayTimestamp = Date.now(); // ← nowa linia
           renderCalendar();
           renderInfo();
           return;
@@ -209,10 +212,12 @@ function renderCalendar(direction) {
         const val = editPaletteMode === 'CYCLE' ? undefined : editPaletteMode;
         applyEdit(currentYear, currentMonth, d, selectedShift, val);
         selectedDay = d;
+        selectedDayTimestamp = Date.now(); // ← nowa linia
         refreshViews();
         return;
       }
       selectedDay = selectedDay === d ? null : d;
+      selectedDayTimestamp = Date.now(); // ← nowa linia
       renderCalendar();
       renderInfo();
     });
@@ -240,6 +245,13 @@ function addReliefPopups(cell, d, shiftCode, onUrlop) {
     : `<div class="rp-label">🌴 ${t('vacation')}</div><div class="rp-brig">+</div><div class="rp-info">${t('infoUrlopMarked')}</div>`;
   urlopPopup.addEventListener('click', (ev) => {
     ev.stopPropagation();
+    // Ochrona przed przypadkowym tap-em na mobile
+    if (Date.now() - selectedDayTimestamp < POPUP_ACTIVATE_DELAY) {
+      selectedDay = null;
+      renderCalendar();
+      renderInfo();
+      return;
+    }
     toggleUrlop(currentYear, currentMonth, d, selectedShift);
     showToast('success', onUrlop ? t('urlopRemoved') : t('urlopAdded'));
     refreshViews();
@@ -266,6 +278,14 @@ function addReliefPopups(cell, d, shiftCode, onUrlop) {
       leftPopup.style.cursor = 'pointer';
       leftPopup.onclick = (ev) => {
         ev.stopPropagation();
+        // Ochrona przed przypadkowym kliknięciem na mobile:
+        // jeśli popup pojawił się <400ms temu — traktuj jako "toggle"
+        if (Date.now() - selectedDayTimestamp < POPUP_ACTIVATE_DELAY) {
+          selectedDay = null;
+          renderCalendar();
+          renderInfo();
+          return;
+        }
         selectedShift = info.prevBrig;
         currentYear = info.prevYear;
         currentMonth = info.prevMonth;
@@ -298,6 +318,14 @@ function addReliefPopups(cell, d, shiftCode, onUrlop) {
       rightPopup.style.cursor = 'pointer';
       rightPopup.onclick = (ev) => {
         ev.stopPropagation();
+        // Ochrona przed przypadkowym kliknięciem na mobile:
+        // jeśli popup pojawił się <400ms temu — traktuj jako "toggle"
+        if (Date.now() - selectedDayTimestamp < POPUP_ACTIVATE_DELAY) {
+          selectedDay = null;
+          renderCalendar();
+          renderInfo();
+          return;
+        }
         selectedShift = info.nextBrig;
         currentYear = info.nextYear;
         currentMonth = info.nextMonth;
