@@ -284,18 +284,18 @@ function addOvertimePopups(cell, d, shift) {
     `;
   }
   topPopup.addEventListener('click', (ev) => {
-    ev.stopPropagation();
-    const t = ev.target;
-    if (t.dataset && t.dataset.act === 'del-przed') {
-      showConfirm(t('otDeleteBefore'), '', () => {
-        removeOvertime(currentYear, currentMonth, d, selectedShift, 'przed');
-        showToast('success', t('removed'));
-        refreshViews();
-      }, { primaryText: t('otDeleteBtn'), primaryClass: 'danger' });
-      return;
-    }
-    openOvertimeModal(d, shift, 'przed', ot.przed);
-  });
+      ev.stopPropagation();
+      const target = ev.target;
+      if (target.dataset && target.dataset.act === 'del-przed') {
+        showConfirm(t('otDeleteBefore'), '', () => {
+         removeOvertime(currentYear, currentMonth, d, selectedShift, 'przed');
+         showToast('success', t('removed'));
+         refreshViews();
+        }, { primaryText: t('otDeleteBtn'), primaryClass: 'danger' });
+        return;
+      }
+      openOvertimeModal(d, shift, 'przed', ot.przed);
+    });
   cell.appendChild(topPopup);
 
   const botPopup = document.createElement('div');
@@ -321,8 +321,8 @@ function addOvertimePopups(cell, d, shift) {
   }
   botPopup.addEventListener('click', (ev) => {
     ev.stopPropagation();
-    const t = ev.target;
-    if (t.dataset && t.dataset.act === 'del-po') {
+    const target = ev.target;
+    if (target.dataset && target.dataset.act === 'del-po') {
       showConfirm(t('otDeleteAfter'), '', () => {
         removeOvertime(currentYear, currentMonth, d, selectedShift, 'po');
         showToast('success', t('removed'));
