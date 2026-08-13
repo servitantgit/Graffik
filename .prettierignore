@@ -1,0 +1,28 @@
+# Залежності
+node_modules/
+
+# Згенеровані файли
+dist/
+build/
+
+# Іконки та зображення
+icons/
+screenshots/
+*.png
+*.jpg
+*.jpeg
+*.svg
+
+# Мінімізовані файли
+*.min.js
+*.min.css
+
+# Логи та тимчасові
+*.log
+.DS_Store
+
+# Python допоміжні
+tools/
+
+# Документація Markdown 
+# *.md

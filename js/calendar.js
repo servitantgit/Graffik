@@ -6,7 +6,9 @@
 function renderCalendar(direction) {
   const cal = document.getElementById('calendar');
   cal.innerHTML = '';
-  cal.className = 'calendar' + (direction === 'right' ? ' slide-right' : direction === 'left' ? ' slide-left' : '');
+  cal.className =
+    'calendar' +
+    (direction === 'right' ? ' slide-right' : direction === 'left' ? ' slide-left' : '');
 
   dayNames.forEach((d, idx) => {
     const h = document.createElement('div');
@@ -28,7 +30,9 @@ function renderCalendar(direction) {
   }
 
   const today = new Date();
-  const cycleRange = selectedDay ? getCycleRange(currentYear, currentMonth, selectedDay, selectedShift) : null;
+  const cycleRange = selectedDay
+    ? getCycleRange(currentYear, currentMonth, selectedDay, selectedShift)
+    : null;
 
   for (let d = 1; d <= dim; d++) {
     const cell = document.createElement('div');
@@ -48,8 +52,13 @@ function renderCalendar(direction) {
     if (weekdayIdx === 6) cell.classList.add('col-last');
     if (weekdayIdx <= 1) cell.classList.add('col-left-edge');
     if (weekdayIdx >= 5) cell.classList.add('col-right-edge');
-    if (yHolidays[currentMonth+'-'+d]) cell.classList.add('holiday');
-    if (today.getFullYear() === currentYear && today.getMonth() + 1 === currentMonth && today.getDate() === d) cell.classList.add('today');
+    if (yHolidays[currentMonth + '-' + d]) cell.classList.add('holiday');
+    if (
+      today.getFullYear() === currentYear &&
+      today.getMonth() + 1 === currentMonth &&
+      today.getDate() === d
+    )
+      cell.classList.add('today');
     if (selectedDay === d) cell.classList.add('selected');
     if (dirtyCell) cell.classList.add('dirty-edit');
 
@@ -76,11 +85,11 @@ function renderCalendar(direction) {
     const numEl = document.createElement('div');
     numEl.className = 'day-num';
     numEl.innerHTML = d;
-    if (yHolidays[currentMonth+'-'+d]) {
+    if (yHolidays[currentMonth + '-' + d]) {
       const em = document.createElement('span');
       em.className = 'day-emoji';
       em.textContent = '🎉';
-      em.title = yHolidays[currentMonth+'-'+d];
+      em.title = yHolidays[currentMonth + '-' + d];
       numEl.appendChild(em);
     }
     cell.appendChild(numEl);
@@ -88,11 +97,11 @@ function renderCalendar(direction) {
     const shiftEl = document.createElement('div');
     shiftEl.className = 'day-shift';
     if (onUrlop) {
-    shiftEl.textContent = '';
-    shiftEl.title = t('vacation');
-    }
-    else if (isWolne(shiftCode)) shiftEl.textContent = '—';
-    else shiftEl.innerHTML = `<span class="shift-emoji">${shiftEmoji[shiftCode]}</span>${shiftCode}`;
+      shiftEl.textContent = '';
+      shiftEl.title = t('vacation');
+    } else if (isWolne(shiftCode)) shiftEl.textContent = '—';
+    else
+      shiftEl.innerHTML = `<span class="shift-emoji">${shiftEmoji[shiftCode]}</span>${shiftCode}`;
     cell.appendChild(shiftEl);
 
     // NADGODZINY: wizualny podział + etykiety
@@ -101,7 +110,14 @@ function renderCalendar(direction) {
       if (ot.przed || ot.po) {
         cell.classList.add('has-ot');
         if (ot.przed) {
-          const cat = categorizeOvertime(currentYear, currentMonth, d, shiftCode, 'przed', ot.przed.hours);
+          const cat = categorizeOvertime(
+            currentYear,
+            currentMonth,
+            d,
+            shiftCode,
+            'przed',
+            ot.przed.hours
+          );
           const dominant = cat.h200 > 0 ? '200' : cat.h100 > 0 ? '100' : '50';
           const stripL = document.createElement('div');
           stripL.className = `ot-strip ot-left ot-${dominant}`;
@@ -109,14 +125,27 @@ function renderCalendar(direction) {
           cell.appendChild(stripL);
         }
         if (ot.po) {
-          const cat = categorizeOvertime(currentYear, currentMonth, d, shiftCode, 'po', ot.po.hours);
+          const cat = categorizeOvertime(
+            currentYear,
+            currentMonth,
+            d,
+            shiftCode,
+            'po',
+            ot.po.hours
+          );
           const dominant = cat.h200 > 0 ? '200' : cat.h100 > 0 ? '100' : '50';
           const stripR = document.createElement('div');
           stripR.className = `ot-strip ot-right ot-${dominant}`;
           stripR.textContent = `+${dominant}%`;
           cell.appendChild(stripR);
         }
-        const actualTime = getActualWorkTime(currentYear, currentMonth, d, selectedShift, shiftCode);
+        const actualTime = getActualWorkTime(
+          currentYear,
+          currentMonth,
+          d,
+          selectedShift,
+          shiftCode
+        );
         if (actualTime) {
           const timeEl = document.createElement('div');
           timeEl.className = 'day-actual-time';
@@ -131,7 +160,14 @@ function renderCalendar(direction) {
       const otWeekend = getOvertimes(currentYear, currentMonth, d, selectedShift);
       if (otWeekend.weekend) {
         cell.classList.add('has-ot');
-        const cat = categorizeOvertime(currentYear, currentMonth, d, null, 'weekend', otWeekend.weekend.hours);
+        const cat = categorizeOvertime(
+          currentYear,
+          currentMonth,
+          d,
+          null,
+          'weekend',
+          otWeekend.weekend.hours
+        );
         const dominant = cat.h200 > 0 ? '200' : '100';
         const stripW = document.createElement('div');
         stripW.className = `ot-weekend-strip ot-${dominant}`;
@@ -176,7 +212,7 @@ function renderCalendar(direction) {
         refreshViews();
         return;
       }
-      selectedDay = (selectedDay === d) ? null : d;
+      selectedDay = selectedDay === d ? null : d;
       renderCalendar();
       renderInfo();
     });
@@ -185,10 +221,11 @@ function renderCalendar(direction) {
   }
 
   const monthTitle = getElementByIdSafe('monthTitle');
-  if (monthTitle) monthTitle.textContent = `${monthNames[currentMonth-1]} ${currentYear}`;
+  if (monthTitle) monthTitle.textContent = `${monthNames[currentMonth - 1]} ${currentYear}`;
   const h = getMonthHours(currentYear, currentMonth);
   const monthHours = getElementByIdSafe('monthHours');
-  if (monthHours) monthHours.textContent = `A=${h.A} • B=${h.B} • C=${h.C} • D=${h.D}${compareShift?` (vs ${compareShift})`:''}`;
+  if (monthHours)
+    monthHours.textContent = `A=${h.A} • B=${h.B} • C=${h.C} • D=${h.D}${compareShift ? ` (vs ${compareShift})` : ''}`;
 
   renderProgress();
   renderMonthOvertimeSummary();
@@ -215,20 +252,30 @@ function addReliefPopups(cell, d, shiftCode, onUrlop) {
     const leftPopup = document.createElement('div');
     const prevCls = info.prevBrig ? info.prevType : 'none';
     leftPopup.className = 'relief-popup left pop-' + prevCls;
-    const prevWhen = (info.prevYear !== currentYear || info.prevMonth !== currentMonth)
-      ? `${info.prevDay} ${monthNamesShort[info.prevMonth-1]}${info.prevYear !== currentYear ? ' '+info.prevYear : ''}`
-      : (info.prevDay === d ? t('todayLabel') : info.prevDay === d-1 ? t('dayBefore') : `${info.prevDay}`);
+    const prevWhen =
+      info.prevYear !== currentYear || info.prevMonth !== currentMonth
+        ? `${info.prevDay} ${monthNamesShort[info.prevMonth - 1]}${info.prevYear !== currentYear ? ' ' + info.prevYear : ''}`
+        : info.prevDay === d
+          ? t('todayLabel')
+          : info.prevDay === d - 1
+            ? t('dayBefore')
+            : `${info.prevDay}`;
     leftPopup.innerHTML = `<div class="rp-label">⬅ ${t('infoPrevShift')}</div><div class="rp-brig">${info.prevBrig || '—'}</div><div class="rp-info">${info.prevType} · ${prevWhen}</div>`;
     if (info.prevBrig) {
       leftPopup.style.pointerEvents = 'auto';
       leftPopup.style.cursor = 'pointer';
       leftPopup.onclick = (ev) => {
         ev.stopPropagation();
-        selectedShift = info.prevBrig; currentYear = info.prevYear; currentMonth = info.prevMonth; selectedDay = info.prevDay;
+        selectedShift = info.prevBrig;
+        currentYear = info.prevYear;
+        currentMonth = info.prevMonth;
+        selectedDay = info.prevDay;
         compareShift = null;
-        prefs.shift = selectedShift; prefs.year = currentYear;
+        prefs.shift = selectedShift;
+        prefs.year = currentYear;
         savePrefs(prefs);
-        updateShiftButtons(); updateYearPicker();
+        updateShiftButtons();
+        updateYearPicker();
         refreshViews();
       };
     }
@@ -237,20 +284,30 @@ function addReliefPopups(cell, d, shiftCode, onUrlop) {
     const rightPopup = document.createElement('div');
     const nextCls = info.nextBrig ? info.nextType : 'none';
     rightPopup.className = 'relief-popup right pop-' + nextCls;
-    const nextWhen = (info.nextYear !== currentYear || info.nextMonth !== currentMonth)
-      ? `${info.nextDay} ${monthNamesShort[info.nextMonth-1]}${info.nextYear !== currentYear ? ' '+info.nextYear : ''}`
-      : (info.nextDay === d ? t('todayLabel') : info.nextDay === d+1 ? t('dayAfter') : `${info.nextDay}`);
+    const nextWhen =
+      info.nextYear !== currentYear || info.nextMonth !== currentMonth
+        ? `${info.nextDay} ${monthNamesShort[info.nextMonth - 1]}${info.nextYear !== currentYear ? ' ' + info.nextYear : ''}`
+        : info.nextDay === d
+          ? t('todayLabel')
+          : info.nextDay === d + 1
+            ? t('dayAfter')
+            : `${info.nextDay}`;
     rightPopup.innerHTML = `<div class="rp-label">${t('infoNextShift')} ➡</div><div class="rp-brig">${info.nextBrig || '—'}</div><div class="rp-info">${info.nextType} · ${nextWhen}</div>`;
     if (info.nextBrig) {
       rightPopup.style.pointerEvents = 'auto';
       rightPopup.style.cursor = 'pointer';
       rightPopup.onclick = (ev) => {
         ev.stopPropagation();
-        selectedShift = info.nextBrig; currentYear = info.nextYear; currentMonth = info.nextMonth; selectedDay = info.nextDay;
+        selectedShift = info.nextBrig;
+        currentYear = info.nextYear;
+        currentMonth = info.nextMonth;
+        selectedDay = info.nextDay;
         compareShift = null;
-        prefs.shift = selectedShift; prefs.year = currentYear;
+        prefs.shift = selectedShift;
+        prefs.year = currentYear;
         savePrefs(prefs);
-        updateShiftButtons(); updateYearPicker();
+        updateShiftButtons();
+        updateYearPicker();
         refreshViews();
       };
     }
@@ -284,18 +341,23 @@ function addOvertimePopups(cell, d, shift) {
     `;
   }
   topPopup.addEventListener('click', (ev) => {
-      ev.stopPropagation();
-      const target = ev.target;
-      if (target.dataset && target.dataset.act === 'del-przed') {
-        showConfirm(t('otDeleteBefore'), '', () => {
-         removeOvertime(currentYear, currentMonth, d, selectedShift, 'przed');
-         showToast('success', t('removed'));
-         refreshViews();
-        }, { primaryText: t('otDeleteBtn'), primaryClass: 'danger' });
-        return;
-      }
-      openOvertimeModal(d, shift, 'przed', ot.przed);
-    });
+    ev.stopPropagation();
+    const target = ev.target;
+    if (target.dataset && target.dataset.act === 'del-przed') {
+      showConfirm(
+        t('otDeleteBefore'),
+        '',
+        () => {
+          removeOvertime(currentYear, currentMonth, d, selectedShift, 'przed');
+          showToast('success', t('removed'));
+          refreshViews();
+        },
+        { primaryText: t('otDeleteBtn'), primaryClass: 'danger' }
+      );
+      return;
+    }
+    openOvertimeModal(d, shift, 'przed', ot.przed);
+  });
   cell.appendChild(topPopup);
 
   const botPopup = document.createElement('div');
@@ -323,11 +385,16 @@ function addOvertimePopups(cell, d, shift) {
     ev.stopPropagation();
     const target = ev.target;
     if (target.dataset && target.dataset.act === 'del-po') {
-      showConfirm(t('otDeleteAfter'), '', () => {
-        removeOvertime(currentYear, currentMonth, d, selectedShift, 'po');
-        showToast('success', t('removed'));
-        refreshViews();
-      }, { primaryText: t('otDeleteBtn'), primaryClass: 'danger' });
+      showConfirm(
+        t('otDeleteAfter'),
+        '',
+        () => {
+          removeOvertime(currentYear, currentMonth, d, selectedShift, 'po');
+          showToast('success', t('removed'));
+          refreshViews();
+        },
+        { primaryText: t('otDeleteBtn'), primaryClass: 'danger' }
+      );
       return;
     }
     openOvertimeModal(d, shift, 'po', ot.po);
@@ -363,11 +430,16 @@ function addWeekendOvertimePopup(cell, d) {
     ev.stopPropagation();
     const target = ev.target;
     if (target.dataset && target.dataset.act === 'del-weekend') {
-      showConfirm(t('otDeleteWeekend'), '', () => {
-        removeOvertime(currentYear, currentMonth, d, selectedShift, 'weekend');
-        showToast('success', t('removed'));
-        refreshViews();
-      }, { primaryText: t('otDeleteBtn'), primaryClass: 'danger' });
+      showConfirm(
+        t('otDeleteWeekend'),
+        '',
+        () => {
+          removeOvertime(currentYear, currentMonth, d, selectedShift, 'weekend');
+          showToast('success', t('removed'));
+          refreshViews();
+        },
+        { primaryText: t('otDeleteBtn'), primaryClass: 'danger' }
+      );
       return;
     }
     openOvertimeModal(d, null, 'weekend', ot.weekend);
@@ -386,14 +458,16 @@ function openOvertimeModal(day, shift, position, existing) {
     // Weekend / holiday overtime
     const yHolidays = buildHolidays(currentYear);
     const isHoliday = !!yHolidays[currentMonth + '-' + day];
-    const dowLocal = new Date(currentYear, currentMonth-1, day).getDay();
+    const dowLocal = new Date(currentYear, currentMonth - 1, day).getDay();
     const dayType = isHoliday
       ? t('otWeekendHoliday')
-      : (dowLocal === 0 ? t('otWeekendSunday') : t('otWeekendDayOff'));
+      : dowLocal === 0
+        ? t('otWeekendSunday')
+        : t('otWeekendDayOff');
 
     document.getElementById('otTitle').textContent = t('otWeekendTitle');
     document.getElementById('otContext').innerHTML = `
-      <b>📅 ${t('infoDate')}</b> ${day} ${monthNames[currentMonth-1]} ${currentYear}<br>
+      <b>📅 ${t('infoDate')}</b> ${day} ${monthNames[currentMonth - 1]} ${currentYear}<br>
       <b>🛠 ${t('otWeekendType')}:</b> ${dayType}<br>
       <b>💰 ${t('otRate')}:</b> ${isHoliday ? '+200%' : '+100%'}
     `;
@@ -401,11 +475,11 @@ function openOvertimeModal(day, shift, position, existing) {
     // Existing logic for 'przed'/'po'
     const posLabel = position === 'przed' ? t('otPositionBefore') : t('otPositionAfter');
     const [sh, eh] = shiftHours[shift];
-    const shiftTimeStr = `${String(sh).padStart(2,'0')}:00-${String(eh%24).padStart(2,'0')}:00`;
+    const shiftTimeStr = `${String(sh).padStart(2, '0')}:00-${String(eh % 24).padStart(2, '0')}:00`;
 
     document.getElementById('otTitle').textContent = `${t('otTitle')} ${posLabel} ${shift}`;
     document.getElementById('otContext').innerHTML = `
-      <b>${t('infoDate')}</b> ${day} ${monthNames[currentMonth-1]} ${currentYear}<br>
+      <b>${t('infoDate')}</b> ${day} ${monthNames[currentMonth - 1]} ${currentYear}<br>
       <b>${t('infoShiftLabel')}</b> ${shift} (${shiftTimeStr})<br>
       <b>${t('infoPosition')}</b> ${posLabel}
     `;
@@ -413,7 +487,7 @@ function openOvertimeModal(day, shift, position, existing) {
   document.getElementById('otNote').value = existing ? existing.note || '' : '';
   document.getElementById('otCustomHours').value = '';
 
-  document.querySelectorAll('.ot-qbtn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.ot-qbtn').forEach((b) => b.classList.remove('active'));
   if (existing) {
     const btn = document.querySelector(`.ot-qbtn[data-h="${existing.hours}"]`);
     if (btn) btn.classList.add('active');
@@ -501,14 +575,15 @@ function saveOvertimeFromModal() {
   refreshViews();
 }
 
-document.getElementById('otClose').onclick = () => document.getElementById('otOverlay').classList.remove('show');
+document.getElementById('otClose').onclick = () =>
+  document.getElementById('otOverlay').classList.remove('show');
 document.getElementById('otOverlay').onclick = (e) => {
   if (e.target.id === 'otOverlay') document.getElementById('otOverlay').classList.remove('show');
 };
 
-document.querySelectorAll('.ot-qbtn').forEach(btn => {
+document.querySelectorAll('.ot-qbtn').forEach((btn) => {
   btn.onclick = () => {
-    document.querySelectorAll('.ot-qbtn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.ot-qbtn').forEach((b) => b.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('otCustomHours').value = '';
     updateOvertimePreview(parseFloat(btn.dataset.h));
@@ -518,7 +593,7 @@ document.querySelectorAll('.ot-qbtn').forEach(btn => {
 document.getElementById('otCustomHours').addEventListener('input', (e) => {
   const v = parseFloat(e.target.value);
   if (!isNaN(v) && v > 0) {
-    document.querySelectorAll('.ot-qbtn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.ot-qbtn').forEach((b) => b.classList.remove('active'));
     updateOvertimePreview(v);
   }
 });
@@ -567,7 +642,7 @@ function renderProgress() {
   const progressFill = getElementByIdSafe('progressFill');
   const progressLabel = getElementByIdSafe('progressLabel');
   if (!progressFill || !progressLabel) return;
-  if (today.getFullYear() !== currentYear || (today.getMonth()+1) !== currentMonth) {
+  if (today.getFullYear() !== currentYear || today.getMonth() + 1 !== currentMonth) {
     progressFill.style.width = '0%';
     progressLabel.textContent = '';
     return;
@@ -577,11 +652,17 @@ function renderProgress() {
   const totalHours = getMonthHours(currentYear, currentMonth)[selectedShift] || 1;
   let workedHours = 0;
   for (let i = 0; i < today.getDate() && i < arr.length; i++) {
-    if (!isWolne(arr[i]) && !isUrlop(currentYear, currentMonth, i+1, selectedShift)) workedHours += 8;
+    if (!isWolne(arr[i]) && !isUrlop(currentYear, currentMonth, i + 1, selectedShift))
+      workedHours += 8;
   }
-  const pct = Math.round((workedHours/totalHours)*100);
+  const pct = Math.round((workedHours / totalHours) * 100);
   progressFill.style.width = Math.min(pct, 100) + '%';
-  progressLabel.textContent = t('infoBrigadeHours', { brig: selectedShift, worked: workedHours, total: totalHours, pct: pct });
+  progressLabel.textContent = t('infoBrigadeHours', {
+    brig: selectedShift,
+    worked: workedHours,
+    total: totalHours,
+    pct: pct,
+  });
 }
 
 /* === INFO PANEL === */
@@ -592,23 +673,25 @@ function renderInfo() {
     return;
   }
   const shiftCode = getShiftAtWithPending(currentYear, currentMonth, selectedDay, selectedShift);
-  const dateStr = `${selectedDay} ${monthNames[currentMonth-1]} ${currentYear}`;
-  const dowIdx = new Date(currentYear, currentMonth-1, selectedDay).getDay();
+  const dateStr = `${selectedDay} ${monthNames[currentMonth - 1]} ${currentYear}`;
+  const dowIdx = new Date(currentYear, currentMonth - 1, selectedDay).getDay();
   const dow = dayNamesFull[dowIdx];
   const yHolidays = buildHolidays(currentYear);
-  const holidayName = yHolidays[currentMonth+'-'+selectedDay];
+  const holidayName = yHolidays[currentMonth + '-' + selectedDay];
   const holidayInfo = holidayName ? ` <span style="color:#c0392b;">🎉 ${holidayName}</span>` : '';
   const noteKey = `${currentYear}-${currentMonth}-${selectedDay}-${selectedShift}`;
   const onUrlop = isUrlop(currentYear, currentMonth, selectedDay, selectedShift);
 
-  const totalUrlop = (urlops[selectedShift] || []).filter(k => k.startsWith(currentYear+'-')).length;
+  const totalUrlop = (urlops[selectedShift] || []).filter((k) =>
+    k.startsWith(currentYear + '-')
+  ).length;
   const usedUrlop = countWorkingUrlops(currentYear, selectedShift);
   const limit = getVacationLimit(selectedShift);
   const overLimit = usedUrlop > limit;
   const urlopStats = `<div class="urlop-stats">
     <span>${t('infoUrlopStats', { brig: selectedShift, year: currentYear })}<br><small style="opacity:.9;font-weight:normal;">${t('infoUrlopMarked')}: ${totalUrlop} • ${t('infoUrlopWorking')}: ${usedUrlop}</small></span>
     <div style="display:flex; align-items:center; gap:6px;">
-      <span><span class="us-count ${overLimit?'us-over':''}">${usedUrlop}</span> / ${limit} ${overLimit ? '⚠️' : ''}</span>
+      <span><span class="us-count ${overLimit ? 'us-over' : ''}">${usedUrlop}</span> / ${limit} ${overLimit ? '⚠️' : ''}</span>
       <button class="urlop-limit-edit" data-brigade="${selectedShift}" title="${t('infoUrlopLimitEdit', { brig: selectedShift })}" style="border:none; background:rgba(255,255,255,0.18); color:inherit; border-radius:6px; width:24px; height:24px; cursor:pointer;">✏️</button>
     </div>
   </div>`;
@@ -628,7 +711,7 @@ function renderInfo() {
   if (!isWolne(shiftCode) && !onUrlop) {
     const w = daysToNextWolne(currentYear, currentMonth, selectedDay, selectedShift);
     if (w && w.days > 0) {
-      const wd = `${w.day} ${monthNames[w.month-1]}${w.year !== currentYear ? ' '+w.year : ''}`;
+      const wd = `${w.day} ${monthNames[w.month - 1]}${w.year !== currentYear ? ' ' + w.year : ''}`;
       const label = w.days === 1 ? t('tomorrow') : t('inDays', { n: w.days });
       toWolneInfo = `<div class="info-card"><div class="label">${t('infoNextDayOff')}</div><div class="value">${label} (${wd})</div></div>`;
     }
@@ -640,10 +723,17 @@ function renderInfo() {
     const otData = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
     if (otData.przed || otData.po) {
       let items = '';
-      ['przed', 'po'].forEach(pos => {
+      ['przed', 'po'].forEach((pos) => {
         if (!otData[pos]) return;
         const { from, to } = calcOvertimeTime(shiftCode, pos, otData[pos].hours);
-        const cat = categorizeOvertime(currentYear, currentMonth, selectedDay, shiftCode, pos, otData[pos].hours);
+        const cat = categorizeOvertime(
+          currentYear,
+          currentMonth,
+          selectedDay,
+          shiftCode,
+          pos,
+          otData[pos].hours
+        );
         const dom = cat.h200 > 0 ? '200' : cat.h100 > 0 ? '100' : '50';
         const label = pos === 'przed' ? t('otWeekBefore') : t('otWeekAfter');
         items += `
@@ -680,12 +770,18 @@ function renderInfo() {
     const info = getRelief(currentYear, currentMonth, selectedDay, selectedShift, shiftCode);
     function formatWhen(y, m, d) {
       if (y === currentYear && m === currentMonth && d === selectedDay) return '';
-      if (y === currentYear && m === currentMonth && d === selectedDay - 1) return ', ' + t('dayBefore');
-      if (y === currentYear && m === currentMonth && d === selectedDay + 1) return ', ' + t('dayAfter');
-      return `, ${d} ${monthNames[m-1]}${y !== currentYear ? ' '+y : ''}`;
+      if (y === currentYear && m === currentMonth && d === selectedDay - 1)
+        return ', ' + t('dayBefore');
+      if (y === currentYear && m === currentMonth && d === selectedDay + 1)
+        return ', ' + t('dayAfter');
+      return `, ${d} ${monthNames[m - 1]}${y !== currentYear ? ' ' + y : ''}`;
     }
-    const prevText = info.prevBrig ? `<span class="badge ${info.prevBrig}">${info.prevBrig}</span> <small>(${info.prevType}${formatWhen(info.prevYear, info.prevMonth, info.prevDay)})</small>` : '<em>—</em>';
-    const nextText = info.nextBrig ? `<span class="badge ${info.nextBrig}">${info.nextBrig}</span> <small>(${info.nextType}${formatWhen(info.nextYear, info.nextMonth, info.nextDay)})</small>` : '<em>—</em>';
+    const prevText = info.prevBrig
+      ? `<span class="badge ${info.prevBrig}">${info.prevBrig}</span> <small>(${info.prevType}${formatWhen(info.prevYear, info.prevMonth, info.prevDay)})</small>`
+      : '<em>—</em>';
+    const nextText = info.nextBrig
+      ? `<span class="badge ${info.nextBrig}">${info.nextBrig}</span> <small>(${info.nextType}${formatWhen(info.nextYear, info.nextMonth, info.nextDay)})</small>`
+      : '<em>—</em>';
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
       ${urlopStats}
       <div class="info-grid">
@@ -714,7 +810,10 @@ function renderInfo() {
         body,
         buttons: [
           { text: t('vacationLimitCancel'), class: 'secondary' },
-          { text: t('vacationLimitSave'), class: 'primary', onClick: () => {
+          {
+            text: t('vacationLimitSave'),
+            class: 'primary',
+            onClick: () => {
               const input = document.getElementById('vacationLimitInput');
               const parsed = Number(input.value);
               if (!Number.isFinite(parsed) || parsed < 0) {
@@ -724,9 +823,9 @@ function renderInfo() {
               setVacationLimit(brigade, parsed);
               showToast('success', t('vacationLimitSet', { brig: brigade, n: parsed }));
               renderInfo();
-            }
-          }
-        ]
+            },
+          },
+        ],
       });
     });
   }
@@ -748,7 +847,13 @@ function renderInfo() {
 function getLiveShiftInfo() {
   const now = new Date();
   if (now.getFullYear() !== currentYear) return '';
-  const timer = getLiveTimer(getShiftAt(currentYear, now.getMonth()+1, now.getDate(), selectedShift), currentYear, now.getMonth()+1, now.getDate());
-  if (timer) return `<div class="info-card" style="border:2px solid #27ae60;"><div class="label">${t('infoLiveShift')}</div><div class="value" style="color:#27ae60;">${timer}</div></div>`;
+  const timer = getLiveTimer(
+    getShiftAt(currentYear, now.getMonth() + 1, now.getDate(), selectedShift),
+    currentYear,
+    now.getMonth() + 1,
+    now.getDate()
+  );
+  if (timer)
+    return `<div class="info-card" style="border:2px solid #27ae60;"><div class="label">${t('infoLiveShift')}</div><div class="value" style="color:#27ae60;">${timer}</div></div>`;
   return '';
 }
