@@ -63,8 +63,6 @@ function categorizeOvertime(year, month, day, shift, position, hours) {
   if (position === 'weekend') {
     const yHolidays = buildHolidays(year);
     const isHoliday = !!yHolidays[month + '-' + day];
-    const dow = new Date(year, month - 1, day).getDay();
-    const isSunday = dow === 0;
 
     if (isHoliday) {
       // Święto państwowe — cała praca +200%
