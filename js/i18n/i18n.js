@@ -9,46 +9,47 @@ const SUPPORTED_LANGS = ['pl', 'en', 'uk'];
 let currentLang = 'pl';
 
 function detectLanguage() {
-    const saved = prefs.lang;
-    if (SUPPORTED_LANGS.includes(saved)) return saved;
-    const browserLang = (navigator.language || '').toLowerCase();
-    if (browserLang.startsWith('uk')) return 'uk';
-    if (browserLang.startsWith('en')) return 'en';
-    return 'pl';
+  const saved = prefs.lang;
+  if (SUPPORTED_LANGS.includes(saved)) return saved;
+  const browserLang = (navigator.language || '').toLowerCase();
+  if (browserLang.startsWith('uk')) return 'uk';
+  if (browserLang.startsWith('en')) return 'en';
+  return 'pl';
 }
 
 function setLanguage(lang) {
-    if (!SUPPORTED_LANGS.includes(lang)) lang = 'pl';
-    currentLang = lang;
-    prefs.lang = lang;
-    savePrefs(prefs);
-    if (typeof updateLocalizedNames === 'function') updateLocalizedNames();
-    applyTranslations();
+  if (!SUPPORTED_LANGS.includes(lang)) lang = 'pl';
+  currentLang = lang;
+  prefs.lang = lang;
+  savePrefs(prefs);
+  if (typeof updateLocalizedNames === 'function') updateLocalizedNames();
+  applyTranslations();
 }
 
 /* === POBIERZ TŁUMACZENIE === */
 function t(key, params) {
-    const translations = window.translations || {};
-    const langObj = translations[currentLang] || translations.pl || {};
-    const fallback = translations.pl || {};
-    let text = langObj[key] !== undefined ? langObj[key] : (fallback[key] !== undefined ? fallback[key] : key);
-    if (params) {
-        Object.keys(params).forEach(p => {
-            text = text.replace(new RegExp('{' + p + '}', 'g'), params[p]);
-        });
-    }
-    return text;
+  const translations = window.translations || {};
+  const langObj = translations[currentLang] || translations.pl || {};
+  const fallback = translations.pl || {};
+  let text =
+    langObj[key] !== undefined ? langObj[key] : fallback[key] !== undefined ? fallback[key] : key;
+  if (params) {
+    Object.keys(params).forEach((p) => {
+      text = text.replace(new RegExp('{' + p + '}', 'g'), params[p]);
+    });
+  }
+  return text;
 }
 
 /* === RENDER FAQ === */
 function renderFAQ() {
-    const container = document.querySelector('.faq-list');
-    if (!container) return;
+  const container = document.querySelector('.faq-list');
+  if (!container) return;
 
-    const faqItems = [
-        {
-            title: t('faqStartTitle'),
-            content: `
+  const faqItems = [
+    {
+      title: t('faqStartTitle'),
+      content: `
                 <ol>
                     <li>${t('faqStart1')}</li>
                     <li>${t('faqStart2')}</li>
@@ -56,11 +57,11 @@ function renderFAQ() {
                     <li>${t('faqStart4')}</li>
                 </ol>
                 <p>${t('faqStartNote')}</p>
-            `
-        },
-        {
-            title: t('faqLangTitle'),
-            content: `
+            `,
+    },
+    {
+      title: t('faqLangTitle'),
+      content: `
                 <p>${t('faqLangDesc')}</p>
                 <ul>
                     <li>${t('faqLangPl')}</li>
@@ -68,11 +69,11 @@ function renderFAQ() {
                     <li>${t('faqLangUk')}</li>
                 </ul>
                 <p>${t('faqLangNote')}</p>
-            `
-        },
-        {
-            title: t('faqViewsTitle'),
-            content: `
+            `,
+    },
+    {
+      title: t('faqViewsTitle'),
+      content: `
                 <p>${t('faqViewsDesc')}</p>
                 <ul>
                     <li>${t('faqViewsDashboard')}</li>
@@ -82,11 +83,11 @@ function renderFAQ() {
                     <li>${t('faqViewsYear')}</li>
                 </ul>
                 <p>${t('faqViewsNote')}</p>
-            `
-        },
-        {
-            title: t('faqFeaturesTitle'),
-            content: `
+            `,
+    },
+    {
+      title: t('faqFeaturesTitle'),
+      content: `
                 <p>${t('faqFeaturesDesc')}</p>
                 <ul>
                     <li>${t('faqFeaturesShift')}</li>
@@ -99,11 +100,11 @@ function renderFAQ() {
                     <li>${t('faqFeaturesPrint')}</li>
                 </ul>
                 <p>${t('faqFeaturesNote')}</p>
-            `
-        },
-        {
-            title: t('faqOvertimeTitle'),
-            content: `
+            `,
+    },
+    {
+      title: t('faqOvertimeTitle'),
+      content: `
                 <ol>
                     <li>${t('faqOvertime1')}</li>
                     <li>${t('faqOvertime2')}</li>
@@ -124,26 +125,26 @@ function renderFAQ() {
                 <p><strong>${t('faqOvertimeWeekend')}</strong></p>
                 <p>${t('faqOvertimeWeekendDesc')}</p>
                 <p>${t('faqOvertimeNote')}</p>
-            `
-        },
-        {
-            title: t('faqVacationTitle'),
-            content: `
+            `,
+    },
+    {
+      title: t('faqVacationTitle'),
+      content: `
                 <p>${t('faqVacationDesc')}</p>
                 <p>${t('faqVacationRemove')}</p>
                 <p>${t('faqVacationStats')}</p>
-            `
-        },
-        {
-            title: t('faqNotesTitle'),
-            content: `
+            `,
+    },
+    {
+      title: t('faqNotesTitle'),
+      content: `
                 <p>${t('faqNotesDesc')}</p>
                 <p>${t('faqNotesIcon')}</p>
-            `
-        },
-        {
-            title: t('faqKeyboardTitle'),
-            content: `
+            `,
+    },
+    {
+      title: t('faqKeyboardTitle'),
+      content: `
                 <b>${t('faqKeyboardEdit')}</b>
                 <ul>
                     <li>${t('faqKeyboardEdit1')}</li>
@@ -158,18 +159,18 @@ function renderFAQ() {
                     <li>${t('faqKeyboardNav2')}</li>
                     <li>${t('faqKeyboardNav3')}</li>
                 </ul>
-            `
-        },
-        {
-            title: t('faqSaveTitle'),
-            content: `
+            `,
+    },
+    {
+      title: t('faqSaveTitle'),
+      content: `
                 <p>${t('faqSaveDesc')}</p>
                 <p>${t('faqSaveNote')}</p>
-            `
-        },
-        {
-            title: t('faqSyncTitle'),
-            content: `
+            `,
+    },
+    {
+      title: t('faqSyncTitle'),
+      content: `
                 <p>${t('faqSyncDesc')}</p>
                 <ol>
                     <li>${t('faqSync1')}</li>
@@ -179,15 +180,15 @@ function renderFAQ() {
                     <li>${t('faqSync5')}</li>
                 </ol>
                 <p>${t('faqSyncNote')}</p>
-            `
-        },
-        {
-            title: t('faqExportTitle'),
-            content: `<p>${t('faqExportDesc')}</p>`
-        },
-        {
-            title: t('faqInstallTitle'),
-            content: `
+            `,
+    },
+    {
+      title: t('faqExportTitle'),
+      content: `<p>${t('faqExportDesc')}</p>`,
+    },
+    {
+      title: t('faqInstallTitle'),
+      content: `
                 <p>${t('faqInstallDesc')}</p>
                 <ol>
                     <li>${t('faqInstall1')}</li>
@@ -197,58 +198,62 @@ function renderFAQ() {
                 </ol>
                 <p>${t('faqInstallNote')}</p>
                 <p>${t('faqInstallMenuNote')}</p>
-            `
-        },
-        {
-            title: t('faqBugTitle'),
-            content: `
+            `,
+    },
+    {
+      title: t('faqBugTitle'),
+      content: `
                 <div style="background:linear-gradient(135deg, #667eea, #764ba2); color:#fff; padding:15px; border-radius:10px; text-align:center;">
                     <b>${t('faqBugDesc')}</b><br>
                     <a href="mailto:${t('faqBugEmail')}?subject=Grafik Gillette" style="color:#fff; font-weight:bold; text-decoration:none;">${t('faqBugEmail')}</a>
                 </div>
                 <p>${t('faqBugNote')}</p>
-            `
-        }
-    ];
+            `,
+    },
+  ];
 
-    container.innerHTML = faqItems.map((item, idx) => `
+  container.innerHTML = faqItems
+    .map(
+      (item, idx) => `
         <details class="faq-item" ${idx === 0 ? 'open' : ''}>
             <summary>${item.title}</summary>
             <div class="faq-answer">
                 ${item.content}
             </div>
         </details>
-    `).join('');
+    `
+    )
+    .join('');
 }
 
 /* === ZASTOSUJ TŁUMACZENIA DO DOM === */
 function applyTranslations() {
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        const val = t(key);
-        if (el.tagName === 'INPUT' || el.tagName === 'BUTTON' || el.tagName === 'SELECT') {
-            el.textContent = val;
-        } else {
-            el.innerHTML = val;
-        }
-    });
-
-    document.querySelectorAll('[data-i18n-title]').forEach(el => {
-        el.title = t(el.getAttribute('data-i18n-title'));
-    });
-
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
-    });
-
-    const langIcon = document.getElementById('langToggleBtn');
-    if (langIcon) {
-        const flags = { pl: '🇵🇱', en: '🇺🇸', uk: '🇺🇦' };
-        langIcon.textContent = flags[currentLang] || '🌐';
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    if (el.tagName === 'INPUT' || el.tagName === 'BUTTON' || el.tagName === 'SELECT') {
+      el.textContent = val;
+    } else {
+      el.innerHTML = val;
     }
+  });
 
-    if (typeof refreshViews === 'function') refreshViews();
-    renderFAQ();
+  document.querySelectorAll('[data-i18n-title]').forEach((el) => {
+    el.title = t(el.getAttribute('data-i18n-title'));
+  });
+
+  document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+    el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+  });
+
+  const langIcon = document.getElementById('langToggleBtn');
+  if (langIcon) {
+    const flags = { pl: '🇵🇱', en: '🇺🇸', uk: '🇺🇦' };
+    langIcon.textContent = flags[currentLang] || '🌐';
+  }
+
+  if (typeof refreshViews === 'function') refreshViews();
+  renderFAQ();
 }
 
 /* === INICJALIZACJA === */

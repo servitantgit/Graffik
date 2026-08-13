@@ -3,9 +3,9 @@
    ================================================================ */
 
 /* === THEMES === */
-const THEMES = ['light','dark'];
+const THEMES = ['light', 'dark'];
 function applyTheme(themeName) {
-  THEMES.forEach(t => document.body.classList.remove('theme-' + t));
+  THEMES.forEach((t) => document.body.classList.remove('theme-' + t));
   if (themeName !== 'light') document.body.classList.add('theme-' + themeName);
   const toggleBtn = document.getElementById('themeToggleBtn');
   if (toggleBtn) {
@@ -48,13 +48,18 @@ function showModal(opts) {
   titleEl.textContent = opts.title || t('ok');
   bodyEl.innerHTML = opts.body || '';
   footer.innerHTML = '';
-  (opts.buttons || [{text: t('ok'), class:'primary', onClick: () => hideModal()}]).forEach(btn => {
-    const b = document.createElement('button');
-    b.className = 'modal-btn ' + (btn.class || 'secondary');
-    b.textContent = btn.text;
-    b.onclick = () => { if (btn.onClick) btn.onClick(); if (btn.closeOnClick !== false) hideModal(); };
-    footer.appendChild(b);
-  });
+  (opts.buttons || [{ text: t('ok'), class: 'primary', onClick: () => hideModal() }]).forEach(
+    (btn) => {
+      const b = document.createElement('button');
+      b.className = 'modal-btn ' + (btn.class || 'secondary');
+      b.textContent = btn.text;
+      b.onclick = () => {
+        if (btn.onClick) btn.onClick();
+        if (btn.closeOnClick !== false) hideModal();
+      };
+      footer.appendChild(b);
+    }
+  );
   overlay.classList.add('show');
 }
 function hideModal() {
@@ -68,16 +73,26 @@ function showConfirm(title, body, onConfirm, opts) {
     body: `<p>${body}</p>`,
     buttons: [
       { text: t('cancel'), class: 'secondary' },
-      { text: opts.primaryText || t('ok'), class: opts.primaryClass || 'primary', onClick: onConfirm }
-    ]
+      {
+        text: opts.primaryText || t('ok'),
+        class: opts.primaryClass || 'primary',
+        onClick: onConfirm,
+      },
+    ],
   });
 }
 
 /* === SIDE MENU === */
 const sideMenu = document.getElementById('sideMenu');
 const sideMenuOverlay = document.getElementById('sideMenuOverlay');
-function openSideMenu() { sideMenu.classList.add('show'); sideMenuOverlay.classList.add('show'); }
-function closeSideMenu() { sideMenu.classList.remove('show'); sideMenuOverlay.classList.remove('show'); }
+function openSideMenu() {
+  sideMenu.classList.add('show');
+  sideMenuOverlay.classList.add('show');
+}
+function closeSideMenu() {
+  sideMenu.classList.remove('show');
+  sideMenuOverlay.classList.remove('show');
+}
 document.getElementById('menuBtn').onclick = openSideMenu;
 document.getElementById('sideMenuClose').onclick = closeSideMenu;
 sideMenuOverlay.onclick = closeSideMenu;
@@ -89,8 +104,11 @@ if (themeToggleBtn) {
 }
 
 /* === TEMATY — kliknięcia (backward compatibility) === */
-document.querySelectorAll('.theme-swatch').forEach(el => {
-  el.onclick = () => { applyTheme(el.dataset.theme); showToast('info', 'Motyw: ' + el.dataset.name, 1500); };
+document.querySelectorAll('.theme-swatch').forEach((el) => {
+  el.onclick = () => {
+    applyTheme(el.dataset.theme);
+    showToast('info', 'Motyw: ' + el.dataset.name, 1500);
+  };
 });
 
 /* === FAQ === */
@@ -112,7 +130,7 @@ function renderFAQ() {
           <li>${t('faqStart4')}</li>
         </ol>
         <p>${t('faqStartNote')}</p>
-      `
+      `,
     },
     {
       title: t('faqViewsTitle'),
@@ -126,7 +144,7 @@ function renderFAQ() {
           <li><b>📊 Rok</b> — ${t('faqViewsYear')}</li>
         </ul>
         <p>${t('faqViewsNote')}</p>
-      `
+      `,
     },
     {
       title: t('faqFeaturesTitle'),
@@ -143,7 +161,7 @@ function renderFAQ() {
           <li><b>${t('faqFeaturesPrint')}</b></li>
           <li><b>${t('faqFeaturesNote')}</b></li>
         </ul>
-      `
+      `,
     },
     {
       title: t('faqOvertimeTitle'),
@@ -166,7 +184,7 @@ function renderFAQ() {
           <li><b>+50%</b> — ${t('faqOvertimeCat50')}</li>
         </ul>
         <p>${t('faqOvertimeNote')}</p>
-      `
+      `,
     },
     {
       title: t('faqVacationTitle'),
@@ -174,14 +192,14 @@ function renderFAQ() {
         <p>${t('faqVacationDesc')}</p>
         <p>${t('faqVacationRemove')}</p>
         <p>${t('faqVacationStats')}</p>
-      `
+      `,
     },
     {
       title: t('faqNotesTitle'),
       content: `
         <p>${t('faqNotesDesc')}</p>
         <p>${t('faqNotesIcon')}</p>
-      `
+      `,
     },
     {
       title: t('faqKeyboardTitle'),
@@ -200,14 +218,14 @@ function renderFAQ() {
           <li><b>Esc</b> — ${t('faqKeyboardNav2')}</li>
           <li><b>E</b> — ${t('faqKeyboardNav3')}</li>
         </ul>
-      `
+      `,
     },
     {
       title: t('faqSaveTitle'),
       content: `
         <p>${t('faqSaveDesc')}</p>
         <p>${t('faqSaveNote')}</p>
-      `
+      `,
     },
     {
       title: t('faqSyncTitle'),
@@ -221,13 +239,13 @@ function renderFAQ() {
           <li>${t('faqSync5')}</li>
         </ol>
         <p>${t('faqSyncNote')}</p>
-      `
+      `,
     },
     {
       title: t('faqExportTitle'),
       content: `
         <p>${t('faqExportDesc')}</p>
-      `
+      `,
     },
     {
       title: t('faqInstallTitle'),
@@ -241,7 +259,7 @@ function renderFAQ() {
         </ol>
         <p>${t('faqInstallNote')}</p>
         <p>${t('faqInstallMenuNote')}</p>
-      `
+      `,
     },
     {
       title: t('faqBugTitle'),
@@ -251,12 +269,12 @@ function renderFAQ() {
           <a href="mailto:tantsiura.s@pg.com?subject=Grafik Gillette" style="color:#fff; font-weight:bold; text-decoration:none;">tantsiura.s@pg.com</a>
         </div>
         <p>${t('faqBugNote')}</p>
-      `
-    }
+      `,
+    },
   ];
 
   faqList.innerHTML = '';
-  faqData.forEach(item => {
+  faqData.forEach((item) => {
     const details = document.createElement('details');
     details.className = 'faq-item';
     if (item.open) details.setAttribute('open', '');
@@ -268,10 +286,19 @@ function renderFAQ() {
   });
 }
 
-document.getElementById('menuHelp').onclick = () => { closeSideMenu(); document.getElementById('faqOverlay').classList.add('show'); renderFAQ(); };
-document.getElementById('faqClose').onclick = () => document.getElementById('faqOverlay').classList.remove('show');
-document.getElementById('faqOverlay').onclick = (e) => { if (e.target.id === 'faqOverlay') document.getElementById('faqOverlay').classList.remove('show'); };
+document.getElementById('menuHelp').onclick = () => {
+  closeSideMenu();
+  document.getElementById('faqOverlay').classList.add('show');
+  renderFAQ();
+};
+document.getElementById('faqClose').onclick = () =>
+  document.getElementById('faqOverlay').classList.remove('show');
+document.getElementById('faqOverlay').onclick = (e) => {
+  if (e.target.id === 'faqOverlay') document.getElementById('faqOverlay').classList.remove('show');
+};
 
 /* === ZAMYKANIE MODALI === */
 document.getElementById('modalClose').onclick = hideModal;
-document.getElementById('modalOverlay').onclick = (e) => { if (e.target.id === 'modalOverlay') hideModal(); };
+document.getElementById('modalOverlay').onclick = (e) => {
+  if (e.target.id === 'modalOverlay') hideModal();
+};

@@ -10,7 +10,8 @@ let lastNotified = null; // 'YYYY-MM-DD:ZMIANA'
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
+    navigator.serviceWorker
+      .register('./sw.js')
       .then((reg) => {
         console.log('[PWA] Service Worker zarejestrowany:', reg.scope);
         reg.update();
@@ -22,12 +23,15 @@ function registerServiceWorker() {
 /* === WYKRYWANIE PLATFORMY === */
 function isIOS() {
   const ua = navigator.userAgent || '';
-  return /iPad|iPhone|iPod/.test(ua) ||
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  return (
+    /iPad|iPhone|iPod/.test(ua) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  );
 }
 function isStandalone() {
-  return window.matchMedia('(display-mode: standalone)').matches ||
-    (window.navigator.standalone === true);
+  return (
+    window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true
+  );
 }
 
 /* === INSTALL PROMPT (Dodaj do ekranu głównego) === */
@@ -52,9 +56,7 @@ function setupInstallPrompt() {
             </ol>
             <p style="font-size:12px; color:var(--text-muted);">${t('installAppIosNote')}</p>
           `,
-          buttons: [
-            { text: t('gotIt'), class: 'primary' }
-          ]
+          buttons: [{ text: t('gotIt'), class: 'primary' }],
         });
       };
     } else {
@@ -88,8 +90,11 @@ function setupInstallPrompt() {
 
 /* === POWIADOMIENIA (Notification API) === */
 function areNotificationsEnabled() {
-  return prefs.notifications === true && 'Notification' in window &&
-    Notification.permission === 'granted';
+  return (
+    prefs.notifications === true &&
+    'Notification' in window &&
+    Notification.permission === 'granted'
+  );
 }
 
 function updateNotificationUI() {
@@ -108,9 +113,7 @@ function updateNotificationUI() {
   const enabled = areNotificationsEnabled();
   if (check) check.style.display = enabled ? 'inline' : 'none';
   if (label) label.textContent = t('notificationsAboutShifts');
-  item.title = enabled
-    ? t('notificationsEnabledHint')
-    : t('notificationsDisabledHint');
+  item.title = enabled ? t('notificationsEnabledHint') : t('notificationsDisabledHint');
 
   // Upewnij się, że prefs.notificationsLead istnieje
   if (typeof prefs.notificationsLead === 'undefined') prefs.notificationsLead = 1;
@@ -139,7 +142,7 @@ function updateNotificationUI() {
       item.parentNode.insertBefore(leadContainer, item.nextSibling);
 
       // Podpinamy click
-      leadContainer.querySelectorAll('.notif-lead-btn').forEach(btn => {
+      leadContainer.querySelectorAll('.notif-lead-btn').forEach((btn) => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           const val = parseInt(btn.dataset.lead, 10) || 1;
@@ -161,7 +164,7 @@ function updateNotificationUI() {
 // Pomocnik — aktualizuje aktywny przycisk
 function updateLeadButtonsActive() {
   const lead = prefs.notificationsLead || 1;
-  document.querySelectorAll('.notif-lead-btn').forEach(btn => {
+  document.querySelectorAll('.notif-lead-btn').forEach((btn) => {
     btn.classList.toggle('active', parseInt(btn.dataset.lead, 10) === lead);
   });
 }
@@ -192,9 +195,11 @@ function requestNotificationPermission() {
       try {
         new Notification(`🔔 ${t('appName')}`, {
           body: t('notificationsTestBody'),
-          icon: './icons/icon-192.png'
+          icon: './icons/icon-192.png',
         });
-      } catch (e) { /* ignoruj */ }
+      } catch (e) {
+        /* ignoruj */
+      }
     } else {
       prefs.notifications = false;
       savePrefs(prefs);
@@ -240,19 +245,19 @@ function notifyCurrentShift() {
     localStorage.setItem('grafik_last_notified', key);
 
     const [sh, eh] = hours;
-    const timeRange = `${String(sh).padStart(2,'0')}:00 – ${String(eh % 24).padStart(2,'0')}:00`;
+    const timeRange = `${String(sh).padStart(2, '0')}:00 – ${String(eh % 24).padStart(2, '0')}:00`;
     // Używamy istniejących nazw zmian (shiftLongNames / shiftEmoji z data.js) zamiast duplikować tłumaczenia
     const shiftLabel = `${shiftEmoji[s] || ''} ${shiftLongNames[s] || s}`;
 
     const title = `⏰ ${t('shift')} ${s} — ${shiftLabel}`;
-    const body = `${t('brigade')} ${selectedShift} • ${d} ${monthNames[m-1]} ${y}\n${timeRange}`;
+    const body = `${t('brigade')} ${selectedShift} • ${d} ${monthNames[m - 1]} ${y}\n${timeRange}`;
     const notification = new Notification(title, {
       body: body,
       icon: './icons/icon-192.png',
       badge: './icons/icon-192.png',
       vibrate: [200, 100, 200],
       tag: 'grafik-shift-start',
-      requireInteraction: false
+      requireInteraction: false,
     });
     notification.onclick = () => {
       window.focus();

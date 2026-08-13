@@ -5,13 +5,15 @@
 function renderDashboard() {
   const dv = document.getElementById('dashboardView');
   const today = new Date();
-  const y = today.getFullYear(), m = today.getMonth() + 1, d = today.getDate();
+  const y = today.getFullYear(),
+    m = today.getMonth() + 1,
+    d = today.getDate();
   const limit = getVacationLimit(selectedShift);
   const yHolidays = buildHolidays(y);
   const shiftCode = getShiftAtWithPending(y, m, d, selectedShift);
   const onUrlop = isUrlop(y, m, d, selectedShift);
   const dayName = dayNamesFull[today.getDay()];
-  const holidayName = yHolidays[m+'-'+d];
+  const holidayName = yHolidays[m + '-' + d];
 
   let todayCard = '';
   let cardCls = '';
@@ -22,17 +24,17 @@ function renderDashboard() {
       <div class="dtc-shift">🌴 ${t('infoUrlop')}</div>
       <div class="dtc-time">${t('vacation')}</div>
     `;
-} else if (isWolne(shiftCode)) {
-  cardCls = 'card-W';
-  todayCard = `
+  } else if (isWolne(shiftCode)) {
+    cardCls = 'card-W';
+    todayCard = `
     <div class="dtc-label">${t('todayLabel')}</div>
     <div class="dtc-shift">${t('infoFree')}</div>
   `;
-} else {
+  } else {
     cardCls = 'card-' + shiftCode;
     const [sh, eh] = shiftHours[shiftCode];
-    let startTxt = `${String(sh).padStart(2,'0')}:00`;
-    let endTxt = `${String(eh % 24).padStart(2,'0')}:00`;
+    let startTxt = `${String(sh).padStart(2, '0')}:00`;
+    let endTxt = `${String(eh % 24).padStart(2, '0')}:00`;
     const timer = getLiveTimer(shiftCode, y, m, d);
 
     // Nadgodziny - faktyczny czas
@@ -63,8 +65,11 @@ function renderDashboard() {
     `;
   }
 
-  const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
-  const tY = tomorrow.getFullYear(), tM = tomorrow.getMonth()+1, tD = tomorrow.getDate();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  const tY = tomorrow.getFullYear(),
+    tM = tomorrow.getMonth() + 1,
+    tD = tomorrow.getDate();
   const tShift = getShiftAtWithPending(tY, tM, tD, selectedShift);
   const tOnU = isUrlop(tY, tM, tD, selectedShift);
   let tomorrowShift;
@@ -74,7 +79,7 @@ function renderDashboard() {
     tomorrowShift = `🏖️ ${t('free')}`;
   } else {
     const [sh, eh] = shiftHours[tShift];
-    const timeRange = `${String(sh).padStart(2,'0')}-${String(eh % 24).padStart(2,'0')}`;
+    const timeRange = `${String(sh).padStart(2, '0')}-${String(eh % 24).padStart(2, '0')}`;
     // Nadgodziny na jutro
     const otTomorrow = getOvertimes(tY, tM, tD, selectedShift);
     let otIcon = '';
@@ -91,25 +96,34 @@ function renderDashboard() {
   let nextWolneTxt;
   if (!wolneInfo) nextWolneTxt = t('unknown');
   else if (wolneInfo.days === 0) nextWolneTxt = `🏖️ ${t('todayLabel')}!`;
-  else if (wolneInfo.days === 1) nextWolneTxt = `${t('tomorrow')} (${wolneInfo.day} ${monthNamesShort[wolneInfo.month-1]})`;
-  else nextWolneTxt = `${t('inDays', { n: wolneInfo.days })} (${wolneInfo.day} ${monthNamesShort[wolneInfo.month-1]})`;
+  else if (wolneInfo.days === 1)
+    nextWolneTxt = `${t('tomorrow')} (${wolneInfo.day} ${monthNamesShort[wolneInfo.month - 1]})`;
+  else
+    nextWolneTxt = `${t('inDays', { n: wolneInfo.days })} (${wolneInfo.day} ${monthNamesShort[wolneInfo.month - 1]})`;
 
   const weekCounts = { R: 0, P: 0, N: 0, W: 0, U: 0 };
   const weekOT = { h50: 0, h100: 0, h200: 0 };
   const dow = today.getDay();
-  const daysToMon = (dow === 0 ? 6 : dow - 1);
-  const monday = new Date(today); monday.setDate(d - daysToMon);
+  const daysToMon = dow === 0 ? 6 : dow - 1;
+  const monday = new Date(today);
+  monday.setDate(d - daysToMon);
   for (let i = 0; i < 7; i++) {
-    const dt = new Date(monday); dt.setDate(monday.getDate() + i);
-    const yy = dt.getFullYear(), mm = dt.getMonth()+1, dd = dt.getDate();
-    if (isUrlop(yy, mm, dd, selectedShift)) { weekCounts.U++; continue; }
+    const dt = new Date(monday);
+    dt.setDate(monday.getDate() + i);
+    const yy = dt.getFullYear(),
+      mm = dt.getMonth() + 1,
+      dd = dt.getDate();
+    if (isUrlop(yy, mm, dd, selectedShift)) {
+      weekCounts.U++;
+      continue;
+    }
     const s = getShiftAtWithPending(yy, mm, dd, selectedShift);
     weekCounts[isWolne(s) ? 'W' : s]++;
 
     // Nadgodziny tygodnia
     if (!isWolne(s)) {
       const otW = getOvertimes(yy, mm, dd, selectedShift);
-      ['przed', 'po'].forEach(pos => {
+      ['przed', 'po'].forEach((pos) => {
         if (otW[pos]) {
           const cat = categorizeOvertime(yy, mm, dd, s, pos, otW[pos].hours);
           weekOT.h50 += cat.h50;
@@ -132,18 +146,20 @@ function renderDashboard() {
   for (let i = 1; i <= 7; i++) {
     const dt = new Date(today);
     dt.setDate(today.getDate() + i);
-    const yy = dt.getFullYear(), mm = dt.getMonth()+1, dd = dt.getDate();
+    const yy = dt.getFullYear(),
+      mm = dt.getMonth() + 1,
+      dd = dt.getDate();
     const s = getShiftAtWithPending(yy, mm, dd, selectedShift);
     const onU = isUrlop(yy, mm, dd, selectedShift);
-    const cls = onU ? 'U' : (isWolne(s) ? 'W' : s);
-    const label = onU ? '🌴' : (isWolne(s) ? '—' : shiftEmoji[s] + ' ' + s);
+    const cls = onU ? 'U' : isWolne(s) ? 'W' : s;
+    const label = onU ? '🌴' : isWolne(s) ? '—' : shiftEmoji[s] + ' ' + s;
     // Znacznik nadgodzin
     const otChip = getOvertimes(yy, mm, dd, selectedShift);
     const hasOT = (otChip.przed || otChip.po) && !isWolne(s) && !onU;
     const otBadge = hasOT ? '<span class="ddc-ot">⏱</span>' : '';
     upcomingHtml += `
       <div class="dash-day-chip chip-${cls}" onclick="jumpToDate(${yy},${mm},${dd})">
-        <div class="ddc-day">${dayNames[(dt.getDay()+6)%7]}</div>
+        <div class="ddc-day">${dayNames[(dt.getDay() + 6) % 7]}</div>
         <div class="ddc-date">${dd}</div>
         <div class="ddc-shift">${label}</div>
         ${otBadge}
@@ -154,7 +170,7 @@ function renderDashboard() {
   dv.innerHTML = `
     <div class="dash-hero">
       <div class="dash-greeting">${t('greeting')}</div>
-      <div class="dash-date">${dayName}, ${d} ${monthNamesGenitive[m-1]} ${y}</div>
+      <div class="dash-date">${dayName}, ${d} ${monthNamesGenitive[m - 1]} ${y}</div>
       <div class="dash-brigade">${t('brigade')} ${selectedShift}</div>
     </div>
 
@@ -191,14 +207,18 @@ function renderDashboard() {
           <div class="dsc-value">${usedUrlop} / ${limit} ${t('dayOff')}</div>
         </div>
       </div>
-      ${totalOT > 0 ? `
+      ${
+        totalOT > 0
+          ? `
       <div class="dash-stat-card" style="border:2px solid #f1c40f;">
         <div class="dsc-icon">⏱</div>
         <div class="dsc-info">
-          <div class="dsc-label">${t('infoOvertime')} (${monthNamesShort[m-1]})</div>
+          <div class="dsc-label">${t('infoOvertime')} (${monthNamesShort[m - 1]})</div>
           <div class="dsc-value">${totalOT}h <small>(${otMonthSum.h50}+${otMonthSum.h100}+${otMonthSum.h200})</small></div>
         </div>
-      </div>` : ''}
+      </div>`
+          : ''
+      }
     </div>
 
     <div class="dash-upcoming">
@@ -219,17 +239,22 @@ window.jumpToDate = jumpToDate;
 
 function getLiveTimer(shift, y, m, d) {
   const now = new Date();
-  if (now.getFullYear() !== y || now.getMonth()+1 !== m || now.getDate() !== d) return null;
+  if (now.getFullYear() !== y || now.getMonth() + 1 !== m || now.getDate() !== d) return null;
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
   let startMin, endMin;
 
   const ot = getOvertimes(y, m, d, selectedShift);
 
-  if (shift === 'R') { startMin = 6*60; endMin = 14*60; }
-  else if (shift === 'P') { startMin = 14*60; endMin = 22*60; }
-  else if (shift === 'N') {
-    startMin = 22*60; endMin = 30*60;
-    if (nowMinutes < 6*60) {
+  if (shift === 'R') {
+    startMin = 6 * 60;
+    endMin = 14 * 60;
+  } else if (shift === 'P') {
+    startMin = 14 * 60;
+    endMin = 22 * 60;
+  } else if (shift === 'N') {
+    startMin = 22 * 60;
+    endMin = 30 * 60;
+    if (nowMinutes < 6 * 60) {
       // Jeśli jesteśmy po północy, sprawdzamy nadgodziny z "wczorajszej" zmiany N
       // Ale renderDashboard/getLiveTimer są wywoływane dla konkretnej daty y,m,d (dzisiaj).
       // System przechowuje nadgodziny zmiany N na dniu, w którym się zaczęła.
@@ -245,24 +270,30 @@ function getLiveTimer(shift, y, m, d) {
   if (ot.przed) startMin -= ot.przed.hours * 60;
   if (ot.po) endMin += ot.po.hours * 60;
 
-  if (shift === 'N' && nowMinutes < 6*60) {
+  if (shift === 'N' && nowMinutes < 6 * 60) {
     // Specyficzna obsługa dla N po północy - używamy wczorajszych nadgodzin
-    const yesterday = new Date(now); yesterday.setDate(yesterday.getDate() - 1);
-    const yOT = getOvertimes(yesterday.getFullYear(), yesterday.getMonth()+1, yesterday.getDate(), selectedShift);
-    let yEndMin = 6*60;
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yOT = getOvertimes(
+      yesterday.getFullYear(),
+      yesterday.getMonth() + 1,
+      yesterday.getDate(),
+      selectedShift
+    );
+    let yEndMin = 6 * 60;
     if (yOT.po) yEndMin += yOT.po.hours * 60;
     if (nowMinutes < yEndMin) {
       const rem = yEndMin - nowMinutes;
-      return t('timerEndsIn', { h: Math.floor(rem/60), m: rem%60 });
+      return t('timerEndsIn', { h: Math.floor(rem / 60), m: rem % 60 });
     }
     return null;
   }
 
   if (nowMinutes >= startMin && nowMinutes < endMin) {
     const rem = endMin - nowMinutes;
-    return t('timerEndsIn', { h: Math.floor(rem/60), m: rem%60 });
+    return t('timerEndsIn', { h: Math.floor(rem / 60), m: rem % 60 });
   }
-  if (nowMinutes < startMin && (startMin - nowMinutes) <= 60) {
+  if (nowMinutes < startMin && startMin - nowMinutes <= 60) {
     return t('timerStartsIn', { m: startMin - nowMinutes });
   }
   return null;

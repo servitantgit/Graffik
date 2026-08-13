@@ -10,24 +10,31 @@ function ensureWeekStart() {
     const t2 = new Date();
     const dow = t2.getDay();
     const daysToMon = dow === 0 ? 6 : dow - 1;
-    weekStartDate = new Date(t2); weekStartDate.setDate(t2.getDate() - daysToMon);
-    weekStartDate.setHours(0,0,0,0);
+    weekStartDate = new Date(t2);
+    weekStartDate.setDate(t2.getDate() - daysToMon);
+    weekStartDate.setHours(0, 0, 0, 0);
   }
 }
 function renderWeekView() {
   ensureWeekStart();
   const grid = document.getElementById('weekViewGrid');
   grid.innerHTML = '';
-  const today = new Date(); today.setHours(0,0,0,0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
   const monday = new Date(weekStartDate);
-  const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
 
-  const rangeTxt = `${monday.getDate()} ${monthNamesShort[monday.getMonth()]} – ${sunday.getDate()} ${monthNamesShort[sunday.getMonth()]} ${monday.getFullYear() !== sunday.getFullYear() ? monday.getFullYear()+'/'+sunday.getFullYear() : monday.getFullYear()}`;
-  document.getElementById('weekTitle').textContent = `📆 ${rangeTxt} · ${t('brigade')} ${selectedShift}`;
+  const rangeTxt = `${monday.getDate()} ${monthNamesShort[monday.getMonth()]} – ${sunday.getDate()} ${monthNamesShort[sunday.getMonth()]} ${monday.getFullYear() !== sunday.getFullYear() ? monday.getFullYear() + '/' + sunday.getFullYear() : monday.getFullYear()}`;
+  document.getElementById('weekTitle').textContent =
+    `📆 ${rangeTxt} · ${t('brigade')} ${selectedShift}`;
 
   for (let i = 0; i < 7; i++) {
-    const dt = new Date(monday); dt.setDate(monday.getDate() + i);
-    const y = dt.getFullYear(), m = dt.getMonth()+1, d = dt.getDate();
+    const dt = new Date(monday);
+    dt.setDate(monday.getDate() + i);
+    const y = dt.getFullYear(),
+      m = dt.getMonth() + 1,
+      d = dt.getDate();
     const s = getShiftAtWithPending(y, m, d, selectedShift);
     const onU = isUrlop(y, m, d, selectedShift);
     const cell = document.createElement('div');
@@ -42,7 +49,7 @@ function renderWeekView() {
       shiftHtml = `<div class="wdc-shift W"><span class="wdc-emoji">🏖️</span><span class="wdc-label">${t('dayOff')}</span></div>`;
     } else {
       const [sh, eh] = shiftHours[s];
-      const scheduledTime = `${String(sh).padStart(2,'0')}:00 – ${String(eh%24).padStart(2,'0')}:00`;
+      const scheduledTime = `${String(sh).padStart(2, '0')}:00 – ${String(eh % 24).padStart(2, '0')}:00`;
 
       // Nadgodziny
       const otWeek = getOvertimes(y, m, d, selectedShift);
@@ -85,8 +92,16 @@ function renderWeekView() {
     grid.appendChild(cell);
   }
 }
-document.getElementById('prevWeekBtn').onclick = () => { ensureWeekStart(); weekStartDate.setDate(weekStartDate.getDate() - 7); renderWeekView(); };
-document.getElementById('nextWeekBtn').onclick = () => { ensureWeekStart(); weekStartDate.setDate(weekStartDate.getDate() + 7); renderWeekView(); };
+document.getElementById('prevWeekBtn').onclick = () => {
+  ensureWeekStart();
+  weekStartDate.setDate(weekStartDate.getDate() - 7);
+  renderWeekView();
+};
+document.getElementById('nextWeekBtn').onclick = () => {
+  ensureWeekStart();
+  weekStartDate.setDate(weekStartDate.getDate() + 7);
+  renderWeekView();
+};
 
 /* === YEAR VIEW === */
 function renderYearView() {
@@ -97,16 +112,16 @@ function renderYearView() {
   for (let m = 1; m <= 12; m++) {
     const wrap = document.createElement('div');
     wrap.className = 'year-month';
-    wrap.innerHTML = `<h4>${monthNames[m-1]}</h4>`;
+    wrap.innerHTML = `<h4>${monthNames[m - 1]}</h4>`;
     const mini = document.createElement('div');
     mini.className = 'mini-calendar';
-    dayNames.forEach(d => {
+    dayNames.forEach((d) => {
       const h = document.createElement('div');
       h.className = 'mini-weekday';
       h.textContent = d[0];
       mini.appendChild(h);
     });
-    const first = new Date(currentYear, m-1, 1);
+    const first = new Date(currentYear, m - 1, 1);
     let sd = first.getDay();
     sd = sd === 0 ? 6 : sd - 1;
     const dim = daysInMonthCal(currentYear, m);
@@ -119,13 +134,18 @@ function renderYearView() {
       const s = getShiftAtWithPending(currentYear, m, d, selectedShift);
       const onU = isUrlop(currentYear, m, d, selectedShift);
       const dirty = isDirty(currentYear, m, d, selectedShift);
-      const cls = onU ? 'U' : (isWolne(s) ? 'W' : s);
+      const cls = onU ? 'U' : isWolne(s) ? 'W' : s;
       const el = document.createElement('div');
       el.className = 'mini-day m' + cls + (dirty ? ' mDirty' : '');
       el.textContent = d;
-      if (today.getFullYear() === currentYear && today.getMonth()+1 === m && today.getDate() === d) el.classList.add('mToday');
-      if (yHolidays[m+'-'+d]) el.classList.add('mHoliday');
-      el.title = `${d} ${monthNames[m-1]}: ${onU ? '🌴 ' + t('vacation') : (shiftFullName[s]||t('dayOff'))}`;
+      if (
+        today.getFullYear() === currentYear &&
+        today.getMonth() + 1 === m &&
+        today.getDate() === d
+      )
+        el.classList.add('mToday');
+      if (yHolidays[m + '-' + d]) el.classList.add('mHoliday');
+      el.title = `${d} ${monthNames[m - 1]}: ${onU ? '🌴 ' + t('vacation') : shiftFullName[s] || t('dayOff')}`;
       el.onclick = (ev) => {
         ev.stopPropagation();
         if (editMode) {
@@ -176,7 +196,7 @@ function renderTableView(showAllYear) {
   title.className = 'table-view-title';
   title.textContent = showAllYear
     ? `📋 ${t('wholeYear')} ${currentYear} — ${t('allBrigades')}`
-    : `📋 ${monthNames[currentMonth-1]} ${currentYear} — ${t('allBrigades')}`;
+    : `📋 ${monthNames[currentMonth - 1]} ${currentYear} — ${t('allBrigades')}`;
   tv.appendChild(title);
 
   if (showAllYear) {
@@ -186,7 +206,7 @@ function renderTableView(showAllYear) {
       const block = document.createElement('div');
       block.className = 'table-month-block';
       const h = document.createElement('h3');
-      h.textContent = `${monthNames[m-1]} ${currentYear}`;
+      h.textContent = `${monthNames[m - 1]} ${currentYear}`;
       block.appendChild(h);
       block.appendChild(buildMonthTable(m));
       wrap.appendChild(block);
@@ -195,7 +215,7 @@ function renderTableView(showAllYear) {
   } else {
     const monthNav = document.createElement('div');
     monthNav.className = 'month-nav';
-    monthNav.innerHTML = `<button onclick="goToMonth(-1)">‹</button><div class="month-title">${monthNames[currentMonth-1]} ${currentYear}</div><button onclick="goToMonth(1)">›</button>`;
+    monthNav.innerHTML = `<button onclick="goToMonth(-1)">‹</button><div class="month-title">${monthNames[currentMonth - 1]} ${currentYear}</div><button onclick="goToMonth(1)">›</button>`;
     tv.appendChild(monthNav);
     tv.appendChild(buildMonthTable(currentMonth));
   }
@@ -223,20 +243,25 @@ function buildMonthTable(month) {
   for (let d = 1; d <= dim; d++) {
     const th = document.createElement('th');
     th.className = 'date-header';
-    const dow = new Date(currentYear, month-1, d).getDay();
+    const dow = new Date(currentYear, month - 1, d).getDay();
     if (dow === 0 || dow === 6) th.classList.add('weekend');
-    if (yHolidays[month+'-'+d]) th.classList.add('holiday');
-    if (today.getFullYear() === currentYear && today.getMonth()+1 === month && today.getDate() === d) th.classList.add('today');
-    const dayLabel = dayNames[(dow+6)%7];
+    if (yHolidays[month + '-' + d]) th.classList.add('holiday');
+    if (
+      today.getFullYear() === currentYear &&
+      today.getMonth() + 1 === month &&
+      today.getDate() === d
+    )
+      th.classList.add('today');
+    const dayLabel = dayNames[(dow + 6) % 7];
     th.innerHTML = `<span class="dh-num">${d}</span><span class="dh-day">${dayLabel[0]}</span>`;
-    if (yHolidays[month+'-'+d]) th.title = yHolidays[month+'-'+d];
+    if (yHolidays[month + '-' + d]) th.title = yHolidays[month + '-' + d];
     trHead.appendChild(th);
   }
   thead.appendChild(trHead);
   table.appendChild(thead);
 
   const tbody = document.createElement('tbody');
-  ['A','B','C','D'].forEach(brig => {
+  ['A', 'B', 'C', 'D'].forEach((brig) => {
     const tr = document.createElement('tr');
     const brigTh = document.createElement('th');
     brigTh.className = 'brig-label ' + brig;
@@ -248,14 +273,19 @@ function buildMonthTable(month) {
       const onU = isUrlop(currentYear, month, d, brig);
       const dirty = isDirty(currentYear, month, d, brig);
       if (dirty) td.classList.add('dirty-edit');
-      const cls = onU ? 'U' : (isWolne(s) ? 'W' : s);
+      const cls = onU ? 'U' : isWolne(s) ? 'W' : s;
       td.className = 'tc tc-' + cls;
-      td.textContent = onU ? '🌴' : (isWolne(s) ? '—' : s);
-      const dow = new Date(currentYear, month-1, d).getDay();
+      td.textContent = onU ? '🌴' : isWolne(s) ? '—' : s;
+      const dow = new Date(currentYear, month - 1, d).getDay();
       if (dow === 0 || dow === 6) td.classList.add('weekend-col');
-      if (today.getFullYear() === currentYear && today.getMonth()+1 === month && today.getDate() === d) td.classList.add('today-col');
+      if (
+        today.getFullYear() === currentYear &&
+        today.getMonth() + 1 === month &&
+        today.getDate() === d
+      )
+        td.classList.add('today-col');
       if (brig === selectedShift) td.classList.add('my-brigade');
-      td.title = `${brig} • ${d} ${monthNames[month-1]}: ${onU ? '🌴' : (shiftFullName[s]||t('dayOff'))}`;
+      td.title = `${brig} • ${d} ${monthNames[month - 1]}: ${onU ? '🌴' : shiftFullName[s] || t('dayOff')}`;
       td.onclick = () => {
         if (editMode) {
           if (editPaletteMode === 'OT') {

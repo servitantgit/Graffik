@@ -15,28 +15,45 @@ function bindClick(id, handler) {
 function exportICS() {
   let ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Gillette Grafik//PL\r\n';
   const ySched = getYearSchedule(currentYear);
-  function pad(n) { return String(n).padStart(2,'0'); }
+  function pad(n) {
+    return String(n).padStart(2, '0');
+  }
   for (let m = 1; m <= 12; m++) {
     const arr = ySched[m][selectedShift];
     for (let i = 0; i < arr.length; i++) {
       const s = arr[i];
       if (isWolne(s)) continue;
-      if (isUrlop(currentYear, m, i+1, selectedShift)) continue;
+      if (isUrlop(currentYear, m, i + 1, selectedShift)) continue;
       const [sh, eh] = shiftHours[s];
-      const dt = new Date(currentYear, m-1, i+1);
-      const startDt = new Date(dt); startDt.setHours(sh, 0, 0);
-      const endDt = new Date(dt); endDt.setHours(eh, 0, 0);
-      const fmt = d => d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + 'T' + pad(d.getHours()) + pad(d.getMinutes()) + '00';
-      ics += `BEGIN:VEVENT\r\nUID:${currentYear}-${m}-${i+1}-${selectedShift}@gillette\r\nDTSTART:${fmt(startDt)}\r\nDTEND:${fmt(endDt)}\r\nSUMMARY:${s} - Brygada ${selectedShift}\r\nEND:VEVENT\r\n`;
+      const dt = new Date(currentYear, m - 1, i + 1);
+      const startDt = new Date(dt);
+      startDt.setHours(sh, 0, 0);
+      const endDt = new Date(dt);
+      endDt.setHours(eh, 0, 0);
+      const fmt = (d) =>
+        d.getFullYear() +
+        pad(d.getMonth() + 1) +
+        pad(d.getDate()) +
+        'T' +
+        pad(d.getHours()) +
+        pad(d.getMinutes()) +
+        '00';
+      ics += `BEGIN:VEVENT\r\nUID:${currentYear}-${m}-${i + 1}-${selectedShift}@gillette\r\nDTSTART:${fmt(startDt)}\r\nDTEND:${fmt(endDt)}\r\nSUMMARY:${s} - Brygada ${selectedShift}\r\nEND:VEVENT\r\n`;
     }
   }
-  (urlops[selectedShift] || []).forEach(k => {
+  (urlops[selectedShift] || []).forEach((k) => {
     const parts = k.split('-').map(Number);
     if (parts.length !== 3 || parts[0] !== currentYear) return;
-    const yy = parts[0], mm = parts[1], dd = parts[2];
-    const fmtD = dt => dt.getFullYear() + String(dt.getMonth()+1).padStart(2,'0') + String(dt.getDate()).padStart(2,'0');
-    const dt = new Date(yy, mm-1, dd);
-    const dtEnd = new Date(dt); dtEnd.setDate(dd+1);
+    const yy = parts[0],
+      mm = parts[1],
+      dd = parts[2];
+    const fmtD = (dt) =>
+      dt.getFullYear() +
+      String(dt.getMonth() + 1).padStart(2, '0') +
+      String(dt.getDate()).padStart(2, '0');
+    const dt = new Date(yy, mm - 1, dd);
+    const dtEnd = new Date(dt);
+    dtEnd.setDate(dd + 1);
     ics += `BEGIN:VEVENT\r\nUID:urlop-${k}-${selectedShift}@gillette\r\nDTSTART;VALUE=DATE:${fmtD(dt)}\r\nDTEND;VALUE=DATE:${fmtD(dtEnd)}\r\nSUMMARY:🌴 URLOP - Brygada ${selectedShift}\r\nEND:VEVENT\r\n`;
   });
   ics += 'END:VCALENDAR\r\n';
@@ -56,7 +73,13 @@ function addPrintHeader() {
   header.className = 'print-header';
   const today = new Date();
   const dateStr = `${today.getDate()} ${monthNames[today.getMonth()]} ${today.getFullYear()}`;
-  const viewName = { dashboard: t('printHeaderDashboard'), week: t('printHeaderWeek'), month: t('printHeaderMonth'), table: t('printHeaderTable') }[currentView] || '';
+  const viewName =
+    {
+      dashboard: t('printHeaderDashboard'),
+      week: t('printHeaderWeek'),
+      month: t('printHeaderMonth'),
+      table: t('printHeaderTable'),
+    }[currentView] || '';
   const yearSuffix = yearMode ? t('printYearSuffix') : '';
   header.textContent = `🏭 ${t('appName')} — ${viewName}${yearSuffix} • Brygada ${selectedShift} • ${dateStr}`;
   document.body.prepend(header);
@@ -74,124 +97,146 @@ window.addEventListener('beforeprint', () => {
   addPrintFooter();
 });
 window.addEventListener('afterprint', () => {
-  document.querySelectorAll('.print-header, .print-footer').forEach(el => el.remove());
+  document.querySelectorAll('.print-header, .print-footer').forEach((el) => el.remove());
 });
 
 /* === SHARE === */
 function buildShareUrl() {
-    const params = new URLSearchParams();
-    params.set('view', currentView);
-    params.set('y', currentYear);
-    
-    // Rok mode
-    if (yearMode && (currentView === 'month' || currentView === 'table')) {
-        params.set('rok', '1');
-    }
-    
-    // Місяць (для month/week/table без yearMode)
-    if (currentView === 'month' || currentView === 'week' || 
-        (currentView === 'table' && !yearMode)) {
-        params.set('m', currentMonth);
-    }
-    
-    // День (тільки для month з вибраним днем, або week)
-    if ((currentView === 'month' && selectedDay && !yearMode) || 
-        currentView === 'week') {
-        const d = selectedDay || new Date().getDate();
-        params.set('d', d);
-    }
-    
-    // Бригада (для всіх видів окрім table)
-    if (currentView !== 'table') {
-        params.set('brig', selectedShift);
-    }
-    
-    return `${location.origin}${location.pathname}?${params.toString()}`;
+  const params = new URLSearchParams();
+  params.set('view', currentView);
+  params.set('y', currentYear);
+
+  // Rok mode
+  if (yearMode && (currentView === 'month' || currentView === 'table')) {
+    params.set('rok', '1');
+  }
+
+  // Місяць (для month/week/table без yearMode)
+  if (currentView === 'month' || currentView === 'week' || (currentView === 'table' && !yearMode)) {
+    params.set('m', currentMonth);
+  }
+
+  // День (тільки для month з вибраним днем, або week)
+  if ((currentView === 'month' && selectedDay && !yearMode) || currentView === 'week') {
+    const d = selectedDay || new Date().getDate();
+    params.set('d', d);
+  }
+
+  // Бригада (для всіх видів окрім table)
+  if (currentView !== 'table') {
+    params.set('brig', selectedShift);
+  }
+
+  return `${location.origin}${location.pathname}?${params.toString()}`;
 }
 
 function buildShareText() {
-    // Опис того, чим ділимося (для тексту повідомлення)
-    const viewNames = {
-        dashboard: t('viewDashboard'),
-        week: t('viewWeek'),
-        month: yearMode ? t('yearViewTitle', { year: currentYear }) : `${monthNames[currentMonth-1]} ${currentYear}`,
-        table: yearMode ? t('yearViewTitle', { year: currentYear }) : t('monthViewTitle', { month: monthNames[currentMonth-1], year: currentYear })
-    };
-    
-    let text = `📅 ${viewNames[currentView]}`;
-    
-    if (currentView === 'week') {
-        const d = selectedDay || new Date().getDate();
-        text = `📆 ${t('viewWeek')} ${d} ${monthNames[currentMonth-1]} ${currentYear}`;
-    } else if (currentView === 'month' && selectedDay && !yearMode) {
-        text = `📅 ${selectedDay} ${monthNames[currentMonth-1]} ${currentYear}`;
-    }
-    
-    if (currentView !== 'table') {
-        text += ` • Brygada ${selectedShift}`;
-    }
-    
-    return text;
+  // Опис того, чим ділимося (для тексту повідомлення)
+  const viewNames = {
+    dashboard: t('viewDashboard'),
+    week: t('viewWeek'),
+    month: yearMode
+      ? t('yearViewTitle', { year: currentYear })
+      : `${monthNames[currentMonth - 1]} ${currentYear}`,
+    table: yearMode
+      ? t('yearViewTitle', { year: currentYear })
+      : t('monthViewTitle', { month: monthNames[currentMonth - 1], year: currentYear }),
+  };
+
+  let text = `📅 ${viewNames[currentView]}`;
+
+  if (currentView === 'week') {
+    const d = selectedDay || new Date().getDate();
+    text = `📆 ${t('viewWeek')} ${d} ${monthNames[currentMonth - 1]} ${currentYear}`;
+  } else if (currentView === 'month' && selectedDay && !yearMode) {
+    text = `📅 ${selectedDay} ${monthNames[currentMonth - 1]} ${currentYear}`;
+  }
+
+  if (currentView !== 'table') {
+    text += ` • Brygada ${selectedShift}`;
+  }
+
+  return text;
 }
 
 function shareCurrent() {
-    const url = buildShareUrl();
-    const text = buildShareText();
-    const isLocal = location.protocol === 'file:' || !location.origin || location.origin === 'null';
-    
-    // Локальний файл: копіюємо текст без URL
-    if (isLocal) {
-        const content = `${text}\n🏭 ${t('appName')}`;
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(content)
-                .then(() => showToast('success', t('shareCopied')))
-                .catch(() => showToast('error', t('shareCopyFailed')));
-        } else {
-            showToast('error', t('shareCopyFailed'));
-        }
-        return;
-    }
-    
-    // Native share (mobile)
-    if (navigator.share) {
-        navigator.share({ title: t('appName'), text, url })
-            .then(() => showToast('success', t('shareSuccess')))
-            .catch(() => copyToClipboard(url));
+  const url = buildShareUrl();
+  const text = buildShareText();
+  const isLocal = location.protocol === 'file:' || !location.origin || location.origin === 'null';
+
+  // Локальний файл: копіюємо текст без URL
+  if (isLocal) {
+    const content = `${text}\n🏭 ${t('appName')}`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(content)
+        .then(() => showToast('success', t('shareCopied')))
+        .catch(() => showToast('error', t('shareCopyFailed')));
     } else {
-        copyToClipboard(url);
+      showToast('error', t('shareCopyFailed'));
     }
+    return;
+  }
+
+  // Native share (mobile)
+  if (navigator.share) {
+    navigator
+      .share({ title: t('appName'), text, url })
+      .then(() => showToast('success', t('shareSuccess')))
+      .catch(() => copyToClipboard(url));
+  } else {
+    copyToClipboard(url);
+  }
 }
 
 function copyToClipboard(url) {
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(url)
-            .then(() => showToast('success', t('shareLinkCopied')))
-            .catch(() => showToast('error', t('shareLinkFailed')));
-    } else {
-        showToast('error', t('shareLinkFailed'));
-    }
+  if (navigator.clipboard) {
+    navigator.clipboard
+      .writeText(url)
+      .then(() => showToast('success', t('shareLinkCopied')))
+      .catch(() => showToast('error', t('shareLinkFailed')));
+  } else {
+    showToast('error', t('shareLinkFailed'));
+  }
 }
 
 /* === EXPORT/IMPORT JSON === */
 document.getElementById('exportDataBtn').onclick = () => {
-  const data = { _meta: { app: t('appName'), v: 3.1, date: new Date().toISOString() }, customSchedule, urlops, notes, overtimes, prefs };
+  const data = {
+    _meta: { app: t('appName'), v: 3.1, date: new Date().toISOString() },
+    customSchedule,
+    urlops,
+    notes,
+    overtimes,
+    prefs,
+  };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `grafik_backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `grafik_backup_${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   showToast('success', t('exportJsonSuccess'));
 };
 
-bindClick('menuIcs', () => { closeSideMenu(); exportICS(); });
-bindClick('menuPrint', () => { closeSideMenu(); window.print(); });
-bindClick('menuShare', () => { closeSideMenu(); shareCurrent(); });
+bindClick('menuIcs', () => {
+  closeSideMenu();
+  exportICS();
+});
+bindClick('menuPrint', () => {
+  closeSideMenu();
+  window.print();
+});
+bindClick('menuShare', () => {
+  closeSideMenu();
+  shareCurrent();
+});
 
 /* === IMPORT === */
 function validateImportedData(data) {
   if (!data || typeof data !== 'object') throw new Error(t('importDataError'));
-  if (!data.customSchedule && !data.urlops && !data.notes && !data.overtimes) throw new Error(t('importMissingKeys'));
+  if (!data.customSchedule && !data.urlops && !data.notes && !data.overtimes)
+    throw new Error(t('importMissingKeys'));
 
   const brigades = ['A', 'B', 'C', 'D'];
 
@@ -204,13 +249,24 @@ function validateImportedData(data) {
       for (let m = 1; m <= 12; m++) {
         if (!months[m]) continue;
         const monthData = months[m];
-        brigades.forEach(b => {
+        brigades.forEach((b) => {
           if (monthData[b]) {
-            if (!Array.isArray(monthData[b])) throw new Error(t('importInvalidBrigade', { brig: b, m, year }));
+            if (!Array.isArray(monthData[b]))
+              throw new Error(t('importInvalidBrigade', { brig: b, m, year }));
             const daysInMonth = new Date(year, m, 0).getDate();
-            if (monthData[b].length !== daysInMonth) throw new Error(t('importInvalidDays', { brig: b, m, year, actual: monthData[b].length, expected: daysInMonth }));
+            if (monthData[b].length !== daysInMonth)
+              throw new Error(
+                t('importInvalidDays', {
+                  brig: b,
+                  m,
+                  year,
+                  actual: monthData[b].length,
+                  expected: daysInMonth,
+                })
+              );
             monthData[b].forEach((dayVal, idx) => {
-              if (typeof dayVal !== 'string') throw new Error(t('importInvalidDayValue', { idx: idx+1, brig: b, m, year }));
+              if (typeof dayVal !== 'string')
+                throw new Error(t('importInvalidDayValue', { idx: idx + 1, brig: b, m, year }));
             });
           }
         });
@@ -220,11 +276,12 @@ function validateImportedData(data) {
 
   if (data.urlops) {
     if (typeof data.urlops !== 'object') throw new Error(t('importInvalidUrlops'));
-    brigades.forEach(b => {
+    brigades.forEach((b) => {
       if (data.urlops[b]) {
         if (!Array.isArray(data.urlops[b])) throw new Error(t('importUrlopsArray', { brig: b }));
-        data.urlops[b].forEach(d => {
-          if (typeof d !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(d)) throw new Error(t('importInvalidUrlopDate', { date: d }));
+        data.urlops[b].forEach((d) => {
+          if (typeof d !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(d))
+            throw new Error(t('importInvalidUrlopDate', { date: d }));
         });
       }
     });
@@ -235,9 +292,10 @@ function validateImportedData(data) {
     for (const k in data.overtimes) {
       const ot = data.overtimes[k];
       if (!ot || typeof ot !== 'object') throw new Error(t('importInvalidOtEntry', { key: k }));
-      ['przed', 'po', 'weekend'].forEach(p => {
+      ['przed', 'po', 'weekend'].forEach((p) => {
         if (ot[p]) {
-          if (typeof ot[p] !== 'object' || typeof ot[p].hours !== 'number') throw new Error(t('importInvalidOtValue', { pos: p, key: k }));
+          if (typeof ot[p] !== 'object' || typeof ot[p].hours !== 'number')
+            throw new Error(t('importInvalidOtValue', { pos: p, key: k }));
         }
       });
     }
@@ -264,18 +322,32 @@ document.getElementById('importFile').onchange = (e) => {
         t('importReplaceTitle'),
         t('importReplaceBody'),
         () => {
-          if (data.customSchedule) { customSchedule = data.customSchedule; saveCustomSchedule(customSchedule); }
-          if (data.urlops) { Object.keys(urlops).forEach(k => delete urlops[k]); Object.assign(urlops, data.urlops); saveUrlops(urlops); }
-          if (data.notes) { Object.keys(notes).forEach(k => delete notes[k]); Object.assign(notes, data.notes); saveNotes(notes); }
-          if (data.overtimes) { overtimes = data.overtimes; saveOvertimes(overtimes); }
+          if (data.customSchedule) {
+            customSchedule = data.customSchedule;
+            saveCustomSchedule(customSchedule);
+          }
+          if (data.urlops) {
+            Object.keys(urlops).forEach((k) => delete urlops[k]);
+            Object.assign(urlops, data.urlops);
+            saveUrlops(urlops);
+          }
+          if (data.notes) {
+            Object.keys(notes).forEach((k) => delete notes[k]);
+            Object.assign(notes, data.notes);
+            saveNotes(notes);
+          }
+          if (data.overtimes) {
+            overtimes = data.overtimes;
+            saveOvertimes(overtimes);
+          }
           showToast('success', t('importSuccess'));
           refreshViews();
         },
         { primaryText: t('importBtn'), primaryClass: 'primary' }
       );
-    } catch(err) { 
+    } catch (err) {
       const msg = err instanceof SyntaxError ? t('importJsonError') : err.message;
-      showToast('error', t('importError', { msg })); 
+      showToast('error', t('importError', { msg }));
     }
   };
   reader.readAsText(file);
@@ -296,7 +368,10 @@ bindClick('menuVacationLimit', () => {
     body,
     buttons: [
       { text: t('vacationLimitCancel'), class: 'secondary' },
-      { text: t('vacationLimitSave'), class: 'primary', onClick: () => {
+      {
+        text: t('vacationLimitSave'),
+        class: 'primary',
+        onClick: () => {
           const input = document.getElementById('vacationLimitInput');
           const parsed = Number(input.value);
           if (!Number.isFinite(parsed) || parsed < 0) {
@@ -306,9 +381,9 @@ bindClick('menuVacationLimit', () => {
           setVacationLimit(selectedShift, parsed);
           showToast('success', t('vacationLimitSet', { brig: selectedShift, n: parsed }));
           refreshViews();
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
 });
 
@@ -320,10 +395,14 @@ bindClick('clearYearBtn', () => {
     () => {
       delete customSchedule[currentYear];
       saveCustomSchedule(customSchedule);
-      Object.keys(pendingChanges).forEach(k => {
-        if (parseInt(k.split('-')[0], 10) === currentYear) { delete pendingChanges[k]; delete pendingOriginals[k]; }
+      Object.keys(pendingChanges).forEach((k) => {
+        if (parseInt(k.split('-')[0], 10) === currentYear) {
+          delete pendingChanges[k];
+          delete pendingOriginals[k];
+        }
       });
-      undoStack = []; redoStack = [];
+      undoStack = [];
+      redoStack = [];
       updateDirtyIndicator();
       refreshViews();
       showToast('warn', t('yearCleared', { year: currentYear }));
@@ -339,7 +418,10 @@ bindClick('resetCustomBtn', () => {
     () => {
       customSchedule = {};
       saveCustomSchedule(customSchedule);
-      pendingChanges = {}; pendingOriginals = {}; undoStack = []; redoStack = [];
+      pendingChanges = {};
+      pendingOriginals = {};
+      undoStack = [];
+      redoStack = [];
       updateDirtyIndicator();
       refreshViews();
       showToast('warn', t('resetSuccess'));

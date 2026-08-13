@@ -6,13 +6,15 @@
 const DRIVE_CLIENT_ID_KEY = 'grafik_drive_client_id';
 const DRIVE_FILE_NAME = 'grafik-gillette-data.json';
 const DRIVE_MIME = 'application/json';
-const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.appdata';
+const DRIVE_SCOPE =
+  'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.appdata';
 
 let gDriveTokenClient = null;
 let gDriveToken = localStorage.getItem('grafik_drive_token') || null;
 let gDriveTokenExpiry = parseInt(localStorage.getItem('grafik_drive_token_expiry') || '0', 10);
 let gDriveFileId = localStorage.getItem('grafik_drive_file_id') || null;
-const DEFAULT_CLIENT_ID = '384517397558-agfoqvv4pv5nbkejhc9i7hbg86qs6her.apps.googleusercontent.com';
+const DEFAULT_CLIENT_ID =
+  '384517397558-agfoqvv4pv5nbkejhc9i7hbg86qs6her.apps.googleusercontent.com';
 let gDriveClientId = localStorage.getItem(DRIVE_CLIENT_ID_KEY) || DEFAULT_CLIENT_ID;
 
 /* === POMOCNICZE === */
@@ -22,7 +24,8 @@ function isDriveTokenValid() {
 
 function loadGis() {
   return new Promise((resolve) => {
-    if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) return resolve();
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2)
+      return resolve();
     const s = document.createElement('script');
     s.src = 'https://accounts.google.com/gsi/client';
     s.onload = () => resolve();
@@ -66,7 +69,10 @@ async function driveFetch(url, options = {}, retry = true) {
   if (resp.status === 401 && retry) {
     // token wygasł — zaloguj ponownie
     const ok = await new Promise((resolve) => {
-      if (!gDriveTokenClient) { resolve(false); return; }
+      if (!gDriveTokenClient) {
+        resolve(false);
+        return;
+      }
       gDriveTokenClient.requestAccessToken();
       // GIS wywoła callback, który ustawi nowy token
       const checkTimer = setInterval(() => {
@@ -75,7 +81,10 @@ async function driveFetch(url, options = {}, retry = true) {
           resolve(true);
         }
       }, 200);
-      setTimeout(() => { clearInterval(checkTimer); resolve(isDriveTokenValid()); }, 5000);
+      setTimeout(() => {
+        clearInterval(checkTimer);
+        resolve(isDriveTokenValid());
+      }, 5000);
     });
     if (ok) return driveFetch(url, options, false);
   }
@@ -108,7 +117,9 @@ async function findDriveFile() {
     console.log('[SYNC] Znaleziono duplikatów:', files.length - 1, '— usuwam...');
     for (let i = 1; i < files.length; i++) {
       try {
-        await driveFetch(`https://www.googleapis.com/drive/v3/files/${files[i].id}`, { method: 'DELETE' });
+        await driveFetch(`https://www.googleapis.com/drive/v3/files/${files[i].id}`, {
+          method: 'DELETE',
+        });
         console.log('[SYNC] Usunięto duplikat:', files[i].id);
       } catch (e) {
         console.warn('[SYNC] Nie udało się usunąć:', files[i].id);
@@ -121,7 +132,10 @@ async function findDriveFile() {
 
 /* === ZAPIS (create lub update) === */
 async function uploadToDrive(force = false) {
-  if (!isDriveTokenValid()) { showToast('warn', `☁️ ${t('driveLoginRequired')}`); return false; }
+  if (!isDriveTokenValid()) {
+    showToast('warn', `☁️ ${t('driveLoginRequired')}`);
+    return false;
+  }
 
   // Budujemy dane do zapisu
   const payload = {
@@ -133,7 +147,7 @@ async function uploadToDrive(force = false) {
     urlops: urlops,
     overtimes: overtimes,
     notes: notes,
-    vacationLimits: (prefs.urlopLimits) || {}
+    vacationLimits: prefs.urlopLimits || {},
   };
   const json = JSON.stringify(payload);
 
@@ -149,7 +163,7 @@ async function uploadToDrive(force = false) {
       const metadata = {
         name: DRIVE_FILE_NAME,
         mimeType: DRIVE_MIME,
-        parents: ['appDataFolder']
+        parents: ['appDataFolder'],
       };
       const form = new FormData();
       form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
@@ -161,7 +175,11 @@ async function uploadToDrive(force = false) {
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({}));
         console.error('[SYNC] Create error:', err);
-        const errText = (err && err.error && err.error.message) || err.message || JSON.stringify(err) || t('unknownError');
+        const errText =
+          (err && err.error && err.error.message) ||
+          err.message ||
+          JSON.stringify(err) ||
+          t('unknownError');
         showToast('error', `☁️ ${t('driveCreateFileError')}: ` + errText);
         return false;
       }
@@ -193,12 +211,18 @@ async function uploadToDrive(force = false) {
 
 /* === ODCZYT === */
 async function downloadFromDrive(confirmOverwrite = false) {
-  if (!isDriveTokenValid()) { showToast('warn', `☁️ ${t('driveLoginRequired')}`); return false; }
+  if (!isDriveTokenValid()) {
+    showToast('warn', `☁️ ${t('driveLoginRequired')}`);
+    return false;
+  }
   try {
     console.log('[SYNC] downloadFromDrive start', { confirmOverwrite, gDriveFileId });
     if (!gDriveFileId) {
       const found = await findDriveFile();
-      if (!found) { showToast('info', `☁️ ${t('driveNoFileToDownload')}`); return false; }
+      if (!found) {
+        showToast('info', `☁️ ${t('driveNoFileToDownload')}`);
+        return false;
+      }
       gDriveFileId = found.id;
       localStorage.setItem('grafik_drive_file_id', gDriveFileId);
       console.log('[SYNC] downloadFromDrive found gDriveFileId', gDriveFileId);
@@ -209,149 +233,157 @@ async function downloadFromDrive(confirmOverwrite = false) {
     console.log('[SYNC] downloadFromDrive response', {
       ok: resp.ok,
       status: resp.status,
-      contentLength: resp.headers && resp.headers.get ? resp.headers.get('content-length') : null
+      contentLength: resp.headers && resp.headers.get ? resp.headers.get('content-length') : null,
     });
     if (!resp.ok) {
       showToast('error', `☁️ ${t('driveDownloadFileError')}`);
       return false;
     }
     const data = await resp.json();
-    console.log('[SYNC] downloadFromDrive parsed data', data && typeof data === 'object' ? { keys: Object.keys(data) } : typeof data);
+    console.log(
+      '[SYNC] downloadFromDrive parsed data',
+      data && typeof data === 'object' ? { keys: Object.keys(data) } : typeof data
+    );
     if (!data || typeof data !== 'object') {
       showToast('error', `☁️ ${t('driveInvalidDataFormat')}`);
       return false;
     }
 
-const doApply = () => {
-  console.log('[SYNC] downloadFromDrive doApply start');
-  let applyErrors = [];
+    const doApply = () => {
+      console.log('[SYNC] downloadFromDrive doApply start');
+      let applyErrors = [];
 
-  // customSchedule — MUTUJEMY obiekt (nie nadpisujemy)
-  if (data.customSchedule && typeof customSchedule !== 'undefined') {
-    try {
-      console.log('[SYNC] applying customSchedule (mutation)');
-      Object.keys(customSchedule).forEach(k => delete customSchedule[k]);
-      Object.assign(customSchedule, data.customSchedule);
-      saveCustomSchedule(customSchedule);
-      console.log('[SYNC] customSchedule applied, years:', Object.keys(customSchedule));
-    } catch (e) {
-      console.error('[SYNC] customSchedule error', e);
-      applyErrors.push('customSchedule');
-    }
-  }
-
-  // urlops — MUTUJEMY obiekt (KRYTYCZNE — tu był problem!)
-  if (data.urlops && typeof urlops !== 'undefined') {
-    try {
-      console.log('[SYNC] applying urlops (mutation)');
-      Object.keys(urlops).forEach(k => delete urlops[k]);
-      Object.assign(urlops, data.urlops);
-      saveUrlops(urlops);
-      console.log('[SYNC] urlops applied, brygady:', Object.keys(urlops));
-    } catch (e) {
-      console.error('[SYNC] urlops error', e);
-      applyErrors.push('urlops');
-    }
-  }
-
-  // overtimes — MUTUJEMY obiekt
-  if (data.overtimes && typeof overtimes !== 'undefined') {
-    try {
-      console.log('[SYNC] applying overtimes (mutation)');
-      Object.keys(overtimes).forEach(k => delete overtimes[k]);
-      Object.assign(overtimes, data.overtimes);
-      saveOvertimes(overtimes);
-      console.log('[SYNC] overtimes applied, keys:', Object.keys(overtimes).length);
-    } catch (e) {
-      console.error('[SYNC] overtimes error', e);
-      applyErrors.push('overtimes');
-    }
-  }
-
-  // notes — MUTUJEMY obiekt
-  if (data.notes && typeof notes !== 'undefined') {
-    try {
-      console.log('[SYNC] applying notes (mutation)');
-      Object.keys(notes).forEach(k => delete notes[k]);
-      Object.assign(notes, data.notes);
-      saveNotes(notes);
-      console.log('[SYNC] notes applied, keys:', Object.keys(notes).length);
-    } catch (e) {
-      console.error('[SYNC] notes error', e);
-      applyErrors.push('notes');
-    }
-  }
-
-  // prefs — scalamy (nie usuwamy kluczy!)
-  if (data.prefs && typeof prefs !== 'undefined') {
-    try {
-      console.log('[SYNC] applying prefs (merge)');
-      Object.assign(prefs, data.prefs);
-      savePrefs(prefs);
-      console.log('[SYNC] prefs merged');
-    } catch (e) {
-      console.error('[SYNC] prefs error', e);
-      applyErrors.push('prefs');
-    }
-  }
-
-  const applyVacationLimits = (limits, source) => {
-    if (!limits || typeof limits !== 'object') return false;
-    if (typeof setVacationLimit !== 'function') {
-      console.warn('[SYNC] setVacationLimit not available, skipping vacationLimits');
-      return false;
-    }
-    Object.keys(limits).forEach(brig => {
-      try {
-        console.log('[SYNC] applying vacationLimit', brig, limits[brig], 'source', source);
-        setVacationLimit(brig, limits[brig]);
-        console.log('[SYNC] vacationLimit applied', brig);
-      } catch (e) {
-        console.error('[SYNC] vacationLimit error', brig, e);
-        applyErrors.push('vacationLimits.' + brig);
+      // customSchedule — MUTUJEMY obiekt (nie nadpisujemy)
+      if (data.customSchedule && typeof customSchedule !== 'undefined') {
+        try {
+          console.log('[SYNC] applying customSchedule (mutation)');
+          Object.keys(customSchedule).forEach((k) => delete customSchedule[k]);
+          Object.assign(customSchedule, data.customSchedule);
+          saveCustomSchedule(customSchedule);
+          console.log('[SYNC] customSchedule applied, years:', Object.keys(customSchedule));
+        } catch (e) {
+          console.error('[SYNC] customSchedule error', e);
+          applyErrors.push('customSchedule');
+        }
       }
-    });
-    return true;
-  };
 
-  if (!applyVacationLimits(data.vacationLimits, 'data.vacationLimits')) {
-    applyVacationLimits(data.prefs && data.prefs.urlopLimits, 'data.prefs.urlopLimits');
-  }
+      // urlops — MUTUJEMY obiekt (KRYTYCZNE — tu był problem!)
+      if (data.urlops && typeof urlops !== 'undefined') {
+        try {
+          console.log('[SYNC] applying urlops (mutation)');
+          Object.keys(urlops).forEach((k) => delete urlops[k]);
+          Object.assign(urlops, data.urlops);
+          saveUrlops(urlops);
+          console.log('[SYNC] urlops applied, brygady:', Object.keys(urlops));
+        } catch (e) {
+          console.error('[SYNC] urlops error', e);
+          applyErrors.push('urlops');
+        }
+      }
 
-  // Odświeżamy widok
-  currentView = 'dashboard';
-  if (typeof switchView === 'function') {
-    try {
-      switchView('dashboard');
-      console.log('[SYNC] switchView dashboard');
-    } catch (e) {
-      console.error('[SYNC] switchView error', e);
-      applyErrors.push('switchView');
-    }
-  } else if (typeof refreshViews === 'function') {
-    try {
-      refreshViews();
-      console.log('[SYNC] refreshViews');
-    } catch (e) {
-      console.error('[SYNC] refreshViews error', e);
-      applyErrors.push('refreshViews');
-    }
-  } else {
-    console.warn('[SYNC] neither switchView nor refreshViews available');
-  }
+      // overtimes — MUTUJEMY obiekt
+      if (data.overtimes && typeof overtimes !== 'undefined') {
+        try {
+          console.log('[SYNC] applying overtimes (mutation)');
+          Object.keys(overtimes).forEach((k) => delete overtimes[k]);
+          Object.assign(overtimes, data.overtimes);
+          saveOvertimes(overtimes);
+          console.log('[SYNC] overtimes applied, keys:', Object.keys(overtimes).length);
+        } catch (e) {
+          console.error('[SYNC] overtimes error', e);
+          applyErrors.push('overtimes');
+        }
+      }
 
-  console.log('[SYNC] downloadFromDrive doApply end', { applyErrors: applyErrors.length ? applyErrors : null });
+      // notes — MUTUJEMY obiekt
+      if (data.notes && typeof notes !== 'undefined') {
+        try {
+          console.log('[SYNC] applying notes (mutation)');
+          Object.keys(notes).forEach((k) => delete notes[k]);
+          Object.assign(notes, data.notes);
+          saveNotes(notes);
+          console.log('[SYNC] notes applied, keys:', Object.keys(notes).length);
+        } catch (e) {
+          console.error('[SYNC] notes error', e);
+          applyErrors.push('notes');
+        }
+      }
 
-  if (applyErrors.length) {
-    showToast('warn', `☁️ ${t('driveDownloadedWithErrors')}: ` + applyErrors.join(', '));
-  } else {
-    showToast('success', `☁️ ${t('driveDownloaded')}`);
-  }
-  updateDriveUI();
-};
+      // prefs — scalamy (nie usuwamy kluczy!)
+      if (data.prefs && typeof prefs !== 'undefined') {
+        try {
+          console.log('[SYNC] applying prefs (merge)');
+          Object.assign(prefs, data.prefs);
+          savePrefs(prefs);
+          console.log('[SYNC] prefs merged');
+        } catch (e) {
+          console.error('[SYNC] prefs error', e);
+          applyErrors.push('prefs');
+        }
+      }
+
+      const applyVacationLimits = (limits, source) => {
+        if (!limits || typeof limits !== 'object') return false;
+        if (typeof setVacationLimit !== 'function') {
+          console.warn('[SYNC] setVacationLimit not available, skipping vacationLimits');
+          return false;
+        }
+        Object.keys(limits).forEach((brig) => {
+          try {
+            console.log('[SYNC] applying vacationLimit', brig, limits[brig], 'source', source);
+            setVacationLimit(brig, limits[brig]);
+            console.log('[SYNC] vacationLimit applied', brig);
+          } catch (e) {
+            console.error('[SYNC] vacationLimit error', brig, e);
+            applyErrors.push('vacationLimits.' + brig);
+          }
+        });
+        return true;
+      };
+
+      if (!applyVacationLimits(data.vacationLimits, 'data.vacationLimits')) {
+        applyVacationLimits(data.prefs && data.prefs.urlopLimits, 'data.prefs.urlopLimits');
+      }
+
+      // Odświeżamy widok
+      currentView = 'dashboard';
+      if (typeof switchView === 'function') {
+        try {
+          switchView('dashboard');
+          console.log('[SYNC] switchView dashboard');
+        } catch (e) {
+          console.error('[SYNC] switchView error', e);
+          applyErrors.push('switchView');
+        }
+      } else if (typeof refreshViews === 'function') {
+        try {
+          refreshViews();
+          console.log('[SYNC] refreshViews');
+        } catch (e) {
+          console.error('[SYNC] refreshViews error', e);
+          applyErrors.push('refreshViews');
+        }
+      } else {
+        console.warn('[SYNC] neither switchView nor refreshViews available');
+      }
+
+      console.log('[SYNC] downloadFromDrive doApply end', {
+        applyErrors: applyErrors.length ? applyErrors : null,
+      });
+
+      if (applyErrors.length) {
+        showToast('warn', `☁️ ${t('driveDownloadedWithErrors')}: ` + applyErrors.join(', '));
+      } else {
+        showToast('success', `☁️ ${t('driveDownloaded')}`);
+      }
+      updateDriveUI();
+    };
 
     if (confirmOverwrite) {
-      showConfirm(`☁️ ${t('driveDownloadConfirmTitle')}`, t('driveDownloadConfirmBody'), doApply, { primaryText: t('download'), primaryClass: 'primary' });
+      showConfirm(`☁️ ${t('driveDownloadConfirmTitle')}`, t('driveDownloadConfirmBody'), doApply, {
+        primaryText: t('download'),
+        primaryClass: 'primary',
+      });
     } else {
       doApply();
     }
@@ -430,14 +462,17 @@ function askForClientId() {
         onClick: () => {
           const input = document.getElementById('driveClientIdInput');
           const val = input ? input.value.trim() : '';
-          if (!val) { showToast('warn', t('enterClientId')); return; }
+          if (!val) {
+            showToast('warn', t('enterClientId'));
+            return;
+          }
           gDriveClientId = val;
           localStorage.setItem(DRIVE_CLIENT_ID_KEY, val);
           initGDriveTokenClient();
           showToast('success', `☁️ ${t('driveClientIdSaved')}`);
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
 }
 
@@ -449,7 +484,10 @@ function loginDrive() {
     return;
   }
   if (!gDriveTokenClient) initGDriveTokenClient();
-  if (!gDriveTokenClient) { showToast('error', `☁️ ${t('driveCannotInitLogin')}`); return; }
+  if (!gDriveTokenClient) {
+    showToast('error', `☁️ ${t('driveCannotInitLogin')}`);
+    return;
+  }
   gDriveTokenClient.requestAccessToken();
 }
 
@@ -466,9 +504,19 @@ async function syncWithDrive() {
     body: `<p>${t('driveSyncBody')}</p>`,
     buttons: [
       { text: t('cancel'), class: 'secondary' },
-      { text: t('download'), class: 'secondary', onClick: () => downloadFromDrive(true), closeOnClick: true },
-      { text: t('sendToDrive'), class: 'primary', onClick: () => uploadToDrive(true), closeOnClick: true }
-    ]
+      {
+        text: t('download'),
+        class: 'secondary',
+        onClick: () => downloadFromDrive(true),
+        closeOnClick: true,
+      },
+      {
+        text: t('sendToDrive'),
+        class: 'primary',
+        onClick: () => uploadToDrive(true),
+        closeOnClick: true,
+      },
+    ],
   });
 }
 
