@@ -241,8 +241,34 @@ function getLiveTimer(shift, y, m, d) {
   const now = new Date();
   if (now.getFullYear() !== y || now.getMonth() + 1 !== m || now.getDate() !== d) return null;
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
-  let startMin, endMin;
 
+  // === PRZYPADEK SPECJALNY: noc po północy ===
+  // Sprawdzamy najpierw czy WCZORAJ była zmiana N, która JESZCZE trwa
+  if (nowMinutes < 6 * 60) {
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yY = yesterday.getFullYear();
+    const yM = yesterday.getMonth() + 1;
+    const yD = yesterday.getDate();
+    const yShift = getShiftAt(yY, yM, yD, selectedShift);
+
+    if (yShift === 'N' && !isUrlop(yY, yM, yD, selectedShift)) {
+      const yOT = getOvertimes(yY, yM, yD, selectedShift);
+      let yEndMin = 6 * 60; // 06:00
+      if (yOT.po) yEndMin += yOT.po.hours * 60;
+
+      if (nowMinutes < yEndMin) {
+        const rem = yEndMin - nowMinutes;
+        return t('timerEndsIn', { h: Math.floor(rem / 60), m: rem % 60 });
+      }
+    }
+    // Jeśli wczoraj nie było N (albo już się skończyła) — kontynuujemy normalną logikę
+  }
+
+  // === NORMALNA LOGIKA: zmiana zaczyna się/trwa dzisiaj ===
+  if (!shift || isWolne(shift)) return null;
+
+  let startMin, endMin;
   const ot = getOvertimes(y, m, d, selectedShift);
 
   if (shift === 'R') {
@@ -254,47 +280,22 @@ function getLiveTimer(shift, y, m, d) {
   } else if (shift === 'N') {
     startMin = 22 * 60;
     endMin = 30 * 60;
-    if (nowMinutes < 6 * 60) {
-      // Jeśli jesteśmy po północy, sprawdzamy nadgodziny z "wczorajszej" zmiany N
-      // Ale renderDashboard/getLiveTimer są wywoływane dla konkretnej daty y,m,d (dzisiaj).
-      // System przechowuje nadgodziny zmiany N na dniu, w którym się zaczęła.
-      // Więc jeśli nowMinutes < 6*60, to jesteśmy w fazie końcowej zmiany N z dnia y,m,d-1?
-      // Nie, bo wywołanie jest dla daty y,m,d.
-      // W obecnej architekturze, jeśli dzisiaj (d) jest N, to o 2:00 rano (d)
-      // pokazywany jest koniec zmiany N, która zaczęła się dnia d-1.
-      // Ale getOvertimes(y,m,d) pobierze OT dla zmiany, która zacznie się o 22:00 DZISIAJ.
-      // To jest szerszy problem z nocną zmianą, ale skupmy się najpierw na P/R i ogólnym poprawieniu endMin.
-    }
-  } else return null;
+  } // 30:00 = 06:00 następnego dnia
+  else return null;
 
   if (ot.przed) startMin -= ot.przed.hours * 60;
   if (ot.po) endMin += ot.po.hours * 60;
 
-  if (shift === 'N' && nowMinutes < 6 * 60) {
-    // Specyficzna obsługa dla N po północy - używamy wczorajszych nadgodzin
-    const yesterday = new Date(now);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yOT = getOvertimes(
-      yesterday.getFullYear(),
-      yesterday.getMonth() + 1,
-      yesterday.getDate(),
-      selectedShift
-    );
-    let yEndMin = 6 * 60;
-    if (yOT.po) yEndMin += yOT.po.hours * 60;
-    if (nowMinutes < yEndMin) {
-      const rem = yEndMin - nowMinutes;
-      return t('timerEndsIn', { h: Math.floor(rem / 60), m: rem % 60 });
-    }
-    return null;
-  }
-
+  // Zmiana trwa
   if (nowMinutes >= startMin && nowMinutes < endMin) {
     const rem = endMin - nowMinutes;
     return t('timerEndsIn', { h: Math.floor(rem / 60), m: rem % 60 });
   }
+
+  // Zmiana zaczyna się w ciągu godziny
   if (nowMinutes < startMin && startMin - nowMinutes <= 60) {
     return t('timerStartsIn', { m: startMin - nowMinutes });
   }
+
   return null;
 }
