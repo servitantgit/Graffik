@@ -259,7 +259,7 @@ function getLiveTimer(shift, y, m, d) {
 
       if (nowMinutes < yEndMin) {
         const rem = yEndMin - nowMinutes;
-        return t('timerEndsIn', { h: Math.floor(rem / 60), m: rem % 60 });
+        return t('timerNightEndsIn', { h: Math.floor(rem / 60), m: rem % 60 });
       }
     }
     // Jeśli wczoraj nie było N (albo już się skończyła) — kontynuujemy normalną logikę

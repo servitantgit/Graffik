@@ -533,5 +533,6 @@ window.translations.pl = {
   notificationsDisabled: 'Powiadomienia wyłączone',
   shift: 'Zmiana',
   timerEndsIn: '⏱️ Kończy się za {h}h {m}min',
+  timerNightEndsIn: '🌙 Zmiana nocna kończy się za {h}h {m}min',
   timerStartsIn: '⏰ Zacznie się za {m} min',
 };

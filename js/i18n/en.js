@@ -575,5 +575,6 @@ window.translations.en = {
   notificationsDisabled: 'Notifications disabled',
   shift: 'Shift',
   timerEndsIn: '⏱️ Ends in {h}h {m}min',
+  timerNightEndsIn: '🌙 Night shift ends in {h}h {m}min',
   timerStartsIn: '⏰ Starts in {m} min',
 };

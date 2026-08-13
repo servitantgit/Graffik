@@ -573,5 +573,6 @@ window.translations.uk = {
   notificationsDisabled: 'Сповіщення вимкнено',
   shift: 'Зміна',
   timerEndsIn: '⏱️ Закінчується через {h}год {m}хв',
+  timerNightEndsIn: '🌙 Нічна зміна закінчується через {h}год {m}хв',
   timerStartsIn: '⏰ Починається через {m} хв',
 };
