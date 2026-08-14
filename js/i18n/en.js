@@ -162,6 +162,8 @@ window.translations.en = {
   otTitle: 'Overtime',
   otPositionBefore: 'BEFORE',
   otPositionAfter: 'AFTER',
+  otSelectPosition: 'Select position',
+  otAlreadySet: 'saved',
   otTime: 'Time',
   otHours: 'hours',
   otPreview: '📊 Preview',

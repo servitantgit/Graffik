@@ -161,6 +161,8 @@ window.translations.uk = {
   otTitle: 'Надгодини',
   otPositionBefore: 'ДО',
   otPositionAfter: 'ПІСЛЯ',
+  otSelectPosition: 'Виберіть позицію',
+  otAlreadySet: 'збережено',
   otTime: 'Час',
   otHours: 'годин',
   otPreview: '📊 Попередній перегляд',

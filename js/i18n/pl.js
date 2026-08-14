@@ -145,6 +145,8 @@ window.translations.pl = {
   otTitle: 'Nadgodziny',
   otPositionBefore: 'PRZED',
   otPositionAfter: 'PO',
+  otSelectPosition: 'Wybierz pozycję',
+  otAlreadySet: 'zapisano',
   otTime: 'Czas',
   otHours: 'godzin',
   otPreview: '📊 Podgląd',

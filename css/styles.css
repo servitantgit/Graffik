@@ -3081,6 +3081,16 @@ small {
   box-shadow: 0 0 0 3px #f39c12;
 }
 
+/* === PALETTE BUTTON: OT (overtime) === */
+.palette-btn.p-OT {
+  background: linear-gradient(135deg, #f39c12, #d68910);
+  color: #fff;
+}
+
+.palette-btn.p-OT.active {
+  box-shadow: 0 0 0 3px #c0392b;
+}
+
 /* === WYSOKA STAWKA: badge na środku (nad zmianą) === */
 .day-cell .shift-rate-badge {
   position: absolute;

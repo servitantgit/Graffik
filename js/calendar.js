@@ -201,6 +201,23 @@ function renderCalendar(direction) {
           refreshViews();
           return;
         }
+        // Palette OT: open overtime modal (only for working days with shift)
+        if (editPaletteMode === 'OT') {
+          const currentShift = getShiftAtWithPending(currentYear, currentMonth, d, selectedShift);
+          if (isWolne(currentShift)) {
+            showToast('warn', t('otOnlyOnShift'));
+            return;
+          }
+          if (isUrlop(currentYear, currentMonth, d, selectedShift)) {
+            showToast('warn', t('otOnlyOnShift'));
+            return;
+          }
+          selectedDay = d;
+          openOvertimeModal(d, currentShift, 'przed', null);
+          renderCalendar();
+          renderInfo();
+          return;
+        }
         const val = editPaletteMode === 'CYCLE' ? undefined : editPaletteMode;
         applyEdit(currentYear, currentMonth, d, selectedShift, val);
         selectedDay = d;
@@ -276,16 +293,58 @@ function openOvertimeModal(day, shift, position, existing) {
   otModalContext = { day, shift, position };
   const overlay = document.getElementById('otOverlay');
 
-  const posLabel = position === 'przed' ? t('otPositionBefore') : t('otPositionAfter');
   const [sh, eh] = shiftHours[shift];
   const shiftTimeStr = `${String(sh).padStart(2, '0')}:00-${String(eh % 24).padStart(2, '0')}:00`;
 
-  document.getElementById('otTitle').textContent = `${t('otTitle')} ${posLabel} ${shift}`;
+  document.getElementById('otTitle').textContent = `${t('otTitle')} ${shift}`;
+
+  // Existing overtimes for this day (to show what's already set)
+  const existingOt = getOvertimes(currentYear, currentMonth, day, selectedShift);
+  const hasPrzed = !!existingOt.przed;
+  const hasPo = !!existingOt.po;
+
+  const przedLabel = hasPrzed
+    ? `${t('otPositionBefore')} <small>(${existingOt.przed.hours}h ${t('otAlreadySet')})</small>`
+    : t('otPositionBefore');
+  const poLabel = hasPo
+    ? `${t('otPositionAfter')} <small>(${existingOt.po.hours}h ${t('otAlreadySet')})</small>`
+    : t('otPositionAfter');
+
   document.getElementById('otContext').innerHTML = `
     <b>${t('infoDate')}</b> ${day} ${monthNames[currentMonth - 1]} ${currentYear}<br>
     <b>${t('infoShiftLabel')}</b> ${shift} (${shiftTimeStr})<br>
-    <b>${t('infoPosition')}</b> ${posLabel}
+    <div style="margin-top:10px; padding:8px; background:var(--bg-cell); border-radius:8px;">
+      <div style="font-weight:700; margin-bottom:6px; font-size:12px;">${t('otSelectPosition')}:</div>
+      <label style="display:flex; align-items:center; gap:8px; padding:6px; cursor:pointer; border-radius:6px;" class="ot-radio-label">
+        <input type="radio" name="otPosition" value="przed" ${position === 'przed' ? 'checked' : ''} style="accent-color:var(--text-header); width:16px; height:16px;">
+        <span>⬅ ${przedLabel}</span>
+      </label>
+      <label style="display:flex; align-items:center; gap:8px; padding:6px; cursor:pointer; border-radius:6px;" class="ot-radio-label">
+        <input type="radio" name="otPosition" value="po" ${position === 'po' ? 'checked' : ''} style="accent-color:var(--text-header); width:16px; height:16px;">
+        <span>${poLabel} ➡</span>
+      </label>
+    </div>
   `;
+
+  // Handler dla radio buttons: перемикання position
+  document.querySelectorAll('input[name="otPosition"]').forEach((radio) => {
+    radio.addEventListener('change', (e) => {
+      const newPos = e.target.value;
+      otModalContext.position = newPos;
+      const newExisting = existingOt[newPos];
+      document.getElementById('otNote').value = newExisting ? newExisting.note || '' : '';
+      document.getElementById('otCustomHours').value = '';
+      document.querySelectorAll('.ot-qbtn').forEach((b) => b.classList.remove('active'));
+      if (newExisting) {
+        const btn = document.querySelector(`.ot-qbtn[data-h="${newExisting.hours}"]`);
+        if (btn) btn.classList.add('active');
+        else document.getElementById('otCustomHours').value = newExisting.hours;
+        updateOvertimePreview(newExisting.hours);
+      } else {
+        document.getElementById('otPreview').style.display = 'none';
+      }
+    });
+  });
 
   document.getElementById('otNote').value = existing ? existing.note || '' : '';
   document.getElementById('otCustomHours').value = '';
@@ -542,42 +601,37 @@ function renderInfo() {
     `;
   }
 
-  // Nadgodziny dla dnia — zawsze widoczne akcje (bez edit mode)
+  // Nadgodziny dla dnia — tylko lista informacyjna (zarządzanie przez paletę ⏱)
   let overtimeInfo = '';
   if (!isWolne(shiftCode) && !onUrlop) {
     const otData = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
-    let items = '';
-    ['przed', 'po'].forEach((pos) => {
-      if (!otData[pos]) return;
-      const { from, to } = calcOvertimeTime(shiftCode, pos, otData[pos].hours);
-      const cat = categorizeOvertime(
-        currentYear,
-        currentMonth,
-        selectedDay,
-        shiftCode,
-        pos,
-        otData[pos].hours
-      );
-      const dom = cat.h200 > 0 ? '200' : cat.h100 > 0 ? '100' : '50';
-      const label = pos === 'przed' ? t('otWeekBefore') : t('otWeekAfter');
-      items += `
-        <div class="ot-list-item">
-          <span class="oti-badge b-${dom}">+${dom}%</span>
-          <div class="oti-details">
-            <div class="oti-time">${label}: ${otData[pos].hours}h · ${formatTimeRange(from, to)}</div>
-            ${otData[pos].note ? `<div class="oti-note">📝 ${escapeHtml(otData[pos].note)}</div>` : ''}
+    if (otData.przed || otData.po) {
+      let items = '';
+      ['przed', 'po'].forEach((pos) => {
+        if (!otData[pos]) return;
+        const { from, to } = calcOvertimeTime(shiftCode, pos, otData[pos].hours);
+        const cat = categorizeOvertime(
+          currentYear,
+          currentMonth,
+          selectedDay,
+          shiftCode,
+          pos,
+          otData[pos].hours
+        );
+        const dom = cat.h200 > 0 ? '200' : cat.h100 > 0 ? '100' : '50';
+        const label = pos === 'przed' ? t('otWeekBefore') : t('otWeekAfter');
+        items += `
+          <div class="ot-list-item">
+            <span class="oti-badge b-${dom}">+${dom}%</span>
+            <div class="oti-details">
+              <div class="oti-time">${label}: ${otData[pos].hours}h · ${formatTimeRange(from, to)}</div>
+              ${otData[pos].note ? `<div class="oti-note">📝 ${escapeHtml(otData[pos].note)}</div>` : ''}
+            </div>
           </div>
-          <button class="ot-edit-btn" data-pos="${pos}" style="border:none; background:rgba(255,255,255,0.18); color:inherit; border-radius:6px; padding:2px 8px; cursor:pointer; margin-left:4px;">✏️</button>
-        </div>
-      `;
-    });
-    const actionButtons = `
-      <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
-        <button class="ot-add-btn" data-pos="przed" style="flex:1; min-width:120px; border:none; background:#3498db; color:#fff; border-radius:8px; padding:8px 12px; cursor:pointer; font-size:13px; font-weight:600;">${otData.przed ? '✏️' : '+'} ⬅ PRZED</button>
-        <button class="ot-add-btn" data-pos="po" style="flex:1; min-width:120px; border:none; background:#3498db; color:#fff; border-radius:8px; padding:8px 12px; cursor:pointer; font-size:13px; font-weight:600;">${otData.po ? '✏️' : '+'} PO ➡</button>
-      </div>
-    `;
-    overtimeInfo = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoOvertime')}</div><div class="value">${items}${actionButtons}</div></div>`;
+        `;
+      });
+      overtimeInfo = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoOvertime')}</div><div class="value">${items}</div></div>`;
+    }
   }
 
   if (onUrlop) {
@@ -661,15 +715,6 @@ function renderInfo() {
       });
     });
   }
-
-  // NEW: Handlery przycisków nadgodzin
-  panel.querySelectorAll('.ot-add-btn, .ot-edit-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const pos = btn.dataset.pos;
-      const otData = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
-      openOvertimeModal(selectedDay, shiftCode, pos, otData[pos]);
-    });
-  });
 
   // NEW: Handlery przycisków dodawania zmiany na wolny dzień
   panel.querySelectorAll('.add-shift-btn').forEach((btn) => {
