@@ -104,6 +104,21 @@ function renderCalendar(direction) {
     else
       shiftEl.innerHTML = `<span class="shift-emoji">${shiftEmoji[shiftCode]}</span>${shiftCode}`;
     cell.appendChild(shiftEl);
+    // Wysoka stawka: święto (+200%) lub niedziela (+100%) na dniu roboczym
+    if (!isWolne(shiftCode) && !onUrlop) {
+      const isHoliday = !!yHolidays[currentMonth + '-' + d];
+      const dowLocal = new Date(currentYear, currentMonth - 1, d).getDay();
+      let rate = null;
+      if (isHoliday) rate = '200';
+      else if (dowLocal === 0) rate = '100';
+
+      if (rate) {
+        const rateStrip = document.createElement('div');
+        rateStrip.className = `shift-rate-strip rate-${rate}`;
+        rateStrip.textContent = `+${rate}%`;
+        cell.appendChild(rateStrip);
+      }
+    }
 
     // NADGODZINY: wizualny podział + etykiety
     if (!isWolne(shiftCode) && !onUrlop) {
