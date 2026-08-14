@@ -194,6 +194,19 @@ function renderCalendar(direction) {
 
     cell.addEventListener('click', () => {
       if (editMode) {
+        // Palette URLOP: toggle vacation instead of editing shift
+        if (editPaletteMode === 'URLOP') {
+          toggleUrlop(currentYear, currentMonth, d, selectedShift);
+          showToast(
+            'success',
+            isUrlop(currentYear, currentMonth, d, selectedShift)
+              ? t('urlopAdded')
+              : t('urlopRemoved')
+          );
+          selectedDay = d;
+          refreshViews();
+          return;
+        }
         const val = editPaletteMode === 'CYCLE' ? undefined : editPaletteMode;
         applyEdit(currentYear, currentMonth, d, selectedShift, val);
         selectedDay = d;
@@ -553,7 +566,6 @@ function renderInfo() {
     <span>${t('infoUrlopStats', { brig: selectedShift, year: currentYear })}<br><small style="opacity:.9;font-weight:normal;">${t('infoUrlopMarked')}: ${totalUrlop} • ${t('infoUrlopWorking')}: ${usedUrlop}</small></span>
     <div style="display:flex; align-items:center; gap:6px;">
       <span><span class="us-count ${overLimit ? 'us-over' : ''}">${usedUrlop}</span> / ${limit} ${overLimit ? '⚠️' : ''}</span>
-      <button class="urlop-toggle-btn" data-day="${selectedDay}" title="${onUrlop ? t('urlopRemoved') : t('vacation')}" style="border:none; background:${onUrlop ? '#e74c3c' : '#27ae60'}; color:#fff; border-radius:6px; padding:4px 10px; cursor:pointer; font-size:13px; font-weight:600;">${onUrlop ? '❌ 🌴' : '+ 🌴'}</button>
       <button class="urlop-limit-edit" data-brigade="${selectedShift}" title="${t('infoUrlopLimitEdit', { brig: selectedShift })}" style="border:none; background:rgba(255,255,255,0.18); color:inherit; border-radius:6px; width:24px; height:24px; cursor:pointer;">✏️</button>
     </div>
   </div>`;
@@ -706,16 +718,6 @@ function renderInfo() {
           },
         ],
       });
-    });
-  }
-
-  // NEW: Handler przycisku toggle urlop
-  const urlopToggleBtn = panel.querySelector('.urlop-toggle-btn');
-  if (urlopToggleBtn) {
-    urlopToggleBtn.addEventListener('click', () => {
-      toggleUrlop(currentYear, currentMonth, selectedDay, selectedShift);
-      showToast('success', onUrlop ? t('urlopRemoved') : t('urlopAdded'));
-      refreshViews();
     });
   }
 

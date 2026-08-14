@@ -405,6 +405,10 @@ document.addEventListener('keydown', (e) => {
       setPaletteMode('CYCLE');
       return;
     }
+    if (k === 'u') {
+      setPaletteMode('URLOP');
+      return;
+    }
     if (k === 'o') {
       setPaletteMode('OT');
       return;
