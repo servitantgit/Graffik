@@ -238,26 +238,6 @@ function renderCalendar(direction) {
 
 /* === POPUPY ZMIAN (relief) === */
 function addReliefPopups(cell, d, shiftCode, onUrlop) {
-  const urlopPopup = document.createElement('div');
-  urlopPopup.className = 'relief-popup top ' + (onUrlop ? 'pop-urlop-remove' : 'pop-urlop');
-  urlopPopup.innerHTML = onUrlop
-    ? `<div class="rp-label">❌ ${t('urlopRemoved')}</div><div class="rp-brig">🌴</div><div class="rp-info">${t('infoPanelHint')}</div>`
-    : `<div class="rp-label">🌴 ${t('vacation')}</div><div class="rp-brig">+</div><div class="rp-info">${t('infoUrlopMarked')}</div>`;
-  urlopPopup.addEventListener('click', (ev) => {
-    ev.stopPropagation();
-    // Ochrona przed przypadkowym tap-em na mobile
-    if (Date.now() - selectedDayTimestamp < POPUP_ACTIVATE_DELAY) {
-      selectedDay = null;
-      renderCalendar();
-      renderInfo();
-      return;
-    }
-    toggleUrlop(currentYear, currentMonth, d, selectedShift);
-    showToast('success', onUrlop ? t('urlopRemoved') : t('urlopAdded'));
-    refreshViews();
-  });
-  cell.appendChild(urlopPopup);
-
   if (!isWolne(shiftCode) && !onUrlop) {
     const info = getRelief(currentYear, currentMonth, d, selectedShift, shiftCode);
 
