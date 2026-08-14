@@ -3101,14 +3101,14 @@ small {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+}
 
-  /* === PALETTE BUTTON: URLOP (vacation) === */
-  .palette-btn.p-URLOP {
-    background: linear-gradient(135deg, #27ae60, #16a085);
-    color: #fff;
-  }
+/* === PALETTE BUTTON: URLOP (vacation) === */
+.palette-btn.p-URLOP {
+  background: linear-gradient(135deg, #27ae60, #16a085);
+  color: #fff;
+}
 
-  .palette-btn.p-URLOP.active {
-    box-shadow: 0 0 0 3px #f39c12;
-  }
+.palette-btn.p-URLOP.active {
+  box-shadow: 0 0 0 3px #f39c12;
 }
