@@ -345,9 +345,13 @@ function getActualWorkTime(year, month, day, brigade, shift) {
 function getMonthOvertimeSummary(year, month, brigade) {
   const dim = daysInMonthCal(year, month);
   const total = { h50: 0, h100: 0, h200: 0, count: 0 };
+  const yHolidays = buildHolidays(year);
+
   for (let d = 1; d <= dim; d++) {
     const shift = getShiftAt(year, month, d, brigade);
     const ot = getOvertimes(year, month, d, brigade);
+
+    // 1. Standard PRZED/PO overtime
     ['przed', 'po'].forEach((pos) => {
       if (ot[pos]) {
         const cat = categorizeOvertime(year, month, d, shift, pos, ot[pos].hours);
@@ -357,6 +361,42 @@ function getMonthOvertimeSummary(year, month, brigade) {
         total.count++;
       }
     });
+
+    // 2. Added shift on holiday/Sunday (Variant A: only if not in factory schedule)
+    // Skip if not a working shift or if it's a vacation day
+    if (shift === 'R' || shift === 'P' || shift === 'N') {
+      if (!isUrlop(year, month, d, brigade)) {
+        // Check what was in factory schedule for this day
+        const factoryShift =
+          factorySchedule[year] &&
+          factorySchedule[year][month] &&
+          factorySchedule[year][month][brigade]
+            ? factorySchedule[year][month][brigade][d - 1]
+            : '';
+
+        // If current shift differs from factory (i.e., user ADDED a shift on a free day)
+        // AND factory was free (empty/W) → count as additional overtime shift
+        const wasFactoryFree = isWolne(factoryShift);
+        const isAddedShift = wasFactoryFree && (shift === 'R' || shift === 'P' || shift === 'N');
+
+        if (isAddedShift) {
+          const isHoliday = !!yHolidays[month + '-' + d];
+          const dow = new Date(year, month - 1, d).getDay();
+          const isSunday = dow === 0;
+
+          if (isHoliday) {
+            // Holiday work = +200%
+            total.h200 += 8;
+            total.count++;
+          } else if (isSunday) {
+            // Sunday work = +100%
+            total.h100 += 8;
+            total.count++;
+          }
+          // Regular Saturday added shift: no extra rate (still counts as regular work)
+        }
+      }
+    }
   }
   return total;
 }

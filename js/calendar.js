@@ -343,6 +343,11 @@ function openOvertimeModal(day, shift, position, existing) {
       } else {
         document.getElementById('otPreview').style.display = 'none';
       }
+      // Show/hide Delete button based on whether overtime exists for new position
+      const delBtn = document.getElementById('otDeleteBtn');
+      if (delBtn) {
+        delBtn.style.display = newExisting ? 'inline-block' : 'none';
+      }
     });
   });
 
@@ -367,18 +372,22 @@ function openOvertimeModal(day, shift, position, existing) {
   cancelBtn.onclick = () => overlay.classList.remove('show');
   footer.appendChild(cancelBtn);
 
-  if (existing) {
-    const delBtn = document.createElement('button');
-    delBtn.className = 'modal-btn danger';
-    delBtn.textContent = '🗑 ' + t('otDeleteBtn');
-    delBtn.onclick = () => {
-      removeOvertime(currentYear, currentMonth, day, selectedShift, position);
-      overlay.classList.remove('show');
-      showToast('success', t('otDeleted'));
-      refreshViews();
-    };
-    footer.appendChild(delBtn);
-  }
+  // Delete button — shown only if overtime exists for current position
+  // (updated dynamically when user switches PRZED/PO via radio)
+  const delBtn = document.createElement('button');
+  delBtn.className = 'modal-btn danger';
+  delBtn.id = 'otDeleteBtn';
+  delBtn.textContent = '🗑 ' + t('otDeleteBtn');
+  delBtn.onclick = () => {
+    const currentPos = otModalContext.position;
+    removeOvertime(currentYear, currentMonth, day, selectedShift, currentPos);
+    overlay.classList.remove('show');
+    showToast('success', t('otDeleted'));
+    refreshViews();
+  };
+  // Show only if overtime exists for INITIAL position
+  delBtn.style.display = existing ? 'inline-block' : 'none';
+  footer.appendChild(delBtn);
 
   const saveBtn = document.createElement('button');
   saveBtn.className = 'modal-btn success';
