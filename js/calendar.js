@@ -201,7 +201,17 @@ function renderCalendar(direction) {
 
     cell.addEventListener('click', () => {
       if (editMode) {
-        // Palette URLOP: toggle vacation instead of editing shift
+        const currentShift = getShiftAtWithPending(currentYear, currentMonth, d, selectedShift);
+        const factoryShift =
+          factorySchedule[currentYear] &&
+          factorySchedule[currentYear][currentMonth] &&
+          factorySchedule[currentYear][currentMonth][selectedShift]
+            ? factorySchedule[currentYear][currentMonth][selectedShift][d - 1]
+            : '';
+        const isFactoryFree = isWolne(factoryShift);
+        const dayIsUrlop = isUrlop(currentYear, currentMonth, d, selectedShift);
+
+        // Palette URLOP: toggle vacation (works on any day)
         if (editPaletteMode === 'URLOP') {
           toggleUrlop(currentYear, currentMonth, d, selectedShift);
           showToast(
@@ -214,28 +224,39 @@ function renderCalendar(direction) {
           refreshViews();
           return;
         }
-        // Palette OT: open overtime modal (only for working days with shift)
-        if (editPaletteMode === 'OT') {
-          const currentShift = getShiftAtWithPending(currentYear, currentMonth, d, selectedShift);
+
+        // Palette ADDSHIFT: add shift on factory-free day
+        if (editPaletteMode === 'ADDSHIFT') {
+          if (!isFactoryFree) {
+            showToast('warn', t('addShiftFactoryHasShift'));
+            return;
+          }
+          if (dayIsUrlop) {
+            showToast('warn', t('addShiftDayIsUrlop'));
+            return;
+          }
+          selectedDay = d;
+          openAddShiftModal(d);
+          return;
+        }
+
+        // Palette OTBEFORE / OTAFTER: open overtime modal with pre-selected position
+        if (editPaletteMode === 'OTBEFORE' || editPaletteMode === 'OTAFTER') {
           if (isWolne(currentShift)) {
             showToast('warn', t('otOnlyOnShift'));
             return;
           }
-          if (isUrlop(currentYear, currentMonth, d, selectedShift)) {
+          if (dayIsUrlop) {
             showToast('warn', t('otOnlyOnShift'));
             return;
           }
+          const position = editPaletteMode === 'OTBEFORE' ? 'przed' : 'po';
           selectedDay = d;
-          openOvertimeModal(d, currentShift, 'przed', null);
+          openOvertimeModal(d, currentShift, position, null);
           renderCalendar();
           renderInfo();
           return;
         }
-        const val = editPaletteMode === 'CYCLE' ? undefined : editPaletteMode;
-        applyEdit(currentYear, currentMonth, d, selectedShift, val);
-        selectedDay = d;
-        refreshViews();
-        return;
       }
       selectedDay = selectedDay === d ? null : d;
       renderCalendar();
@@ -299,6 +320,50 @@ function addReliefPopups(cell, d, shiftCode, onUrlop) {
   }
 }
 
+/* === MODAL: DODAJ DODATKOWĄ ZMIANĘ === */
+function openAddShiftModal(day) {
+  const yHolidays = buildHolidays(currentYear);
+  const isHoliday = !!yHolidays[currentMonth + '-' + day];
+  const dowLocal = new Date(currentYear, currentMonth - 1, day).getDay();
+  const isSunday = dowLocal === 0;
+  const rateInfo = isHoliday ? '+200% (święto)' : isSunday ? '+100% (niedziela)' : '';
+  const rateHtml = rateInfo
+    ? `<div style="margin-top:6px; padding:6px 10px; background:var(--bg-info); border-radius:6px; font-size:13px; text-align:center; font-weight:600;">💰 ${rateInfo}</div>`
+    : '';
+
+  const body = `
+    <div style="padding:10px 14px; background:var(--bg-cell); border-radius:10px; margin-bottom:15px; font-size:13px;">
+      <b>📅 ${day} ${monthNames[currentMonth - 1]} ${currentYear}</b>
+      ${rateHtml}
+    </div>
+    <div style="font-weight:600; margin-bottom:10px;">${t('addShiftSelectType')}:</div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button class="add-shift-modal-btn" data-shift="R" style="flex:1; min-width:90px; padding:14px 8px; border:none; background:var(--color-R); color:#fff; border-radius:10px; cursor:pointer; font-size:15px; font-weight:700;">🌅 R<br><small style="opacity:0.85; font-weight:500;">6:00-14:00</small></button>
+      <button class="add-shift-modal-btn" data-shift="P" style="flex:1; min-width:90px; padding:14px 8px; border:none; background:var(--color-P); color:#fff; border-radius:10px; cursor:pointer; font-size:15px; font-weight:700;">🌤️ P<br><small style="opacity:0.85; font-weight:500;">14:00-22:00</small></button>
+      <button class="add-shift-modal-btn" data-shift="N" style="flex:1; min-width:90px; padding:14px 8px; border:none; background:var(--color-N); color:#fff; border-radius:10px; cursor:pointer; font-size:15px; font-weight:700;">🌙 N<br><small style="opacity:0.85; font-weight:500;">22:00-6:00</small></button>
+    </div>
+  `;
+
+  showModal({
+    title: t('addShiftTitle'),
+    body: body,
+    buttons: [{ text: t('otCancelBtn'), class: 'secondary' }],
+  });
+
+  // Attach handlers after modal is shown
+  setTimeout(() => {
+    document.querySelectorAll('.add-shift-modal-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const shiftType = btn.dataset.shift;
+        applyEdit(currentYear, currentMonth, day, selectedShift, shiftType);
+        showToast('success', t('addShiftAdded', { s: shiftType }));
+        hideModal();
+        refreshViews();
+      });
+    });
+  }, 50);
+}
+
 /* === MODAL NADGODZIN === */
 let otModalContext = null;
 
@@ -308,61 +373,17 @@ function openOvertimeModal(day, shift, position, existing) {
 
   const [sh, eh] = shiftHours[shift];
   const shiftTimeStr = `${String(sh).padStart(2, '0')}:00-${String(eh % 24).padStart(2, '0')}:00`;
+  const posLabel = position === 'przed' ? t('otPositionBefore') : t('otPositionAfter');
+  const posArrow = position === 'przed' ? '⬅' : '➡';
 
-  document.getElementById('otTitle').textContent = `${t('otTitle')} ${shift}`;
-
-  // Existing overtimes for this day (to show what's already set)
-  const existingOt = getOvertimes(currentYear, currentMonth, day, selectedShift);
-  const hasPrzed = !!existingOt.przed;
-  const hasPo = !!existingOt.po;
-
-  const przedLabel = hasPrzed
-    ? `${t('otPositionBefore')} <small>(${existingOt.przed.hours}h ${t('otAlreadySet')})</small>`
-    : t('otPositionBefore');
-  const poLabel = hasPo
-    ? `${t('otPositionAfter')} <small>(${existingOt.po.hours}h ${t('otAlreadySet')})</small>`
-    : t('otPositionAfter');
+  document.getElementById('otTitle').textContent =
+    `${t('otTitle')} ${posArrow} ${posLabel} ${shift}`;
 
   document.getElementById('otContext').innerHTML = `
     <b>${t('infoDate')}</b> ${day} ${monthNames[currentMonth - 1]} ${currentYear}<br>
     <b>${t('infoShiftLabel')}</b> ${shift} (${shiftTimeStr})<br>
-    <div style="margin-top:10px; padding:8px; background:var(--bg-cell); border-radius:8px;">
-      <div style="font-weight:700; margin-bottom:6px; font-size:12px;">${t('otSelectPosition')}:</div>
-      <label style="display:flex; align-items:center; gap:8px; padding:6px; cursor:pointer; border-radius:6px;" class="ot-radio-label">
-        <input type="radio" name="otPosition" value="przed" ${position === 'przed' ? 'checked' : ''} style="accent-color:var(--text-header); width:16px; height:16px;">
-        <span>⬅ ${przedLabel}</span>
-      </label>
-      <label style="display:flex; align-items:center; gap:8px; padding:6px; cursor:pointer; border-radius:6px;" class="ot-radio-label">
-        <input type="radio" name="otPosition" value="po" ${position === 'po' ? 'checked' : ''} style="accent-color:var(--text-header); width:16px; height:16px;">
-        <span>${poLabel} ➡</span>
-      </label>
-    </div>
+    <b>${t('infoPosition')}</b> ${posArrow} ${posLabel}
   `;
-
-  // Handler dla radio buttons: перемикання position
-  document.querySelectorAll('input[name="otPosition"]').forEach((radio) => {
-    radio.addEventListener('change', (e) => {
-      const newPos = e.target.value;
-      otModalContext.position = newPos;
-      const newExisting = existingOt[newPos];
-      document.getElementById('otNote').value = newExisting ? newExisting.note || '' : '';
-      document.getElementById('otCustomHours').value = '';
-      document.querySelectorAll('.ot-qbtn').forEach((b) => b.classList.remove('active'));
-      if (newExisting) {
-        const btn = document.querySelector(`.ot-qbtn[data-h="${newExisting.hours}"]`);
-        if (btn) btn.classList.add('active');
-        else document.getElementById('otCustomHours').value = newExisting.hours;
-        updateOvertimePreview(newExisting.hours);
-      } else {
-        document.getElementById('otPreview').style.display = 'none';
-      }
-      // Show/hide Delete button based on whether overtime exists for new position
-      const delBtn = document.getElementById('otDeleteBtn');
-      if (delBtn) {
-        delBtn.style.display = newExisting ? 'inline-block' : 'none';
-      }
-    });
-  });
 
   document.getElementById('otNote').value = existing ? existing.note || '' : '';
   document.getElementById('otCustomHours').value = '';

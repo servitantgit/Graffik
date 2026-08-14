@@ -3071,7 +3071,7 @@ small {
   }
 }
 
-/* === PALETTE BUTTON: URLOP (vacation) === */
+/* === PALETTE BUTTONS (new set) === */
 .palette-btn.p-URLOP {
   background: linear-gradient(135deg, #27ae60, #16a085);
   color: #fff;
@@ -3081,13 +3081,33 @@ small {
   box-shadow: 0 0 0 3px #f39c12;
 }
 
-/* === PALETTE BUTTON: OT (overtime) === */
-.palette-btn.p-OT {
-  background: linear-gradient(135deg, #f39c12, #d68910);
+.palette-btn.p-ADDSHIFT {
+  background: linear-gradient(135deg, #3498db, #2874a6);
   color: #fff;
+  font-size: 22px;
 }
 
-.palette-btn.p-OT.active {
+.palette-btn.p-ADDSHIFT.active {
+  box-shadow: 0 0 0 3px #f39c12;
+}
+
+.palette-btn.p-OTBEFORE {
+  background: linear-gradient(135deg, #f39c12, #d68910);
+  color: #fff;
+  font-size: 14px;
+}
+
+.palette-btn.p-OTBEFORE.active {
+  box-shadow: 0 0 0 3px #c0392b;
+}
+
+.palette-btn.p-OTAFTER {
+  background: linear-gradient(135deg, #e67e22, #ba4a00);
+  color: #fff;
+  font-size: 14px;
+}
+
+.palette-btn.p-OTAFTER.active {
   box-shadow: 0 0 0 3px #c0392b;
 }
 

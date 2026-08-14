@@ -11,7 +11,7 @@ let selectedDay = null;
 let currentView = prefs.view || 'dashboard';
 let yearMode = prefs.yearMode || false;
 let editMode = false;
-let editPaletteMode = 'CYCLE';
+let editPaletteMode = 'URLOP';
 let popupFadeTimer = null;
 
 /* === HELPER: Bezpieczne bindowanie eventów === */
@@ -255,12 +255,12 @@ document.querySelectorAll('.palette-btn').forEach((btn) => {
     document.querySelectorAll('.palette-btn').forEach((b) => b.classList.remove('active'));
     btn.classList.add('active');
     let name;
-    if (editPaletteMode === 'CYCLE') name = 'Cykl';
-    else if (editPaletteMode === 'OT') name = '⏱ Nadgodziny';
-    else if (editPaletteMode === '') name = 'Wolne';
+    if (editPaletteMode === 'URLOP') name = '🌴 Urlop';
+    else if (editPaletteMode === 'ADDSHIFT') name = '➕ Dodaj zmianę';
+    else if (editPaletteMode === 'OTBEFORE') name = '⏱⬅ PRZED';
+    else if (editPaletteMode === 'OTAFTER') name = '⏱➡ PO';
     else name = editPaletteMode;
     showToast('info', `Wybrano: ${name}`, 1200);
-    if (editPaletteMode === 'OT' && selectedDay) refreshViews();
   };
 });
 function setPaletteMode(mode) {
@@ -269,12 +269,12 @@ function setPaletteMode(mode) {
     .querySelectorAll('.palette-btn')
     .forEach((b) => b.classList.toggle('active', b.dataset.shift === mode));
   let name;
-  if (mode === 'CYCLE') name = 'Cykl';
-  else if (mode === 'OT') name = '⏱ Nadgodziny';
-  else if (mode === '') name = 'Wolne';
+  if (mode === 'URLOP') name = '🌴 Urlop';
+  else if (mode === 'ADDSHIFT') name = '➕ Dodaj zmianę';
+  else if (mode === 'OTBEFORE') name = '⏱⬅ PRZED';
+  else if (mode === 'OTAFTER') name = '⏱➡ PO';
   else name = mode;
   showToast('info', `Paleta: ${name}`, 1000);
-  if (mode === 'OT' && selectedDay) refreshViews();
 }
 
 bindClick('saveChangesBtn', saveAllPendingChanges);
@@ -385,32 +385,20 @@ document.addEventListener('keydown', (e) => {
       return;
     }
     const k = e.key.toLowerCase();
-    if (k === 'r') {
-      setPaletteMode('R');
-      return;
-    }
-    if (k === 'p') {
-      setPaletteMode('P');
-      return;
-    }
-    if (k === 'n') {
-      setPaletteMode('N');
-      return;
-    }
-    if (k === 'w') {
-      setPaletteMode('');
-      return;
-    }
-    if (k === 'c') {
-      setPaletteMode('CYCLE');
-      return;
-    }
     if (k === 'u') {
       setPaletteMode('URLOP');
       return;
     }
-    if (k === 'o') {
-      setPaletteMode('OT');
+    if (k === 's') {
+      setPaletteMode('ADDSHIFT');
+      return;
+    }
+    if (k === '1') {
+      setPaletteMode('OTBEFORE');
+      return;
+    }
+    if (k === '2') {
+      setPaletteMode('OTAFTER');
       return;
     }
   }
