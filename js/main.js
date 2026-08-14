@@ -487,13 +487,10 @@ document.querySelectorAll('.shift-btn').forEach((btn) => {
 
 /* === DZIŚ === */
 bindClick('todayBtn', () => {
-  const today = new Date(); // ← перейменував `t` (бо колізія з i18n t()!)
+  const today = new Date(); // ← przejrenął `t` (bo kolíży z i18n t()!)
   currentYear = today.getFullYear();
   currentMonth = today.getMonth() + 1;
   selectedDay = today.getDate();
-  if (typeof selectedDayTimestamp !== 'undefined') {
-    selectedDayTimestamp = Date.now(); // ← захист від випадкового тапу
-  }
   prefs.year = currentYear;
   savePrefs(prefs);
   if (currentView === 'dashboard') refreshViews();

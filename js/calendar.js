@@ -2,8 +2,6 @@
    GRAFIK GILLETTE — Moduł 6: KALENDARZ MIESIĄCA + INFO + NADGODZINY
    ================================================================ */
 /* === STAN: Kiedy selectedDay został ustawiony (dla mobile UX) === */
-let selectedDayTimestamp = 0;
-const POPUP_ACTIVATE_DELAY = 400; // ms — czas, po którym popupy stają się klikalne
 
 /* === RENDER MONTH VIEW === */
 function renderCalendar(direction) {
@@ -210,12 +208,10 @@ function renderCalendar(direction) {
         const val = editPaletteMode === 'CYCLE' ? undefined : editPaletteMode;
         applyEdit(currentYear, currentMonth, d, selectedShift, val);
         selectedDay = d;
-        selectedDayTimestamp = Date.now(); // ← nowa linia
         refreshViews();
         return;
       }
       selectedDay = selectedDay === d ? null : d;
-      selectedDayTimestamp = Date.now(); // ← nowa linia
       renderCalendar();
       renderInfo();
     });
@@ -254,28 +250,6 @@ function addReliefPopups(cell, d, shiftCode, onUrlop) {
     if (info.prevBrig) {
       leftPopup.style.pointerEvents = 'auto';
       leftPopup.style.cursor = 'pointer';
-      leftPopup.onclick = (ev) => {
-        ev.stopPropagation();
-        // Ochrona przed przypadkowym kliknięciem na mobile:
-        // jeśli popup pojawił się <400ms temu — traktuj jako "toggle"
-        if (Date.now() - selectedDayTimestamp < POPUP_ACTIVATE_DELAY) {
-          selectedDay = null;
-          renderCalendar();
-          renderInfo();
-          return;
-        }
-        selectedShift = info.prevBrig;
-        currentYear = info.prevYear;
-        currentMonth = info.prevMonth;
-        selectedDay = info.prevDay;
-        compareShift = null;
-        prefs.shift = selectedShift;
-        prefs.year = currentYear;
-        savePrefs(prefs);
-        updateShiftButtons();
-        updateYearPicker();
-        refreshViews();
-      };
     }
     cell.appendChild(leftPopup);
 
@@ -294,28 +268,6 @@ function addReliefPopups(cell, d, shiftCode, onUrlop) {
     if (info.nextBrig) {
       rightPopup.style.pointerEvents = 'auto';
       rightPopup.style.cursor = 'pointer';
-      rightPopup.onclick = (ev) => {
-        ev.stopPropagation();
-        // Ochrona przed przypadkowym kliknięciem na mobile:
-        // jeśli popup pojawił się <400ms temu — traktuj jako "toggle"
-        if (Date.now() - selectedDayTimestamp < POPUP_ACTIVATE_DELAY) {
-          selectedDay = null;
-          renderCalendar();
-          renderInfo();
-          return;
-        }
-        selectedShift = info.nextBrig;
-        currentYear = info.nextYear;
-        currentMonth = info.nextMonth;
-        selectedDay = info.nextDay;
-        compareShift = null;
-        prefs.shift = selectedShift;
-        prefs.year = currentYear;
-        savePrefs(prefs);
-        updateShiftButtons();
-        updateYearPicker();
-        refreshViews();
-      };
     }
     cell.appendChild(rightPopup);
   }
