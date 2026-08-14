@@ -847,12 +847,6 @@ function renderInfo() {
       });
     });
   }
-  const editLimitBtn = panel.querySelector('.urlop-limit-edit');
-  if (editLimitBtn) {
-    editLimitBtn.addEventListener('click', () => {
-      // ... existing handler (не чіпаємо)
-    });
-  }
 
   // NEW: Handler przycisku toggle urlop
   const urlopToggleBtn = panel.querySelector('.urlop-toggle-btn');
