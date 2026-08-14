@@ -3081,27 +3081,30 @@ small {
   box-shadow: 0 0 0 3px #f39c12;
 }
 
-/* === WYSOKA STAWKA: święto (+200%) lub niedziela (+100%) === */
-.day-cell .shift-rate-strip {
+/* === WYSOKA STAWKA: badge w rogu komórki === */
+.day-cell .shift-rate-badge {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  padding: 2px 6px;
+  top: 4px;
+  right: 4px;
+  padding: 2px 5px;
   font-size: 9px;
   font-weight: 800;
   color: #fff;
-  text-align: center;
-  letter-spacing: 0.5px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-  border-top-left-radius: 7px;
-  border-top-right-radius: 7px;
-  z-index: 2;
+  border-radius: 4px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  z-index: 3;
   pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.3px;
 }
-.day-cell .shift-rate-strip.rate-100 {
-  background: linear-gradient(90deg, #8e44ad, #6c3483);
+.day-cell .shift-rate-badge.rate-100 {
+  background: linear-gradient(135deg, #8e44ad, #6c3483);
 }
-.day-cell .shift-rate-strip.rate-200 {
-  background: linear-gradient(90deg, #c0392b, #922b21);
+.day-cell .shift-rate-badge.rate-200 {
+  background: linear-gradient(135deg, #c0392b, #922b21);
+}
+
+/* Jeśli mamy święto 🎉 — badge przesuwamy niżej, żeby nie nakładał się */
+.day-cell.holiday .shift-rate-badge {
+  top: 22px;
 }
