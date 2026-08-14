@@ -309,13 +309,13 @@ function otKey(year, month, day, brigade) {
   return `${year}-${month}-${day}-${brigade}`;
 }
 function getOvertimes(year, month, day, brigade) {
-  return overtimes[otKey(year, month, day, brigade)] || { przed: null, po: null, weekend: null };
+  return overtimes[otKey(year, month, day, brigade)] || { przed: null, po: null };
 }
 function setOvertime(year, month, day, brigade, position, data) {
   const k = otKey(year, month, day, brigade);
-  if (!overtimes[k]) overtimes[k] = { przed: null, po: null, weekend: null };
+  if (!overtimes[k]) overtimes[k] = { przed: null, po: null };
   overtimes[k][position] = data;
-  if (!overtimes[k].przed && !overtimes[k].po && !overtimes[k].weekend) delete overtimes[k];
+  if (!overtimes[k].przed && !overtimes[k].po) delete overtimes[k];
   saveOvertimes(overtimes);
 }
 function removeOvertime(year, month, day, brigade, position) {
@@ -348,10 +348,9 @@ function getMonthOvertimeSummary(year, month, brigade) {
   for (let d = 1; d <= dim; d++) {
     const shift = getShiftAt(year, month, d, brigade);
     const ot = getOvertimes(year, month, d, brigade);
-    ['przed', 'po', 'weekend'].forEach((pos) => {
+    ['przed', 'po'].forEach((pos) => {
       if (ot[pos]) {
-        const shiftForCat = pos === 'weekend' ? null : shift;
-        const cat = categorizeOvertime(year, month, d, shiftForCat, pos, ot[pos].hours);
+        const cat = categorizeOvertime(year, month, d, shift, pos, ot[pos].hours);
         total.h50 += cat.h50;
         total.h100 += cat.h100;
         total.h200 += cat.h200;

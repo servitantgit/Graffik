@@ -156,27 +156,6 @@ function renderCalendar(direction) {
       }
     }
 
-    // Weekend/holiday overtime marker
-    if (isWolne(shiftCode) && !onUrlop) {
-      const otWeekend = getOvertimes(currentYear, currentMonth, d, selectedShift);
-      if (otWeekend.weekend) {
-        cell.classList.add('has-ot');
-        const cat = categorizeOvertime(
-          currentYear,
-          currentMonth,
-          d,
-          null,
-          'weekend',
-          otWeekend.weekend.hours
-        );
-        const dominant = cat.h200 > 0 ? '200' : '100';
-        const stripW = document.createElement('div');
-        stripW.className = `ot-weekend-strip ot-${dominant}`;
-        stripW.textContent = `🛠 ${otWeekend.weekend.hours}h +${dominant}%`;
-        cell.appendChild(stripW);
-      }
-    }
-
     const noteKey = `${currentYear}-${currentMonth}-${d}-${selectedShift}`;
     if (notes[noteKey]) {
       const nEl = document.createElement('div');
@@ -280,36 +259,17 @@ function openOvertimeModal(day, shift, position, existing) {
   otModalContext = { day, shift, position };
   const overlay = document.getElementById('otOverlay');
 
-  if (position === 'weekend') {
-    // Weekend / holiday overtime
-    const yHolidays = buildHolidays(currentYear);
-    const isHoliday = !!yHolidays[currentMonth + '-' + day];
-    const dowLocal = new Date(currentYear, currentMonth - 1, day).getDay();
-    const dayType = isHoliday
-      ? t('otWeekendHoliday')
-      : dowLocal === 0
-        ? t('otWeekendSunday')
-        : t('otWeekendDayOff');
+  const posLabel = position === 'przed' ? t('otPositionBefore') : t('otPositionAfter');
+  const [sh, eh] = shiftHours[shift];
+  const shiftTimeStr = `${String(sh).padStart(2, '0')}:00-${String(eh % 24).padStart(2, '0')}:00`;
 
-    document.getElementById('otTitle').textContent = t('otWeekendTitle');
-    document.getElementById('otContext').innerHTML = `
-      <b>📅 ${t('infoDate')}</b> ${day} ${monthNames[currentMonth - 1]} ${currentYear}<br>
-      <b>🛠 ${t('otWeekendType')}:</b> ${dayType}<br>
-      <b>💰 ${t('otRate')}:</b> ${isHoliday ? '+200%' : '+100%'}
-    `;
-  } else {
-    // Existing logic for 'przed'/'po'
-    const posLabel = position === 'przed' ? t('otPositionBefore') : t('otPositionAfter');
-    const [sh, eh] = shiftHours[shift];
-    const shiftTimeStr = `${String(sh).padStart(2, '0')}:00-${String(eh % 24).padStart(2, '0')}:00`;
+  document.getElementById('otTitle').textContent = `${t('otTitle')} ${posLabel} ${shift}`;
+  document.getElementById('otContext').innerHTML = `
+    <b>${t('infoDate')}</b> ${day} ${monthNames[currentMonth - 1]} ${currentYear}<br>
+    <b>${t('infoShiftLabel')}</b> ${shift} (${shiftTimeStr})<br>
+    <b>${t('infoPosition')}</b> ${posLabel}
+  `;
 
-    document.getElementById('otTitle').textContent = `${t('otTitle')} ${posLabel} ${shift}`;
-    document.getElementById('otContext').innerHTML = `
-      <b>${t('infoDate')}</b> ${day} ${monthNames[currentMonth - 1]} ${currentYear}<br>
-      <b>${t('infoShiftLabel')}</b> ${shift} (${shiftTimeStr})<br>
-      <b>${t('infoPosition')}</b> ${posLabel}
-    `;
-  }
   document.getElementById('otNote').value = existing ? existing.note || '' : '';
   document.getElementById('otCustomHours').value = '';
 
@@ -543,6 +503,28 @@ function renderInfo() {
     }
   }
 
+  // Wolny dzień/święto — przyciski do zaplanowania zmiany R/P/N
+  let shiftButtonsInfo = '';
+  if (isWolne(shiftCode) && !onUrlop) {
+    const yHolidays = buildHolidays(currentYear);
+    const isHoliday = !!yHolidays[currentMonth + '-' + selectedDay];
+    const dowLocal = new Date(currentYear, currentMonth - 1, selectedDay).getDay();
+    const rateLabel = isHoliday ? '+200%' : dowLocal === 0 ? '+100%' : '+100%';
+    shiftButtonsInfo = `
+      <div class="info-card" style="grid-column:1/-1;">
+        <div class="label">🛠 Zaplanuj pracę</div>
+        <div class="value">
+          <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
+            <button class="add-shift-btn" data-shift="R" style="flex:1; min-width:90px; border:none; background:var(--color-R); color:#fff; border-radius:8px; padding:10px 8px; cursor:pointer; font-size:13px; font-weight:700;">+ 🌅 R</button>
+            <button class="add-shift-btn" data-shift="P" style="flex:1; min-width:90px; border:none; background:var(--color-P); color:#fff; border-radius:8px; padding:10px 8px; cursor:pointer; font-size:13px; font-weight:700;">+ 🌤️ P</button>
+            <button class="add-shift-btn" data-shift="N" style="flex:1; min-width:90px; border:none; background:var(--color-N); color:#fff; border-radius:8px; padding:10px 8px; cursor:pointer; font-size:13px; font-weight:700;">+ 🌙 N</button>
+          </div>
+          <div style="margin-top:6px; font-size:11px; color:var(--text-muted); text-align:center;">Nadgodziny w tym dniu będą liczone jako ${rateLabel}</div>
+        </div>
+      </div>
+    `;
+  }
+
   // Nadgodziny dla dnia — zawsze widoczne akcje (bez edit mode)
   let overtimeInfo = '';
   if (!isWolne(shiftCode) && !onUrlop) {
@@ -581,17 +563,6 @@ function renderInfo() {
     overtimeInfo = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoOvertime')}</div><div class="value">${items}${actionButtons}</div></div>`;
   }
 
-  // Weekend overtime — dla dni wolnych/świąt
-  if (isWolne(shiftCode) && !onUrlop) {
-    const otData = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
-    const weekendBtn = `
-      <div style="margin-top:8px;">
-        <button class="ot-add-btn" data-pos="weekend" style="width:100%; border:none; background:#16a085; color:#fff; border-radius:8px; padding:10px 12px; cursor:pointer; font-size:13px; font-weight:600;">${otData.weekend ? `✏️ 🛠 ${otData.weekend.hours}h` : '+ 🛠 Praca w dzień wolny'}</button>
-      </div>
-    `;
-    overtimeInfo = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoOvertime')}</div><div class="value">${weekendBtn}</div></div>`;
-  }
-
   if (onUrlop) {
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
       ${urlopStats}
@@ -605,6 +576,7 @@ function renderInfo() {
       ${urlopStats}
       <div class="info-grid">
         <div class="info-card"><div class="label">${t('infoStatus')}</div><div class="value">${t('infoFree')}</div></div>
+        ${shiftButtonsInfo}
         ${cycleInfo}
         ${overtimeInfo}
         <div class="info-card"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>
@@ -678,11 +650,17 @@ function renderInfo() {
     btn.addEventListener('click', () => {
       const pos = btn.dataset.pos;
       const otData = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
-      if (pos === 'weekend') {
-        openOvertimeModal(selectedDay, null, 'weekend', otData.weekend);
-      } else {
-        openOvertimeModal(selectedDay, shiftCode, pos, otData[pos]);
-      }
+      openOvertimeModal(selectedDay, shiftCode, pos, otData[pos]);
+    });
+  });
+
+  // NEW: Handlery przycisków dodawania zmiany na wolny dzień
+  panel.querySelectorAll('.add-shift-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const newShift = btn.dataset.shift;
+      applyEdit(currentYear, currentMonth, selectedDay, selectedShift, newShift);
+      showToast('success', `Zmiana ${newShift} dodana`);
+      refreshViews();
     });
   });
 
