@@ -104,21 +104,34 @@ function renderCalendar(direction) {
     else
       shiftEl.innerHTML = `<span class="shift-emoji">${shiftEmoji[shiftCode]}</span>${shiftCode}`;
     cell.appendChild(shiftEl);
-    // Wysoka stawka: święto (+200%) lub niedziela (+100%) na dniu roboczym
-    // Wysoka stawka: święto (+200%) lub niedziela (+100%) na dniu roboczym
-    if (!isWolne(shiftCode) && !onUrlop) {
-      const isHoliday = !!yHolidays[currentMonth + '-' + d];
-      const dowLocal = new Date(currentYear, currentMonth - 1, d).getDay();
-      let rate = null;
-      if (isHoliday) rate = '200';
-      else if (dowLocal === 0) rate = '100';
 
-      if (rate) {
-        const rateBadge = document.createElement('div');
-        rateBadge.className = `shift-rate-badge rate-${rate}`;
-        rateBadge.textContent = `+${rate}%`;
-        rateBadge.title = rate === '200' ? 'Święto — stawka +200%' : 'Niedziela — stawka +100%';
-        cell.appendChild(rateBadge);
+    // Wysoka stawka: święto (+200%) lub niedziela (+100%) na dniu roboczym
+    // Wysoka stawka: TYLKO gdy zmiana dodana na dzień, który fabrycznie był wolny
+    if (!isWolne(shiftCode) && !onUrlop) {
+      // Sprawdzamy: co było w fabrycznym grafiku dla tego dnia?
+      const factoryShift =
+        factorySchedule[currentYear] &&
+        factorySchedule[currentYear][currentMonth] &&
+        factorySchedule[currentYear][currentMonth][selectedShift]
+          ? factorySchedule[currentYear][currentMonth][selectedShift][d - 1]
+          : '';
+      const wasFactoryFree = isWolne(factoryShift);
+
+      // Badge pokazujemy TYLKO gdy zmiana dodana (fabrycznie było wolno)
+      if (wasFactoryFree) {
+        const isHoliday = !!yHolidays[currentMonth + '-' + d];
+        const dowLocal = new Date(currentYear, currentMonth - 1, d).getDay();
+        let rate = null;
+        if (isHoliday) rate = '200';
+        else if (dowLocal === 0) rate = '100';
+
+        if (rate) {
+          const rateBadge = document.createElement('div');
+          rateBadge.className = `shift-rate-badge rate-${rate}`;
+          rateBadge.textContent = `+${rate}%`;
+          rateBadge.title = rate === '200' ? 'Święto — stawka +200%' : 'Niedziela — stawka +100%';
+          cell.appendChild(rateBadge);
+        }
       }
     }
 
