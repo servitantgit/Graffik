@@ -191,14 +191,6 @@ function renderCalendar(direction) {
     if (!editMode && !isWolne(shiftCode)) {
       addReliefPopups(cell, d, shiftCode, onUrlop);
     }
-    // Popupy nadgodzin - w trybie edycji z paletą OT
-    if (selectedDay === d && editMode && editPaletteMode === 'OT' && !onUrlop) {
-      if (isWolne(shiftCode)) {
-        addWeekendOvertimePopup(cell, d);
-      } else {
-        addOvertimePopups(cell, d, shiftCode);
-      }
-    }
 
     cell.addEventListener('click', () => {
       if (editMode) {
@@ -700,6 +692,7 @@ function renderInfo() {
     <span>${t('infoUrlopStats', { brig: selectedShift, year: currentYear })}<br><small style="opacity:.9;font-weight:normal;">${t('infoUrlopMarked')}: ${totalUrlop} • ${t('infoUrlopWorking')}: ${usedUrlop}</small></span>
     <div style="display:flex; align-items:center; gap:6px;">
       <span><span class="us-count ${overLimit ? 'us-over' : ''}">${usedUrlop}</span> / ${limit} ${overLimit ? '⚠️' : ''}</span>
+      <button class="urlop-toggle-btn" data-day="${selectedDay}" title="${onUrlop ? t('urlopRemoved') : t('vacation')}" style="border:none; background:${onUrlop ? '#e74c3c' : '#27ae60'}; color:#fff; border-radius:6px; padding:4px 10px; cursor:pointer; font-size:13px; font-weight:600;">${onUrlop ? '❌ 🌴' : '+ 🌴'}</button>
       <button class="urlop-limit-edit" data-brigade="${selectedShift}" title="${t('infoUrlopLimitEdit', { brig: selectedShift })}" style="border:none; background:rgba(255,255,255,0.18); color:inherit; border-radius:6px; width:24px; height:24px; cursor:pointer;">✏️</button>
     </div>
   </div>`;
@@ -725,37 +718,53 @@ function renderInfo() {
     }
   }
 
-  // Nadgodziny dla dnia
+  // Nadgodziny dla dnia — zawsze widoczne akcje (bez edit mode)
   let overtimeInfo = '';
   if (!isWolne(shiftCode) && !onUrlop) {
     const otData = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
-    if (otData.przed || otData.po) {
-      let items = '';
-      ['przed', 'po'].forEach((pos) => {
-        if (!otData[pos]) return;
-        const { from, to } = calcOvertimeTime(shiftCode, pos, otData[pos].hours);
-        const cat = categorizeOvertime(
-          currentYear,
-          currentMonth,
-          selectedDay,
-          shiftCode,
-          pos,
-          otData[pos].hours
-        );
-        const dom = cat.h200 > 0 ? '200' : cat.h100 > 0 ? '100' : '50';
-        const label = pos === 'przed' ? t('otWeekBefore') : t('otWeekAfter');
-        items += `
-          <div class="ot-list-item">
-            <span class="oti-badge b-${dom}">+${dom}%</span>
-            <div class="oti-details">
-              <div class="oti-time">${label}: ${otData[pos].hours}h · ${formatTimeRange(from, to)}</div>
-              ${otData[pos].note ? `<div class="oti-note">📝 ${escapeHtml(otData[pos].note)}</div>` : ''}
-            </div>
+    let items = '';
+    ['przed', 'po'].forEach((pos) => {
+      if (!otData[pos]) return;
+      const { from, to } = calcOvertimeTime(shiftCode, pos, otData[pos].hours);
+      const cat = categorizeOvertime(
+        currentYear,
+        currentMonth,
+        selectedDay,
+        shiftCode,
+        pos,
+        otData[pos].hours
+      );
+      const dom = cat.h200 > 0 ? '200' : cat.h100 > 0 ? '100' : '50';
+      const label = pos === 'przed' ? t('otWeekBefore') : t('otWeekAfter');
+      items += `
+        <div class="ot-list-item">
+          <span class="oti-badge b-${dom}">+${dom}%</span>
+          <div class="oti-details">
+            <div class="oti-time">${label}: ${otData[pos].hours}h · ${formatTimeRange(from, to)}</div>
+            ${otData[pos].note ? `<div class="oti-note">📝 ${escapeHtml(otData[pos].note)}</div>` : ''}
           </div>
-        `;
-      });
-      overtimeInfo = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoOvertime')}</div><div class="value">${items}</div></div>`;
-    }
+          <button class="ot-edit-btn" data-pos="${pos}" style="border:none; background:rgba(255,255,255,0.18); color:inherit; border-radius:6px; padding:2px 8px; cursor:pointer; margin-left:4px;">✏️</button>
+        </div>
+      `;
+    });
+    const actionButtons = `
+      <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+        <button class="ot-add-btn" data-pos="przed" style="flex:1; min-width:120px; border:none; background:#3498db; color:#fff; border-radius:8px; padding:8px 12px; cursor:pointer; font-size:13px; font-weight:600;">${otData.przed ? '✏️' : '+'} ⬅ PRZED</button>
+        <button class="ot-add-btn" data-pos="po" style="flex:1; min-width:120px; border:none; background:#3498db; color:#fff; border-radius:8px; padding:8px 12px; cursor:pointer; font-size:13px; font-weight:600;">${otData.po ? '✏️' : '+'} PO ➡</button>
+      </div>
+    `;
+    overtimeInfo = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoOvertime')}</div><div class="value">${items}${actionButtons}</div></div>`;
+  }
+
+  // Weekend overtime — dla dni wolnych/świąt
+  if (isWolne(shiftCode) && !onUrlop) {
+    const otData = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
+    const weekendBtn = `
+      <div style="margin-top:8px;">
+        <button class="ot-add-btn" data-pos="weekend" style="width:100%; border:none; background:#16a085; color:#fff; border-radius:8px; padding:10px 12px; cursor:pointer; font-size:13px; font-weight:600;">${otData.weekend ? `✏️ 🛠 ${otData.weekend.hours}h` : '+ 🛠 Praca w dzień wolny'}</button>
+      </div>
+    `;
+    overtimeInfo = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoOvertime')}</div><div class="value">${weekendBtn}</div></div>`;
   }
 
   if (onUrlop) {
@@ -772,6 +781,7 @@ function renderInfo() {
       <div class="info-grid">
         <div class="info-card"><div class="label">${t('infoStatus')}</div><div class="value">${t('infoFree')}</div></div>
         ${cycleInfo}
+        ${overtimeInfo}
         <div class="info-card"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>
       </div>`;
   } else {
@@ -837,6 +847,35 @@ function renderInfo() {
       });
     });
   }
+  const editLimitBtn = panel.querySelector('.urlop-limit-edit');
+  if (editLimitBtn) {
+    editLimitBtn.addEventListener('click', () => {
+      // ... existing handler (не чіпаємо)
+    });
+  }
+
+  // NEW: Handler przycisku toggle urlop
+  const urlopToggleBtn = panel.querySelector('.urlop-toggle-btn');
+  if (urlopToggleBtn) {
+    urlopToggleBtn.addEventListener('click', () => {
+      toggleUrlop(currentYear, currentMonth, selectedDay, selectedShift);
+      showToast('success', onUrlop ? t('urlopRemoved') : t('urlopAdded'));
+      refreshViews();
+    });
+  }
+
+  // NEW: Handlery przycisków nadgodzin
+  panel.querySelectorAll('.ot-add-btn, .ot-edit-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const pos = btn.dataset.pos;
+      const otData = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
+      if (pos === 'weekend') {
+        openOvertimeModal(selectedDay, null, 'weekend', otData.weekend);
+      } else {
+        openOvertimeModal(selectedDay, shiftCode, pos, otData[pos]);
+      }
+    });
+  });
 
   const ni = document.getElementById('noteInput');
   if (ni) {
