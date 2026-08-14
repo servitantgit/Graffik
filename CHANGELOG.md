@@ -6,6 +6,30 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 
 ## [Unreleased]
 
+## [3.5.1] - 2026-08-13
+
+### Naprawione
+
+- **Krytyczny bug UX na mobile** — przypadkowe tapy na popupy urlopu i nadgodzin po wybraniu dnia (np. przez przycisk "Dziś") powodowały przełączenie brygady lub oznaczenie urlopu
+
+### Zmienione
+
+- **Refactor UI dla urlopów i nadgodzin** — usunięte popupy z komórek kalendarza, przeniesione do info-panel poniżej:
+  - Przycisk urlopu (zielony `+ 🌴` / czerwony `❌ 🌴`)
+  - Przyciski nadgodzin `+ ⬅ PRZED` i `+ PO ➡` (niebieskie)
+  - Przycisk `+ 🛠 Praca w dzień wolny` (turkusowy) dla dni wolnych/świąt
+  - Przyciski `✏️` do edycji istniejących nadgodzin
+- **Uproszczona paleta edycji** — 5 przycisków (R, P, N, W, CYCLE) zamiast 6 (usunięty ⏱ OT)
+- **Usunięto skrót klawiaturowy `O`** — nadgodziny dostępne przez info-panel w każdym trybie
+
+### Usunięte
+
+- Popup urlopu (🌴 +) z komórki dnia w widoku Miesiąc
+- Popup nadgodzin (⏱ PRZED/PO) z komórki dnia w edit mode + OT palette
+- Przycisk ⏱ z palety edycji
+- Skrót klawiaturowy `O` dla trybu OT palette
+- Martwy blok kodu `editPaletteMode === 'OT'` w handlerze kliknięcia komórki
+
 ## [3.5.0] - 2026-08-13
 
 ### Naprawione
