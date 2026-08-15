@@ -622,28 +622,6 @@ function renderInfo() {
     }
   }
 
-  // Wolny dzień/święto — przyciski do zaplanowania zmiany R/P/N
-  let shiftButtonsInfo = '';
-  if (isWolne(shiftCode) && !onUrlop) {
-    const yHolidays = buildHolidays(currentYear);
-    const isHoliday = !!yHolidays[currentMonth + '-' + selectedDay];
-    const dowLocal = new Date(currentYear, currentMonth - 1, selectedDay).getDay();
-    const rateLabel = isHoliday ? '+200%' : dowLocal === 0 ? '+100%' : '+100%';
-    shiftButtonsInfo = `
-      <div class="info-card" style="grid-column:1/-1;">
-        <div class="label">🛠 Zaplanuj pracę</div>
-        <div class="value">
-          <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
-            <button class="add-shift-btn" data-shift="R" style="flex:1; min-width:90px; border:none; background:var(--color-R); color:#fff; border-radius:8px; padding:10px 8px; cursor:pointer; font-size:13px; font-weight:700;">+ 🌅 R</button>
-            <button class="add-shift-btn" data-shift="P" style="flex:1; min-width:90px; border:none; background:var(--color-P); color:#fff; border-radius:8px; padding:10px 8px; cursor:pointer; font-size:13px; font-weight:700;">+ 🌤️ P</button>
-            <button class="add-shift-btn" data-shift="N" style="flex:1; min-width:90px; border:none; background:var(--color-N); color:#fff; border-radius:8px; padding:10px 8px; cursor:pointer; font-size:13px; font-weight:700;">+ 🌙 N</button>
-          </div>
-          <div style="margin-top:6px; font-size:11px; color:var(--text-muted); text-align:center;">Nadgodziny w tym dniu będą liczone jako ${rateLabel}</div>
-        </div>
-      </div>
-    `;
-  }
-
   // Nadgodziny dla dnia — tylko lista informacyjna (zarządzanie przez paletę ⏱)
   let overtimeInfo = '';
   if (!isWolne(shiftCode) && !onUrlop) {
@@ -690,7 +668,6 @@ function renderInfo() {
       ${urlopStats}
       <div class="info-grid">
         <div class="info-card"><div class="label">${t('infoStatus')}</div><div class="value">${t('infoFree')}</div></div>
-        ${shiftButtonsInfo}
         ${cycleInfo}
         ${overtimeInfo}
         <div class="info-card"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>
@@ -758,16 +735,6 @@ function renderInfo() {
       });
     });
   }
-
-  // NEW: Handlery przycisków dodawania zmiany na wolny dzień
-  panel.querySelectorAll('.add-shift-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const newShift = btn.dataset.shift;
-      applyEdit(currentYear, currentMonth, selectedDay, selectedShift, newShift);
-      showToast('success', `Zmiana ${newShift} dodana`);
-      refreshViews();
-    });
-  });
 
   const ni = document.getElementById('noteInput');
   if (ni) {
