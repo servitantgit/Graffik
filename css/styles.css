@@ -2854,25 +2854,28 @@ small {
   }
   /* Компактний view switcher на мобільному — тільки іконки */
   .view-btn {
-    font-size: 0;
     padding: 10px 8px;
     min-width: 44px;
+    gap: 0;
+    font-size: 0 !important;
+    line-height: 1;
+  }
+  .view-btn[data-view]::before {
+    font-size: 24px !important;
+    line-height: 1;
+    display: inline-block;
   }
   .view-btn[data-view='dashboard']::before {
     content: '🏠';
-    font-size: 22px;
   }
   .view-btn[data-view='week']::before {
     content: '7️⃣';
-    font-size: 22px;
   }
   .view-btn[data-view='month']::before {
     content: '📅';
-    font-size: 22px;
   }
   .view-btn[data-view='table']::before {
     content: '📋';
-    font-size: 22px;
   }
   .dash-today-card .dtc-shift {
     font-size: 32px;
