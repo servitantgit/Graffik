@@ -450,6 +450,14 @@ window.translations.en = {
   menuTheme: 'Theme',
   installPrompt: 'Install app',
 
+  // === MENU: Advanced (v3.6.1) ===
+  menuSectionAdvanced: '⚙️ Advanced',
+  menuVacationLimit: 'Vacation limit',
+  menuExportJson: 'Export JSON',
+  menuImportJson: 'Import JSON',
+  menuClearYear: 'Clear year',
+  menuResetAll: 'Reset everything',
+
   // === GENERIC ===
   cancel: 'Cancel',
   ok: 'OK',

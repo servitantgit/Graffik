@@ -451,6 +451,14 @@ window.translations.pl = {
   menuTheme: 'Motyw',
   installPrompt: 'Zainstaluj aplikację',
 
+  // === MENU: Advanced (v3.6.1) ===
+  menuSectionAdvanced: '⚙️ Zaawansowane',
+  menuVacationLimit: 'Limit urlopu',
+  menuExportJson: 'Eksport JSON',
+  menuImportJson: 'Import JSON',
+  menuClearYear: 'Wyczyść rok',
+  menuResetAll: 'Reset wszystkiego',
+
   // === GENERIC ===
   cancel: 'Anuluj',
   ok: 'OK',
