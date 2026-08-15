@@ -44,6 +44,12 @@ function updateAdminUI() {
 function initAdminMode() {
   updateAdminUI();
   window.addEventListener('driveAuthChanged', updateAdminUI);
+
+  // Polling fallback: check admin state every 3 seconds
+  // (needed because fetchDriveUserEmail from sync.js resolves async after login,
+  // and we can't guarantee event 'driveAuthChanged' is dispatched)
+  // Overhead is negligible — just checks a global variable.
+  setInterval(updateAdminUI, 3000);
 }
 
 /* === EXPOSE TO GLOBAL SCOPE === */
