@@ -448,6 +448,14 @@ window.translations.uk = {
   menuTheme: 'Тема',
   installPrompt: 'Встановити додаток',
 
+  // === MENU: Advanced (v3.6.1) ===
+  menuSectionAdvanced: '⚙️ Розширені',
+  menuVacationLimit: 'Ліміт відпустки',
+  menuExportJson: 'Експорт JSON',
+  menuImportJson: 'Імпорт JSON',
+  menuClearYear: 'Очистити рік',
+  menuResetAll: 'Скинути все',
+
   // === GENERIC ===
   cancel: 'Скасувати',
   ok: 'OK',
