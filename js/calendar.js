@@ -600,12 +600,7 @@ function renderInfo() {
   const lv = getLiveShiftInfo();
   if (lv) liveInfo = lv;
 
-  let cycleInfo = '';
-  const cyc = getCycleRange(currentYear, currentMonth, selectedDay, selectedShift);
-  if (cyc && cyc.length > 1) {
-    const which = selectedDay - cyc.start + 1;
-    cycleInfo = `<div class="info-card"><div class="label">${t('infoCycle')}</div><div class="value">${t('infoCycleOf', { n: which, total: cyc.length })}</div></div>`;
-  }
+  let cycleInfo = ''; // Prybrane: nie potrzebne w codziennym użytkowaniu
 
   let toWolneInfo = '';
   if (!isWolne(shiftCode) && !onUrlop) {
