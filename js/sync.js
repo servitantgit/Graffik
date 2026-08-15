@@ -7,12 +7,13 @@ const DRIVE_CLIENT_ID_KEY = 'grafik_drive_client_id';
 const DRIVE_FILE_NAME = 'grafik-gillette-data.json';
 const DRIVE_MIME = 'application/json';
 const DRIVE_SCOPE =
-  'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.appdata';
+  'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.appdata openid email';
 
 let gDriveTokenClient = null;
 let gDriveToken = localStorage.getItem('grafik_drive_token') || null;
 let gDriveTokenExpiry = parseInt(localStorage.getItem('grafik_drive_token_expiry') || '0', 10);
 let gDriveFileId = localStorage.getItem('grafik_drive_file_id') || null;
+let driveUserEmail = localStorage.getItem('grafik_drive_user_email') || null;
 const DEFAULT_CLIENT_ID =
   '384517397558-agfoqvv4pv5nbkejhc9i7hbg86qs6her.apps.googleusercontent.com';
 let gDriveClientId = localStorage.getItem(DRIVE_CLIENT_ID_KEY) || DEFAULT_CLIENT_ID;
@@ -20,6 +21,41 @@ let gDriveClientId = localStorage.getItem(DRIVE_CLIENT_ID_KEY) || DEFAULT_CLIENT
 /* === POMOCNICZE === */
 function isDriveTokenValid() {
   return gDriveToken && Date.now() < gDriveTokenExpiry - 60000;
+}
+
+/**
+ * Pobiera email zalogowanego użytkownika z Google API.
+ * Wymagany scope: 'openid email' w DRIVE_SCOPE.
+ * Wynik zapisywany do driveUserEmail + localStorage.
+ * Wywoływane po pomyślnym login.
+ */
+async function fetchDriveUserEmail() {
+  if (!gDriveToken) {
+    console.warn('[SYNC] fetchDriveUserEmail: no token');
+    return null;
+  }
+  try {
+    const resp = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { Authorization: 'Bearer ' + gDriveToken },
+    });
+    if (!resp.ok) {
+      console.warn('[SYNC] fetchDriveUserEmail failed:', resp.status);
+      return null;
+    }
+    const data = await resp.json();
+    if (data && data.email) {
+      driveUserEmail = data.email.toLowerCase();
+      localStorage.setItem('grafik_drive_user_email', driveUserEmail);
+      console.log('[SYNC] User email fetched:', driveUserEmail);
+      if (typeof updateAdminUI === 'function') {
+        updateAdminUI();
+      }
+      return driveUserEmail;
+    }
+  } catch (e) {
+    console.error('[SYNC] fetchDriveUserEmail error:', e);
+  }
+  return null;
 }
 
 function loadGis() {
@@ -49,6 +85,7 @@ function initGDriveTokenClient() {
           localStorage.setItem('grafik_drive_token_expiry', String(gDriveTokenExpiry));
           showToast('success', `☁️ ${t('driveLoggedIn')}`);
           updateDriveUI();
+          fetchDriveUserEmail();
         } else {
           showToast('error', `☁️ ${t('driveLoginFailed')}`);
         }
@@ -525,12 +562,23 @@ function logoutDrive() {
   gDriveToken = null;
   gDriveTokenExpiry = 0;
   gDriveFileId = null;
+  driveUserEmail = null;
   localStorage.removeItem('grafik_drive_token');
   localStorage.removeItem('grafik_drive_token_expiry');
   localStorage.removeItem('grafik_drive_file_id');
+  localStorage.removeItem('grafik_drive_user_email');
   showToast('info', `☁️ ${t('driveLoggedOut')}`);
   updateDriveUI();
+  if (typeof updateAdminUI === 'function') {
+    updateAdminUI();
+  }
 }
+
+/* === EXPOSE driveUserEmail TO GLOBAL SCOPE (for js/admin.js) === */
+Object.defineProperty(window, 'driveUserEmail', {
+  get: () => driveUserEmail,
+  configurable: true,
+});
 
 /* === INIT === */
 function initSync() {
