@@ -439,7 +439,7 @@ function getAppUrl() {
 function buildQRCodeUrl(text, size = 250) {
   // Використовуємо публічний сервіс QR Server (безкоштовний, без ключа)
   const encoded = encodeURIComponent(text);
-  return `https://api.qrserver.com/v7/create-qr-code/?size=${size}x${size}&data=${encoded}&margin=10`;
+  return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encoded}&margin=10`;
 }
 
 function shareApp() {
