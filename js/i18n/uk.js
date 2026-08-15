@@ -257,7 +257,7 @@ window.translations.uk = {
 
   // === VIEWS ===
   viewDashboard: '🏠 Панель',
-  viewWeek: '📆 Тиждень',
+  viewWeek: '7️⃣ Тиждень',
   viewMonth: '📅 Місяць',
   viewTable: '📋 Таблиця',
   viewYear: '📊 Рік',
