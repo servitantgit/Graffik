@@ -617,36 +617,85 @@ function renderInfo() {
     }
   }
 
-  // Nadgodziny dla dnia — tylko lista informacyjna (zarządzanie przez paletę ⏱)
+  // Nadgodziny dla dnia — pokazujemy WSZYSTKIE godziny ze stawką (włącznie z dodaną zmianą w święto/niedzielę)
   let overtimeInfo = '';
   if (!isWolne(shiftCode) && !onUrlop) {
     const otData = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
-    if (otData.przed || otData.po) {
-      let items = '';
-      ['przed', 'po'].forEach((pos) => {
-        if (!otData[pos]) return;
-        const { from, to } = calcOvertimeTime(shiftCode, pos, otData[pos].hours);
-        const cat = categorizeOvertime(
-          currentYear,
-          currentMonth,
-          selectedDay,
-          shiftCode,
-          pos,
-          otData[pos].hours
-        );
-        const dom = cat.h200 > 0 ? '200' : cat.h100 > 0 ? '100' : '50';
-        const label = pos === 'przed' ? t('otWeekBefore') : t('otWeekAfter');
-        items += `
-          <div class="ot-list-item">
-            <span class="oti-badge b-${dom}">+${dom}%</span>
-            <div class="oti-details">
-              <div class="oti-time">${label}: ${otData[pos].hours}h · ${formatTimeRange(from, to)}</div>
-              ${otData[pos].note ? `<div class="oti-note">📝 ${escapeHtml(otData[pos].note)}</div>` : ''}
-            </div>
+
+    // Sprawdź czy to dodana zmiana w święto/niedzielę (fabrycznie było wolno)
+    const factoryShift =
+      factorySchedule[currentYear] &&
+      factorySchedule[currentYear][currentMonth] &&
+      factorySchedule[currentYear][currentMonth][selectedShift]
+        ? factorySchedule[currentYear][currentMonth][selectedShift][selectedDay - 1]
+        : '';
+    const wasFactoryFree = isWolne(factoryShift);
+    const isHoliday = !!yHolidays[currentMonth + '-' + selectedDay];
+    const dowLocal = new Date(currentYear, currentMonth - 1, selectedDay).getDay();
+    const isSunday = dowLocal === 0;
+    const isAddedPremiumShift = wasFactoryFree && (isHoliday || isSunday);
+    const shiftRate = isHoliday ? '200' : isSunday ? '100' : null;
+
+    // Zbieramy wszystkie pozycje
+    let items = '';
+    let totalHours = 0;
+    let totalPaid = 0;
+
+    // 1. Dodana zmiana w święto/niedzielę — jako pierwsza pozycja
+    if (isAddedPremiumShift && shiftRate) {
+      const [sh, eh] = shiftHours[shiftCode];
+      const shiftTimeStr = `${String(sh).padStart(2, '0')}:00 – ${String(eh % 24).padStart(2, '0')}:00`;
+      const shiftLabel = isHoliday ? 'Święto' : 'Niedziela';
+      const multiplier = shiftRate === '200' ? 3 : 2;
+      items += `
+        <div class="ot-list-item" style="border-left: 3px solid ${shiftRate === '200' ? '#c0392b' : '#8e44ad'};">
+          <span class="oti-badge b-${shiftRate}">+${shiftRate}%</span>
+          <div class="oti-details">
+            <div class="oti-time"><b>Zmiana ${shiftCode}</b>: 8h · ${shiftTimeStr} <small>(${shiftLabel})</small></div>
           </div>
-        `;
-      });
-      overtimeInfo = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoOvertime')}</div><div class="value">${items}</div></div>`;
+        </div>
+      `;
+      totalHours += 8;
+      totalPaid += 8 * multiplier;
+    }
+
+    // 2. Standardowe nadgodziny PRZED/PO
+    ['przed', 'po'].forEach((pos) => {
+      if (!otData[pos]) return;
+      const { from, to } = calcOvertimeTime(shiftCode, pos, otData[pos].hours);
+      const cat = categorizeOvertime(
+        currentYear,
+        currentMonth,
+        selectedDay,
+        shiftCode,
+        pos,
+        otData[pos].hours
+      );
+      const dom = cat.h200 > 0 ? '200' : cat.h100 > 0 ? '100' : '50';
+      const label = pos === 'przed' ? t('otWeekBefore') : t('otWeekAfter');
+      const multiplier = dom === '200' ? 3 : dom === '100' ? 2 : 1.5;
+      items += `
+        <div class="ot-list-item">
+          <span class="oti-badge b-${dom}">+${dom}%</span>
+          <div class="oti-details">
+            <div class="oti-time">${label}: ${otData[pos].hours}h · ${formatTimeRange(from, to)}</div>
+            ${otData[pos].note ? `<div class="oti-note">📝 ${escapeHtml(otData[pos].note)}</div>` : ''}
+          </div>
+        </div>
+      `;
+      totalHours += otData[pos].hours;
+      totalPaid += otData[pos].hours * multiplier;
+    });
+
+    // Pokaż blok TYLKO jeśli są jakieś pozycje ze stawką
+    if (items) {
+      const summary =
+        totalHours > 0
+          ? `<div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border-cell); font-weight:700; text-align:center;">
+             📊 Razem dziś: <b>${totalHours}h</b> pracy · 💰 <b>${totalPaid}h</b> płatne
+           </div>`
+          : '';
+      overtimeInfo = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoOvertime')}</div><div class="value">${items}${summary}</div></div>`;
     }
   }
 
