@@ -585,4 +585,7 @@ window.translations.uk = {
   timerEndsIn: '⏱️ Закінчується через {h}год {m}хв',
   timerNightEndsIn: '🌙 Нічна зміна закінчується через {h}год {m}хв',
   timerStartsIn: '⏰ Починається через {m} хв',
+  updateAvailable: 'Доступна нова версія',
+  updateHint: 'Натисніть "Оновити", щоб оновити',
+  updateNow: '🔄 Оновити',
 };

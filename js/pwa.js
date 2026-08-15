@@ -6,18 +6,103 @@
 let deferredInstallPrompt = null;
 let lastNotified = null; // 'YYYY-MM-DD:ZMIANA'
 
-/* === SERVICE WORKER === */
+/* === SERVICE WORKER + AUTO-UPDATE === */
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
+
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('./sw.js')
       .then((reg) => {
         console.log('[PWA] Service Worker zarejestrowany:', reg.scope);
+
+        // Перевіряємо оновлення одразу
         reg.update();
+
+        // Періодична перевірка (кожні 60 хв)
+        setInterval(() => reg.update(), 60 * 60 * 1000);
+
+        // 1) Нова версія вже чекає в waiting (наприклад, після F5)
+        if (reg.waiting) {
+          promptUserToUpdate(reg.waiting);
+        }
+
+        // 2) Знайдено оновлення — стежимо за станом
+        reg.addEventListener('updatefound', () => {
+          const newSW = reg.installing;
+          if (!newSW) return;
+
+          newSW.addEventListener('statechange', () => {
+            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+              // Нова версія встановлена, стара ще активна → пропонуємо оновити
+              promptUserToUpdate(newSW);
+            }
+          });
+        });
       })
       .catch((err) => console.warn('[PWA] SW błąd:', err));
+
+    // Коли новий SW активувався → перезавантажуємо сторінку
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
   });
+}
+
+/* === Toast з кнопкою "Оновити" === */
+function promptUserToUpdate(waitingSW) {
+  // Не показувати, якщо вже показали в цій сесії
+  if (window._updatePromptShown) return;
+  window._updatePromptShown = true;
+
+  showUpdateToast(() => {
+    // Кажемо новому SW взяти управління → controllerchange → reload
+    waitingSW.postMessage({ type: 'SKIP_WAITING' });
+  });
+}
+
+function showUpdateToast(onUpdate) {
+  const container = document.getElementById('toastContainer');
+  if (!container) {
+    // Fallback — якщо toast-контейнер не готовий
+    if (confirm('🔄 Dostępna jest nowa wersja aplikacji. Odświeżyć teraz?')) {
+      onUpdate();
+    }
+    return;
+  }
+
+  const toast = document.createElement('div');
+  toast.className = 'toast info';
+  toast.style.cssText = 'min-width: 280px; align-items: center; gap: 12px;';
+  toast.innerHTML = `
+    <span class="toast-icon">🔄</span>
+    <div style="flex:1;">
+      <div style="font-weight:700; margin-bottom:2px;">${t('updateAvailable') || 'Nowa wersja dostępna'}</div>
+      <div style="font-size:12px; opacity:0.85;">${t('updateHint') || 'Kliknij, aby odświeżyć'}</div>
+    </div>
+    <button id="updateNowBtn" style="
+      background: var(--text-header);
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 13px;
+      white-space: nowrap;
+    ">${t('updateNow') || '🔄 Odśwież'}</button>
+  `;
+  container.appendChild(toast);
+
+  document.getElementById('updateNowBtn').onclick = () => {
+    toast.remove();
+    onUpdate();
+  };
+
+  // НЕ автоматично закриваємо — користувач має сам вирішити
 }
 
 /* === WYKRYWANIE PLATFORMY === */

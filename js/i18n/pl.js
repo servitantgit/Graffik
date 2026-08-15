@@ -545,4 +545,7 @@ window.translations.pl = {
   timerEndsIn: '⏱️ Kończy się za {h}h {m}min',
   timerNightEndsIn: '🌙 Zmiana nocna kończy się za {h}h {m}min',
   timerStartsIn: '⏰ Zacznie się za {m} min',
+  updateAvailable: 'Nowa wersja dostępna',
+  updateHint: 'Kliknij "Odśwież", aby zaktualizować',
+  updateNow: '🔄 Odśwież',
 };

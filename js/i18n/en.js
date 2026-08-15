@@ -587,4 +587,7 @@ window.translations.en = {
   timerEndsIn: '⏱️ Ends in {h}h {m}min',
   timerNightEndsIn: '🌙 Night shift ends in {h}h {m}min',
   timerStartsIn: '⏰ Starts in {m} min',
+  updateAvailable: 'New version available',
+  updateHint: 'Click "Update" to refresh',
+  updateNow: '🔄 Update',
 };
