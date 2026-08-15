@@ -34,7 +34,7 @@ window.translations.pl = {
   undoHint: 'Cofnij ostatnią zmianę (Ctrl+Z)',
   redoHint: 'Ponów cofniętą zmianę (Ctrl+Y)',
   saveHint: 'Zapisz zmiany w przeglądarce (Ctrl+S)',
-  yearToggle: 'Rozszerz do całego roku',
+  yearToggle: 'Rok',
   otHoursLabel: 'Ile godzin?',
   otOrCustom: 'lub własnie:',
   otHoursUnit: 'godzin',
