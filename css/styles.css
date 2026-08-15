@@ -318,6 +318,26 @@ body.theme-dark .menu-item.menu-item-danger .mi-icon {
   color: #ff6b6b;
 }
 
+/* === ADMIN MODE — visibility of admin-only elements === */
+/* Hidden by default. Shown only when body has 'admin-mode' class (set by js/admin.js). */
+.admin-only {
+  display: none !important;
+}
+body.admin-mode .admin-only {
+  display: block !important;
+}
+/* Admin menu section — visual distinction (gold accent) */
+body.admin-mode .menu-section.admin-only .menu-section-title {
+  color: #d4af37;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+body.theme-dark.admin-mode .menu-section.admin-only .menu-section-title {
+  color: #f1c40f;
+  border-top-color: rgba(241, 196, 15, 0.25);
+}
+
 /* === MAIN CONTROLS === */
 .controls-main {
   display: flex;
