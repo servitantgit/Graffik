@@ -63,7 +63,7 @@
       </label>
     </div>
 
-    <!-- EDIT BANNER -->
+    <!-- EDIT BANNER (simplified — only essential actions) -->
     <div class="edit-banner" id="editBanner">
       <div class="edit-banner-text">
         <span class="ebt-title">
@@ -93,11 +93,6 @@
           title="Zapisz zmiany w przeglądarce (Ctrl+S)">💾 Zapisz</button>
 
         <button id="discardChangesBtn" data-i18n="discardBtn">↶ Odrzuć wszystko</button>
-        <button id="menuVacationLimit" data-i18n="vacationLimitBtn">🌴 Limit urlopu</button>
-        <button id="exportDataBtn" data-i18n="exportBtn">📥 JSON</button>
-        <button id="importDataBtn" data-i18n="importBtn">📂 Import</button>
-        <button id="clearYearBtn" class="danger" data-i18n="clearYearBtn">🗑 Rok</button>
-        <button id="resetCustomBtn" class="danger" data-i18n="resetBtn">↺ Reset</button>
       </div>
     </div>
     <input type="file" id="importFile" accept="application/json,.json" style="display:none">
@@ -226,6 +221,30 @@
       <button class="menu-item" id="menuHelp">
         <span class="mi-icon">❓</span>
         <span data-i18n="menuHelp">Pomoc / FAQ</span>
+      </button>
+    </div>
+
+    <div class="menu-section">
+      <div class="menu-section-title">⚙️ Zaawansowane</div>
+      <button class="menu-item" id="menuVacationLimit">
+        <span class="mi-icon">🌴</span>
+        <span data-i18n="vacationLimitBtn">Limit urlopu</span>
+      </button>
+      <button class="menu-item" id="exportDataBtn">
+        <span class="mi-icon">📥</span>
+        <span data-i18n="exportBtn">Eksport JSON</span>
+      </button>
+      <button class="menu-item" id="importDataBtn">
+        <span class="mi-icon">📂</span>
+        <span data-i18n="importBtn">Import JSON</span>
+      </button>
+      <button class="menu-item menu-item-danger" id="clearYearBtn">
+        <span class="mi-icon">🗑</span>
+        <span data-i18n="clearYearBtn">Wyczyść rok</span>
+      </button>
+      <button class="menu-item menu-item-danger" id="resetCustomBtn">
+        <span class="mi-icon">↺</span>
+        <span data-i18n="resetBtn">Reset wszystkiego</span>
       </button>
     </div>
   </div>
