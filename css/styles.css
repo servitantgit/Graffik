@@ -295,6 +295,29 @@ body {
   font-weight: bold;
 }
 
+/* === MENU ITEM — DANGER variant (destructive actions) === */
+.menu-item.menu-item-danger {
+  color: #c0392b;
+}
+.menu-item.menu-item-danger:hover {
+  background: rgba(192, 57, 43, 0.1);
+  border-color: rgba(192, 57, 43, 0.3);
+  color: #a93226;
+}
+.menu-item.menu-item-danger .mi-icon {
+  color: #c0392b;
+}
+body.theme-dark .menu-item.menu-item-danger {
+  color: #ff6b6b;
+}
+body.theme-dark .menu-item.menu-item-danger:hover {
+  background: rgba(255, 107, 107, 0.15);
+  color: #ff8888;
+}
+body.theme-dark .menu-item.menu-item-danger .mi-icon {
+  color: #ff6b6b;
+}
+
 /* === MAIN CONTROLS === */
 .controls-main {
   display: flex;
