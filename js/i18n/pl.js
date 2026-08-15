@@ -229,7 +229,7 @@ window.translations.pl = {
   printYearSuffix: ' — cały rok',
   printGenerated: 'Wygenerowano',
   viewDashboard: '🏠 Dashboard',
-  viewWeek: '📆 Tydzień',
+  viewWeek: '7️⃣ Tydzień',
   viewMonth: '📅 Miesiąc',
   viewTable: '📋 Tabela',
   viewYear: '📊 Rok',

@@ -258,7 +258,7 @@ window.translations.en = {
 
   // === VIEWS ===
   viewDashboard: '🏠 Dashboard',
-  viewWeek: '📆 Week',
+  viewWeek: '7️⃣ Week',
   viewMonth: '📅 Month',
   viewTable: '📋 Table',
   viewYear: '📊 Year',

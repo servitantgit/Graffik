@@ -268,12 +268,7 @@ function renderCalendar(direction) {
 
   const monthTitle = getElementByIdSafe('monthTitle');
   if (monthTitle) monthTitle.textContent = `${monthNames[currentMonth - 1]} ${currentYear}`;
-  const h = getMonthHours(currentYear, currentMonth);
-  const monthHours = getElementByIdSafe('monthHours');
-  if (monthHours)
-    monthHours.textContent = `A=${h.A} • B=${h.B} • C=${h.C} • D=${h.D}${compareShift ? ` (vs ${compareShift})` : ''}`;
 
-  renderProgress();
   renderMonthOvertimeSummary();
 }
 
