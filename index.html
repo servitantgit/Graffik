@@ -66,23 +66,32 @@
     <!-- EDIT BANNER -->
     <div class="edit-banner" id="editBanner">
       <div class="edit-banner-text">
-        ✏️ <b data-i18n="editBannerTitle">Tryb edycji</b>
-        <span id="dirtyIndicator" style="display:none;">● <span id="dirtyCount">0</span></span>
-        <br><small style="opacity:.9;" data-i18n="editBannerHint">Skróty: R P N W = zmiana • O = nadgodziny • Ctrl+Z =
-          cofnij • Ctrl+S = zapisz • Esc = wyjdź</small>
+        <span class="ebt-title">
+          ✏️ <b data-i18n="editBannerTitle">Tryb edycji</b>
+          <span id="dirtyIndicator" style="display:none;">● <span id="dirtyCount">0</span></span>
+        </span>
+        <span class="ebt-hint" data-i18n="editBannerHint">
+          R/P/N/W = zmiana • Ctrl+Z = cofnij • Ctrl+S = zapisz • Esc = wyjdź
+        </span>
       </div>
-      <div class="year-picker" id="yearPicker" data-i18n-title="changeYear" title="Zmień rok" style="background:rgba(255,255,255,0.2); border-color:rgba(255,255,255,0.5); color:#fff;">
-        <button id="prevYearBtn" style="color:#fff;">‹</button>
-        <span class="year-current" id="yearCurrent" style="color:#fff;">2026</span>
-        <button id="nextYearBtn" style="color:#fff;">›</button>
+
+      <div class="year-picker" id="yearPicker" data-i18n-title="changeYear" title="Zmień rok">
+        <button id="prevYearBtn">‹</button>
+        <span class="year-current" id="yearCurrent">2026</span>
+        <button id="nextYearBtn">›</button>
       </div>
+
       <div class="edit-banner-actions">
-        <button id="undoBtn" data-i18n="undoBtn" data-i18n-title="undoHint" title="Cofnij ostatnią zmianę (Ctrl+Z)">↶
-          Undo</button>
-        <button id="redoBtn" data-i18n="redoBtn" data-i18n-title="redoHint" title="Ponów cofniętą zmianę (Ctrl+Y)">↷
-          Redo</button>
+        <div class="ebg-group">
+          <button id="undoBtn" class="icon-only" data-i18n-title="undoHint"
+            title="Cofnij ostatnią zmianę (Ctrl+Z)">↶</button>
+          <button id="redoBtn" class="icon-only" data-i18n-title="redoHint"
+            title="Ponów cofniętą zmianę (Ctrl+Y)">↷</button>
+        </div>
+
         <button id="saveChangesBtn" class="save" data-i18n="saveBtn" data-i18n-title="saveHint"
           title="Zapisz zmiany w przeglądarce (Ctrl+S)">💾 Zapisz</button>
+
         <button id="discardChangesBtn" data-i18n="discardBtn">↶ Odrzuć wszystko</button>
         <button id="menuVacationLimit" data-i18n="vacationLimitBtn">🌴 Limit urlopu</button>
         <button id="exportDataBtn" data-i18n="exportBtn">📥 JSON</button>
@@ -146,12 +155,12 @@
   <div class="edit-palette" id="editPalette">
     <button class="palette-btn p-URLOP active" data-shift="URLOP" data-i18n-title="vacation" title="Urlop (U)">🌴<span
         class="pb-hotkey">U</span></button>
-    <button class="palette-btn p-ADDSHIFT" data-shift="ADDSHIFT" data-i18n-title="addShiftBtn" title="Dodaj zmianę (S)">➕<span
-        class="pb-hotkey">S</span></button>
-    <button class="palette-btn p-OTBEFORE" data-shift="OTBEFORE" data-i18n-title="otBeforeBtn" title="Nadgodziny PRZED (1)">⏱⬅<span
-        class="pb-hotkey">1</span></button>
-    <button class="palette-btn p-OTAFTER" data-shift="OTAFTER" data-i18n-title="otAfterBtn" title="Nadgodziny PO (2)">⏱➡<span
-        class="pb-hotkey">2</span></button>
+    <button class="palette-btn p-ADDSHIFT" data-shift="ADDSHIFT" data-i18n-title="addShiftBtn"
+      title="Dodaj zmianę (S)">➕<span class="pb-hotkey">S</span></button>
+    <button class="palette-btn p-OTBEFORE" data-shift="OTBEFORE" data-i18n-title="otBeforeBtn"
+      title="Nadgodziny PRZED (1)">⏱⬅<span class="pb-hotkey">1</span></button>
+    <button class="palette-btn p-OTAFTER" data-shift="OTAFTER" data-i18n-title="otAfterBtn"
+      title="Nadgodziny PO (2)">⏱➡<span class="pb-hotkey">2</span></button>
   </div>
 
   <!-- SIDE MENU -->
@@ -281,7 +290,6 @@
       <div class="modal-footer" id="otFooter"></div>
     </div>
   </div>
-
   <!-- FAQ MODAL -->
   <div class="modal-overlay" id="faqOverlay">
     <div class="modal" style="max-width:800px;">
@@ -301,23 +309,25 @@
         </div>
       </div>
     </div>
-    <!-- ===== MODUŁY JS (rozbito monolit na 9 plików) ===== -->
-    <script src="js/data.js"></script>
-    <script src="js/overtime-logic.js"></script>
-    <script src="js/core.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/edit.js"></script>
-    <script src="js/dashboard.js"></script>
-    <script src="js/calendar.js"></script>
-    <script src="js/views.js"></script>
-    <script src="js/actions.js"></script>
-    <script src="js/pwa.js"></script>
-    <script src="js/sync.js"></script>
-    <script src="js/i18n/pl.js"></script>
-    <script src="js/i18n/en.js"></script>
-    <script src="js/i18n/uk.js"></script>
-    <script src="js/i18n/i18n.js"></script>
-    <script src="js/main.js"></script>
+  </div>
+
+  <!-- ===== MODUŁY JS (rozbito monolit na 9 plików) ===== -->
+  <script src="js/data.js"></script>
+  <script src="js/overtime-logic.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/edit.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/views.js"></script>
+  <script src="js/actions.js"></script>
+  <script src="js/pwa.js"></script>
+  <script src="js/sync.js"></script>
+  <script src="js/i18n/pl.js"></script>
+  <script src="js/i18n/en.js"></script>
+  <script src="js/i18n/uk.js"></script>
+  <script src="js/i18n/i18n.js"></script>
+  <script src="js/main.js"></script>
 
 </body>
 

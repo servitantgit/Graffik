@@ -951,6 +951,191 @@ body {
   font-weight: 700;
   animation: dirtyPulse 1.5s infinite;
 }
+/* === EDIT BANNER (redesign v3.6.1 — dark + hierarchy) === */
+.edit-banner {
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  color: #fff;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border-left: 4px solid #e67e22;
+  margin: 10px 0;
+  display: none;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  animation: slideDown 0.3s ease-out;
+}
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.edit-banner.show {
+  display: flex;
+}
+
+/* === Текстова частина зліва === */
+.edit-banner-text {
+  flex: 1 1 220px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.edit-banner-text .ebt-title {
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.edit-banner-text .ebt-hint {
+  font-size: 12px;
+  opacity: 0.7;
+  line-height: 1.4;
+}
+
+/* === Actions container === */
+.edit-banner-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* === Групи кнопок (undo/redo разом) === */
+.edit-banner-actions .ebg-group {
+  display: flex;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 3px;
+}
+
+/* === Базовий стиль всіх кнопок банера === */
+.edit-banner button {
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+.edit-banner button:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+/* === ICON-ONLY кнопки (Undo/Redo) === */
+.edit-banner button.icon-only {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  justify-content: center;
+}
+.edit-banner button.icon-only:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: none;
+}
+.edit-banner button.icon-only:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* === PRIMARY кнопка Зберегти === */
+.edit-banner button.save {
+  background: linear-gradient(135deg, #27ae60, #229954);
+  border-color: #1e8449;
+  font-weight: 700;
+  padding: 9px 18px;
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.35);
+}
+.edit-banner button.save:hover {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  box-shadow: 0 4px 14px rgba(39, 174, 96, 0.5);
+  transform: translateY(-1px);
+}
+.edit-banner button.save:disabled {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  cursor: not-allowed;
+  opacity: 0.4;
+  transform: none;
+  box-shadow: none;
+}
+
+/* === DANGER кнопки (Rok, Reset) === */
+.edit-banner button.danger {
+  background: rgba(231, 76, 60, 0.15);
+  border-color: rgba(231, 76, 60, 0.4);
+  color: #ffcccc;
+}
+.edit-banner button.danger:hover {
+  background: rgba(231, 76, 60, 0.3);
+  border-color: rgba(231, 76, 60, 0.6);
+  color: #fff;
+}
+
+/* === Year picker всередині edit-banner (темний фон) === */
+.edit-banner .year-picker {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  padding: 3px 6px;
+}
+.edit-banner .year-picker button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  padding: 0 8px;
+  font-size: 22px;
+  min-width: auto;
+  min-height: auto;
+  display: inline-flex;
+}
+.edit-banner .year-picker button:hover {
+  background: transparent;
+  transform: scale(1.4);
+  border-color: transparent;
+}
+.edit-banner .year-picker .year-current {
+  color: #fff;
+  font-size: 16px;
+}
+.edit-banner .year-picker.no-data {
+  border-color: #f39c12;
+  background: rgba(243, 156, 18, 0.2);
+}
+
+/* === Dirty indicator === */
+#dirtyIndicator {
+  display: inline-block;
+  background: #f1c40f;
+  color: #1a1a1a;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 12px;
+  animation: dirtyPulse 1.5s infinite;
+}
 @keyframes dirtyPulse {
   0%,
   100% {
@@ -960,6 +1145,37 @@ body {
   50% {
     transform: scale(1.05);
     box-shadow: 0 0 12px rgba(241, 196, 15, 0.7);
+  }
+}
+
+/* === Responsive edit-banner для мобільних === */
+@media (max-width: 700px) {
+  .edit-banner {
+    padding: 12px;
+    gap: 10px;
+  }
+  .edit-banner-text {
+    flex: 1 1 100%;
+  }
+  .edit-banner-text .ebt-hint {
+    display: none; /* Ховаємо hint на мобі — місце дороге */
+  }
+  .edit-banner-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .edit-banner button.save {
+    flex: 1;
+    justify-content: center;
+    min-width: 120px;
+    order: -1; /* Save завжди першою на мобі */
+  }
+  .edit-banner button:not(.save):not(.icon-only) {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  .edit-banner .year-picker {
+    order: 10; /* Year picker в кінці на мобі */
   }
 }
 
