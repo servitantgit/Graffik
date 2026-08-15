@@ -54,6 +54,8 @@ Kliknij dowolny zrzut, aby zobaczyć w pełnym rozmiarze.
 - 🎨 **2 motywy**: jasny/ciemny (przełącznik w top-bar)
 - 🌐 **Wielojęzyczność**: polski, angielski, ukraiński (przełącznik 🌐 w top-bar)
 - 📱 **PWA** — instalacja na telefonie, tryb offline, powiadomienia
+- 📱 **Udostępnianie aplikacji** — link + kod QR + natywne udostępnianie (SMS, messengers)
+- 🔄 **Auto-update** — automatyczne powiadomienie o nowej wersji z jednym kliknięciem
 - ☁️ **Google Drive sync** — dane między urządzeniami
 - 🔗 **Kontekstowe udostępnianie** — link do dokładnie tego widoku
 - 📥 **Eksport .ics** do kalendarza, **drukowanie**, **backup JSON**
@@ -70,10 +72,12 @@ Kliknij dowolny zrzut, aby zobaczyć w pełnym rozmiarze.
 ## 📱 Instalacja jako PWA
 
 ### Android (Chrome)
+
 - Menu przeglądarki (⋮) → "Dodaj do ekranu głównego"
 - Lub: ☰ Menu → 📲 Zainstaluj aplikację
 
 ### iPhone / iPad (Safari)
+
 1. Otwórz stronę w **Safari** (nie w innej przeglądarce!)
 2. Dotknij **Udostępnij** ⬆️ na dole ekranu
 3. Przewiń w dół → **„Dodaj do ekranu głównego"**
@@ -87,14 +91,14 @@ Funkcja **🔗 Udostępnij widok** w bocznym menu tworzy link do dokładnie tego
 
 ### Parametry URL
 
-| Parametr | Znaczenie | Przykład | Opcjonalny |
-|----------|-----------|----------|------------|
-| `view` | Typ widoku: `dashboard`, `week`, `month`, `table` | `view=month` | Nie |
-| `y` | Rok | `y=2026` | Nie |
-| `m` | Miesiąc (1-12) | `m=8` | Tak* |
-| `d` | Dzień (1-31) | `d=10` | Tak* |
-| `brig` | Brygada (A/B/C/D) | `brig=C` | Tak* |
-| `rok` | Tryb Rok (1 = włączony) | `rok=1` | Tak* |
+| Parametr | Znaczenie                                         | Przykład     | Opcjonalny |
+| -------- | ------------------------------------------------- | ------------ | ---------- |
+| `view`   | Typ widoku: `dashboard`, `week`, `month`, `table` | `view=month` | Nie        |
+| `y`      | Rok                                               | `y=2026`     | Nie        |
+| `m`      | Miesiąc (1-12)                                    | `m=8`        | Tak\*      |
+| `d`      | Dzień (1-31)                                      | `d=10`       | Tak\*      |
+| `brig`   | Brygada (A/B/C/D)                                 | `brig=C`     | Tak\*      |
+| `rok`    | Tryb Rok (1 = włączony)                           | `rok=1`      | Tak\*      |
 
 \* Parametr jest dodawany automatycznie, jeśli ma sens w danym widoku.
 
@@ -120,14 +124,17 @@ Funkcja **🔗 Udostępnij widok** w bocznym menu tworzy link do dokładnie tego
 ## 🛠 Dla developerów
 
 ### Stos technologiczny
+
 - **Vanilla JavaScript** (ES2020+, bez frameworków, bez build system)
 - **HTML5 + CSS3** (Custom Properties, Flexbox, Grid)
 - **i18n**: własny prosty system tłumaczeń w `js/i18n/` (3 języki, bez zależności zewnętrznych)
 - **PWA**: Service Worker + Web App Manifest
 - **Google Drive API** (OAuth 2.0)
 - **Hosting**: GitHub Pages
+- **CI/CD**: GitHub Actions (auto-versioning cache SW przy każdym pushu)
 
 ### Wymagania
+
 - Nowoczesna przeglądarka z obsługą ES2020, Service Worker, localStorage
 - **Uwaga**: PWA i moduły JS wymagają HTTP (nie działa z `file://`)
 
@@ -182,27 +189,30 @@ Następnie otwórz: `http://localhost:8000`
 ## ⌨️ Skróty klawiszowe
 
 ### Tryb edycji
-| Skrót | Działanie |
-|-------|-----------|
-| `R` / `P` / `N` / `W` | Wybór zmiany do malowania |
-| `C` | Tryb cyklu (rotacja zmian) |
-| `O` | Tryb nadgodzin (przed/po zmianie ORAZ praca w dzień wolny/święto) |
-| `Ctrl+Z` | Cofnij ostatnią zmianę |
-| `Ctrl+Y` / `Ctrl+Shift+Z` | Ponów cofniętą zmianę |
-| `Ctrl+S` | Zapisz wszystkie zmiany |
-| `Esc` | Wyjdź z trybu edycji |
+
+| Skrót                     | Działanie                                                         |
+| ------------------------- | ----------------------------------------------------------------- |
+| `R` / `P` / `N` / `W`     | Wybór zmiany do malowania                                         |
+| `C`                       | Tryb cyklu (rotacja zmian)                                        |
+| `O`                       | Tryb nadgodzin (przed/po zmianie ORAZ praca w dzień wolny/święto) |
+| `Ctrl+Z`                  | Cofnij ostatnią zmianę                                            |
+| `Ctrl+Y` / `Ctrl+Shift+Z` | Ponów cofniętą zmianę                                             |
+| `Ctrl+S`                  | Zapisz wszystkie zmiany                                           |
+| `Esc`                     | Wyjdź z trybu edycji                                              |
 
 ### Nawigacja
-| Skrót | Działanie |
-|-------|-----------|
+
+| Skrót     | Działanie                              |
+| --------- | -------------------------------------- |
 | `←` / `→` | Poprzedni/następny miesiąc lub tydzień |
-| `E` | Włącz/wyłącz tryb edycji |
-| `Esc` | Zamknij popup/modal lub wyjdź z edycji |
+| `E`       | Włącz/wyłącz tryb edycji               |
+| `Esc`     | Zamknij popup/modal lub wyjdź z edycji |
 
 ### Wybór brygady
-| Akcja | Działanie |
-|-------|-----------|
-| `Klik` | Zmień aktywną brygadę |
+
+| Akcja         | Działanie                                           |
+| ------------- | --------------------------------------------------- |
+| `Klik`        | Zmień aktywną brygadę                               |
 | `Ctrl + klik` | Porównaj z inną brygadą (podświetla wspólne zmiany) |
 
 ## 🌐 Języki
@@ -213,10 +223,10 @@ Aplikacja obsługuje 3 języki (wybór przyciskiem 🌐 w górnym pasku):
 - 🇺🇸 **English**
 - 🇺🇦 **Українська**
 
-Język jest automatycznie wykrywany z ustawień przeglądarki przy pierwszym uruchomieniu.
-Wybrany język zapisuje się w localStorage i zostaje po restarcie.
+Język jest automatycznie wykrywany z ustawień przeglądarki przy pierwszym uruchomieniu. Wybrany język zapisuje się w localStorage i zostaje po restarcie.
 
 **Dla developerów** — dodawanie nowych tłumaczeń:
+
 1. Otwórz `js/i18n/pl.js` (lub en.js/uk.js) — dodaj nowy klucz z wartością
 2. **Ważne**: dodaj ten sam klucz w WSZYSTKICH 3 plikach
 3. W HTML używaj `data-i18n="klucz"` lub w JS: `t('klucz')` / `t('klucz', {param: 'wartość'})`
@@ -240,6 +250,7 @@ Wszystkie dane przechowywane są lokalnie w przeglądarce użytkownika. Synchron
 Znaleziono błąd lub masz sugestię? Napisz na: [tantsiura.s@pg.com](mailto:tantsiura.s@pg.com)
 
 Przy zgłoszeniu podaj:
+
 - Rok, datę, brygadę
 - Nazwę przeglądarki i urządzenie
 - Krótki opis problemu

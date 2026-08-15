@@ -1,5 +1,10 @@
+/* ================================================================
+   GRAFIK GILLETTE — Tłumaczenia: POLSKI (domyślny)
+   ================================================================ */
+
 window.translations = window.translations || {};
 window.translations.pl = {
+  // === APP / TOP BAR ===
   appName: 'Grafik Gillette',
   appNameShort: 'Grafik',
   editMode: 'Tryb edycji (E)',
@@ -16,10 +21,16 @@ window.translations.pl = {
   nextMonth: 'Następny miesiąc (→)',
   prevWeek: '‹',
   nextWeek: '›',
+
+  // === SHIFTS ===
   shiftR: 'Rano (R)',
   shiftP: 'Popołudnie (P)',
   shiftN: 'Noc (N)',
   shiftW: 'Wolne',
+  shiftEmpty: 'Wolne',
+  shiftRShort: 'Rano',
+  shiftPShort: 'Popołudnie',
+  shiftNShort: 'Noc',
   shiftROption: 'R – Rano',
   shiftPOption: 'P – Popołudnie',
   shiftNOption: 'N – Noc',
@@ -31,34 +42,12 @@ window.translations.pl = {
   paletteTitleW: 'Wolne (W)',
   cycleMode: 'Cykl',
   overtime: 'Nadgodziny (O)',
+
+  // === EDIT BANNER ===
   undoHint: 'Cofnij ostatnią zmianę (Ctrl+Z)',
   redoHint: 'Ponów cofniętą zmianę (Ctrl+Y)',
   saveHint: 'Zapisz zmiany w przeglądarce (Ctrl+S)',
   yearToggle: 'Rok',
-  otHoursLabel: 'Ile godzin?',
-  otOrCustom: 'lub własnie:',
-  otHoursUnit: 'godzin',
-  otNote: '📝 Notatka (opcjonalne)',
-  otNotePlaceholder: 'np. Zastępstwo za Kowalskiego',
-  faqTitle: '❓ Pomoc — Grafik Gillette (FAQ v3)',
-  faqIntro:
-    'Kliknij pytanie, aby zobaczyć odpowiedź. Poniżej znajdziesz szczegółowy opis zakładek, możliwości i tego, co aplikacja pokazuje.',
-  faqOk: 'Rozumiem',
-  welcome: '👋 Witaj! Kliknij ☰ Menu → Pomoc, aby zobaczyć wszystkie funkcje.',
-  greeting: 'Cześć! 👋',
-  tomorrow: 'Jutro',
-  nextDayOff: 'Do wolnego',
-  thisWeek: 'Ten tydzień',
-  vacation: 'Urlop',
-  upcomingDays: 'Najbliższe 7 dni',
-  seeMonth: '📅 Zobacz miesiąc',
-  seeWeek: '📆 Zobacz tydzień',
-  unknown: 'Nieznane',
-  todayLabel: 'Dziś!',
-  daysAgo: 'wczoraj',
-  dayBefore: 'wczoraj',
-  dayAfter: 'jutro',
-  inDays: 'Za {n} dni',
   editBannerTitle: 'Tryb edycji',
   editBannerHint:
     'Skróty: R P N W = zmiana • O = nadgodziny • Ctrl+Z = cofnij • Ctrl+S = zapisz • Esc = wyjdź',
@@ -94,6 +83,8 @@ window.translations.pl = {
   discardConfirmBody: 'Zostaną odrzucone {n} {unit}.',
   discardConfirmBtn: '↶ Cofnij',
   discardSuccess: 'Zmiany cofnięte',
+
+  // === YEAR PICKER ===
   yearWithChanges: 'Rok {year} — z Twoimi zmianami',
   yearFactoryData: 'Rok {year} — dane fabryczne',
   yearNoData: 'Rok {year} — brak danych, użyj ✏️',
@@ -108,11 +99,20 @@ window.translations.pl = {
   resetBody:
     'Usunięte zostaną WSZYSTKIE Twoje edycje (wszystkie lata + bufor). Fabryczne dane wrócą. Urlopy, nadgodziny i notatki pozostaną.',
   resetSuccess: 'Wszystkie zmiany zresetowane',
+
+  // === EMPTY STATE ===
   emptyYearTitle: 'Rok {year} jest pusty',
   emptyYearBody:
     'Ten rok nie ma jeszcze fabrycznych danych.<br>Wypełnij go ręcznie w trybie edycji lub zaimportuj plik JSON.',
   emptyEnableEdit: '✏️ Włącz edycję',
   emptyImport: '📂 Import JSON',
+  yearIsEmptyTitle: 'Rok {year} jest pusty',
+  yearIsEmptyDescription:
+    'Ten rok nie ma jeszcze fabrycznych danych.<br>Wypełnij go ręcznie w trybie edycji lub zaimportuj plik JSON.',
+  enableEdit: '✏️ Włącz edycję',
+  importJson: '📂 Import JSON',
+
+  // === INFO PANEL ===
   infoPanelTitle: 'ℹ️ Wybierz dzień w kalendarzu',
   infoPanelHint: 'Kliknij dowolny dzień, aby zobaczyć szczegóły.',
   infoStatus: 'Status',
@@ -134,6 +134,22 @@ window.translations.pl = {
   infoUrlopMarked: 'Zaznaczone',
   infoUrlopWorking: 'Robocze',
   infoUrlopLimitEdit: 'Zmień limit urlopów dla {brig}',
+  infoDate: '📅 Data:',
+  infoShiftLabel: '🏭 Zmiana:',
+  infoPosition: '📍 Pozycja:',
+  infoPaid: 'zapłaty',
+  infoTime: '⏰ Czas:',
+  infoBrigadeHours: 'Brygada {brig}: {worked}h / {total}h ({pct}%)',
+  infoDayTooltip: '{d} {month}: {status}',
+  infoTableTooltip: '{brig} • {d} {month}: {status}',
+  infoStatusFree: '🏖️ Wolne',
+
+  // === OVERTIME ===
+  otHoursLabel: 'Ile godzin?',
+  otOrCustom: 'lub własnie:',
+  otHoursUnit: 'godzin',
+  otNote: '📝 Notatka (opcjonalne)',
+  otNotePlaceholder: 'np. Zastępstwo za Kowalskiego',
   otBefore: '⏱ PRZED',
   otAfter: '⏱ PO',
   otAdd: '+ Dodaj',
@@ -175,6 +191,7 @@ window.translations.pl = {
   otWeekBefore: '⬅ PRZED',
   otWeekAfter: 'PO ➡',
   otAddInMonthView: 'Nadgodziny dodawaj w widoku Miesiąc',
+  otOnlyOnShift: 'Nadgodziny można dodać tylko do dnia ze zmianą',
 
   // === WEEKEND / HOLIDAY OVERTIME ===
   otWeekendTitle: 'Praca w dzień wolny',
@@ -186,12 +203,19 @@ window.translations.pl = {
   otRate: 'Stawka',
   otDeleteWeekend: 'Usunąć zapis pracy w dzień wolny?',
 
+  // === VACATION ===
   vacationLimitTitle: 'Ustaw limit urlopu',
   vacationLimitBody: 'Podaj nową liczbę dni urlopu dla brygady <strong>{brig}</strong>:',
   vacationLimitSave: 'Zapisz',
   vacationLimitCancel: 'Anuluj',
   vacationLimitInvalid: 'Wpisz liczbę dni większą lub równą 0',
   vacationLimitSet: 'Limit urlopów dla brygady {brig}: {n} dni',
+  vacation: 'Urlop',
+  urlopRemoved: 'Urlop usunięty',
+  urlopAdded: 'Urlop dodany',
+  removed: 'Usunięto',
+
+  // === EXPORT / IMPORT / SHARE ===
   exportSuccess: 'Kalendarz wyeksportowany',
   exportJsonSuccess: 'Backup pobrany',
   importReplaceTitle: '⚠️ Zastąpić aktualne dane?',
@@ -222,12 +246,16 @@ window.translations.pl = {
   shareLinkCopied: 'Link skopiowany do schowka',
   shareLinkFailed: 'Nie udało się skopiować linku',
   shareApp: 'Grafik Gillette',
+
+  // === PRINT ===
   printHeaderDashboard: 'Dashboard',
   printHeaderWeek: 'Tydzień',
   printHeaderMonth: 'Miesiąc',
   printHeaderTable: 'Tabela',
   printYearSuffix: ' — cały rok',
   printGenerated: 'Wygenerowano',
+
+  // === VIEWS ===
   viewDashboard: '🏠 Dashboard',
   viewWeek: '7️⃣ Tydzień',
   viewMonth: '📅 Miesiąc',
@@ -237,7 +265,34 @@ window.translations.pl = {
   yearViewTitle: '📋 Cały rok {year} — wszystkie brygady',
   monthViewTitle: '📋 {month} {year} — wszystkie brygady',
   tableCorner: 'Br.\\Dz.',
+  brigade: 'Brygada',
+  dayOff: 'Wolne',
   free: 'Wolne',
+  wholeYear: 'Cały rok',
+  allBrigades: 'wszystkie brygady',
+  brigadeDayHeader: 'Br.\\Dz.',
+
+  // === DASHBOARD ===
+  welcome: '👋 Witaj! Kliknij ☰ Menu → Pomoc, aby zobaczyć wszystkie funkcje.',
+  greeting: 'Cześć! 👋',
+  tomorrow: 'Jutro',
+  nextDayOff: 'Do wolnego',
+  thisWeek: 'Ten tydzień',
+  upcomingDays: 'Najbliższe 7 dni',
+  seeMonth: '📅 Zobacz miesiąc',
+  seeWeek: '📆 Zobacz tydzień',
+  unknown: 'Nieznane',
+  todayLabel: 'Dziś!',
+  daysAgo: 'wczoraj',
+  dayBefore: 'wczoraj',
+  dayAfter: 'jutro',
+  inDays: 'Za {n} dni',
+
+  // === FAQ ===
+  faqTitle: '❓ Pomoc — Grafik Gillette (FAQ v3)',
+  faqIntro:
+    'Kliknij pytanie, aby zobaczyć odpowiedź. Poniżej znajdziesz szczegółowy opis zakładek, możliwości i tego, co aplikacja pokazuje.',
+  faqOk: 'Rozumiem',
   faqStartTitle: '🚀 Jak zacząć pracę z aplikacją?',
   faqStart1: 'Wybierz swoją brygadę (A/B/C/D)',
   faqStart2: 'Wybierz rok strzałkami ‹ ›',
@@ -341,6 +396,25 @@ window.translations.pl = {
   faqExportTitle: '📥 Czy można eksportować grafik do innych aplikacji?',
   faqExportDesc:
     'Tak. W menu dostępny jest eksport .ics do kalendarza oraz backup JSON. Plik .ics można zaimportować do Google Calendar, Outlooka, iPhone’a i wielu innych aplikacji kalendarzowych.',
+
+  // === FAQ SHARE APP & UPDATE (v3.6.0) ===
+  faqShareAppTitle: '📱 Jak udostępnić aplikację innym?',
+  faqShareAppDesc: 'Aplikację można łatwo udostępnić kolegom z brygady na kilka sposobów:',
+  faqShareApp1: 'Otwórz menu (☰) i wybierz "📱 Udostępnij aplikację"',
+  faqShareApp2: 'Pokaż kod QR koledze — może go zeskanować aparatem telefonu',
+  faqShareApp3: 'Lub kliknij "📋 Kopiuj link" i wyślij przez SMS/Messenger',
+  faqShareApp4: 'Na telefonie kliknij "🔗 Udostępnij" — wybierz aplikację (WhatsApp, SMS, email)',
+  faqShareAppNote:
+    'Odbiorca otworzy link i od razu może zacząć korzystać z aplikacji, bez instalacji.',
+  faqUpdateTitle: '🔄 Jak działają aktualizacje aplikacji?',
+  faqUpdateDesc:
+    'Aplikacja sama sprawdza dostępność nowej wersji w tle (co godzinę oraz przy każdym otwarciu).',
+  faqUpdateHow:
+    'Gdy pojawi się nowa wersja, zobaczysz powiadomienie w dolnej części ekranu: "🔄 Nowa wersja dostępna". Kliknij przycisk "Odśwież" — aplikacja przeładuje się z nową wersją.',
+  faqUpdateNote:
+    'Twoje dane (grafiki, urlopy, nadgodziny) NIE zostaną utracone. Aktualizowana jest tylko sama aplikacja.',
+
+  // === FAQ (continued) ===
   faqInstallTitle: '📲 Jak zainstalować aplikację na iPhone / iPad?',
   faqInstallDesc:
     'Aplikacja jest dostępna jako PWA (Progressive Web App). Na urządzeniach Apple nie ma natywnego okna instalacji, ale możesz dodać ją do ekranu głównego:',
@@ -358,13 +432,13 @@ window.translations.pl = {
   faqBugNote:
     'Przy zgłoszeniu błędu warto podać rok, datę, brygadę, przeglądarkę i krótki opis problemu.',
 
-  // === MENU (заголовки секцій — без іконок, іконки в HTML не мають) ===
+  // === MENU (section titles) ===
   menuSectionDrive: 'Google Drive',
   menuSectionExport: 'Eksport',
   menuSectionNotifications: 'Powiadomienia',
   menuSectionInfo: 'Info',
 
-  // === MENU (пункти — без іконок, іконки в HTML через <span class="mi-icon">) ===
+  // === MENU (items) ===
   menuDrive: 'Google Drive (zaloguj)',
   menuSyncNow: 'Synchronizuj teraz',
   menuDriveLogout: 'Wyloguj z Google Drive',
@@ -377,6 +451,7 @@ window.translations.pl = {
   menuTheme: 'Motyw',
   installPrompt: 'Zainstaluj aplikację',
 
+  // === GENERIC ===
   cancel: 'Anuluj',
   ok: 'OK',
   close: 'Zamknij',
@@ -384,6 +459,9 @@ window.translations.pl = {
   delete: 'Usuń',
   yes: 'Tak',
   no: 'Nie',
+  gotIt: 'Rozumiem',
+
+  // === DAYS ===
   dayMon: 'Pon',
   dayTue: 'Wt',
   dayWed: 'Śr',
@@ -398,6 +476,8 @@ window.translations.pl = {
   dayFriday: 'Piątek',
   daySaturday: 'Sobota',
   daySunday: 'Niedziela',
+
+  // === MONTHS ===
   month1: 'Styczeń',
   month2: 'Luty',
   month3: 'Marzec',
@@ -422,6 +502,7 @@ window.translations.pl = {
   month10Short: 'Paź',
   month11Short: 'Lis',
   month12Short: 'Gru',
+
   // === MONTHS (genitive — for dates like "12 sierpnia 2026") ===
   month1Genitive: 'stycznia',
   month2Genitive: 'lutego',
@@ -436,10 +517,7 @@ window.translations.pl = {
   month11Genitive: 'listopada',
   month12Genitive: 'grudnia',
 
-  shiftEmpty: 'Wolne',
-  shiftRShort: 'Rano',
-  shiftPShort: 'Popołudnie',
-  shiftNShort: 'Noc',
+  // === HOLIDAYS ===
   holidayNewYear: 'Nowy Rok',
   holidayEpiphany: 'Trzech Króli',
   holidayEaster: 'Wielkanoc',
@@ -453,31 +531,12 @@ window.translations.pl = {
   holidayIndependence: 'Święto Niepodległości',
   holidayChristmas1: 'Boże Narodzenie',
   holidayChristmas2: '2. Dzień Bożego Narodzenia',
+
+  // === PALETTE ===
   paletteSelected: 'Wybrano: {name}',
   paletteChanged: 'Paleta: {name}',
-  otOnlyOnShift: 'Nadgodziny można dodać tylko do dnia ze zmianą',
-  urlopRemoved: 'Urlop usunięty',
-  urlopAdded: 'Urlop dodany',
-  removed: 'Usunięto',
-  infoDate: '📅 Data:',
-  infoShiftLabel: '🏭 Zmiana:',
-  infoPosition: '📍 Pozycja:',
-  infoPaid: 'zapłaty',
-  infoTime: '⏰ Czas:',
-  infoBrigadeHours: 'Brygada {brig}: {worked}h / {total}h ({pct}%)',
-  infoDayTooltip: '{d} {month}: {status}',
-  infoTableTooltip: '{brig} • {d} {month}: {status}',
-  infoStatusFree: '🏖️ Wolne',
-  brigade: 'Brygada',
-  dayOff: 'Wolne',
-  wholeYear: 'Cały rok',
-  allBrigades: 'wszystkie brygady',
-  brigadeDayHeader: 'Br.\\Dz.',
-  yearIsEmptyTitle: 'Rok {year} jest pusty',
-  yearIsEmptyDescription:
-    'Ten rok nie ma jeszcze fabrycznych danych.<br>Wypełnij go ręcznie w trybie edycji lub zaimportuj plik JSON.',
-  enableEdit: '✏️ Włącz edycję',
-  importJson: '📂 Import JSON',
+
+  // === GOOGLE DRIVE ===
   driveLoggedIn: 'Zalogowano do Google Drive',
   driveLoginFailed: 'Błąd logowania do Google Drive',
   driveLoginRequired: 'Wymagane logowanie do Google Drive',
@@ -517,16 +576,19 @@ window.translations.pl = {
   driveSyncBody: 'Czy chcesz wysłać dane do Drive lub pobrać z Drive?',
   sendToDrive: '📤 Wyślij do Drive',
   driveLoggedOut: 'Wylogowano z Google Drive',
+
+  // === PWA INSTALL ===
   installApp: '📲 Zainstaluj aplikację',
   installAppIosIntro: 'Aby zainstalować aplikację na iPhone/iPad:',
   installAppIosStep1: 'Otwórz tę stronę w Safari',
   installAppIosStep2: 'Dotknij przycisku Udostępnij ⬆️',
   installAppIosStep3: 'Wybierz "Dodaj do ekranu głównego"',
   installAppIosNote: 'Po instalacji aplikacja będzie dostępna offline i w pełnym ekranie.',
-  gotIt: 'Rozumiem',
   appInstalled: 'Aplikacja zainstalowana',
   installStarted: 'Instalacja rozpoczęta',
   installCancelled: 'Instalacja anulowana',
+
+  // === NOTIFICATIONS ===
   notificationsNotSupported: 'Powiadomienia nie są obsługiwane',
   notificationsAboutShifts: 'Powiadomienia o zmianach',
   notificationsEnabledHint: 'Powiadomienia włączone',
@@ -541,13 +603,19 @@ window.translations.pl = {
   notificationsEnabled: 'Powiadomienia włączone',
   notificationsTestBody: 'To jest test powiadomienia',
   notificationsDisabled: 'Powiadomienia wyłączone',
+
+  // === TIMERS ===
   shift: 'Zmiana',
   timerEndsIn: '⏱️ Kończy się za {h}h {m}min',
   timerNightEndsIn: '🌙 Zmiana nocna kończy się za {h}h {m}min',
   timerStartsIn: '⏰ Zacznie się za {m} min',
+
+  // === AUTO-UPDATE (v3.6.0) ===
   updateAvailable: 'Nowa wersja dostępna',
   updateHint: 'Kliknij "Odśwież", aby zaktualizować',
   updateNow: '🔄 Odśwież',
+
+  // === SHARE APP MODAL (v3.6.0) ===
   menuShareApp: 'Udostępnij aplikację',
   shareAppTitle: 'Udostępnij aplikację',
   shareAppIntro: 'Zeskanuj kod QR telefonem lub udostępnij link znajomym z brygady.',

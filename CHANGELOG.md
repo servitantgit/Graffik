@@ -6,6 +6,39 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 
 ## [Unreleased]
 
+## [3.6.0] - 2026-08-14
+
+### Dodane
+
+- **📱 Udostępnianie aplikacji** — nowa pozycja w bocznym menu z modalnym oknem zawierającym:
+  - Automatycznie generowany kod QR (przez api.qrserver.com) do szybkiego zeskanowania telefonem
+  - Link do aplikacji z możliwością kopiowania jednym kliknięciem
+  - Przycisk "🔗 Udostępnij" wykorzystujący natywne Web Share API (SMS, WhatsApp, Messenger, Email itp.)
+  - Fallback do kopiowania linku na desktopie bez Web Share API
+- **🔄 Auto-update Service Workera** — automatyczne wykrywanie nowej wersji aplikacji z powiadomieniem toast:
+  - Wykrywanie nowej wersji SW w tle (co 60 minut lub przy każdym otwarciu)
+  - Toast "🔄 Nowa wersja dostępna" z przyciskiem odświeżenia
+  - Obsługa `SKIP_WAITING` message dla natychmiastowej aktywacji
+  - Automatyczny reload strony po zatwierdzeniu przez użytkownika
+- **🤖 GitHub Actions CI/CD** — workflow `.github/workflows/deploy.yml`:
+  - Automatyczne wersjonowanie cache SW przy każdym pushu (na podstawie git commit hash)
+  - Deploy do gałęzi `gh-pages`
+  - Placeholder `__BUILD_ID__` w `sw.js` zamieniany na krótki hash commita
+- **Nowe klucze i18n** (pl/en/uk): `menuShareApp`, `shareAppTitle`, `shareAppIntro`, `shareAppCopy`, `shareAppShare`, `shareAppCopied`, `shareAppHint`, `shareAppQrError`, `shareAppText`, `updateAvailable`, `updateHint`, `updateNow`
+
+### Zmienione
+
+- **`sw.js`** — dynamiczny `CACHE_NAME` z hash commita zamiast ręcznego inkrementowania wersji
+- **`js/pwa.js`** — funkcja `registerServiceWorker()` z pełną obsługą auto-update i toastów
+- **`js/actions.js`** — dodane funkcje `getAppUrl()`, `buildQRCodeUrl()`, `shareApp()`
+- **Dashboard** — dodano automatyczne liczenie nadgodzin dla dodanych zmian w święta (+200%) i niedziele (+100%) w podsumowaniu tygodniowym
+- **Dashboard hero** — jeśli istnieje notatka na dzisiaj, wyświetlana zamiast standardowego powitania "Cześć!"
+- **Info panel** — połączone karty "Kto przekazał" i "Kto przejmie" w jedną kompaktową kartę z badges i strzałkami kierunku
+
+### Naprawione
+
+- Nadgodziny za dodane zmiany w dni wolne były liczone tylko w podsumowaniu miesięcznym — teraz również w widoku tygodnia na Dashboard
+
 ## [3.5.1] - 2026-08-13
 
 ### Naprawione
@@ -43,8 +76,8 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 
 ### Dodane
 
-- **🌙 Wskaźnik nocnej zmiany trвающей po północy** — timer teraz pokazuje ikonę 🌙 i dedykowaną etykietę gdy odlicza koniec wczorajszej zmiany N (nowy klucz i18n `timerNightEndsIn` w pl/en/uk)
-- **Ochrona przed przypadkowym tap-em na popup na mobile** (`js/calendar.js`) — po wybraniu dnia (np. kliknięcie "Dziś") popupy `relief` (poprzednia/następna zmiana, urlop) are nieaktywne przez 400ms. Tap w tym oknie deselektuje dzień zamiast wykonywać akcję popupu. Zapobiega przypadkowemu przełączeniu brygady lub oznaczeniu urlopu
+- **🌙 Wskaźnik nocnej zmiany trwającej po północy** — timer teraz pokazuje ikonę 🌙 i dedykowaną etykietę gdy odlicza koniec wczorajszej zmiany N (nowy klucz i18n `timerNightEndsIn` w pl/en/uk)
+- **Ochrona przed przypadkowym tap-em na popup na mobile** (`js/calendar.js`) — po wybraniu dnia (np. kliknięcie "Dziś") popupy `relief` (poprzednia/następna zmiana, urlop) są nieaktywne przez 400ms. Tap w tym oknie deselektuje dzień zamiast wykonywać akcję popupu. Zapobiega przypadkowemu przełączeniu brygady lub oznaczeniu urlopu
 - **Konfiguracja Prettier** — dodane pliki `.prettierrc.json`, `.prettierignore` oraz `.vscode/settings.json` dla automatycznego formatowania kodu przy zapisie
 
 ### Zmienione
@@ -164,7 +197,9 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 
 Historia wcześniejszych wersji nie była śledzona.
 
-[Unreleased]: https://github.com/servitantgit/Graffik/compare/v3.5.0...HEAD
+[Unreleased]: https://github.com/servitantgit/Graffik/compare/v3.6.0...HEAD
+[3.6.0]: https://github.com/servitantgit/Graffik/releases/tag/v3.6.0
+[3.5.1]: https://github.com/servitantgit/Graffik/releases/tag/v3.5.1
 [3.5.0]: https://github.com/servitantgit/Graffik/releases/tag/v3.5.0
 [3.4.0]: https://github.com/servitantgit/Graffik/releases/tag/v3.4.0
 [3.3.0]: https://github.com/servitantgit/Graffik/releases/tag/v3.3.0
