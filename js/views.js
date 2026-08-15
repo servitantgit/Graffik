@@ -325,7 +325,7 @@ function renderEmptyState(container) {
   container.innerHTML = `
     <div class="empty-state">
       <div class="es-emoji">📅</div>
-      <h3>${t('yearIsEmptyTitle')} ${currentYear}</h3>
+      <h3>${t('yearIsEmptyTitle', { year: currentYear })}</h3>
       <p>${t('yearIsEmptyDescription')}</p>
       <div class="es-actions">
         <button class="btn-primary" onclick="document.getElementById('editModeToggle').click()">✏️ ${t('enableEdit')}</button>

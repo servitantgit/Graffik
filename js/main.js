@@ -127,7 +127,10 @@ function refreshViews() {
   updateYearToggleState();
 
   const empty =
-    !hasFactoryData(currentYear) && !hasCustomData(currentYear) && currentView !== 'dashboard';
+    !hasFactoryData(currentYear) &&
+    !hasCustomData(currentYear) &&
+    currentView !== 'dashboard' &&
+    !editMode;
 
   // Usuwamy stare podsumowanie nadgodzin przy przełączaniu widoku
   const oldOtSum = document.getElementById('otMonthSummary');
