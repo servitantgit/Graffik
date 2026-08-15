@@ -590,4 +590,13 @@ window.translations.en = {
   updateAvailable: 'New version available',
   updateHint: 'Click "Update" to refresh',
   updateNow: '🔄 Update',
+  menuShareApp: 'Share app',
+  shareAppTitle: 'Share app',
+  shareAppIntro: 'Scan the QR code with your phone or share the link with your brigade colleagues.',
+  shareAppCopy: 'Copy link',
+  shareAppShare: 'Share',
+  shareAppCopied: '✅ App link copied',
+  shareAppHint: 'The QR code works with any scanning app (camera, Google Lens, etc.)',
+  shareAppQrError: 'Failed to load QR code. Check your internet connection.',
+  shareAppText: 'Check out this shift schedule app:',
 };

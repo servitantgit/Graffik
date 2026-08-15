@@ -429,3 +429,121 @@ bindClick('resetCustomBtn', () => {
     { primaryText: t('resetBtn'), primaryClass: 'danger' }
   );
 });
+
+/* === SHARE APP (link + QR code) === */
+function getAppUrl() {
+  // Базовий URL додатку (без параметрів)
+  return `${location.origin}${location.pathname}`;
+}
+
+function buildQRCodeUrl(text, size = 250) {
+  // Використовуємо публічний сервіс QR Server (безкоштовний, без ключа)
+  const encoded = encodeURIComponent(text);
+  return `https://api.qrserver.com/v7/create-qr-code/?size=${size}x${size}&data=${encoded}&margin=10`;
+}
+
+function shareApp() {
+  const appUrl = getAppUrl();
+  const qrUrl = buildQRCodeUrl(appUrl, 280);
+
+  const body = `
+    <div style="text-align:center;">
+      <p style="margin-bottom:16px; font-size:14px;">
+        ${t('shareAppIntro')}
+      </p>
+
+      <div style="background:#fff; padding:12px; border-radius:12px; display:inline-block; box-shadow:0 4px 15px rgba(0,0,0,0.15); margin-bottom:16px;">
+        <img src="${qrUrl}" alt="QR Code" style="display:block; width:240px; height:240px;" onerror="this.style.display='none'; document.getElementById('qrError').style.display='block';">
+        <div id="qrError" style="display:none; color:#c0392b; padding:20px; font-size:13px;">
+          ⚠️ ${t('shareAppQrError')}
+        </div>
+      </div>
+
+      <div style="background:var(--bg-cell); border:1px solid var(--border-cell); border-radius:8px; padding:10px 12px; margin-bottom:12px; word-break:break-all; font-family:monospace; font-size:13px; color:var(--text-header);">
+        ${appUrl}
+      </div>
+
+      <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:8px;">
+        <button id="shareAppCopyBtn" class="modal-btn secondary" style="flex:1; min-width:130px;">
+          📋 ${t('shareAppCopy')}
+        </button>
+        <button id="shareAppNativeBtn" class="modal-btn primary" style="flex:1; min-width:130px;">
+          🔗 ${t('shareAppShare')}
+        </button>
+      </div>
+
+      <p style="font-size:11px; color:var(--text-muted); margin-top:12px;">
+        ${t('shareAppHint')}
+      </p>
+    </div>
+  `;
+
+  showModal({
+    title: `📱 ${t('shareAppTitle')}`,
+    body: body,
+    buttons: [{ text: t('close'), class: 'secondary' }],
+  });
+
+  // Attach handlers after modal is shown
+  setTimeout(() => {
+    const copyBtn = document.getElementById('shareAppCopyBtn');
+    const nativeBtn = document.getElementById('shareAppNativeBtn');
+
+    if (copyBtn) {
+      copyBtn.onclick = () => {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard
+            .writeText(appUrl)
+            .then(() => showToast('success', t('shareAppCopied')))
+            .catch(() => showToast('error', t('shareCopyFailed')));
+        } else {
+          // Fallback для старих браузерів
+          const textarea = document.createElement('textarea');
+          textarea.value = appUrl;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          try {
+            document.execCommand('copy');
+            showToast('success', t('shareAppCopied'));
+          } catch (e) {
+            showToast('error', t('shareCopyFailed'));
+          }
+          document.body.removeChild(textarea);
+        }
+      };
+    }
+
+    if (nativeBtn) {
+      nativeBtn.onclick = () => {
+        if (navigator.share) {
+          navigator
+            .share({
+              title: t('appName'),
+              text: t('shareAppText'),
+              url: appUrl,
+            })
+            .then(() => showToast('success', t('shareSuccess')))
+            .catch((err) => {
+              // Користувач скасував — не показуємо помилку
+              if (err.name !== 'AbortError') {
+                showToast('error', t('shareCopyFailed'));
+              }
+            });
+        } else {
+          // Немає Web Share API — просто копіюємо
+          navigator.clipboard
+            .writeText(appUrl)
+            .then(() => showToast('info', t('shareLinkCopied')))
+            .catch(() => showToast('error', t('shareCopyFailed')));
+        }
+      };
+    }
+  }, 100);
+}
+
+bindClick('menuShareApp', () => {
+  closeSideMenu();
+  shareApp();
+});

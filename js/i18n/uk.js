@@ -588,4 +588,13 @@ window.translations.uk = {
   updateAvailable: 'Доступна нова версія',
   updateHint: 'Натисніть "Оновити", щоб оновити',
   updateNow: '🔄 Оновити',
+  menuShareApp: 'Поділитися додатком',
+  shareAppTitle: 'Поділитися додатком',
+  shareAppIntro: 'Відскануйте QR-код телефоном або надішліть посилання колегам по бригаді.',
+  shareAppCopy: 'Копіювати посилання',
+  shareAppShare: 'Поділитися',
+  shareAppCopied: '✅ Посилання на додаток скопійовано',
+  shareAppHint: 'QR-код працює з будь-яким сканером (камера, Google Lens тощо)',
+  shareAppQrError: "Не вдалося завантажити QR-код. Перевірте інтернет-з'єднання.",
+  shareAppText: 'Рекомендую додаток для керування графіком змін:',
 };

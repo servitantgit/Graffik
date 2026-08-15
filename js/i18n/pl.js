@@ -548,4 +548,13 @@ window.translations.pl = {
   updateAvailable: 'Nowa wersja dostępna',
   updateHint: 'Kliknij "Odśwież", aby zaktualizować',
   updateNow: '🔄 Odśwież',
+  menuShareApp: 'Udostępnij aplikację',
+  shareAppTitle: 'Udostępnij aplikację',
+  shareAppIntro: 'Zeskanuj kod QR telefonem lub udostępnij link znajomym z brygady.',
+  shareAppCopy: 'Kopiuj link',
+  shareAppShare: 'Udostępnij',
+  shareAppCopied: '✅ Link do aplikacji skopiowany',
+  shareAppHint: 'Kod QR działa z każdą aplikacją do skanowania (aparat, Google Lens itp.)',
+  shareAppQrError: 'Nie udało się załadować kodu QR. Sprawdź połączenie z internetem.',
+  shareAppText: 'Polecam aplikację do zarządzania grafikiem zmian:',
 };
