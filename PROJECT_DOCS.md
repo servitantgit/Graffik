@@ -203,10 +203,20 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - Menu handlers: `menuIcs`, `menuPrint`, `menuShare`, `menuVacationLimit`
 - `clearYearBtn`, `resetCustomBtn` — czyszczenie danych
 - `validateImportedData(data)` — walidacja struktury JSON przy imporcie (typy, formaty dat, długości tablic)
+- `getAppUrl()` — zwraca bazowy URL aplikacji (bez parametrów query)
+- `buildQRCodeUrl(text, size)` — generuje URL do api.qrserver.com dla kodu QR
+- `shareApp()` — otwiera modal z QR kodem, linkiem, przyciskami kopiowania i natywnego udostępniania
+- Handler `menuShareApp` w side menu
 
 ### js/pwa.js — Moduł 9: PWA + Powiadomienia
 
-- `registerServiceWorker()` — rejestracja SW
+- `registerServiceWorker()` — rejestracja SW z pełną obsługą auto-update:
+  - Wykrywanie nowej wersji w `waiting` state
+  - Nasłuchiwanie na `updatefound` event
+  - Nasłuchiwanie na `controllerchange` → automatyczny reload
+  - Periodyczna kontrola aktualizacji co 60 minut
+- `promptUserToUpdate(waitingSW)` — wyświetla toast z przyciskiem "Odśwież"
+- `showUpdateToast(onUpdate)` — buduje niestandardowy toast z akcją
 - `setupInstallPrompt()` — prompt instalacji PWA
 - `isIOS`, `isStandalone` — detekcja środowiska
 - `requestNotificationPermission()` — prośba o uprawnienia
@@ -334,7 +344,6 @@ Używany dla wszystkich przycisków w side menu i edit banner.
 - Brak testów jednostkowych automatycznych (poza `test_core.js` dla obliczeń)
 - Synchronizacja Google Drive: brak merge/diff — last-write-wins (patrz sekcja 6)
 - `goToMonth` musi być exposed na `window` (patrz `window.goToMonth = goToMonth`)
-- Service Worker jest podstawowy (bez auto-update / toast notification) — użytkownicy widzą nową wersję dopiero przy drugiej wizycie
 - Klucze i18n są rozproszone po 3 plikach — brak central registry i validacji brakujących kluczy
 - Genitive month names są zdublowane w kodzie (monthNames dla nagłówków vs monthNamesGenitive dla dat)
 - Testowanie funkcji `getLiveTimer()` wymaga mockowania `Date`, `getShiftAt`, `isUrlop`, `getOvertimes` jednocześnie — pojedynczy mock jednej zależności może dawać fałszywe wyniki
@@ -365,8 +374,50 @@ System **nie obsługuje bezpiecznej synchronizacji z wielu urządzeń jednocześ
 - Wymaga to znaczącej przebudowy (wersjonowanie, historia zmian, trzyustawowe scalanie)
 - Rozważ wersjonowanie plików w chmurze lub jaśniejsze ostrzeżenia o utracie danych
 
-## 7. Historia zmian (ostatnie refaktoringi)
+## 7. CI/CD (GitHub Actions)
 
+### 7.1. Workflow: `.github/workflows/deploy.yml`
+
+Automatyczny deployment przy każdym pushu do gałęzi `main`:
+
+1. **Checkout** — pobranie kodu z repozytorium
+2. **Replace BUILD_ID** — zamiana placeholdera `__BUILD_ID__` w `sw.js` na krótki hash commita (np. `a3f42b1`)
+3. **Deploy to gh-pages** — publikacja do gałęzi `gh-pages` używanej przez GitHub Pages
+
+### 7.2. Dynamiczne wersjonowanie cache SW
+
+W `sw.js`:
+
+```javascript
+const CACHE_NAME = 'grafik-gillette-' + '__BUILD_ID__';
+```
+
+Placeholder `__BUILD_ID__` jest zamieniany przez CI/CD na aktualny git hash. Dzięki temu:
+
+- Każdy commit → nowa wersja cache SW
+- Klienci automatycznie widzą toast "🔄 Nowa wersja dostępna"
+- Nie ma potrzeby ręcznego inkrementowania v8 → v9 → v10
+
+### 7.3. Uprawnienia GitHub Actions
+
+W ustawieniach repo (Settings → Actions → General → Workflow permissions) musi być włączone **Read and write permissions**.
+
+### 7.4. GitHub Pages source
+
+Ustawienia (Settings → Pages):
+
+- **Source:** Deploy from a branch
+- **Branch:** `gh-pages`
+- **Folder:** `/ (root)`
+
+## 8. Historia zmian (ostatnie refaktoringi)
+
+- **v3.6.0 (2026-08-14):** Dodane udostępnianie aplikacji (QR + link + Web Share API)
+- **v3.6.0:** Auto-update Service Workera z toastem powiadomienia
+- **v3.6.0:** GitHub Actions workflow dla automatycznego wersjonowania cache
+- **v3.6.0:** Dashboard hero pokazuje notatkę na dzisiaj (jeśli istnieje)
+- **v3.6.0:** Nadgodziny za dodane zmiany w święta/niedziele w podsumowaniu tygodnia
+- **v3.6.0:** Połączone karty relief (poprzednia/następna zmiana) w info panelu
 - Usunięto martwy kod "Podsumowania tygodnia"
 - Dodano `bindClick()` helper dla bezpiecznego bindowania
 - Uproszczono motywy z 8 do 2 (jasny/ciemny) + przełącznik w top-bar
@@ -401,7 +452,7 @@ System **nie obsługuje bezpiecznej synchronizacji z wielu urządzeń jednocześ
 - **v3.5.0:** Usunięty martwy kod w `overtime-logic.js` (zmienne `dow`, `isSunday`)
 - **v3.5.0:** Konfiguracja Prettier + `.vscode/settings.json` + rozbudowany `.gitignore`
 
-## 8. Backlog / TODO na przyszłość
+## 9. Backlog / TODO na przyszłość
 
 - [ ] Migracja na ES modules (plan istnieje)
 - [ ] Wprowadzenie `AppState` jako obiektu (proto-krok do modułów)
@@ -417,7 +468,9 @@ System **nie obsługuje bezpiecznej synchronizacji z wielu urządzeń jednocześ
 - [x] Wydzielenie CSS z index.html do osobnego pliku ✅ (wcześniej)
 - [ ] Central rejestr kluczy i18n z ostrzeżeniami o brakujących tłumaczeniach
 - [ ] Testy automatyczne dla kategoryzacji nadgodzin
-- [ ] Zaawansowany Service Worker z auto-update + toast "🔄 Nowa wersja"
+- [x] Zaawansowany Service Worker z auto-update + toast "🔄 Nowa wersja" ✅ v3.6.0
+- [x] Udostępnianie aplikacji z QR kodem ✅ v3.6.0
+- [x] CI/CD dla automatycznego wersjonowania SW ✅ v3.6.0
 - [x] Naprawa kolizji `t` z i18n w handlerach popupów ✅ v3.5.0
 - [x] Naprawa timera nocnej zmiany po północy ✅ v3.5.0
 - [x] Safe DOM binding (`bindClick`/`bindEvent`) w `main.js` ✅ v3.5.0
@@ -426,12 +479,13 @@ System **nie obsługuje bezpiecznej synchronizacji z wielu urządzeń jednocześ
 - [x] Filtr protokołu w Service Worker (chrome-extension) ✅ v3.5.0
 - [x] Konfiguracja Prettier ✅ v3.5.0
 
-## 9. Szybkie odwołania
+## 10. Szybkie odwołania
 
 ### Pliki konfiguracyjne
 
 - `manifest.json` — PWA manifest (nazwa, kolory, ikony)
 - `sw.js` — Service Worker (cache strategy)
+- `.github/workflows/deploy.yml` — GitHub Actions CI/CD
 - `.agent.md` — Instrukcje dla AI-asystentów
 
 ### Dokumentacja użytkownika

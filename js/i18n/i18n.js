@@ -187,6 +187,27 @@ function renderFAQ() {
       content: `<p>${t('faqExportDesc')}</p>`,
     },
     {
+      title: t('faqShareAppTitle'),
+      content: `
+                <p>${t('faqShareAppDesc')}</p>
+                <ol>
+                    <li>${t('faqShareApp1')}</li>
+                    <li>${t('faqShareApp2')}</li>
+                    <li>${t('faqShareApp3')}</li>
+                    <li>${t('faqShareApp4')}</li>
+                </ol>
+                <p>${t('faqShareAppNote')}</p>
+            `,
+    },
+    {
+      title: t('faqUpdateTitle'),
+      content: `
+                <p>${t('faqUpdateDesc')}</p>
+                <p>${t('faqUpdateHow')}</p>
+                <p>${t('faqUpdateNote')}</p>
+            `,
+    },
+    {
       title: t('faqInstallTitle'),
       content: `
                 <p>${t('faqInstallDesc')}</p>

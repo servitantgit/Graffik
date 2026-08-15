@@ -395,6 +395,25 @@ window.translations.en = {
   faqExportTitle: '📥 Can I export the schedule to other apps?',
   faqExportDesc:
     'Yes. The menu offers .ics calendar export and JSON backup. The .ics file can be imported into Google Calendar, Outlook, iPhone and many other calendar apps.',
+
+  // === FAQ SHARE APP & UPDATE (v3.6.0) ===
+  faqShareAppTitle: '📱 How to share the app with others?',
+  faqShareAppDesc: 'You can easily share the app with brigade colleagues in several ways:',
+  faqShareApp1: 'Open the menu (☰) and select "📱 Share app"',
+  faqShareApp2: 'Show the QR code to a colleague — they can scan it with their phone camera',
+  faqShareApp3: 'Or click "📋 Copy link" and send via SMS/Messenger',
+  faqShareApp4: 'On mobile, click "🔗 Share" — choose an app (WhatsApp, SMS, email)',
+  faqShareAppNote:
+    'The recipient opens the link and can start using the app immediately, no installation needed.',
+  faqUpdateTitle: '🔄 How do app updates work?',
+  faqUpdateDesc:
+    'The app automatically checks for new versions in the background (every hour and on every open).',
+  faqUpdateHow:
+    'When a new version is available, you\'ll see a notification at the bottom: "🔄 New version available". Click "Update" — the app will reload with the new version.',
+  faqUpdateNote:
+    'Your data (schedules, vacations, overtime) will NOT be lost. Only the app itself is updated.',
+
+  // === FAQ (continued) ===
   faqInstallTitle: '📲 How to install the app on iPhone / iPad?',
   faqInstallDesc:
     'The app is available as a PWA (Progressive Web App). On Apple devices there is no native install window, but you can add it to your home screen:',
@@ -583,13 +602,19 @@ window.translations.en = {
   notificationsEnabled: 'Notifications enabled',
   notificationsTestBody: 'This is a test notification',
   notificationsDisabled: 'Notifications disabled',
+
+  // === TIMERS ===
   shift: 'Shift',
   timerEndsIn: '⏱️ Ends in {h}h {m}min',
   timerNightEndsIn: '🌙 Night shift ends in {h}h {m}min',
   timerStartsIn: '⏰ Starts in {m} min',
+
+  // === AUTO-UPDATE (v3.6.0) ===
   updateAvailable: 'New version available',
   updateHint: 'Click "Update" to refresh',
   updateNow: '🔄 Update',
+
+  // === SHARE APP MODAL (v3.6.0) ===
   menuShareApp: 'Share app',
   shareAppTitle: 'Share app',
   shareAppIntro: 'Scan the QR code with your phone or share the link with your brigade colleagues.',
