@@ -412,6 +412,13 @@ Ustawienia (Settings → Pages):
 
 ## 8. Historia zmian (ostatnie refaktoringi)
 
+- **v3.6.2 (2026-08-15):** Admin identification via Google OAuth email (`js/admin.js`)
+- **v3.6.2:** Nowa sekcja "👑 Admin Panel" w bocznym menu (widoczna tylko dla admina)
+- **v3.6.2:** Uproszczony edit-banner — 5 przycisków przeniesionych do menu "⚙️ Zarządzaj"
+- **v3.6.2:** Przycisk "🆓 Wolne" w modalu AddShift — szybkie czyszczenie błędnie dodanej zmiany
+- **v3.6.2:** Fix: empty state nie blokuje edycji pustego roku (dla admina zapełniającego nowy rok)
+- **v3.6.2:** Fix: placeholder `{year}` w renderEmptyState teraz poprawnie substytuowany
+- **v3.6.2:** Refactor pl.js — 28 sekcji z komentarzami (poprzednio bardak)
 - **v3.6.0 (2026-08-14):** Dodane udostępnianie aplikacji (QR + link + Web Share API)
 - **v3.6.0:** Auto-update Service Workera z toastem powiadomienia
 - **v3.6.0:** GitHub Actions workflow dla automatycznego wersjonowania cache

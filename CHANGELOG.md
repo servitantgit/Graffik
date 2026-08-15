@@ -6,6 +6,50 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 
 ## [Unreleased]
 
+## [3.6.2] - 2026-08-15
+
+### Dodane
+
+- **👑 Admin identification** — moduł `js/admin.js` z listą `ADMIN_EMAILS` do rozpoznawania administratorów
+- Sprawdzenie emaila z Google OAuth (nie fałszowalne przez F12)
+- Nowa sekcja "👑 Admin Panel" w bocznym menu (widoczna tylko dla admina, złoty kolor)
+- Automatyczna aktywacja po zalogowaniu do Google Drive (polling co 3s)
+- CSS class `.admin-only` + `body.admin-mode` do warunkowej widoczności
+- **Nowy scope `openid email`** w Google Drive OAuth — pobranie emaila zalogowanego użytkownika
+- Funkcja `fetchDriveUserEmail()` w `js/sync.js`
+- Email zapisywany do `localStorage` (`grafik_drive_user_email`)
+- Ekspozycja przez `window.driveUserEmail` (getter via defineProperty)
+- Użytkownicy zobaczą jednorazowy nowy consent screen przy następnym logowaniu
+- **🆓 Przycisk "Wolne"** w modalu dodawania zmiany (`openAddShiftModal`)
+- 4-ty przycisk obok R/P/N — pozwala szybko wyczyścić błędnie dodaną zmianę
+- Bez potrzeby wielokrotnego klikania Undo
+- Pokazuje aktualną zmianę ("Obecnie: R") gdy komórka jest już edytowana
+- **Nowe klucze i18n** (pl/en/uk): `addShiftCurrent`, `addShiftEraseTitle`, `addShiftEraseButton`
+
+### Zmienione
+
+- **Uproszczony edit-banner** — usunięto 5 przycisków, przeniesiono do bocznego menu "⚙️ Zarządzaj"
+- Banner pokazuje teraz tylko: Undo/Redo (icon-only) + Save (green primary) + Done (grey)
+- Ciemne tło (`#2c3e50`) con pomarańczowym akcentem po lewej (border-left) — spokój wizualny
+- Icon-only Undo/Redo w grupie z shared background
+- Danger buttons (Wyczyść rok, Reset) — czerwony akcent, ukryte в menu
+- **Refactor pl.js** — reorganizacja ~330 kluczy w 28 sekcji z komentarzami (poprzednio bardak)
+- Kolejność sekcji zsynchronizowana z en.js/uk.js
+- Wszystkie 3 pliki językowe teraz mają identyczną strukturę
+- Łatwiej znaleźć każdy klucz przez Ctrl+F
+
+### Naprawione
+
+- **Empty state blokował edycję pustego roku** (`js/main.js`, `refreshViews`)
+- Warunek `empty` teraz uwzględnia `!editMode` — в trybie edycji pokazuje pustą siatkę
+- Umożliwia adminowi ręczne wypełnienie graficznego szkieletu na nowy rok (np. 2027)
+- **Placeholder `{year}` nie był podmieniany** в `renderEmptyState` (`js/views.js`)
+- Zmieniono `t('yearIsEmptyTitle') + currentYear` na `t('yearIsEmptyTitle', { year: currentYear })`
+- Poprawna substytucja i18n zamiast literalnego "{year}"
+- **Modal AddShift blokował ponowne edytowanie** dodanych zmian (`js/calendar.js`)
+- Sprawdzenie `dayIsCustomEdited` — modal otwiera się także dla dni z user-added shifts
+- Pozwala natychmiast poprawić błąd bez wielokrotnego klikania Undo
+
 ## [3.6.0] - 2026-08-14
 
 ### Dodane
@@ -197,7 +241,8 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 
 Historia wcześniejszych wersji nie była śledzona.
 
-[Unreleased]: https://github.com/servitantgit/Graffik/compare/v3.6.0...HEAD
+[Unreleased]: https://github.com/servitantgit/Graffik/compare/v3.6.2...HEAD
+[3.6.2]: https://github.com/servitantgit/Graffik/releases/tag/v3.6.2
 [3.6.0]: https://github.com/servitantgit/Graffik/releases/tag/v3.6.0
 [3.5.1]: https://github.com/servitantgit/Graffik/releases/tag/v3.5.1
 [3.5.0]: https://github.com/servitantgit/Graffik/releases/tag/v3.5.0
