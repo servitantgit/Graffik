@@ -459,6 +459,11 @@ window.translations.pl = {
   menuClearYear: 'Wyczyść rok',
   menuResetAll: 'Reset wszystkiego',
 
+  // === MENU: Admin (v3.6.2) ===
+  menuSectionAdmin: '👑 Admin Panel',
+  menuAdminImport: 'Import CSV/JSON',
+  menuAdminExport: 'Export data.js',
+
   // === GENERIC ===
   cancel: 'Anuluj',
   ok: 'OK',
