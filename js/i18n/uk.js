@@ -456,6 +456,11 @@ window.translations.uk = {
   menuClearYear: 'Очистити рік',
   menuResetAll: 'Скинути все',
 
+  // === MENU: Admin (v3.6.2) ===
+  menuSectionAdmin: '👑 Панель адміна',
+  menuAdminImport: 'Імпорт CSV/JSON',
+  menuAdminExport: 'Експорт data.js',
+
   // === GENERIC ===
   cancel: 'Скасувати',
   ok: 'OK',
