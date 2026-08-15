@@ -2768,7 +2768,12 @@ small {
     font-size: 17px;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+    /* Приховуємо оригінальний текст */
+    font-size: 0;
+  }
+  .top-bar h1::before {
+    content: '🏭 Grafik';
+    font-size: 17px;
   }
   .icon-btn {
     width: 36px;
@@ -2847,9 +2852,27 @@ small {
     height: 42px;
     font-size: 17px;
   }
+  /* Компактний view switcher на мобільному — тільки іконки */
   .view-btn {
-    font-size: 12px;
-    padding: 6px 8px;
+    font-size: 0;
+    padding: 10px 8px;
+    min-width: 44px;
+  }
+  .view-btn[data-view='dashboard']::before {
+    content: '🏠';
+    font-size: 22px;
+  }
+  .view-btn[data-view='week']::before {
+    content: '7️⃣';
+    font-size: 22px;
+  }
+  .view-btn[data-view='month']::before {
+    content: '📅';
+    font-size: 22px;
+  }
+  .view-btn[data-view='table']::before {
+    content: '📋';
+    font-size: 22px;
   }
   .dash-today-card .dtc-shift {
     font-size: 32px;
