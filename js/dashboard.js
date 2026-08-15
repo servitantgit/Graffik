@@ -131,6 +131,23 @@ function renderDashboard() {
           weekOT.h200 += cat.h200;
         }
       });
+
+      // Dodana zmiana w święto/niedzielę (fabrycznie było wolno)
+      const factoryShift =
+        factorySchedule[yy] && factorySchedule[yy][mm] && factorySchedule[yy][mm][selectedShift]
+          ? factorySchedule[yy][mm][selectedShift][dd - 1]
+          : '';
+      const wasFactoryFree = isWolne(factoryShift);
+      if (wasFactoryFree) {
+        const isHoliday = !!yHolidays[mm + '-' + dd];
+        const dowLocal = dt.getDay();
+        const isSunday = dowLocal === 0;
+        if (isHoliday) {
+          weekOT.h200 += 8;
+        } else if (isSunday) {
+          weekOT.h100 += 8;
+        }
+      }
     }
   }
   const weekScheduledHours = (weekCounts.R + weekCounts.P + weekCounts.N) * 8;
@@ -167,9 +184,16 @@ function renderDashboard() {
     `;
   }
 
+  // Sprawdź czy jest notatka dla dzisiaj
+  const todayNoteKey = `${y}-${m}-${d}-${selectedShift}`;
+  const todayNote = notes[todayNoteKey];
+  const greetingContent = todayNote
+    ? `<div class="dash-greeting" style="font-style: italic; opacity: 1;">📝 ${escapeHtml(todayNote)}</div>`
+    : `<div class="dash-greeting">${t('greeting')}</div>`;
+
   dv.innerHTML = `
     <div class="dash-hero">
-      <div class="dash-greeting">${t('greeting')}</div>
+      ${greetingContent}
       <div class="dash-date">${dayName}, ${d} ${monthNamesGenitive[m - 1]} ${y}</div>
       <div class="dash-brigade">${t('brigade')} ${selectedShift}</div>
     </div>

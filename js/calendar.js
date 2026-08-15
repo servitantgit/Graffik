@@ -721,18 +721,35 @@ function renderInfo() {
         return ', ' + t('dayAfter');
       return `, ${d} ${monthNames[m - 1]}${y !== currentYear ? ' ' + y : ''}`;
     }
-    const prevText = info.prevBrig
-      ? `<span class="badge ${info.prevBrig}">${info.prevBrig}</span> <small>(${info.prevType}${formatWhen(info.prevYear, info.prevMonth, info.prevDay)})</small>`
+    // Kombinowana karta: kto przekazał + kto przyjmie
+    const prevPart = info.prevBrig
+      ? `<span class="badge ${info.prevBrig}">${info.prevBrig}</span> <small style="opacity:0.85;">${info.prevType}${formatWhen(info.prevYear, info.prevMonth, info.prevDay)}</small>`
       : '<em>—</em>';
-    const nextText = info.nextBrig
-      ? `<span class="badge ${info.nextBrig}">${info.nextBrig}</span> <small>(${info.nextType}${formatWhen(info.nextYear, info.nextMonth, info.nextDay)})</small>`
+    const nextPart = info.nextBrig
+      ? `<span class="badge ${info.nextBrig}">${info.nextBrig}</span> <small style="opacity:0.85;">${info.nextType}${formatWhen(info.nextYear, info.nextMonth, info.nextDay)}</small>`
       : '<em>—</em>';
+    const reliefCard = `
+      <div class="info-card" style="grid-column:1/-1;">
+        <div class="label">🔄 ${t('infoPrevShift').replace('⬅️ ', '').replace('⬅ ', '')} / ${t('infoNextShift').replace('➡️ ', '').replace('➡ ', '')}</div>
+        <div class="value" style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-around;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:16px; opacity:0.7;">⬅️</span>
+            <div>${prevPart}</div>
+          </div>
+          <div style="width:1px; background:var(--border-cell); height:28px;"></div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div>${nextPart}</div>
+            <span style="font-size:16px; opacity:0.7;">➡️</span>
+          </div>
+        </div>
+      </div>
+    `;
+
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
       ${urlopStats}
       <div class="info-grid">
         <div class="info-card"><div class="label">${t('infoShift')}</div><div class="value"><span class="shift-chip ${shiftCode}">${shiftEmoji[shiftCode]} ${shiftCode}</span> ${shiftFullName[shiftCode]}</div></div>
-        <div class="info-card"><div class="label">${t('infoPrevShift')}</div><div class="value">${prevText}</div></div>
-        <div class="info-card"><div class="label">${t('infoNextShift')}</div><div class="value">${nextText}</div></div>
+        ${reliefCard}
         ${liveInfo}
         ${cycleInfo}
         ${toWolneInfo}
