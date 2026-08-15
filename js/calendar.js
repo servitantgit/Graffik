@@ -225,9 +225,12 @@ function renderCalendar(direction) {
           return;
         }
 
-        // Palette ADDSHIFT: add shift on factory-free day
+        // Palette ADDSHIFT: add/edit/erase shift on factory-free day
+        // Also allow reopening modal for days where user already added custom shift
+        // (so they can change it or erase it via the "Empty" button)
         if (editPaletteMode === 'ADDSHIFT') {
-          if (!isFactoryFree) {
+          const dayIsCustomEdited = isFactoryFree && !isWolne(currentShift);
+          if (!isFactoryFree && !dayIsCustomEdited) {
             showToast('warn', t('addShiftFactoryHasShift'));
             return;
           }
@@ -326,9 +329,14 @@ function openAddShiftModal(day) {
     ? `<div style="margin-top:6px; padding:6px 10px; background:var(--bg-info); border-radius:6px; font-size:13px; text-align:center; font-weight:600;">💰 ${rateInfo}</div>`
     : '';
 
+  // Check if day already has a custom shift (for showing/highlighting Empty button)
+  const existingShift = getShiftAtWithPending(currentYear, currentMonth, day, selectedShift);
+  const hasExistingShift = !isWolne(existingShift);
+
   const body = `
     <div style="padding:10px 14px; background:var(--bg-cell); border-radius:10px; margin-bottom:15px; font-size:13px;">
       <b>📅 ${day} ${monthNames[currentMonth - 1]} ${currentYear}</b>
+      ${hasExistingShift ? `<div style="margin-top:6px; font-size:12px; opacity:0.85;">${t('addShiftCurrent') || 'Obecnie'}: <b>${existingShift}</b></div>` : ''}
       ${rateHtml}
     </div>
     <div style="font-weight:600; margin-bottom:10px;">${t('addShiftSelectType')}:</div>
@@ -336,6 +344,7 @@ function openAddShiftModal(day) {
       <button class="add-shift-modal-btn" data-shift="R" style="flex:1; min-width:90px; padding:14px 8px; border:none; background:var(--color-R); color:#fff; border-radius:10px; cursor:pointer; font-size:15px; font-weight:700;">🌅 R<br><small style="opacity:0.85; font-weight:500;">6:00-14:00</small></button>
       <button class="add-shift-modal-btn" data-shift="P" style="flex:1; min-width:90px; padding:14px 8px; border:none; background:var(--color-P); color:#fff; border-radius:10px; cursor:pointer; font-size:15px; font-weight:700;">🌤️ P<br><small style="opacity:0.85; font-weight:500;">14:00-22:00</small></button>
       <button class="add-shift-modal-btn" data-shift="N" style="flex:1; min-width:90px; padding:14px 8px; border:none; background:var(--color-N); color:#fff; border-radius:10px; cursor:pointer; font-size:15px; font-weight:700;">🌙 N<br><small style="opacity:0.85; font-weight:500;">22:00-6:00</small></button>
+      <button class="add-shift-modal-btn" data-shift="" style="flex:1; min-width:90px; padding:14px 8px; border:none; background:linear-gradient(135deg, #7f8c8d, #5d6d6e); color:#fff; border-radius:10px; cursor:pointer; font-size:15px; font-weight:700;" title="${t('addShiftEraseTitle') || 'Wyczyść zmianę'}">🏖️ —<br><small style="opacity:0.85; font-weight:500;">${t('addShiftEraseLabel') || 'Wolne'}</small></button>
     </div>
   `;
 
