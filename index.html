@@ -23,8 +23,7 @@
   <div class="container">
     <!-- TOP BAR -->
     <div class="top-bar">
-      <button class="icon-btn admin-only" id="editModeToggle" data-i18n-title="editMode" title="Tryb edycji (E)"
-        style="display: none;">✏️</button>
+      <button class="icon-btn" id="editModeToggle" data-i18n-title="editMode" title="Tryb edycji (E)">✏️</button>
       <h1 data-i18n="appName">🏭 Grafik Gillette</h1>
       <button class="icon-btn" id="userAuthBtn" data-i18n-title="profile" title="Zaloguj do Google Drive">👤</button>
       <button class="icon-btn" id="themeToggleBtn" data-i18n-title="theme"
@@ -149,14 +148,25 @@
 
   <!-- FLOATING EDIT PALETTE -->
   <div class="edit-palette" id="editPalette">
-    <button class="palette-btn p-R active" data-shift="R" data-i18n-title="paletteTitleR" title="Rano (R)">🌅<span
-        class="pb-hotkey">R</span></button>
-    <button class="palette-btn p-P" data-shift="P" data-i18n-title="paletteTitleP" title="Popołudnie (P)">🌤️<span
-        class="pb-hotkey">P</span></button>
-    <button class="palette-btn p-N" data-shift="N" data-i18n-title="paletteTitleN" title="Noc (N)">🌙<span
-        class="pb-hotkey">N</span></button>
-    <button class="palette-btn p-W" data-shift="W" data-i18n-title="paletteTitleW" title="Wolne (W)">🏖️<span
-        class="pb-hotkey">W</span></button>
+    <!-- Standard user features (visible to all users) -->
+    <button class="palette-btn p-URLOP active" data-shift="URLOP" data-i18n-title="vacation" title="Urlop (U)">🌴<span
+        class="pb-hotkey">U</span></button>
+    <button class="palette-btn p-ADDSHIFT" data-shift="ADDSHIFT" data-i18n-title="addShiftBtn"
+      title="Dodaj zmianę (S)">➕<span class="pb-hotkey">S</span></button>
+    <button class="palette-btn p-OTBEFORE" data-shift="OTBEFORE" data-i18n-title="otBeforeBtn"
+      title="Nadgodziny PRZED (1)">⏱⬅<span class="pb-hotkey">1</span></button>
+    <button class="palette-btn p-OTAFTER" data-shift="OTAFTER" data-i18n-title="otAfterBtn"
+      title="Nadgodziny PO (2)">⏱➡<span class="pb-hotkey">2</span></button>
+
+    <!-- Factory structure edit features (Admin only) -->
+    <button class="palette-btn p-R admin-only" data-shift="R" data-i18n-title="paletteTitleR" title="Rano (R)"
+      style="display: none;">🌅<span class="pb-hotkey">R</span></button>
+    <button class="palette-btn p-P admin-only" data-shift="P" data-i18n-title="paletteTitleP" title="Popołudnie (P)"
+      style="display: none;">🌤️<span class="pb-hotkey">P</span></button>
+    <button class="palette-btn p-N admin-only" data-shift="N" data-i18n-title="paletteTitleN" title="Noc (N)"
+      style="display: none;">🌙<span class="pb-hotkey">N</span></button>
+    <button class="palette-btn p-W admin-only" data-shift="W" data-i18n-title="paletteTitleW" title="Wolne (W)"
+      style="display: none;">🏖️<span class="pb-hotkey">W</span></button>
   </div>
 
   <!-- SIDE MENU -->

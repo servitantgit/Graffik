@@ -169,6 +169,25 @@ function renderYearView() {
       el.onclick = (ev) => {
         ev.stopPropagation();
         if (editMode) {
+          // Palette URLOP: toggle vacation
+          if (editPaletteMode === 'URLOP') {
+            toggleUrlop(currentYear, m, d, selectedShift);
+            showToast(
+              'success',
+              isUrlop(currentYear, m, d, selectedShift) ? t('urlopAdded') : t('urlopRemoved')
+            );
+            refreshViews();
+            return;
+          }
+          // Palette ADDSHIFT / OTBEFORE / OTAFTER: only available in month view
+          if (
+            editPaletteMode === 'ADDSHIFT' ||
+            editPaletteMode === 'OTBEFORE' ||
+            editPaletteMode === 'OTAFTER'
+          ) {
+            showToast('warn', t('otAddInMonthView'));
+            return;
+          }
           // Palette: 'R','P','N','W' — map free day 'W' to '' for storage
           const val = editPaletteMode === 'W' ? '' : editPaletteMode;
           applyEdit(currentYear, m, d, selectedShift, val);
@@ -316,6 +335,25 @@ function buildMonthTable(month) {
       td.title = `${brig} • ${d} ${monthNames[month - 1]}: ${onU ? '🌴' : shiftFullName[s] || t('dayOff')}`;
       td.onclick = () => {
         if (editMode) {
+          // Palette URLOP: toggle vacation
+          if (editPaletteMode === 'URLOP') {
+            toggleUrlop(currentYear, month, d, brig);
+            showToast(
+              'success',
+              isUrlop(currentYear, month, d, brig) ? t('urlopAdded') : t('urlopRemoved')
+            );
+            refreshViews();
+            return;
+          }
+          // Palette ADDSHIFT / OTBEFORE / OTAFTER: only available in month view
+          if (
+            editPaletteMode === 'ADDSHIFT' ||
+            editPaletteMode === 'OTBEFORE' ||
+            editPaletteMode === 'OTAFTER'
+          ) {
+            showToast('warn', t('otAddInMonthView'));
+            return;
+          }
           // Palette: 'R','P','N','W' — map free day 'W' to '' for storage
           const val = editPaletteMode === 'W' ? '' : editPaletteMode;
           applyEdit(currentYear, month, d, brig, val);
