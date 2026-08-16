@@ -12,6 +12,10 @@ let currentView = prefs.view || 'dashboard';
 let yearMode = prefs.yearMode || false;
 let privacyMode = localStorage.getItem('grafik_privacy_mode') === 'true';
 let editMode = false;
+
+function isPrivacyModeEnabled() {
+  return privacyMode;
+}
 let editPaletteMode = 'URLOP';
 let popupFadeTimer = null;
 
