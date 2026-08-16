@@ -10,6 +10,7 @@ let compareShift = null;
 let selectedDay = null;
 let currentView = prefs.view || 'dashboard';
 let yearMode = prefs.yearMode || false;
+let privacyMode = localStorage.getItem('grafik_privacy_mode') === 'true';
 let editMode = false;
 let editPaletteMode = 'URLOP';
 let popupFadeTimer = null;
@@ -553,5 +554,59 @@ if (langToggleBtn && langDropdown) {
   });
 }
 
+/* === PRIVACY MODE === */
+function togglePrivacyMode(forceState = null) {
+  if (forceState !== null) {
+    privacyMode = forceState;
+  } else {
+    privacyMode = !privacyMode;
+  }
+
+  // Warning on first activation
+  if (privacyMode && !localStorage.getItem('grafik_privacy_warned')) {
+    showModal({
+      title: t('privacyModeTitle'),
+      body: `<p>${t('privacyModeWarning')}</p>`,
+      buttons: [
+        {
+          text: t('gotIt'),
+          class: 'primary',
+          onClick: () => {
+            localStorage.setItem('grafik_privacy_warned', 'true');
+          },
+        },
+      ],
+    });
+  }
+
+  document.body.classList.toggle('privacy-mode', privacyMode);
+  localStorage.setItem('grafik_privacy_mode', privacyMode);
+
+  const btn = document.getElementById('menuPrivacyMode');
+  if (btn) {
+    btn.classList.toggle('active', privacyMode);
+    const label = btn.querySelector('.mi-label');
+    if (label) {
+      label.textContent = privacyMode ? t('privacyModeOn') : t('privacyModeOff');
+    }
+  }
+
+  refreshViews();
+}
+
+// Init privacy mode
+if (privacyMode) {
+  document.body.classList.add('privacy-mode');
+}
+
 /* === ПРИМЕНЕНИЕ ЛОКАЛИЗАЦИИ === */
 applyTranslations();
+
+// Update privacy button label after translations
+const privacyBtn = document.getElementById('menuPrivacyMode');
+if (privacyBtn) {
+  const label = privacyBtn.querySelector('.mi-label');
+  if (label) {
+    label.textContent = privacyMode ? t('privacyModeOn') : t('privacyModeOff');
+  }
+}

@@ -597,7 +597,7 @@ function renderInfo() {
   const usedUrlop = countWorkingUrlops(currentYear, selectedShift);
   const limit = getVacationLimit(selectedShift);
   const overLimit = usedUrlop > limit;
-  const urlopStats = `<div class="urlop-stats">
+  const urlopStats = `<div class="urlop-stats info-section-vacation">
     <span>${t('infoUrlopStats', { brig: selectedShift, year: currentYear })}<br><small style="opacity:.9;font-weight:normal;">${t('infoUrlopMarked')}: ${totalUrlop} • ${t('infoUrlopWorking')}: ${usedUrlop}</small></span>
     <div style="display:flex; align-items:center; gap:6px;">
       <span><span class="us-count ${overLimit ? 'us-over' : ''}">${usedUrlop}</span> / ${limit} ${overLimit ? '⚠️' : ''}</span>
@@ -699,7 +699,7 @@ function renderInfo() {
              📊 Razem dziś: <b>${totalHours}h</b> pracy · 💰 <b>${totalPaid}h</b> płatne
            </div>`
           : '';
-      overtimeInfo = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoOvertime')}</div><div class="value">${items}${summary}</div></div>`;
+      overtimeInfo = `<div class="info-card info-section-ot" style="grid-column:1/-1;"><div class="label">${t('infoOvertime')}</div><div class="value">${items}${summary}</div></div>`;
     }
   }
 
@@ -709,7 +709,7 @@ function renderInfo() {
       <div class="info-grid">
         <div class="info-card"><div class="label">${t('infoStatus')}</div><div class="value" style="color:#e67e22;">${t('infoUrlop')}</div></div>
         <div class="info-card"><div class="label">${t('infoPlannedShift')}</div><div class="value">${isWolne(shiftCode) ? t('infoFree') : `<span class="shift-chip ${shiftCode}">${shiftEmoji[shiftCode]} ${shiftCode}</span>`}</div></div>
-        <div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>
+        <div class="info-card info-section-note" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>
       </div>`;
   } else if (isWolne(shiftCode)) {
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>

@@ -547,3 +547,7 @@ bindClick('menuShareApp', () => {
   closeSideMenu();
   shareApp();
 });
+
+bindClick('menuPrivacyMode', () => {
+  togglePrivacyMode();
+});
