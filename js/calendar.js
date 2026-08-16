@@ -212,21 +212,70 @@ function renderCalendar(direction) {
 
     cell.addEventListener('click', () => {
       if (editMode) {
-        // CYCLIC SHIFT TOGGLE: R (Rano) -> P (Popołudnie) -> N (Noc) -> W (Wolne) -> R
-        // Free day is stored as '' internally ('W' is only its display/CSS representation).
-        const shiftCycle = ['R', 'P', 'N', ''];
-        const currentShift =
-          getShiftAtWithPending(currentYear, currentMonth, d, selectedShift) || '';
-        let nextIndex = shiftCycle.indexOf(currentShift);
-        if (nextIndex === -1) {
-          nextIndex = 0; // Unknown/empty/W -> 'R'
-        } else {
-          nextIndex = (nextIndex + 1) % shiftCycle.length;
-        }
-        const nextShift = shiftCycle[nextIndex];
+        const currentShift = getShiftAtWithPending(currentYear, currentMonth, d, selectedShift);
+        const factoryShift =
+          factorySchedule[currentYear] &&
+          factorySchedule[currentYear][currentMonth] &&
+          factorySchedule[currentYear][currentMonth][selectedShift]
+            ? factorySchedule[currentYear][currentMonth][selectedShift][d - 1]
+            : '';
+        const isFactoryFree = isWolne(factoryShift);
+        const dayIsUrlop = isUrlop(currentYear, currentMonth, d, selectedShift);
 
-        // Register in undo/redo history + dirty tracking, then re-render immediately
-        applyEdit(currentYear, currentMonth, d, selectedShift, nextShift);
+        // Palette URLOP: toggle vacation (works on any day)
+        if (editPaletteMode === 'URLOP') {
+          toggleUrlop(currentYear, currentMonth, d, selectedShift);
+          showToast(
+            'success',
+            isUrlop(currentYear, currentMonth, d, selectedShift)
+              ? t('urlopAdded')
+              : t('urlopRemoved')
+          );
+          selectedDay = d;
+          refreshViews();
+          return;
+        }
+
+        // Palette ADDSHIFT: add/edit/erase shift on factory-free day
+        // Also allow reopening modal for days where user already added custom shift
+        // (so they can change it or erase it via the "Empty" button)
+        if (editPaletteMode === 'ADDSHIFT') {
+          const dayIsCustomEdited = isFactoryFree && !isWolne(currentShift);
+          if (!isFactoryFree && !dayIsCustomEdited) {
+            showToast('warn', t('addShiftFactoryHasShift'));
+            return;
+          }
+          if (dayIsUrlop) {
+            showToast('warn', t('addShiftDayIsUrlop'));
+            return;
+          }
+          selectedDay = d;
+          openAddShiftModal(d);
+          return;
+        }
+
+        // Palette OTBEFORE / OTAFTER: open overtime modal with pre-selected position
+        if (editPaletteMode === 'OTBEFORE' || editPaletteMode === 'OTAFTER') {
+          if (isWolne(currentShift)) {
+            showToast('warn', t('otOnlyOnShift'));
+            return;
+          }
+          if (dayIsUrlop) {
+            showToast('warn', t('otOnlyOnShift'));
+            return;
+          }
+          const position = editPaletteMode === 'OTBEFORE' ? 'przed' : 'po';
+          selectedDay = d;
+          openOvertimeModal(d, currentShift, position, null);
+          renderCalendar();
+          renderInfo();
+          return;
+        }
+
+        // Palette R/P/N/W: apply direct shift replacement (admin factory editing)
+        // Free day is stored as '' internally ('W' is only its display/CSS representation).
+        const val = editPaletteMode === 'W' ? '' : editPaletteMode;
+        applyEdit(currentYear, currentMonth, d, selectedShift, val);
         selectedDay = d;
         refreshViews();
         return;

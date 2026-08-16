@@ -1720,6 +1720,10 @@ function updateLocalizedNames() {
   shiftFullName.N = t('shiftN');
   shiftFullName.W = t('shiftW');
   shiftFullName[''] = t('shiftEmpty');
+  shiftFullName.URLOP = t('vacation');
+  shiftFullName.ADDSHIFT = t('addShiftBtn');
+  shiftFullName.OTBEFORE = t('otBeforeBtn');
+  shiftFullName.OTAFTER = t('otAfterBtn');
 
   shiftLongNames.R = t('shiftRShort');
   shiftLongNames.P = t('shiftPShort');
@@ -1732,6 +1736,10 @@ let shiftFullName = {
   N: 'Noc (22:00–6:00)',
   W: 'Wolne',
   '': 'Wolne',
+  URLOP: '🌴 Urlop',
+  ADDSHIFT: '➕ Dodaj zmianę',
+  OTBEFORE: '⏱⬅ PRZED',
+  OTAFTER: '⏱➡ PO',
 };
 let shiftLongNames = { R: 'Rano', P: 'Popołudnie', N: 'Noc', W: 'Wolne' };
 const shiftEmoji = { R: '🌅', P: '🌤️', N: '🌙', '': '🏖️' };

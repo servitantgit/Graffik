@@ -16,7 +16,7 @@ let editMode = false;
 function isPrivacyModeEnabled() {
   return privacyMode;
 }
-let editPaletteMode = 'R';
+let editPaletteMode = 'URLOP';
 let popupFadeTimer = null;
 
 /* === HELPER: Bezpieczne bindowanie eventów === */
@@ -383,28 +383,46 @@ document.addEventListener('keydown', (e) => {
       return;
     }
     const k = e.key.toLowerCase();
-    if (k === 'r') {
-      setPaletteMode('R');
+    if (k === 'u') {
+      setPaletteMode('URLOP');
       return;
     }
-    if (k === 'p') {
-      setPaletteMode('P');
+    if (k === 's') {
+      setPaletteMode('ADDSHIFT');
       return;
     }
-    if (k === 'n') {
-      setPaletteMode('N');
+    if (k === '1') {
+      setPaletteMode('OTBEFORE');
       return;
     }
-    if (k === 'w') {
-      setPaletteMode('W');
+    if (k === '2') {
+      setPaletteMode('OTAFTER');
       return;
+    }
+
+    // Admin-only hotkeys for factory schedule editing
+    if (typeof isCurrentUserAdmin === 'function' && isCurrentUserAdmin()) {
+      if (k === 'r') {
+        setPaletteMode('R');
+        return;
+      }
+      if (k === 'p') {
+        setPaletteMode('P');
+        return;
+      }
+      if (k === 'n') {
+        setPaletteMode('N');
+        return;
+      }
+      if (k === 'w') {
+        setPaletteMode('W');
+        return;
+      }
     }
   }
 
   if (e.key.toLowerCase() === 'e' && !e.ctrlKey && !e.altKey) {
-    if (typeof isCurrentUserAdmin === 'function' && isCurrentUserAdmin()) {
-      document.getElementById('editModeToggle').click();
-    }
+    document.getElementById('editModeToggle').click();
     return;
   }
 
