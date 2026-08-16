@@ -640,4 +640,12 @@ window.translations.en = {
   shareAppHint: 'The QR code works with any scanning app (camera, Google Lens, etc.)',
   shareAppQrError: 'Failed to load QR code. Check your internet connection.',
   shareAppText: 'Check out this shift schedule app:',
+
+  // === PRIVACY MODE ===
+  menuPrivacyMode: 'Privacy Mode',
+  privacyModeTitle: '🔒 Privacy Mode',
+  privacyModeWarning:
+    'Privacy Mode hides all your personal data (overtime, vacations, notes) from all views. Only the factory schedule will be visible. Useful for sharing your screen or showing the schedule to others.',
+  privacyModeOn: 'Privacy Mode: ON',
+  privacyModeOff: 'Privacy Mode: OFF',
 };

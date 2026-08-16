@@ -224,7 +224,7 @@ function renderDashboard() {
           <div class="dsc-value">${weekHours}h${weekOTTotal > 0 ? ` <small style="color:#f1c40f;">(+${weekOTTotal}h ⏱)</small>` : ''} · ${weekCounts.R}🌅 ${weekCounts.P}🌤️ ${weekCounts.N}🌙</div>
         </div>
       </div>
-      <div class="dash-stat-card">
+      <div class="dash-stat-card dash-vacation-stats">
         <div class="dsc-icon">🌴</div>
         <div class="dsc-info">
           <div class="dsc-label">${t('vacation')} ${y}</div>
@@ -234,7 +234,7 @@ function renderDashboard() {
       ${
         totalOT > 0
           ? `
-      <div class="dash-stat-card" style="border:2px solid #f1c40f;">
+      <div class="dash-stat-card dash-overtime-summary" style="border:2px solid #f1c40f;">
         <div class="dsc-icon">⏱</div>
         <div class="dsc-info">
           <div class="dsc-label">${t('infoOvertime')} (${monthNamesShort[m - 1]})</div>
