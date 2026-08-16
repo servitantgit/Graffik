@@ -322,11 +322,21 @@ body.theme-dark .menu-item.menu-item-danger .mi-icon {
 body.privacy-mode .dash-stat-card.dash-overtime-summary,
 body.privacy-mode .dash-stat-card.dash-vacation-stats,
 body.privacy-mode .dtc-timer,     /* Timer details in dashboard today card */
+body.privacy-mode .day-cell .ot-strip,        /* Overtime strips in month view */
+body.privacy-mode .day-cell .day-actual-time, /* Actual work time text in month view */
+body.privacy-mode .day-cell .shift-rate-badge, /* Premium rate badges (+100%/+200%) in month view */
+body.privacy-mode .day-cell .urlop-icon,      /* Vacation palm icon in month view */
+body.privacy-mode .day-cell.urlop,            /* Vacation coloring in month view */
+body.privacy-mode .day-cell .day-note,        /* Note markers in month view */
 body.privacy-mode .calendar-day .day-ot,     /* Overtime markers in month view */
 body.privacy-mode .calendar-day .day-u,      /* Vacation markers in month view */
 body.privacy-mode .calendar-day .day-note-icon, /* Note icons in month view */
 body.privacy-mode .week-day .wd-ot,           /* Overtime indicators in week view */
 body.privacy-mode .week-day .wd-u,            /* Vacation indicators in week view */
+body.privacy-mode .week-day .wdc-ot-row,     /* OT badges row in week view */
+body.privacy-mode .week-day .wdc-actual-time,/* Actual work time in week view */
+body.privacy-mode .week-day .wdc-ot-badge,   /* Individual OT badges in week view */
+body.privacy-mode .dash-day-chip .ddc-ot,    /* OT indicators in dashboard day chips */
 body.privacy-mode .info-section-ot,           /* Overtime in info panel */
 body.privacy-mode .info-section-note,         /* Notes in info panel */
 body.privacy-mode .info-section-vacation,     /* Vacation stats in info panel */
@@ -337,35 +347,24 @@ body.privacy-mode #otMonthSummary             /* Monthly overtime summary in mon
 
 /* Specific for table view — hide custom cells if they contain personal data markers */
 body.privacy-mode .table-cell.custom-urlop,
-body.privacy-mode .table-cell.custom-ot {
+body.privacy-mode .table-cell.custom-ot,
+body.privacy-mode td.tc-U,
+body.privacy-mode .mini-day.mU {
   background: var(--bg-cell) !important;
-  color: var(--text-main) !important;
+  color: var(--color-W-text) !important;
   border-color: var(--border-cell) !important;
 }
 
-/* === PRIVACY MODE === */
-body.privacy-mode .dash-stat-card.dash-overtime-summary,
-body.privacy-mode .dash-stat-card.dash-vacation-stats,
-body.privacy-mode .dtc-timer,     /* Timer details in dashboard today card */
-body.privacy-mode .calendar-day .day-ot,     /* Overtime markers in month view */
-body.privacy-mode .calendar-day .day-u,      /* Vacation markers in month view */
-body.privacy-mode .calendar-day .day-note-icon, /* Note icons in month view */
-body.privacy-mode .week-day .wd-ot,           /* Overtime indicators in week view */
-body.privacy-mode .week-day .wd-u,            /* Vacation indicators in week view */
-body.privacy-mode .info-section-ot,           /* Overtime in info panel */
-body.privacy-mode .info-section-note,         /* Notes in info panel */
-body.privacy-mode .info-section-vacation,     /* Vacation stats in info panel */
-body.privacy-mode .ot-indicator,              /* Any other overtime indicators */
-body.privacy-mode #otMonthSummary             /* Monthly overtime summary in month view */ {
+body.privacy-mode td.tc-U::after {
   display: none !important;
 }
 
-/* Specific for table view — hide custom cells if they contain personal data markers */
-body.privacy-mode .table-cell.custom-urlop,
-body.privacy-mode .table-cell.custom-ot {
+/* Force override vacation styling back to regular appearance in month view */
+body.privacy-mode .day-cell.urlop {
   background: var(--bg-cell) !important;
   color: var(--text-main) !important;
   border-color: var(--border-cell) !important;
+  text-shadow: none !important;
 }
 
 /* === ADMIN MODE — visibility of admin-only elements === */
