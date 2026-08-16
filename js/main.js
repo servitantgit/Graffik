@@ -402,7 +402,9 @@ document.addEventListener('keydown', (e) => {
   }
 
   if (e.key.toLowerCase() === 'e' && !e.ctrlKey && !e.altKey) {
-    document.getElementById('editModeToggle').click();
+    if (typeof isCurrentUserAdmin === 'function' && isCurrentUserAdmin()) {
+      document.getElementById('editModeToggle').click();
+    }
     return;
   }
 
