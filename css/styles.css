@@ -3473,3 +3473,137 @@ small {
 .day-cell .shift-rate-badge.rate-200 {
   background: linear-gradient(135deg, #c0392b, #922b21);
 }
+
+/* Continuation of CSS file from .info-card styling */
+
+  background: var(--bg-info-card);
+  border: 1px solid var(--border-cell);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+.info-card-header {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.info-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-header);
+  margin-bottom: 4px;
+}
+.info-card-body {
+  font-size: 13px;
+  color: var(--text-main);
+  line-height: 1.4;
+}
+.info-card-body p {
+  margin: 4px 0;
+}
+
+/* === INFO PANEL SECTIONS === */
+.info-section {
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-cell);
+}
+.info-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+.info-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-header);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* === FOOTER === */
+.app-footer {
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-cell);
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+.app-footer-links {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.app-footer-links a,
+.app-footer-links button {
+  color: var(--text-muted);
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+  transition: color 0.15s;
+}
+.app-footer-links a:hover,
+.app-footer-links button:hover {
+  color: var(--text-header);
+  text-decoration: underline;
+}
+
+/* === PRINT STYLES === */
+@media print {
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    padding: 0 !important;
+  }
+  .container {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+  .top-bar,
+  .controls-main,
+  .view-switcher,
+  .edit-palette,
+  .edit-banner,
+  .app-footer,
+  .icon-btn,
+  .month-nav button,
+  .relief-popup,
+  .ot-popup {
+    display: none !important;
+  }
+  .calendar-wrap,
+  .table-view,
+  .year-view,
+  .week-view {
+    page-break-inside: avoid;
+  }
+  .day-cell {
+    border: 1px solid #000 !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+}
