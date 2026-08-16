@@ -1718,19 +1718,22 @@ function updateLocalizedNames() {
   shiftFullName.R = t('shiftR');
   shiftFullName.P = t('shiftP');
   shiftFullName.N = t('shiftN');
+  shiftFullName.W = t('shiftW');
   shiftFullName[''] = t('shiftEmpty');
 
   shiftLongNames.R = t('shiftRShort');
   shiftLongNames.P = t('shiftPShort');
   shiftLongNames.N = t('shiftNShort');
+  shiftLongNames.W = t('shiftW');
 }
 let shiftFullName = {
   R: 'Rano (6:00–14:00)',
   P: 'Popołudnie (14:00–22:00)',
   N: 'Noc (22:00–6:00)',
+  W: 'Wolne',
   '': 'Wolne',
 };
-let shiftLongNames = { R: 'Rano', P: 'Popołudnie', N: 'Noc' };
+let shiftLongNames = { R: 'Rano', P: 'Popołudnie', N: 'Noc', W: 'Wolne' };
 const shiftEmoji = { R: '🌅', P: '🌤️', N: '🌙', '': '🏖️' };
 const SHIFT_CYCLE = ['', 'R', 'P', 'N'];
 const MIN_YEAR = 2026;
