@@ -29,14 +29,23 @@ function renderWeekView() {
   document.getElementById('weekTitle').textContent =
     `📆 ${rangeTxt} · ${t('brigade')} ${selectedShift}`;
 
+  const hidePrivate = isPrivacyModeEnabled();
+
   for (let i = 0; i < 7; i++) {
     const dt = new Date(monday);
     dt.setDate(monday.getDate() + i);
     const y = dt.getFullYear(),
       m = dt.getMonth() + 1,
       d = dt.getDate();
-    const s = getShiftAtWithPending(y, m, d, selectedShift);
-    const onU = isUrlop(y, m, d, selectedShift);
+    let s = getShiftAtWithPending(y, m, d, selectedShift);
+    let onU = isUrlop(y, m, d, selectedShift);
+    if (hidePrivate) {
+      s =
+        factorySchedule[y] && factorySchedule[y][m] && factorySchedule[y][m][selectedShift]
+          ? factorySchedule[y][m][selectedShift][d - 1]
+          : '';
+      onU = false;
+    }
     const cell = document.createElement('div');
     cell.className = 'week-day-cell';
     if (i >= 5) cell.classList.add('weekend');
@@ -55,7 +64,7 @@ function renderWeekView() {
       const otWeek = getOvertimes(y, m, d, selectedShift);
       let otBadgesHtml = '';
       let actualTimeHtml = '';
-      if (otWeek.przed || otWeek.po) {
+      if (!hidePrivate && (otWeek.przed || otWeek.po)) {
         const actualTime = getActualWorkTime(y, m, d, selectedShift, s);
         const parts = [];
         if (otWeek.przed) {
@@ -109,6 +118,7 @@ function renderYearView() {
   yv.innerHTML = '';
   const today = new Date();
   const yHolidays = buildHolidays(currentYear);
+  const hidePrivate = isPrivacyModeEnabled();
   for (let m = 1; m <= 12; m++) {
     const wrap = document.createElement('div');
     wrap.className = 'year-month';
@@ -131,9 +141,19 @@ function renderYearView() {
       mini.appendChild(e);
     }
     for (let d = 1; d <= dim; d++) {
-      const s = getShiftAtWithPending(currentYear, m, d, selectedShift);
-      const onU = isUrlop(currentYear, m, d, selectedShift);
-      const dirty = isDirty(currentYear, m, d, selectedShift);
+      let s = getShiftAtWithPending(currentYear, m, d, selectedShift);
+      let onU = isUrlop(currentYear, m, d, selectedShift);
+      let dirty = isDirty(currentYear, m, d, selectedShift);
+      if (hidePrivate) {
+        s =
+          factorySchedule[currentYear] &&
+          factorySchedule[currentYear][m] &&
+          factorySchedule[currentYear][m][selectedShift]
+            ? factorySchedule[currentYear][m][selectedShift][d - 1]
+            : '';
+        onU = false;
+        dirty = false;
+      }
       const cls = onU ? 'U' : isWolne(s) ? 'W' : s;
       const el = document.createElement('div');
       el.className = 'mini-day m' + cls + (dirty ? ' mDirty' : '');
@@ -232,6 +252,7 @@ function buildMonthTable(month) {
   const dim = daysInMonthCal(currentYear, month);
   const today = new Date();
   const yHolidays = buildHolidays(currentYear);
+  const hidePrivate = isPrivacyModeEnabled();
 
   const thead = document.createElement('thead');
   const trHead = document.createElement('tr');
@@ -269,9 +290,19 @@ function buildMonthTable(month) {
     tr.appendChild(brigTh);
     for (let d = 1; d <= dim; d++) {
       const td = document.createElement('td');
-      const s = getShiftAtWithPending(currentYear, month, d, brig);
-      const onU = isUrlop(currentYear, month, d, brig);
-      const dirty = isDirty(currentYear, month, d, brig);
+      let s = getShiftAtWithPending(currentYear, month, d, brig);
+      let onU = isUrlop(currentYear, month, d, brig);
+      let dirty = isDirty(currentYear, month, d, brig);
+      if (hidePrivate) {
+        s =
+          factorySchedule[currentYear] &&
+          factorySchedule[currentYear][month] &&
+          factorySchedule[currentYear][month][brig]
+            ? factorySchedule[currentYear][month][brig][d - 1]
+            : '';
+        onU = false;
+        dirty = false;
+      }
       if (dirty) td.classList.add('dirty-edit');
       const cls = onU ? 'U' : isWolne(s) ? 'W' : s;
       td.className = 'tc tc-' + cls;

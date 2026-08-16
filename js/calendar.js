@@ -35,11 +35,22 @@ function renderCalendar(direction) {
     ? getCycleRange(currentYear, currentMonth, selectedDay, selectedShift)
     : null;
 
+  const hidePrivate = isPrivacyModeEnabled();
+
   for (let d = 1; d <= dim; d++) {
     const cell = document.createElement('div');
-    const shiftCode = getShiftAtWithPending(currentYear, currentMonth, d, selectedShift);
-    const onUrlop = isUrlop(currentYear, currentMonth, d, selectedShift);
+    let shiftCode = getShiftAtWithPending(currentYear, currentMonth, d, selectedShift);
+    let onUrlop = isUrlop(currentYear, currentMonth, d, selectedShift);
     const dirtyCell = isDirty(currentYear, currentMonth, d, selectedShift);
+    if (hidePrivate) {
+      shiftCode =
+        factorySchedule[currentYear] &&
+        factorySchedule[currentYear][currentMonth] &&
+        factorySchedule[currentYear][currentMonth][selectedShift]
+          ? factorySchedule[currentYear][currentMonth][selectedShift][d - 1]
+          : '';
+      onUrlop = false;
+    }
     const cellClass = isWolne(shiftCode) ? 'W' : shiftCode;
     cell.className = 'day-cell cell-' + cellClass;
     if (onUrlop) cell.classList.add('urlop');
@@ -61,7 +72,7 @@ function renderCalendar(direction) {
     )
       cell.classList.add('today');
     if (selectedDay === d) cell.classList.add('selected');
-    if (dirtyCell) cell.classList.add('dirty-edit');
+    if (!hidePrivate && dirtyCell) cell.classList.add('dirty-edit');
 
     if (cycleRange && cycleRange.length > 1 && d >= cycleRange.start && d <= cycleRange.end) {
       if (d === cycleRange.start) cell.classList.add('cycle-start');
@@ -107,7 +118,7 @@ function renderCalendar(direction) {
 
     // Wysoka stawka: święto (+200%) lub niedziela (+100%) na dniu roboczym
     // Wysoka stawka: TYLKO gdy zmiana dodana na dzień, który fabrycznie był wolny
-    if (!isWolne(shiftCode) && !onUrlop) {
+    if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
       // Sprawdzamy: co było w fabrycznym grafiku dla tego dnia?
       const factoryShift =
         factorySchedule[currentYear] &&
@@ -136,7 +147,7 @@ function renderCalendar(direction) {
     }
 
     // NADGODZINY: wizualny podział + etykiety
-    if (!isWolne(shiftCode) && !onUrlop) {
+    if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
       const ot = getOvertimes(currentYear, currentMonth, d, selectedShift);
       if (ot.przed || ot.po) {
         cell.classList.add('has-ot');
@@ -187,7 +198,7 @@ function renderCalendar(direction) {
     }
 
     const noteKey = `${currentYear}-${currentMonth}-${d}-${selectedShift}`;
-    if (notes[noteKey]) {
+    if (!hidePrivate && notes[noteKey]) {
       const nEl = document.createElement('div');
       nEl.className = 'day-note';
       nEl.textContent = '📝';
@@ -511,6 +522,7 @@ document.getElementById('otCustomHours').addEventListener('input', (e) => {
 function renderMonthOvertimeSummary() {
   const old = document.getElementById('otMonthSummary');
   if (old) old.remove();
+  if (isPrivacyModeEnabled()) return;
 
   const sum = getMonthOvertimeSummary(currentYear, currentMonth, selectedShift);
   if (sum.count === 0) return;
@@ -581,7 +593,16 @@ function renderInfo() {
     panel.innerHTML = `<h3>${t('infoPanelTitle')}</h3><p>${t('infoPanelHint')}</p>`;
     return;
   }
-  const shiftCode = getShiftAtWithPending(currentYear, currentMonth, selectedDay, selectedShift);
+  const hidePrivate = isPrivacyModeEnabled();
+  let shiftCode = getShiftAtWithPending(currentYear, currentMonth, selectedDay, selectedShift);
+  if (hidePrivate) {
+    shiftCode =
+      factorySchedule[currentYear] &&
+      factorySchedule[currentYear][currentMonth] &&
+      factorySchedule[currentYear][currentMonth][selectedShift]
+        ? factorySchedule[currentYear][currentMonth][selectedShift][selectedDay - 1]
+        : '';
+  }
   const dateStr = `${selectedDay} ${monthNames[currentMonth - 1]} ${currentYear}`;
   const dowIdx = new Date(currentYear, currentMonth - 1, selectedDay).getDay();
   const dow = dayNamesFull[dowIdx];
@@ -589,7 +610,9 @@ function renderInfo() {
   const holidayName = yHolidays[currentMonth + '-' + selectedDay];
   const holidayInfo = holidayName ? ` <span style="color:#c0392b;">🎉 ${holidayName}</span>` : '';
   const noteKey = `${currentYear}-${currentMonth}-${selectedDay}-${selectedShift}`;
-  const onUrlop = isUrlop(currentYear, currentMonth, selectedDay, selectedShift);
+  const onUrlop = hidePrivate
+    ? false
+    : isUrlop(currentYear, currentMonth, selectedDay, selectedShift);
 
   const totalUrlop = (urlops[selectedShift] || []).filter((k) =>
     k.startsWith(currentYear + '-')
@@ -597,7 +620,9 @@ function renderInfo() {
   const usedUrlop = countWorkingUrlops(currentYear, selectedShift);
   const limit = getVacationLimit(selectedShift);
   const overLimit = usedUrlop > limit;
-  const urlopStats = `<div class="urlop-stats info-section-vacation">
+  const urlopStats = hidePrivate
+    ? ''
+    : `<div class="urlop-stats info-section-vacation">
     <span>${t('infoUrlopStats', { brig: selectedShift, year: currentYear })}<br><small style="opacity:.9;font-weight:normal;">${t('infoUrlopMarked')}: ${totalUrlop} • ${t('infoUrlopWorking')}: ${usedUrlop}</small></span>
     <div style="display:flex; align-items:center; gap:6px;">
       <span><span class="us-count ${overLimit ? 'us-over' : ''}">${usedUrlop}</span> / ${limit} ${overLimit ? '⚠️' : ''}</span>
@@ -606,13 +631,15 @@ function renderInfo() {
   </div>`;
 
   let liveInfo = '';
-  const lv = getLiveShiftInfo();
-  if (lv) liveInfo = lv;
+  if (!hidePrivate) {
+    const lv = getLiveShiftInfo();
+    if (lv) liveInfo = lv;
+  }
 
   let cycleInfo = ''; // Prybrane: nie potrzebne w codziennym użytkowaniu
 
   let toWolneInfo = '';
-  if (!isWolne(shiftCode) && !onUrlop) {
+  if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
     const w = daysToNextWolne(currentYear, currentMonth, selectedDay, selectedShift);
     if (w && w.days > 0) {
       const wd = `${w.day} ${monthNames[w.month - 1]}${w.year !== currentYear ? ' ' + w.year : ''}`;
@@ -623,7 +650,7 @@ function renderInfo() {
 
   // Nadgodziny dla dnia — pokazujemy WSZYSTKIE godziny ze stawką (włącznie z dodaną zmianą w święto/niedzielę)
   let overtimeInfo = '';
-  if (!isWolne(shiftCode) && !onUrlop) {
+  if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
     const otData = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
 
     // Sprawdź czy to dodana zmiana w święto/niedzielę (fabrycznie było wolno)
@@ -709,7 +736,7 @@ function renderInfo() {
       <div class="info-grid">
         <div class="info-card"><div class="label">${t('infoStatus')}</div><div class="value" style="color:#e67e22;">${t('infoUrlop')}</div></div>
         <div class="info-card"><div class="label">${t('infoPlannedShift')}</div><div class="value">${isWolne(shiftCode) ? t('infoFree') : `<span class="shift-chip ${shiftCode}">${shiftEmoji[shiftCode]} ${shiftCode}</span>`}</div></div>
-        <div class="info-card info-section-note" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>
+        ${hidePrivate ? '' : `<div class="info-card info-section-note" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
       </div>`;
   } else if (isWolne(shiftCode)) {
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
@@ -718,7 +745,7 @@ function renderInfo() {
         <div class="info-card"><div class="label">${t('infoStatus')}</div><div class="value">${t('infoFree')}</div></div>
         ${cycleInfo}
         ${overtimeInfo}
-        <div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>
+        ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
       </div>`;
   } else {
     const info = getRelief(currentYear, currentMonth, selectedDay, selectedShift, shiftCode);
@@ -763,7 +790,7 @@ function renderInfo() {
         ${cycleInfo}
         ${toWolneInfo}
         ${overtimeInfo}
-        <div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>
+        ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
       </div>`;
   }
 
