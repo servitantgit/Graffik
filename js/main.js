@@ -16,7 +16,7 @@ let editMode = false;
 function isPrivacyModeEnabled() {
   return privacyMode;
 }
-let editPaletteMode = 'URLOP';
+let editPaletteMode = 'R';
 let popupFadeTimer = null;
 
 /* === HELPER: Bezpieczne bindowanie eventów === */
@@ -262,13 +262,8 @@ document.querySelectorAll('.palette-btn').forEach((btn) => {
     editPaletteMode = btn.dataset.shift;
     document.querySelectorAll('.palette-btn').forEach((b) => b.classList.remove('active'));
     btn.classList.add('active');
-    let name;
-    if (editPaletteMode === 'URLOP') name = '🌴 Urlop';
-    else if (editPaletteMode === 'ADDSHIFT') name = '➕ Dodaj zmianę';
-    else if (editPaletteMode === 'OTBEFORE') name = '⏱⬅ PRZED';
-    else if (editPaletteMode === 'OTAFTER') name = '⏱➡ PO';
-    else name = editPaletteMode;
-    showToast('info', `Wybrano: ${name}`, 1200);
+    const name = shiftFullName[editPaletteMode] || editPaletteMode;
+    showToast('info', t('paletteSelected', { name }), 1200);
   };
 });
 function setPaletteMode(mode) {
@@ -276,13 +271,8 @@ function setPaletteMode(mode) {
   document
     .querySelectorAll('.palette-btn')
     .forEach((b) => b.classList.toggle('active', b.dataset.shift === mode));
-  let name;
-  if (mode === 'URLOP') name = '🌴 Urlop';
-  else if (mode === 'ADDSHIFT') name = '➕ Dodaj zmianę';
-  else if (mode === 'OTBEFORE') name = '⏱⬅ PRZED';
-  else if (mode === 'OTAFTER') name = '⏱➡ PO';
-  else name = mode;
-  showToast('info', `Paleta: ${name}`, 1000);
+  const name = shiftFullName[mode] || mode;
+  showToast('info', t('paletteChanged', { name }), 1000);
 }
 
 bindClick('saveChangesBtn', saveAllPendingChanges);
@@ -393,20 +383,20 @@ document.addEventListener('keydown', (e) => {
       return;
     }
     const k = e.key.toLowerCase();
-    if (k === 'u') {
-      setPaletteMode('URLOP');
+    if (k === 'r') {
+      setPaletteMode('R');
       return;
     }
-    if (k === 's') {
-      setPaletteMode('ADDSHIFT');
+    if (k === 'p') {
+      setPaletteMode('P');
       return;
     }
-    if (k === '1') {
-      setPaletteMode('OTBEFORE');
+    if (k === 'n') {
+      setPaletteMode('N');
       return;
     }
-    if (k === '2') {
-      setPaletteMode('OTAFTER');
+    if (k === 'w') {
+      setPaletteMode('W');
       return;
     }
   }

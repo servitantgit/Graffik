@@ -169,11 +169,8 @@ function renderYearView() {
       el.onclick = (ev) => {
         ev.stopPropagation();
         if (editMode) {
-          if (editPaletteMode === 'OT') {
-            showToast('warn', t('otAddInMonthView'));
-            return;
-          }
-          const val = editPaletteMode === 'CYCLE' ? undefined : editPaletteMode;
+          // Palette: 'R','P','N','W' — map free day 'W' to '' for storage
+          const val = editPaletteMode === 'W' ? '' : editPaletteMode;
           applyEdit(currentYear, m, d, selectedShift, val);
           refreshViews();
           return;
@@ -319,11 +316,8 @@ function buildMonthTable(month) {
       td.title = `${brig} • ${d} ${monthNames[month - 1]}: ${onU ? '🌴' : shiftFullName[s] || t('dayOff')}`;
       td.onclick = () => {
         if (editMode) {
-          if (editPaletteMode === 'OT') {
-            showToast('warn', t('otAddInMonthView'));
-            return;
-          }
-          const val = editPaletteMode === 'CYCLE' ? undefined : editPaletteMode;
+          // Palette: 'R','P','N','W' — map free day 'W' to '' for storage
+          const val = editPaletteMode === 'W' ? '' : editPaletteMode;
           applyEdit(currentYear, month, d, brig, val);
           refreshViews();
           return;
