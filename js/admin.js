@@ -37,6 +37,16 @@ function updateAdminUI() {
     document.body.classList.remove('admin-mode');
     console.log('[admin.js] Admin mode inactive');
   }
+
+  // Ensure all .admin-only elements and #adminPanelSection are toggled
+  const adminElements = document.querySelectorAll('.admin-only, #adminPanelSection');
+  adminElements.forEach((el) => {
+    if (isAdmin) {
+      el.style.display = '';
+    } else {
+      el.style.display = 'none';
+    }
+  });
 }
 
 /* === INICJALIZACJA === */
