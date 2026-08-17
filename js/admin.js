@@ -32,10 +32,8 @@ function updateAdminUI() {
 
   if (isAdmin) {
     document.body.classList.add('admin-mode');
-    console.log('[admin.js] Admin mode ACTIVATED for:', driveUserEmail);
   } else {
     document.body.classList.remove('admin-mode');
-    console.log('[admin.js] Admin mode inactive');
   }
 
   // Ensure all .admin-only elements and #adminPanelSection are toggled

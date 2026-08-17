@@ -14,7 +14,6 @@ function registerServiceWorker() {
     navigator.serviceWorker
       .register('./sw.js')
       .then((reg) => {
-        console.log('[PWA] Service Worker zarejestrowany:', reg.scope);
 
         // Перевіряємо оновлення одразу
         reg.update();
@@ -202,10 +201,6 @@ function updateNotificationUI() {
 
   // Upewnij się, że prefs.notificationsLead istnieje
   if (typeof prefs.notificationsLead === 'undefined') prefs.notificationsLead = 1;
-
-  // Usuwamy stary selector jeśli był
-  const oldSelect = document.getElementById('notifLeadSelect');
-  if (oldSelect) oldSelect.remove();
 
   // Kontener z przyciskami — pokazujemy tylko gdy notifications ON
   let leadContainer = document.getElementById('notifLeadContainer');
