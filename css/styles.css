@@ -376,6 +376,12 @@ body.privacy-mode .table-cell.custom-ot {
 body.admin-mode .admin-only {
   display: block !important;
 }
+/* .palette-btn relies on flex for centering its icon + hotkey label;
+   the generic 'display: block' above would break that layout, so
+   restore flex specifically for admin-only palette buttons. */
+body.admin-mode .palette-btn.admin-only {
+  display: flex !important;
+}
 /* Admin menu section — visual distinction (gold accent) */
 body.admin-mode .menu-section.admin-only .menu-section-title {
   color: #d4af37;

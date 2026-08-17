@@ -6,6 +6,27 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 
 ## [Unreleased]
 
+### Naprawione
+
+- **Spójność uprawnień admina** — klik w przyciski palety `.admin-only` (R/P/N/W —
+  struktura fabryczna) teraz też sprawdza `isCurrentUserAdmin()`, tak samo jak
+  skróty klawiszowe. Wcześniej `onclick` był podpięty bezwarunkowo do wszystkich
+  `.palette-btn`, więc ręczne wywołanie `.click()` na ukrytym elemencie (np. z
+  konsoli deweloperskiej) omijało ograniczenie widoczności CSS
+- **Layout przycisków admin w trybie admina** — `.admin-only` wymuszał
+  `display: block !important`, co psuło centrowanie ikony/hotkeya w `.palette-btn`
+  (który polega na `display: flex`). Dodano bardziej specyficzną regułę
+  `body.admin-mode .palette-btn.admin-only { display: flex !important; }`
+
+### Poprawione (dokumentacja)
+
+- **PROJECT_DOCS.md** — zaktualizowano model danych `customSchedule` (to tablica
+  per-dzień, nie pojedynczy string) i `overtimes` (płaski obiekt kluczowany przez
+  `otKey()`, nie zagnieżdżenie `[brygada][rok][miesiąc][dzień]`) zgodnie z
+  faktyczną implementacją w `js/core.js`
+- Dodano `admin.js` do kolejności ładowania skryptów i do mapy plików (Sekcja 3)
+  — wcześniej brakowało go w obu miejscach
+
 ## [3.6.2] - 2026-08-15
 
 ### Dodane

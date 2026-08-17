@@ -259,6 +259,16 @@ bindClick('editModeToggle', () => {
 
 document.querySelectorAll('.palette-btn').forEach((btn) => {
   btn.onclick = () => {
+    // Admin-only buttons (factory shift structure: R/P/N/W) must stay
+    // gated even if triggered directly (e.g. via a hidden element),
+    // not just hidden by CSS — keep this in sync with the keyboard
+    // shortcut check below.
+    if (
+      btn.classList.contains('admin-only') &&
+      !(typeof isCurrentUserAdmin === 'function' && isCurrentUserAdmin())
+    ) {
+      return;
+    }
     editPaletteMode = btn.dataset.shift;
     document.querySelectorAll('.palette-btn').forEach((b) => b.classList.remove('active'));
     btn.classList.add('active');
