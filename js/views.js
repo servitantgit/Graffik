@@ -29,7 +29,7 @@ function renderWeekView() {
   document.getElementById('weekTitle').textContent =
     `📆 ${rangeTxt} · ${t('brigade')} ${selectedShift}`;
 
-  const hidePrivate = isPrivacyModeEnabled();
+  const hidePrivate = !shouldShowPersonalData();
 
   for (let i = 0; i < 7; i++) {
     const dt = new Date(monday);
@@ -118,7 +118,7 @@ function renderYearView() {
   yv.innerHTML = '';
   const today = new Date();
   const yHolidays = buildHolidays(currentYear);
-  const hidePrivate = isPrivacyModeEnabled();
+  const hidePrivate = !shouldShowPersonalData();
   for (let m = 1; m <= 12; m++) {
     const wrap = document.createElement('div');
     wrap.className = 'year-month';
@@ -268,7 +268,7 @@ function buildMonthTable(month) {
   const dim = daysInMonthCal(currentYear, month);
   const today = new Date();
   const yHolidays = buildHolidays(currentYear);
-  const hidePrivate = isPrivacyModeEnabled();
+  const hidePrivate = !shouldShowPersonalData();
 
   const thead = document.createElement('thead');
   const trHead = document.createElement('tr');
