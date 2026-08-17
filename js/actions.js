@@ -551,3 +551,256 @@ bindClick('menuShareApp', () => {
 bindClick('menuPrivacyMode', () => {
   togglePrivacyMode();
 });
+
+/* === ADMIN: EXPORT FACTORY SCHEDULE AS data.js SNIPPET === */
+
+/**
+ * Merges factorySchedule + customSchedule for a given year.
+ * customSchedule takes precedence (admin's edits override factory).
+ * @param {number} year
+ * @returns {object} - { 1: { A: [...], B, C, D }, 2: {...}, ... 12: {...} }
+ */
+function mergeFactoryWithCustom(year) {
+  const merged = {};
+  const factory = factorySchedule[year] || {};
+  const custom = customSchedule[year] || {};
+  const brigades = ['A', 'B', 'C', 'D'];
+
+  for (let m = 1; m <= 12; m++) {
+    const daysInMonth = new Date(year, m, 0).getDate();
+    merged[m] = {};
+    brigades.forEach((b) => {
+      // Start with factory data (or empty array)
+      const factoryArr =
+        factory[m] && factory[m][b] ? [...factory[m][b]] : new Array(daysInMonth).fill('');
+      // Overlay custom edits (day by day)
+      if (custom[m] && custom[m][b]) {
+        for (let d = 0; d < daysInMonth; d++) {
+          const customVal = custom[m][b][d];
+          if (customVal !== undefined && customVal !== null) {
+            factoryArr[d] = customVal;
+          }
+        }
+      }
+      // Ensure exactly daysInMonth length
+      while (factoryArr.length < daysInMonth) factoryArr.push('');
+      if (factoryArr.length > daysInMonth) factoryArr.length = daysInMonth;
+      merged[m][b] = factoryArr;
+    });
+  }
+  return merged;
+}
+
+/**
+ * Calculates factoryMonthHours automatically from schedule (R+P+N × 8h).
+ * @param {object} yearData - merged schedule for one year
+ * @returns {object} - { 1: { A: 168, B: 184, C: 160, D: 168 }, ... }
+ */
+function calculateMonthHours(yearData) {
+  const hours = {};
+  const brigades = ['A', 'B', 'C', 'D'];
+  for (let m = 1; m <= 12; m++) {
+    hours[m] = {};
+    brigades.forEach((b) => {
+      const arr = yearData[m] ? yearData[m][b] || [] : [];
+      const workedDays = arr.filter((s) => s === 'R' || s === 'P' || s === 'N').length;
+      hours[m][b] = workedDays * 8;
+    });
+  }
+  return hours;
+}
+
+/**
+ * Formats one year of schedule data as pretty-printed JS code (indented).
+ * @param {number} year
+ * @param {object} yearData - merged schedule
+ * @returns {string} - JS code snippet
+ */
+function formatYearAsJs(year, yearData) {
+  let out = `    ${year}: {\n`;
+  for (let m = 1; m <= 12; m++) {
+    out += `      ${m}: {\n`;
+    ['A', 'B', 'C', 'D'].forEach((b, idx) => {
+      const arr = yearData[m][b] || [];
+      const formatted = arr.map((v) => `'${v}'`).join(', ');
+      const comma = idx < 3 ? ',' : '';
+      out += `        ${b}: [${formatted}]${comma}\n`;
+    });
+    const comma = m < 12 ? ',' : '';
+    out += `      }${comma}\n`;
+  }
+  out += `    }`;
+  return out;
+}
+
+/**
+ * Formats factoryMonthHours as JS code.
+ * @param {number} year
+ * @param {object} hoursData
+ * @returns {string}
+ */
+function formatHoursAsJs(year, hoursData) {
+  let out = `    ${year}: {\n`;
+  for (let m = 1; m <= 12; m++) {
+    const h = hoursData[m];
+    const comma = m < 12 ? ',' : '';
+    out += `      ${m}: { A: ${h.A}, B: ${h.B}, C: ${h.C}, D: ${h.D} }${comma}\n`;
+  }
+  out += `    }`;
+  return out;
+}
+
+/**
+ * Main function: generates data.js snippet for a chosen year and downloads it.
+ * Shows instructions modal after download.
+ */
+function exportFactorySchedule() {
+  // Get list of available years (from factorySchedule and customSchedule combined)
+  const factoryYears = Object.keys(factorySchedule || {}).map(Number);
+  const customYears = Object.keys(customSchedule || {}).map(Number);
+  const allYears = [...new Set([...factoryYears, ...customYears])].sort();
+
+  if (allYears.length === 0) {
+    showToast('error', t('adminExportNoData') || 'No data to export');
+    return;
+  }
+
+  // Build year selection buttons
+  const yearButtons = allYears
+    .map((y) => {
+      const hasCustom = customYears.includes(y);
+      const hasFactory = factoryYears.includes(y);
+      const label = hasCustom && hasFactory ? `${y} ✏️` : hasCustom ? `${y} 🆕` : `${y}`;
+      const title = hasCustom
+        ? t('adminExportYearWithEdits') || 'Contains your edits'
+        : t('adminExportYearFactory') || 'Factory data only';
+      return `<button class="admin-export-year-btn" data-year="${y}" title="${title}" style="padding:12px 20px; margin:4px; border:2px solid var(--border-cell); background:var(--bg-cell); color:var(--text-main); border-radius:8px; cursor:pointer; font-size:15px; font-weight:700;">${label}</button>`;
+    })
+    .join('');
+
+  const body = `
+    <p style="margin-bottom:12px;">${t('adminExportSelectYear') || 'Select year to export:'}</p>
+    <div style="display:flex; flex-wrap:wrap; justify-content:center; margin-bottom:12px;">
+      ${yearButtons}
+    </div>
+    <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">
+      ✏️ = ${t('adminExportYearWithEdits') || 'contains your edits'}<br>
+      🆕 = ${t('adminExportYearNew') || 'new year (custom only)'}
+    </p>
+  `;
+
+  showModal({
+    title: '📤 ' + (t('menuAdminExport') || 'Export data.js'),
+    body: body,
+    buttons: [{ text: t('otCancelBtn'), class: 'secondary' }],
+  });
+
+  // Attach year button handlers
+  setTimeout(() => {
+    document.querySelectorAll('.admin-export-year-btn').forEach((btn) => {
+      btn.onclick = () => {
+        const year = parseInt(btn.dataset.year, 10);
+        hideModal();
+        generateAndDownloadDataJs(year);
+      };
+    });
+  }, 50);
+}
+
+/**
+ * Generates JS snippet and triggers download.
+ * @param {number} year
+ */
+function generateAndDownloadDataJs(year) {
+  try {
+    const merged = mergeFactoryWithCustom(year);
+    const hours = calculateMonthHours(merged);
+
+    const now = new Date();
+    const dateStr = now.toISOString().slice(0, 10);
+
+    const content = `/* ================================================================
+   GRAFIK GILLETTE — data.js snippet for year ${year}
+   Auto-generated: ${dateStr} by Admin Panel Export
+   ================================================================
+
+   INSTRUCTIONS FOR DEPLOYMENT:
+   1. Open js/data.js in your editor
+   2. Find the line: "const factorySchedule = {"
+   3. Find the closing "};" of factorySchedule
+   4. Insert the "${year}" block below INSIDE the {} braces
+      (add a comma after the previous year's closing "}" if needed)
+   5. Do the same for factoryMonthHours
+   6. git add js/data.js
+   7. git commit -m "chore(data): add ${year} factory schedule"
+   8. git push
+   9. GitHub Actions will auto-deploy — users get toast "🔄 New version"
+
+   ================================================================ */
+
+/* === PASTE INSIDE const factorySchedule = { ... }; === */
+
+${formatYearAsJs(year, merged)}
+
+/* === PASTE INSIDE const factoryMonthHours = { ... }; === */
+
+${formatHoursAsJs(year, hours)}
+`;
+
+    // Trigger download
+    const blob = new Blob([content], { type: 'text/javascript' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `data-${year}-snippet.js`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    // Show success modal with instructions
+    showInstructionsModal(year);
+  } catch (err) {
+    console.error('[actions.js] Export data.js error:', err);
+    showToast('error', (t('adminExportError') || 'Export failed') + ': ' + err.message);
+  }
+}
+
+/**
+ * Shows post-download modal with deployment instructions.
+ * @param {number} year
+ */
+function showInstructionsModal(year) {
+  const body = `
+    <div style="padding:12px; background:var(--bg-info); border-radius:10px; margin-bottom:15px;">
+      <p style="margin:0; font-weight:600; color:var(--text-header);">
+        ✅ ${t('adminExportSuccess') || 'File downloaded:'} <code>data-${year}-snippet.js</code>
+      </p>
+    </div>
+    <p style="font-weight:600; margin-bottom:10px;">
+      ${t('adminExportSteps') || 'Deployment steps:'}
+    </p>
+    <ol style="line-height:1.7; font-size:14px; padding-left:22px;">
+      <li>${t('adminExportStep1') || 'Open the downloaded file in your editor'}</li>
+      <li>${t('adminExportStep2') || 'Copy the block after "PASTE INSIDE const factorySchedule..."'}</li>
+      <li>${t('adminExportStep3') || 'Paste it into <code>js/data.js</code> inside <code>factorySchedule = { ... }</code>'}</li>
+      <li>${t('adminExportStep4') || 'Repeat for <code>factoryMonthHours</code>'}</li>
+      <li><code>git add js/data.js && git commit -m "chore(data): add ${year}" && git push</code></li>
+      <li>${t('adminExportStep6') || 'GitHub Actions deploys automatically (2-5 min)'}</li>
+      <li>${t('adminExportStep7') || 'Users see toast "🔄 New version available"'}</li>
+    </ol>
+    <p style="font-size:12px; color:var(--text-muted); margin-top:12px; padding-top:12px; border-top:1px solid var(--border-cell);">
+      💡 ${t('adminExportTip') || 'Detailed instructions are also in the downloaded file (comments at the top).'}
+    </p>
+  `;
+
+  showModal({
+    title: '📦 ' + (t('adminExportInstructions') || 'Deployment Instructions'),
+    body: body,
+    buttons: [{ text: t('gotIt') || 'OK', class: 'primary' }],
+  });
+}
+
+/* === MENU HANDLER: Admin Export === */
+bindClick('menuAdminExport', () => {
+  closeSideMenu();
+  exportFactorySchedule();
+});
