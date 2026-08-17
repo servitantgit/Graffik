@@ -1,71 +1,37 @@
 /* ================================================================
-   GRAFIK GILLETTE — Moduł Logiki (Prazdniki, Nadgodziny)
+   GRAFIK GILLETTE — Moduł Logiki (Nadgodziny)
    Ten plik zawiera czyste funkcje obliczeniowe, bez zależności od DOM/LS.
+   
+   Requires: js/schedules/_core.js (for shiftHours + buildHolidays)
    ================================================================ */
 
-const shiftHours = { R: [6, 14], P: [14, 22], N: [22, 30] };
+// Note: shiftHours and buildHolidays are now defined in js/schedules/_core.js
+// This file only contains overtime-specific logic.
 
-function easter(year) {
-  const a = year % 19,
-    b = Math.floor(year / 100),
-    c = year % 100;
-  const d = Math.floor(b / 4),
-    e = b % 4;
-  const f = Math.floor((b + 8) / 25),
-    g = Math.floor((b - f + 1) / 3);
-  const h = (19 * a + b - d - g + 15) % 30;
-  const i = Math.floor(c / 4),
-    k = c % 4;
-  const L = (32 + 2 * e + 2 * i - h - k) % 7;
-  const m = Math.floor((a + 11 * h + 22 * L) / 451);
-  const month = Math.floor((h + L - 7 * m + 114) / 31);
-  const day = ((h + L - 7 * m + 114) % 31) + 1;
-  return { month, day };
-}
-
-function buildHolidays(year) {
-  const e = easter(year);
-  const eDate = new Date(year, e.month - 1, e.day);
-  const monPas = new Date(eDate);
-  monPas.setDate(eDate.getDate() + 1);
-  const pentecost = new Date(eDate);
-  pentecost.setDate(eDate.getDate() + 49);
-  const corpus = new Date(eDate);
-  corpus.setDate(eDate.getDate() + 60);
-
-  // t() доступна після завантаження i18n; fallback = польська (для тестів / раннього виклику)
-  const L = (key, fallback) => (typeof t === 'function' ? t(key) : fallback);
-
-  return {
-    '1-1': L('holidayNewYear', 'Nowy Rok'),
-    '1-6': L('holidayEpiphany', 'Trzech Króli'),
-    [`${e.month}-${e.day}`]: L('holidayEaster', 'Wielkanoc'),
-    [`${monPas.getMonth() + 1}-${monPas.getDate()}`]: L(
-      'holidayEasterMonday',
-      'Poniedziałek Wielkanocny'
-    ),
-    '5-1': L('holidayLabor', 'Święto Pracy'),
-    '5-3': L('holidayConstitution', 'Święto Konstytucji'),
-    [`${pentecost.getMonth() + 1}-${pentecost.getDate()}`]: L(
-      'holidayPentecost',
-      'Zesłanie Ducha Świętego'
-    ),
-    [`${corpus.getMonth() + 1}-${corpus.getDate()}`]: L('holidayCorpus', 'Boże Ciało'),
-    '8-15': L('holidayAssumption', 'Wniebowzięcie NMP'),
-    '11-1': L('holidayAllSaints', 'Wszystkich Świętych'),
-    '11-11': L('holidayIndependence', 'Święto Niepodległości'),
-    '12-25': L('holidayChristmas1', 'Boże Narodzenie'),
-    '12-26': L('holidayChristmas2', '2. Dzień Bożego Narodzenia'),
-  };
-}
-
+/**
+ * Categorizes overtime hours into pay rates (+50%, +100%, +200%).
+ * @param {number} year
+ * @param {number} month - 1-12
+ * @param {number} day - 1-31
+ * @param {string} shift - 'R', 'P', 'N'
+ * @param {string} position - 'przed', 'po', 'weekend'
+ * @param {number} hours
+ * @returns {object} - { h50, h100, h200 }
+ */
 function categorizeOvertime(year, month, day, shift, position, hours) {
   const yHolidays = buildHolidays(year);
   const isHoliday = !!yHolidays[month + '-' + day];
   const dow = new Date(year, month - 1, day).getDay();
   const isSunday = dow === 0;
 
+  // Holiday work — always +200%
   if (isHoliday) return { h50: 0, h100: 0, h200: hours };
+
+  // Weekend overtime (praca w dzień wolny/święto)
+  if (position === 'weekend') {
+    if (isSunday) return { h50: 0, h100: hours, h200: 0 };
+    return { h50: 0, h100: hours, h200: 0 }; // Saturday or dzień wolny — +100%
+  }
 
   const [shStart, shEnd] = shiftHours[shift];
   let curHour;
@@ -84,6 +50,13 @@ function categorizeOvertime(year, month, day, shift, position, hours) {
   return { h50: dayH, h100: nightH, h200: 0 };
 }
 
+/**
+ * Calculates start/end time of overtime based on shift and position.
+ * @param {string} shift - 'R', 'P', 'N'
+ * @param {string} position - 'przed' or 'po'
+ * @param {number} hours
+ * @returns {object} - { from, to }
+ */
 function calcOvertimeTime(shift, position, hours) {
   const [start, end] = shiftHours[shift];
   let from, to;
@@ -98,6 +71,7 @@ function calcOvertimeTime(shift, position, hours) {
   return { from, to };
 }
 
+// Node.js export (for tests)
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { easter, buildHolidays, categorizeOvertime, calcOvertimeTime, shiftHours };
+  module.exports = { categorizeOvertime, calcOvertimeTime };
 }
