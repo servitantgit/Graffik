@@ -359,7 +359,11 @@
   </div>
 
   <!-- ===== MODUŁY JS (rozbito monolit na 9 plików) ===== -->
-  <script src="js/data.js"></script>
+  <!-- Schedules architecture: core + registry + Gillette schedule -->
+  <script src="js/schedules/_core.js"></script>
+  <script src="js/schedules/_registry.js"></script>
+  <script src="js/schedules/gillette/metadata.js"></script>
+  <script src="js/schedules/gillette/2026.js"></script>
   <script src="js/overtime-logic.js"></script>
   <script src="js/core.js"></script>
   <script src="js/ui.js"></script>
