@@ -22,6 +22,7 @@ function loadNotes() {
 }
 function saveNotes(n) {
   localStorage.setItem(NOTES_KEY, JSON.stringify(n));
+  if (typeof updateLastModified === 'function') updateLastModified();
 }
 function loadUrlops() {
   try {
@@ -32,6 +33,7 @@ function loadUrlops() {
 }
 function saveUrlops(u) {
   localStorage.setItem(URLOPS_KEY, JSON.stringify(u));
+  if (typeof updateLastModified === 'function') updateLastModified();
 }
 function loadCustomSchedule() {
   try {
@@ -42,6 +44,7 @@ function loadCustomSchedule() {
 }
 function saveCustomSchedule(s) {
   localStorage.setItem(CUSTOM_SCHEDULE_KEY, JSON.stringify(s));
+  if (typeof updateLastModified === 'function') updateLastModified();
 }
 function loadOvertimes() {
   try {
@@ -52,6 +55,7 @@ function loadOvertimes() {
 }
 function saveOvertimes(o) {
   localStorage.setItem(OVERTIMES_KEY, JSON.stringify(o));
+  if (typeof updateLastModified === 'function') updateLastModified();
 }
 
 /* === Stan trwały === */
