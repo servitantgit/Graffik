@@ -27,6 +27,46 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 - Dodano `admin.js` do kolejności ładowania skryptów i do mapy plików (Sekcja 3)
   — wcześniej brakowało go w obu miejscach
 
+## [3.7.0] - 2026-08-17
+
+### Zmienione (BREAKING CHANGE ARCHITEKTURY)
+
+- **🏗️ Modularna architektura danych** — `js/data.js` rozbite na wiele plików:
+  - `js/schedules/_core.js` — stałe i helpers (`monthNames`, `shiftHours`, `buildHolidays`, etc.)
+  - `js/schedules/_registry.js` — registry pattern + `shouldShowPersonalData()` helper
+  - `js/schedules/gillette/metadata.js` — metadane Gillette schedule (nazwa, brygady, typy zmian)
+  - `js/schedules/gillette/2026.js` — dane roku 2026 (używa `registerYearData()`)
+  - Struktura gotowa na przyszłe schedules (office, production, etc.)
+  - Każdy rok w osobnym pliku — dodanie 2027 = jeden nowy plik + jeden `<script>` tag
+- **`index.html`** — zaktualizowane script tags (4 nowe zamiast starego `js/data.js`)
+- **Backward-compatible** — `factorySchedule` i `factoryMonthHours` nadal dostępne globalnie (aliased)
+
+### Usunięte
+
+- **🗑️ `js/data.js`** — stary monolityczny plik (2000+ linii) usunięty
+  - Wszystkie dane przeniesione do nowej struktury `js/schedules/`
+  - Zero data loss — wartości zachowane 1:1
+- **🔒 Privacy Mode** — usunięta stara funkcja z osobnym przełącznikiem
+  - Zastąpiona automatyczną logiką: **login = pokazuj personal data, logout = tylko fabryczny grafik**
+  - Prostsze UX (nie trzeba pamiętać o przełączniku)
+  - Usunięte: `menuPrivacyMode` button, `togglePrivacyMode()` function, 5 i18n keys × 3 języki
+
+### Zmienione
+
+- **Admin Export** — generuje pliki w nowym formacie `YYYY.js` (zamiast `data-YYYY-snippet.js`):
+  - Standalone valid JS z `registerYearData()` — można wrzucić bezpośrednio do `js/schedules/gillette/`
+  - Instrukcje deploymentu po ukraińsku (dopasowane do Admin FAQ)
+  - 10 kroków zamiast 7 — dokładniejsze wskazówki dla nowej architektury
+- **PROJECT_DOCS.md** — nowa sekcja "10. Dodawanie nowego roku" z krok-po-kroku
+- **Admin FAQ** — zaktualizowane sekcje 2 i 4 dla nowej architektury
+
+### Zalety nowej architektury
+
+- ✅ **Zero ryzyka** przy dodawaniu nowego roku — 2026 zostaje nietknięty
+- ✅ **Modułowość** — łatwo dodawać przyszłe schedules (np. office 5×1)
+- ✅ **Prostsze debugging** — problemy izolowane w plikach per rok
+- ✅ **Jaśniejsza historia w Git** — commit "add 2027" pokazuje jeden nowy plik
+
 ## [3.6.2] - 2026-08-15
 
 ### Dodane

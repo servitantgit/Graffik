@@ -8,7 +8,14 @@ Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą p
 - **Skrypty**: Klasyczne (bez ES modules), dzielone przez global scope
 - **CSS**: Wydzielony do osobnego pliku `css/styles.css`
 - **Hosting**: GitHub Pages (https://servitantgit.github.io/Graffik/)
-- **Kolejność ładowania skryptów**: Ważna — data.js → overtime-logic.js → core.js → ui.js → edit.js → dashboard.js → calendar.js → views.js → actions.js → pwa.js → sync.js → admin.js → i18n/pl.js → i18n/en.js → i18n/uk.js → i18n/i18n.js → main.js
+- **Kolejność ładowania skryptów** (v3.7.0+):
+  1. `schedules/_core.js` — stałe i helpers
+  2. `schedules/_registry.js` — registry + shouldShowPersonalData
+  3. `schedules/gillette/metadata.js` — rejestracja Gillette schedule
+  4. `schedules/gillette/2026.js` — dane roku 2026 (dodać kolejne 2027.js gdy powstaną)
+  5. `overtime-logic.js` → `core.js` → `ui.js` → `edit.js` → `dashboard.js` → `calendar.js` → `views.js` → `actions.js` → `pwa.js` → `sync.js` → `admin.js`
+  6. `i18n/pl.js` → `i18n/en.js` → `i18n/uk.js` → `i18n/i18n.js`
+  7. `main.js` (na końcu — inicjalizacja)
 - **Wielojęzyczność (i18n)**: 3 języki (pl/en/uk), modułowa struktura w `js/i18n/`
 
 ## 2. Modele danych
@@ -103,14 +110,55 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 
 ## 3. Mapa plików JS (co gdzie)
 
-### js/data.js — Moduł 1: Dane statyczne
+### js/schedules/ — Moduł 1: Modularna architektura danych (v3.7.0+)
 
-- `factorySchedule` — grafik fabryczny 2026 (i inne lata)
+**Nowa architektura** — dane rozbite na osobne pliki dla lepszej rozszerzalności:
+
+**js/schedules/\_core.js** — stałe i helpers (niezależne od roku):
+
 - `monthNames`, `monthNamesShort`, `dayNames`, `dayNamesFull`
 - `shiftHours`, `shiftEmoji`, `shiftFullName`, `shiftLongNames`
 - `SHIFT_CYCLE`, `MIN_YEAR`, `MAX_YEAR`, `URLOP_LIMIT`
+- Klucze localStorage: `LS_KEY`, `NOTES_KEY`, `URLOPS_KEY`, etc.
+- Helpers: `daysInMonthCal`, `isWolne`, `escapeHtml`, `formatTimeRange`
 - `buildHolidays(year)` — polskie święta
-- `daysInMonthCal`, `isWolne`, `escapeHtml`
+
+**js/schedules/\_registry.js** — registry pattern + visibility:
+
+- `scheduleRegistry` — mapa wszystkich zarejestrowanych schedules
+- `AVAILABLE_YEARS` — lista dostępnych lat dla aktywnego schedule
+- `factorySchedule`, `factoryMonthHours` — backward-compatible aliases
+- `registerSchedule({...})` — rejestruje nowy typ schedule
+- `registerYearData(scheduleId, year, {...}, {...})` — rejestruje dane roku
+- `shouldShowPersonalData()` — visibility control (login-based, replaces old privacyMode)
+
+**js/schedules/gillette/metadata.js** — metadane Gillette schedule:
+
+- `registerSchedule({ id: 'gillette', name: 'Gillette IV brygady', ... })`
+- Definiuje: 4 brygady (A/B/C/D), 3 typy zmian (R/P/N), typ 'rotating-4x3'
+- Kolory brygad (matches CSS variables)
+
+**js/schedules/gillette/YYYY.js** — dane per rok:
+
+- `registerYearData('gillette', 2026, {...schedule...}, {...hours...})`
+- Każdy rok w osobnym pliku (2026.js, 2027.js, 2028.js, ...)
+- Dodanie nowego roku = utworzenie nowego pliku + jeden `<script>` tag w index.html
+- Brak ryzyka zepsucia starych lat
+
+**Struktura folderów:**
+
+```
+js/schedules/
+├── _core.js                  # constants + helpers
+├── _registry.js              # registry pattern + shouldShowPersonalData
+└── gillette/
+    ├── metadata.js           # 'gillette' schedule metadata
+    ├── 2026.js               # year 2026 data
+    └── 2027.js               # future year (when added)
+```
+
+**Future expansion:** Nowe typy grafików (np. office-5x1) będą w osobnych folderach:
+`js/schedules/office-5x1/metadata.js` + `js/schedules/office-5x1/YYYY.js`
 
 ### js/overtime-logic.js — Moduł 1.5: Logika nadgodzin
 
@@ -504,7 +552,57 @@ Ustawienia (Settings → Pages):
 - [x] Filtr protokołu w Service Worker (chrome-extension) ✅ v3.5.0
 - [x] Konfiguracja Prettier ✅ v3.5.0
 
-## 10. Szybkie odwołania
+## 10. Dodawanie nowego roku (Admin workflow)
+
+Nowa architektura upraszcza dodawanie nowych lat — **każdy rok w osobnym pliku**.
+
+### 10.1. Krok po kroku:
+
+1. **Zaloguj się** jako admin (servitant@gmail.com w Google Drive)
+2. **Przejdź na nowy rok** (year picker → np. 2027)
+3. **Włącz tryb edycji** ✏️
+4. **Zaznacz zmiany** klikając komórki (użyj palety R/P/N/W dla admin)
+5. **Zapisz** (Ctrl+S) — dane w localStorage
+6. **Export data.js** (☰ Menu → 👑 Admin Panel → 📤 Export data.js → wybierz rok)
+7. **Pobierz plik** `YYYY.js` (np. `2027.js`)
+8. **Umieść plik** w folderze `js/schedules/gillette/`
+9. **Zaktualizuj index.html** — dodaj nowy script tag:
+   ```html
+   <script src="js/schedules/gillette/2027.js"></script>
+   ```
+   (dodaj po istniejącym 2026.js)
+10. **Git commit + push:**
+    ```bash
+    git add js/schedules/gillette/2027.js index.html
+    git commit -m "chore(data): add 2027 factory schedule"
+    git push
+    ```
+11. **GitHub Actions** zadeploi automatycznie (2-5 min)
+12. Użytkownicy zobaczą toast **"🔄 Nowa wersja dostępna"** → klikną → zobaczą 2027
+
+### 10.2. Zalety nowej architektury:
+
+- ✅ **Zero ryzyka zepsucia starych lat** — 2026 w osobnym pliku, nie ruszamy
+- ✅ **Łatwy rollback** — można cofnąć jeden rok bez wpływu na inne
+- ✅ **Jasny historia w Git** — każdy rok osobny commit
+- ✅ **Modułowa struktura** — łatwo dodawać nowe typy grafików w przyszłości
+- ✅ **Prostszy debugging** — problemy w danym roku izolowane
+
+### 10.3. Future: Multi-schedule support
+
+Aktualnie tylko `gillette` schedule (4 brygady × 3 zmiany).
+Struktura gotowa na przyszłe schedules (np. office 5×1, produkcja 5×3):
+
+```
+js/schedules/
+├── gillette/         # 4×3 rotating
+├── office-5x1/       # future: office schedule (5 days × 1 shift)
+└── production-5x3/   # future: production 5×3
+```
+
+Każdy schedule ma własne metadata + dane per rok.
+
+## 11. Szybkie odwołania
 
 ### Pliki konfiguracyjne
 
