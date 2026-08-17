@@ -704,7 +704,8 @@ function exportFactorySchedule() {
 }
 
 /**
- * Generates JS snippet and triggers download.
+ * Generates schedules/gillette/YYYY.js file content and triggers download.
+ * New format uses registerYearData() from schedules architecture.
  * @param {number} year
  */
 function generateAndDownloadDataJs(year) {
@@ -715,32 +716,37 @@ function generateAndDownloadDataJs(year) {
     const now = new Date();
     const dateStr = now.toISOString().slice(0, 10);
 
+    // Format schedule data as pretty-printed JS (indented for readability)
+    // formatYearAsJs returns "    ${year}: { ... }" — we need just the { ... } inner content
+    // Strip the "    ${year}: " prefix and outer wrapping
+    const scheduleFormatted = formatYearAsJs(year, merged);
+    // Remove first line ("    YYYY: {") and last line ("    }")
+    const scheduleLines = scheduleFormatted.split('\n');
+    const scheduleInner = scheduleLines.slice(1, -1).join('\n');
+
+    const hoursFormatted = formatHoursAsJs(year, hours);
+    const hoursLines = hoursFormatted.split('\n');
+    const hoursInner = hoursLines.slice(1, -1).join('\n');
+
     const content = `/* ================================================================
-   GRAFIK GILLETTE — data.js snippet for year ${year}
+   GRAFIK GILLETTE — Data for year ${year} (Gillette schedule)
+   
+   PUBLIC MODULE — safe to commit to git
+   
    Auto-generated: ${dateStr} by Admin Panel Export
-   ================================================================
-
-   INSTRUCTIONS FOR DEPLOYMENT:
-   1. Open js/data.js in your editor
-   2. Find the line: "const factorySchedule = {"
-   3. Find the closing "};" of factorySchedule
-   4. Insert the "${year}" block below INSIDE the {} braces
-      (add a comma after the previous year's closing "}" if needed)
-   5. Do the same for factoryMonthHours
-   6. git add js/data.js
-   7. git commit -m "chore(data): add ${year} factory schedule"
-   8. git push
-   9. GitHub Actions will auto-deploy — users get toast "🔄 New version"
-
+   Data extracted from admin's local factorySchedule + customSchedule.
+   
+   Requires:
+   - schedules/_registry.js (for registerYearData function)
+   - schedules/gillette/metadata.js (registers 'gillette' schedule first)
    ================================================================ */
 
-/* === PASTE INSIDE const factorySchedule = { ... }; === */
-
-${formatYearAsJs(year, merged)}
-
-/* === PASTE INSIDE const factoryMonthHours = { ... }; === */
-
-${formatHoursAsJs(year, hours)}
+registerYearData(
+  'gillette',
+  ${year},
+${scheduleInner},
+${hoursInner}
+);
 `;
 
     // Trigger download
@@ -748,7 +754,7 @@ ${formatHoursAsJs(year, hours)}
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `data-${year}-snippet.js`;
+    a.download = `${year}.js`;
     a.click();
     URL.revokeObjectURL(url);
 
@@ -761,37 +767,43 @@ ${formatHoursAsJs(year, hours)}
 }
 
 /**
- * Shows post-download modal with deployment instructions.
+ * Shows post-download modal with deployment instructions for new schedules format.
  * @param {number} year
  */
 function showInstructionsModal(year) {
   const body = `
     <div style="padding:12px; background:var(--bg-info); border-radius:10px; margin-bottom:15px;">
       <p style="margin:0; font-weight:600; color:var(--text-header);">
-        ✅ ${t('adminExportSuccess') || 'File downloaded:'} <code>data-${year}-snippet.js</code>
+        ✅ Файл скачано: <code>${year}.js</code>
       </p>
     </div>
     <p style="font-weight:600; margin-bottom:10px;">
-      ${t('adminExportSteps') || 'Deployment steps:'}
+      📦 Кроки для деплою (нова архітектура):
     </p>
     <ol style="line-height:1.7; font-size:14px; padding-left:22px;">
-      <li>${t('adminExportStep1') || 'Open the downloaded file in your editor'}</li>
-      <li>${t('adminExportStep2') || 'Copy the block after "PASTE INSIDE const factorySchedule..."'}</li>
-      <li>${t('adminExportStep3') || 'Paste it into <code>js/data.js</code> inside <code>factorySchedule = { ... }</code>'}</li>
-      <li>${t('adminExportStep4') || 'Repeat for <code>factoryMonthHours</code>'}</li>
-      <li><code>git add js/data.js && git commit -m "chore(data): add ${year}" && git push</code></li>
-      <li>${t('adminExportStep6') || 'GitHub Actions deploys automatically (2-5 min)'}</li>
-      <li>${t('adminExportStep7') || 'Users see toast "🔄 New version available"'}</li>
+      <li>Відкрий проект у VS Code</li>
+      <li>Помісти скачаний файл <code>${year}.js</code> у папку <code>js/schedules/gillette/</code></li>
+      <li>Відкрий <code>index.html</code></li>
+      <li>Знайди рядок <code><script src="js/schedules/gillette/2026.js"></code></li>
+      <li>Додай новий рядок ПІСЛЯ нього:<br><code><script src="js/schedules/gillette/${year}.js"></script></code></li>
+      <li>Термінал: <code>git add js/schedules/gillette/${year}.js index.html</code></li>
+      <li><code>git commit -m "chore(data): add ${year} factory schedule"</code></li>
+      <li><code>git push</code></li>
+      <li>GitHub Actions задеплоїть автоматично (2-5 хв)</li>
+      <li>Юзери побачать toast "🔄 Nowa wersja dostępna"</li>
     </ol>
     <p style="font-size:12px; color:var(--text-muted); margin-top:12px; padding-top:12px; border-top:1px solid var(--border-cell);">
-      💡 ${t('adminExportTip') || 'Detailed instructions are also in the downloaded file (comments at the top).'}
+      💡 <b>Перевага нової архітектури:</b> Кожен рік у власному файлі — не треба редагувати спільний data.js, немає ризику зіпсувати старі роки.
+    </p>
+    <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">
+      💡 Детальна інструкція у самому файлі (коментар зверху) + у Admin FAQ (❓ у top-bar).
     </p>
   `;
 
   showModal({
-    title: '📦 ' + (t('adminExportInstructions') || 'Deployment Instructions'),
+    title: '📦 Інструкція деплою',
     body: body,
-    buttons: [{ text: t('gotIt') || 'OK', class: 'primary' }],
+    buttons: [{ text: 'Зрозуміло', class: 'primary' }],
   });
 }
 
