@@ -593,6 +593,25 @@ window.translations.pl = {
   sendToDrive: '📤 Wyślij do Drive',
   driveLoggedOut: 'Wylogowano z Google Drive',
 
+  // === LOGOUT UNSYNCED WARNING (v3.7.0) ===
+  logoutUnsyncedTitle: '⚠️ Niezapisane zmiany',
+  logoutUnsyncedBody: `<p>Masz lokalne zmiany, których jeszcze nie zsynchronizowano z Google Drive.</p>
+     <p><b>Ostatnia synchronizacja:</b> {time}</p>
+     <p style="margin-top:12px;">Jeśli wylogujesz się teraz:</p>
+     <ul style="margin:8px 0; padding-left:22px;">
+       <li>✅ Dane pozostaną w tej przeglądarce</li>
+       <li>❌ NIE będą w backup Google Drive</li>
+       <li>❌ NIE zobaczysz ich na innym urządzeniu</li>
+     </ul>
+     <p style="padding:10px; background:var(--bg-info); border-radius:8px; margin-top:10px;">
+       💡 <b>Zalecane:</b> Zsynchronizuj najpierw, potem się wyloguj.
+     </p>`,
+  logoutUnsyncedCancel: 'Anuluj',
+  logoutUnsyncedForce: 'Wyloguj mimo to',
+  logoutUnsyncedSyncFirst: '☁️ Synchronizuj i wyloguj',
+  driveSyncing: 'Synchronizacja...',
+  driveSyncFailedNoLogout: 'Synchronizacja nie udała się, wylogowanie przerwane',
+
   // === PWA INSTALL ===
   installApp: '📲 Zainstaluj aplikację',
   installAppIosIntro: 'Aby zainstalować aplikację na iPhone/iPad:',
