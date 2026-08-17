@@ -234,6 +234,8 @@ async function uploadToDrive(force = false) {
     }
     showToast('success', `☁️ ${t('driveSaved')}`);
     updateDriveUI();
+    // Mark data as synced — clears unsynced state (used by R11 logout warning)
+    if (typeof updateLastSync === 'function') updateLastSync();
     return true;
   } catch (e) {
     console.error('[SYNC] upload:', e);
