@@ -846,10 +846,12 @@ function renderAdminFaq() {
       icon: '✨',
       title: 'Як додати новий рік (2027, 2028...)',
       content: `
+        <p><b>🎉 Нова архітектура (v3.7.0+) — набагато простіше!</b></p>
+        <p>Кожен рік тепер у власному файлі. Додавання = один новий файл + один рядок у index.html.</p>
         <ol style="line-height:1.7;">
           <li><b>Увійди в Google Drive</b> як admin (servitant@gmail.com)</li>
           <li>Дочекайся появи "👑 Admin Panel" у боковому меню (до 3 сек)</li>
-          <li><b>У year picker</b> (правий верх edit banner) натискай ›  до нового року (напр. 2027)</li>
+          <li><b>У year picker</b> натискай ›  до нового року (напр. 2027)</li>
           <li>Побачиш "Rok 2027 jest pusty" — це нормально</li>
           <li>Натисни <b>✏️ Włącz tryb edycji</b> → підтверди</li>
           <li>Empty state зникне → з'явиться <b>пуста сітка</b> календаря</li>
@@ -862,10 +864,10 @@ function renderAdminFaq() {
           <li>Коли готово → див. секцію "📤 Як експортувати"</li>
         </ol>
         <p style="padding:10px; background:var(--bg-info); border-radius:8px; margin-top:12px;">
-          ⏱️ <b>Реалістичний час:</b> 1500 клітинок (12 міс × 4 бриг × ~31 день). При 2 сек/клітинка = ~50 хв на рік.
+          ⏱️ <b>Реалістичний час:</b> 1460 клітинок (12 міс × 4 бриг × ~30 днів). При 2 сек/клітинка = ~50 хв на рік.
         </p>
-        <p style="padding:10px; background:#fff3cd; border-left:3px solid #f39c12; border-radius:6px; margin-top:8px;">
-          ⚠️ <b>Порада:</b> Заводські графіки повторюються по циклах (наприклад, 8-денний цикл RRPPNNWW). Заповни один цикл, потім використовуй copy-paste у VS Code після експорту, щоб прискорити.
+        <p style="padding:10px; background:#e8f5e9; border-left:3px solid #4caf50; border-radius:6px; margin-top:8px;">
+          ✅ <b>Нова архітектура:</b> Ти редагуєш свій customSchedule, Export генерує окремий файл <code>2027.js</code> який просто додається до <code>js/schedules/gillette/</code>. Zero ризик зіпсувати 2026!
         </p>
       `,
     },
@@ -897,27 +899,31 @@ function renderAdminFaq() {
       icon: '📤',
       title: 'Як експортувати та задеплоїти (git flow)',
       content: `
+        <p><b>🎉 Нова архітектура (v3.7.0+):</b> тепер кожен рік у власному файлі — простіший і безпечніший деплой.</p>
+        
         <p><b>Крок 1: Експорт у додатку</b></p>
         <ol style="line-height:1.7;">
           <li>☰ Menu → 👑 Admin Panel → <b>📤 Export data.js</b></li>
-          <li>Виберіть рік (напр. 2027)</li>
-          <li>Скачається файл <code>data-2027-snippet.js</code></li>
+          <li>Вибери рік (напр. 2027)</li>
+          <li>Скачається файл <code>2027.js</code> (новий формат — standalone JS)</li>
           <li>Прочитай інструкцію у модалці, що з'явиться</li>
         </ol>
-        <p><b>Крок 2: Оновлення репозиторію</b></p>
+        
+        <p><b>Крок 2: Розмістити файл у репо</b></p>
         <ol style="line-height:1.7;">
-          <li>Відкрий скачаний файл у VS Code (або будь-якому редакторі)</li>
-          <li>Відкрий <code>js/data.js</code> у репо</li>
-          <li>Знайди рядок <code>const factorySchedule = {</code></li>
-          <li>Скопіюй блок <b>"PASTE INSIDE const factorySchedule..."</b> зі скачаного файла</li>
-          <li>Встав його <b>всередину</b> <code>{ ... }</code> — після року 2026, додай кому <code>,</code> між роками</li>
-          <li>Аналогічно для <code>factoryMonthHours</code></li>
+          <li>Відкрий проект у VS Code</li>
+          <li>Помісти скачаний <code>2027.js</code> у папку <code>js/schedules/gillette/</code></li>
+          <li>Відкрий <code>index.html</code></li>
+          <li>Знайди рядок:<br><code><script src="js/schedules/gillette/2026.js"></script></code></li>
+          <li>Додай новий рядок ПІСЛЯ нього:<br><code><script src="js/schedules/gillette/2027.js"></script></code></li>
         </ol>
+        
         <p><b>Крок 3: Git commit + push</b></p>
         <pre style="background:#2c3e50; color:#fff; padding:10px; border-radius:6px; overflow-x:auto; font-size:12px;">cd Graffik
-git add js/data.js
+git add js/schedules/gillette/2027.js index.html
 git commit -m "chore(data): add 2027 factory schedule"
 git push</pre>
+        
         <p><b>Крок 4: Автоматичний деплой</b></p>
         <ul>
           <li>GitHub Actions запуститься автоматично (2-5 хв)</li>
@@ -926,6 +932,16 @@ git push</pre>
           <li>Юзери побачать toast: <b>"🔄 Nowa wersja dostępna"</b></li>
           <li>Клікнуть Odśwież → отримають графік на 2027 🎉</li>
         </ul>
+        
+        <p style="padding:10px; background:#e8f5e9; border-left:3px solid #4caf50; border-radius:6px; margin-top:12px;">
+          ✅ <b>Zalety нової архітектури:</b>
+          <ul style="margin:8px 0 0 0; padding-left:20px;">
+            <li>Не редагуєш спільний <code>data.js</code> (його вже нема!)</li>
+            <li>Просто додаєш новий файл — 2026 залишається недоторканим</li>
+            <li>Git показує один новий файл — чиста історія</li>
+            <li>Легкий rollback: <code>git revert HEAD</code> → 2027 зникне, 2026 залишиться</li>
+          </ul>
+        </p>
       `,
     },
     {
