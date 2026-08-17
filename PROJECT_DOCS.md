@@ -8,7 +8,7 @@ Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą p
 - **Skrypty**: Klasyczne (bez ES modules), dzielone przez global scope
 - **CSS**: Wydzielony do osobnego pliku `css/styles.css`
 - **Hosting**: GitHub Pages (https://servitantgit.github.io/Graffik/)
-- **Kolejność ładowania skryptów**: Ważna — data.js → overtime-logic.js → core.js → ui.js → edit.js → dashboard.js → calendar.js → views.js → actions.js → pwa.js → sync.js → i18n/pl.js → i18n/en.js → i18n/uk.js → i18n/i18n.js → main.js
+- **Kolejność ładowania skryptów**: Ważna — data.js → overtime-logic.js → core.js → ui.js → edit.js → dashboard.js → calendar.js → views.js → actions.js → pwa.js → sync.js → admin.js → i18n/pl.js → i18n/en.js → i18n/uk.js → i18n/i18n.js → main.js
 - **Wielojęzyczność (i18n)**: 3 języki (pl/en/uk), modułowa struktura w `js/i18n/`
 
 ## 2. Modele danych
@@ -39,13 +39,15 @@ Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą p
 {
   [year]: {
     [month]: {
-      [brigade]: 'RRPPNNWW...'  // String 28-31 znaków (R/P/N/W)
+      [brigade]: ['R', 'R', 'P', 'P', 'N', 'N', 'W', 'W', ...]  // Array, 1 element/dzień (R/P/N/W/'')
     }
   }
 }
 ```
 
-Przykład: `{ 2026: { 8: { A: 'RRPPNNWW...', B: 'PPNNRRWW...' } } }`
+Uwaga: to jest **tablica**, nie string — indeks `[day - 1]` odpowiada dniu miesiąca (patrz `setShift()`/`ensureCustomYear()` w `core.js`). Długość tablicy jest zawsze równa liczbie dni w miesiącu; `ensureCustomYear()` dopełnia/przycina ją automatycznie.
+
+Przykład: `{ 2026: { 8: { A: ['R','R','P','P',...], B: ['P','P','N','N',...] } } }`
 
 ### urlops (localStorage: `gillette_urlops_v1`)
 
@@ -68,19 +70,18 @@ Przykład: `{ 2026: { 8: { A: 'RRPPNNWW...', B: 'PPNNRRWW...' } } }`
 
 ```javascript
 {
-  [brigade]: {
-    [year]: {
-      [month]: {
-        [day]: {
-          przed: { hours: 2, note: 'przed zmianą' },      // dni robocze
-          po: { hours: 3, note: 'po zmianie' },           // dni robocze
-          weekend: { hours: 8, note: 'praca w niedzielę' } // dni wolne / święta
-        }
-      }
-    }
+  // Klucz płaski: `${year}-${month}-${day}-${brigade}`, generowany przez otKey() w core.js
+  '2026-8-10-C': {
+    przed: { hours: 2, note: 'przed zmianą' },  // ustawiane z UI (przycisk ⏱⬅ OT PRZED)
+    po: { hours: 3, note: 'po zmianie' },       // ustawiane z UI (przycisk ⏱➡ OT PO)
+    weekend: { hours: 8, note: '...' }          // obsługiwane przez categorizeOvertime()
+                                                 // i import (validateImportedData), ale
+                                                 // NIE jest jeszcze ustawiane z poziomu UI
   }
 }
 ```
+
+Uwaga: struktura jest **płaska** (jeden poziom kluczy string), nie zagnieżdżona przez `[brigade][year][month][day]`. Zobacz `otKey()`, `getOvertimes()`, `setOvertime()` w `core.js`.
 
 ### pendingChanges (w pamięci, tylko w trybie edycji)
 
@@ -233,6 +234,23 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - `downloadFromDrive()` — pobieranie i pełne zastąpienie lokalnych danych
 - `uploadToDrive()` — wysyłanie danych do Drive
 - Obsługa konfliktów (brak merge — last-write-wins)
+
+### js/admin.js — Moduł Admin: identyfikacja administratora
+
+- `ADMIN_EMAILS` — lista emaili administratorów (publiczna w kodzie; sama znajomość
+  emaila nie daje dostępu — wymaga faktycznego zalogowania do Google)
+- `isCurrentUserAdmin()` — porównuje `driveUserEmail` (ustawiane w `sync.js` po
+  OAuth) z `ADMIN_EMAILS`
+- `updateAdminUI()` — dodaje/usuwa klasę `body.admin-mode` i przełącza widoczność
+  elementów `.admin-only` / `#adminPanelSection`
+- `initAdminMode()` — nasłuchuje event `driveAuthChanged` + polling co 3s (fallback)
+- **Ważne**: `.admin-only` (CSS) tylko **ukrywa** elementy — nie blokuje wykonania
+  powiązanego z nimi kodu. Klawiskowe skróty R/P/N/W (`main.js`) i klik w przyciski
+  palety (`main.js`) dodatkowo sprawdzają `isCurrentUserAdmin()` przed zastosowaniem
+  edycji, żeby wywołanie `.click()` na ukrytym elemencie (np. z konsoli) też nie
+  przechodziło. Sama zmiana w `customSchedule` i tak zostaje tylko lokalnie w
+  przeglądarce danej osoby — nie ma wspólnego zapisu bez repozytorium/Drive, do
+  którego dostęp ma tylko administrator.
 
 ### js/i18n/ — Moduł i18n (wielojęzyczność)
 
