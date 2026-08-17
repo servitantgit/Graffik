@@ -590,6 +590,25 @@ window.translations.uk = {
   sendToDrive: '📤 Надіслати в Drive',
   driveLoggedOut: 'Вийшли з Google Drive',
 
+  // === LOGOUT UNSYNCED WARNING (v3.7.0) ===
+  logoutUnsyncedTitle: '⚠️ Незбережені зміни',
+  logoutUnsyncedBody: `<p>У вас є локальні зміни, які ще не синхронізовані з Google Drive.</p>
+     <p><b>Остання синхронізація:</b> {time}</p>
+     <p style="margin-top:12px;">Якщо вийдете зараз:</p>
+     <ul style="margin:8px 0; padding-left:22px;">
+       <li>✅ Дані залишаться у цьому браузері</li>
+       <li>❌ НЕ будуть у backup Google Drive</li>
+       <li>❌ НЕ побачите їх на іншому пристрої</li>
+     </ul>
+     <p style="padding:10px; background:var(--bg-info); border-radius:8px; margin-top:10px;">
+       💡 <b>Рекомендовано:</b> Спочатку синхронізуйте, потім вийдіть.
+     </p>`,
+  logoutUnsyncedCancel: 'Скасувати',
+  logoutUnsyncedForce: 'Вийти все одно',
+  logoutUnsyncedSyncFirst: '☁️ Синхронізувати і вийти',
+  driveSyncing: 'Синхронізація...',
+  driveSyncFailedNoLogout: 'Синхронізація не вдалася, вихід скасовано',
+
   // === PWA INSTALL ===
   installApp: '📲 Встановити додаток',
   installAppIosIntro: 'Для встановлення на iPhone/iPad:',

@@ -592,6 +592,25 @@ window.translations.en = {
   sendToDrive: '📤 Send to Drive',
   driveLoggedOut: 'Logged out from Google Drive',
 
+  // === LOGOUT UNSYNCED WARNING (v3.7.0) ===
+  logoutUnsyncedTitle: '⚠️ Unsaved changes',
+  logoutUnsyncedBody: `<p>You have local changes that have not been synced to Google Drive yet.</p>
+     <p><b>Last sync:</b> {time}</p>
+     <p style="margin-top:12px;">If you log out now:</p>
+     <ul style="margin:8px 0; padding-left:22px;">
+       <li>✅ Data will remain in this browser</li>
+       <li>❌ WILL NOT be in Google Drive backup</li>
+       <li>❌ WILL NOT be visible on other devices</li>
+     </ul>
+     <p style="padding:10px; background:var(--bg-info); border-radius:8px; margin-top:10px;">
+       💡 <b>Recommended:</b> Sync first, then log out.
+     </p>`,
+  logoutUnsyncedCancel: 'Cancel',
+  logoutUnsyncedForce: 'Log out anyway',
+  logoutUnsyncedSyncFirst: '☁️ Sync and log out',
+  driveSyncing: 'Syncing...',
+  driveSyncFailedNoLogout: 'Sync failed, logout cancelled',
+
   // === PWA INSTALL ===
   installApp: '📲 Install app',
   installAppIosIntro: 'To install on iPhone/iPad:',
