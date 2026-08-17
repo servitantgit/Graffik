@@ -46,7 +46,6 @@ async function fetchDriveUserEmail() {
     if (data && data.email) {
       driveUserEmail = data.email.toLowerCase();
       localStorage.setItem('grafik_drive_user_email', driveUserEmail);
-      console.log('[SYNC] User email fetched:', driveUserEmail);
       if (typeof updateAdminUI === 'function') {
         updateAdminUI();
       }
@@ -147,17 +146,14 @@ async function findDriveFile() {
 
   // Najnowszy plik — pierwszy na liście (orderBy=modifiedTime desc)
   const newest = files[0];
-  console.log('[SYNC] Najnowszy plik:', newest.id, newest.modifiedTime);
 
   // Usuwamy duplikaty (wszystkie oprócz pierwszego)
   if (files.length > 1) {
-    console.log('[SYNC] Znaleziono duplikatów:', files.length - 1, '— usuwam...');
     for (let i = 1; i < files.length; i++) {
       try {
         await driveFetch(`https://www.googleapis.com/drive/v3/files/${files[i].id}`, {
           method: 'DELETE',
         });
-        console.log('[SYNC] Usunięto duplikat:', files[i].id);
       } catch (e) {
         console.warn('[SYNC] Nie udało się usunąć:', files[i].id);
       }
@@ -253,7 +249,6 @@ async function downloadFromDrive(confirmOverwrite = false) {
     return false;
   }
   try {
-    console.log('[SYNC] downloadFromDrive start', { confirmOverwrite, gDriveFileId });
     if (!gDriveFileId) {
       const found = await findDriveFile();
       if (!found) {
@@ -262,42 +257,29 @@ async function downloadFromDrive(confirmOverwrite = false) {
       }
       gDriveFileId = found.id;
       localStorage.setItem('grafik_drive_file_id', gDriveFileId);
-      console.log('[SYNC] downloadFromDrive found gDriveFileId', gDriveFileId);
     }
     const resp = await driveFetch(
       `https://www.googleapis.com/drive/v3/files/${gDriveFileId}?alt=media`
     );
-    console.log('[SYNC] downloadFromDrive response', {
-      ok: resp.ok,
-      status: resp.status,
-      contentLength: resp.headers && resp.headers.get ? resp.headers.get('content-length') : null,
-    });
     if (!resp.ok) {
       showToast('error', `☁️ ${t('driveDownloadFileError')}`);
       return false;
     }
     const data = await resp.json();
-    console.log(
-      '[SYNC] downloadFromDrive parsed data',
-      data && typeof data === 'object' ? { keys: Object.keys(data) } : typeof data
-    );
     if (!data || typeof data !== 'object') {
       showToast('error', `☁️ ${t('driveInvalidDataFormat')}`);
       return false;
     }
 
     const doApply = () => {
-      console.log('[SYNC] downloadFromDrive doApply start');
       let applyErrors = [];
 
       // customSchedule — MUTUJEMY obiekt (nie nadpisujemy)
       if (data.customSchedule && typeof customSchedule !== 'undefined') {
         try {
-          console.log('[SYNC] applying customSchedule (mutation)');
           Object.keys(customSchedule).forEach((k) => delete customSchedule[k]);
           Object.assign(customSchedule, data.customSchedule);
           saveCustomSchedule(customSchedule);
-          console.log('[SYNC] customSchedule applied, years:', Object.keys(customSchedule));
         } catch (e) {
           console.error('[SYNC] customSchedule error', e);
           applyErrors.push('customSchedule');
@@ -307,11 +289,9 @@ async function downloadFromDrive(confirmOverwrite = false) {
       // urlops — MUTUJEMY obiekt (KRYTYCZNE — tu był problem!)
       if (data.urlops && typeof urlops !== 'undefined') {
         try {
-          console.log('[SYNC] applying urlops (mutation)');
           Object.keys(urlops).forEach((k) => delete urlops[k]);
           Object.assign(urlops, data.urlops);
           saveUrlops(urlops);
-          console.log('[SYNC] urlops applied, brygady:', Object.keys(urlops));
         } catch (e) {
           console.error('[SYNC] urlops error', e);
           applyErrors.push('urlops');
@@ -321,11 +301,9 @@ async function downloadFromDrive(confirmOverwrite = false) {
       // overtimes — MUTUJEMY obiekt
       if (data.overtimes && typeof overtimes !== 'undefined') {
         try {
-          console.log('[SYNC] applying overtimes (mutation)');
           Object.keys(overtimes).forEach((k) => delete overtimes[k]);
           Object.assign(overtimes, data.overtimes);
           saveOvertimes(overtimes);
-          console.log('[SYNC] overtimes applied, keys:', Object.keys(overtimes).length);
         } catch (e) {
           console.error('[SYNC] overtimes error', e);
           applyErrors.push('overtimes');
@@ -335,11 +313,9 @@ async function downloadFromDrive(confirmOverwrite = false) {
       // notes — MUTUJEMY obiekt
       if (data.notes && typeof notes !== 'undefined') {
         try {
-          console.log('[SYNC] applying notes (mutation)');
           Object.keys(notes).forEach((k) => delete notes[k]);
           Object.assign(notes, data.notes);
           saveNotes(notes);
-          console.log('[SYNC] notes applied, keys:', Object.keys(notes).length);
         } catch (e) {
           console.error('[SYNC] notes error', e);
           applyErrors.push('notes');
@@ -349,10 +325,8 @@ async function downloadFromDrive(confirmOverwrite = false) {
       // prefs — scalamy (nie usuwamy kluczy!)
       if (data.prefs && typeof prefs !== 'undefined') {
         try {
-          console.log('[SYNC] applying prefs (merge)');
           Object.assign(prefs, data.prefs);
           savePrefs(prefs);
-          console.log('[SYNC] prefs merged');
         } catch (e) {
           console.error('[SYNC] prefs error', e);
           applyErrors.push('prefs');
@@ -367,9 +341,7 @@ async function downloadFromDrive(confirmOverwrite = false) {
         }
         Object.keys(limits).forEach((brig) => {
           try {
-            console.log('[SYNC] applying vacationLimit', brig, limits[brig], 'source', source);
             setVacationLimit(brig, limits[brig]);
-            console.log('[SYNC] vacationLimit applied', brig);
           } catch (e) {
             console.error('[SYNC] vacationLimit error', brig, e);
             applyErrors.push('vacationLimits.' + brig);
@@ -387,7 +359,6 @@ async function downloadFromDrive(confirmOverwrite = false) {
       if (typeof switchView === 'function') {
         try {
           switchView('dashboard');
-          console.log('[SYNC] switchView dashboard');
         } catch (e) {
           console.error('[SYNC] switchView error', e);
           applyErrors.push('switchView');
@@ -395,7 +366,6 @@ async function downloadFromDrive(confirmOverwrite = false) {
       } else if (typeof refreshViews === 'function') {
         try {
           refreshViews();
-          console.log('[SYNC] refreshViews');
         } catch (e) {
           console.error('[SYNC] refreshViews error', e);
           applyErrors.push('refreshViews');
@@ -403,10 +373,6 @@ async function downloadFromDrive(confirmOverwrite = false) {
       } else {
         console.warn('[SYNC] neither switchView nor refreshViews available');
       }
-
-      console.log('[SYNC] downloadFromDrive doApply end', {
-        applyErrors: applyErrors.length ? applyErrors : null,
-      });
 
       if (applyErrors.length) {
         showToast('warn', `☁️ ${t('driveDownloadedWithErrors')}: ` + applyErrors.join(', '));
