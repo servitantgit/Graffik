@@ -35,7 +35,7 @@ function renderCalendar(direction) {
     ? getCycleRange(currentYear, currentMonth, selectedDay, selectedShift)
     : null;
 
-  const hidePrivate = isPrivacyModeEnabled();
+  const hidePrivate = !shouldShowPersonalData();
 
   for (let d = 1; d <= dim; d++) {
     const cell = document.createElement('div');
@@ -530,7 +530,7 @@ document.getElementById('otCustomHours').addEventListener('input', (e) => {
 function renderMonthOvertimeSummary() {
   const old = document.getElementById('otMonthSummary');
   if (old) old.remove();
-  if (isPrivacyModeEnabled()) return;
+  if (!shouldShowPersonalData()) return;
 
   const sum = getMonthOvertimeSummary(currentYear, currentMonth, selectedShift);
   if (sum.count === 0) return;
@@ -601,7 +601,7 @@ function renderInfo() {
     panel.innerHTML = `<h3>${t('infoPanelTitle')}</h3><p>${t('infoPanelHint')}</p>`;
     return;
   }
-  const hidePrivate = isPrivacyModeEnabled();
+  const hidePrivate = !shouldShowPersonalData();
   let shiftCode = getShiftAtWithPending(currentYear, currentMonth, selectedDay, selectedShift);
   if (hidePrivate) {
     shiftCode =

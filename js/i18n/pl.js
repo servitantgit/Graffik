@@ -641,12 +641,4 @@ window.translations.pl = {
   shareAppHint: 'Kod QR działa z każdą aplikacją do skanowania (aparat, Google Lens itp.)',
   shareAppQrError: 'Nie udało się załadować kodu QR. Sprawdź połączenie z internetem.',
   shareAppText: 'Polecam aplikację do zarządzania grafikiem zmian:',
-
-  // === PRIVACY MODE ===
-  menuPrivacyMode: 'Tryb prywatności',
-  privacyModeTitle: '🔒 Tryb prywatności',
-  privacyModeWarning:
-    'Tryb prywatności ukrywa wszystkie Twoje dane osobowe (nadgodziny, urlopy, notatki) we wszystkich widokach. Widoczny będzie tylko grafik fabryczny. Przydatne przy udostępnianiu ekranu lub pokazywaniu grafiku innym.',
-  privacyModeOn: 'Tryb prywatności: WŁ',
-  privacyModeOff: 'Tryb prywatności: WYŁ',
 };

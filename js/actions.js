@@ -548,10 +548,6 @@ bindClick('menuShareApp', () => {
   shareApp();
 });
 
-bindClick('menuPrivacyMode', () => {
-  togglePrivacyMode();
-});
-
 /* === ADMIN: EXPORT FACTORY SCHEDULE AS data.js SNIPPET === */
 
 /**
