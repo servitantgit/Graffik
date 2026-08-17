@@ -526,7 +526,87 @@ async function syncWithDrive() {
 }
 
 /* === LOGOUT === */
+/**
+ * Public logout function — checks for unsynced changes first.
+ * If unsynced data exists, shows warning modal with 3 options:
+ * - Cancel (stay logged in)
+ * - Upload first then logout (safest)
+ * - Logout anyway (data stays in localStorage but no cloud backup)
+ */
 function logoutDrive() {
+  // Check for unsynced changes (from js/personal/sync-tracking.js)
+  const hasUnsynced = typeof hasUnsyncedChanges === 'function' && hasUnsyncedChanges();
+
+  if (!hasUnsynced) {
+    // No unsynced changes — safe to logout immediately
+    performLogoutDrive();
+    return;
+  }
+
+  // Has unsynced changes — show warning modal
+  const lastSyncText = typeof timeSinceLastSync === 'function' ? timeSinceLastSync() : 'nieznany';
+
+  const title = (typeof t === 'function' && t('logoutUnsyncedTitle')) || '⚠️ Niezapisane zmiany';
+  const body =
+    (typeof t === 'function' && t('logoutUnsyncedBody', { time: lastSyncText })) ||
+    `<p>Masz lokalne zmiany, których jeszcze nie zsynchronizowano z Google Drive.</p>
+     <p><b>Ostatnia synchronizacja:</b> ${lastSyncText}</p>
+     <p style="margin-top:12px;">Jeśli wylogujesz się teraz:</p>
+     <ul style="margin:8px 0; padding-left:22px;">
+       <li>✅ Dane pozostaną w tej przeglądarce</li>
+       <li>❌ NIE będą w backup Google Drive</li>
+       <li>❌ NIE zobaczysz ich na innym urządzeniu</li>
+     </ul>
+     <p style="padding:10px; background:var(--bg-info); border-radius:8px; margin-top:10px;">
+       💡 <b>Zalecane:</b> Zsynchronizuj najpierw, potem się wyloguj.
+     </p>`;
+
+  showModal({
+    title: title,
+    body: body,
+    buttons: [
+      {
+        text: (typeof t === 'function' && t('logoutUnsyncedCancel')) || 'Anuluj',
+        class: 'secondary',
+      },
+      {
+        text: (typeof t === 'function' && t('logoutUnsyncedForce')) || 'Wyloguj mimo to',
+        class: 'danger',
+        onClick: () => {
+          performLogoutDrive();
+        },
+      },
+      {
+        text:
+          (typeof t === 'function' && t('logoutUnsyncedSyncFirst')) || '☁️ Synchronizuj i wyloguj',
+        class: 'primary',
+        onClick: async () => {
+          showToast(
+            'info',
+            '☁️ ' + ((typeof t === 'function' && t('driveSyncing')) || 'Synchronizacja...')
+          );
+          const success = await uploadToDrive();
+          if (success) {
+            performLogoutDrive();
+          } else {
+            showToast(
+              'error',
+              '☁️ ' +
+                ((typeof t === 'function' && t('driveSyncFailedNoLogout')) ||
+                  'Synchronizacja nie udała się, wylogowanie przerwane')
+            );
+          }
+        },
+      },
+    ],
+  });
+}
+
+/**
+ * Internal logout — actually clears drive state.
+ * Called after user confirms (or if no unsynced changes exist).
+ */
+function performLogoutDrive() {
   gDriveToken = null;
   gDriveTokenExpiry = 0;
   gDriveFileId = null;
