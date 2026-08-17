@@ -1,13 +1,13 @@
-﻿/* ================================================================
-   GRAFIK GILLETTE â€” SCHEDULES CORE (constants + helpers)
+/* ================================================================
+   GRAFIK GILLETTE — SCHEDULES CORE (constants + helpers)
    
-   đźŚŤ PUBLIC MODULE â€” safe to commit to git
+   🌍 PUBLIC MODULE — safe to commit to git
    
    Contains constants and helper functions independent of specific schedule.
    Per-schedule data is in js/schedules/<schedule-id>/ folders.
    
    Loading order in index.html:
-   1. schedules/_core.js          (this file â€” constants + helpers)
+   1. schedules/_core.js          (this file — constants + helpers)
    2. schedules/_registry.js      (global registries: scheduleRegistry, factorySchedule)
    3. schedules/gillette/metadata.js  (schedule metadata)
    4. schedules/gillette/2026.js  (year data)
@@ -18,18 +18,18 @@
 
 /* === MONTH NAMES (Polish, updated by i18n) === */
 let monthNames = [
-  'StyczeĹ„',
+  'Styczeń',
   'Luty',
   'Marzec',
-  'KwiecieĹ„',
+  'Kwiecień',
   'Maj',
   'Czerwiec',
   'Lipiec',
-  'SierpieĹ„',
-  'WrzesieĹ„',
-  'PaĹşdziernik',
+  'Sierpień',
+  'Wrzesień',
+  'Październik',
   'Listopad',
-  'GrudzieĹ„',
+  'Grudzień',
 ];
 
 let monthNamesShort = [
@@ -42,7 +42,7 @@ let monthNamesShort = [
   'Lip',
   'Sie',
   'Wrz',
-  'PaĹş',
+  'Paź',
   'Lis',
   'Gru',
 ];
@@ -56,42 +56,42 @@ let monthNamesGenitive = [
   'czerwca',
   'lipca',
   'sierpnia',
-  'wrzeĹ›nia',
-  'paĹşdziernika',
+  'września',
+  'października',
   'listopada',
   'grudnia',
 ];
 
 /* === DAY NAMES === */
-let dayNames = ['Pon', 'Wt', 'Ĺšr', 'Cz', 'Pt', 'Sob', 'Nd'];
-let dayNamesFull = ['Niedziela', 'PoniedziaĹ‚ek', 'Wtorek', 'Ĺšroda', 'Czwartek', 'PiÄ…tek', 'Sobota'];
+let dayNames = ['Pon', 'Wt', 'Śr', 'Cz', 'Pt', 'Sob', 'Nd'];
+let dayNamesFull = ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'];
 
 /* === SHIFT DEFINITIONS === */
 const shiftHours = {
   R: [6, 14],
   P: [14, 22],
-  N: [22, 30], // 30 = 6 Đ˝Đ°ŃŃ‚ŃĐżĐ˝ĐľĐłĐľ Đ´Đ˝ŃŹ
+  N: [22, 30], // 30 = 6 наступного дня
 };
 
 let shiftFullName = {
   R: 'Rano (6:00-14:00)',
-  P: 'PopoĹ‚udnie (14:00-22:00)',
+  P: 'Popołudnie (14:00-22:00)',
   N: 'Noc (22:00-6:00)',
   '': 'Wolne',
 };
 
 let shiftLongNames = {
   R: 'Rano',
-  P: 'PopoĹ‚udnie',
+  P: 'Popołudnie',
   N: 'Noc',
   '': 'Wolne',
 };
 
 const shiftEmoji = {
-  R: 'đźŚ…',
-  P: 'đźŚ¤ď¸Ź',
-  N: 'đźŚ™',
-  '': 'đźŹ–ď¸Ź',
+  R: '🌅',
+  P: '🌤️',
+  N: '🌙',
+  '': '🏖️',
 };
 
 /* === APP CONSTANTS === */
@@ -154,29 +154,29 @@ function formatTimeRange(from, to) {
     const hh = ((h % 24) + 24) % 24;
     return String(Math.floor(hh)).padStart(2, '0') + ':00';
   };
-  return `${fmt(from)}â€“${fmt(to)}`;
+  return `${fmt(from)}–${fmt(to)}`;
 }
 
 /**
  * Builds map of Polish public holidays for a year.
  * @param {number} year
- * @returns {object} - { "1-1": "Nowy Rok", "1-6": "Trzech KrĂłli", ... }
+ * @returns {object} - { "1-1": "Nowy Rok", "1-6": "Trzech Króli", ... }
  */
 function buildHolidays(year) {
   // Fixed-date holidays
   const holidays = {
     '1-1': 'Nowy Rok',
-    '1-6': 'Trzech KrĂłli',
-    '5-1': 'ĹšwiÄ™to Pracy',
-    '5-3': 'ĹšwiÄ™to Konstytucji',
-    '8-15': 'WniebowziÄ™cie NMP',
-    '11-1': 'Wszystkich ĹšwiÄ™tych',
-    '11-11': 'ĹšwiÄ™to NiepodlegĹ‚oĹ›ci',
-    '12-25': 'BoĹĽe Narodzenie',
-    '12-26': '2. DzieĹ„ BoĹĽego Narodzenia',
+    '1-6': 'Trzech Króli',
+    '5-1': 'Święto Pracy',
+    '5-3': 'Święto Konstytucji',
+    '8-15': 'Wniebowzięcie NMP',
+    '11-1': 'Wszystkich Świętych',
+    '11-11': 'Święto Niepodległości',
+    '12-25': 'Boże Narodzenie',
+    '12-26': '2. Dzień Bożego Narodzenia',
   };
 
-  // Moving holidays â€” computed via Butcher's algorithm (Easter)
+  // Moving holidays — computed via Butcher's algorithm (Easter)
   const a = year % 19;
   const b = Math.floor(year / 100);
   const c = year % 100;
@@ -194,19 +194,19 @@ function buildHolidays(year) {
 
   holidays[`${easterMonth}-${easterDay}`] = 'Wielkanoc';
 
-  // Easter Monday â€” Easter + 1 day
+  // Easter Monday — Easter + 1 day
   const easterMondayDate = new Date(year, easterMonth - 1, easterDay + 1);
   holidays[`${easterMondayDate.getMonth() + 1}-${easterMondayDate.getDate()}`] =
-    'PoniedziaĹ‚ek Wielkanocny';
+    'Poniedziałek Wielkanocny';
 
-  // Pentecost â€” Easter + 49 days
+  // Pentecost — Easter + 49 days
   const pentecostDate = new Date(year, easterMonth - 1, easterDay + 49);
   holidays[`${pentecostDate.getMonth() + 1}-${pentecostDate.getDate()}`] =
-    'ZesĹ‚anie Ducha ĹšwiÄ™tego';
+    'Zesłanie Ducha Świętego';
 
-  // Corpus Christi â€” Easter + 60 days
+  // Corpus Christi — Easter + 60 days
   const corpusDate = new Date(year, easterMonth - 1, easterDay + 60);
-  holidays[`${corpusDate.getMonth() + 1}-${corpusDate.getDate()}`] = 'BoĹĽe CiaĹ‚o';
+  holidays[`${corpusDate.getMonth() + 1}-${corpusDate.getDate()}`] = 'Boże Ciało';
 
   return holidays;
 }
