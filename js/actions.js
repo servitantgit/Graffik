@@ -804,3 +804,296 @@ bindClick('menuAdminExport', () => {
   closeSideMenu();
   exportFactorySchedule();
 });
+
+/* === ADMIN: DETAILED FAQ MODAL (Ukrainian, for admin only) === */
+/**
+ * Renders the Admin FAQ modal — comprehensive documentation for
+ * administrator use cases. Language: Ukrainian only (single admin).
+ * Purpose: "future-proof" self-documentation — if admin returns after
+ * 6 months, they should be able to understand what to do without external help.
+ */
+function renderAdminFaq() {
+  const sections = [
+    {
+      icon: '🎯',
+      title: 'Як я редагую графік? (базові концепції)',
+      content: `
+        <p><b>У додатку є 2 типи графіка:</b></p>
+        <ul>
+          <li><b>Фабричний (<code>factorySchedule</code>)</b> — базовий графік з файлу <code>js/data.js</code>. Його бачать <b>усі</b> користувачі. Зашитий у код.</li>
+          <li><b>Персональний (<code>customSchedule</code>)</b> — редагування конкретного користувача, зберігається в <code>localStorage</code> його браузера. Інші не бачать.</li>
+        </ul>
+        <p><b>Коли ти адмін і редагуєш через палету R/P/N/W:</b></p>
+        <ul>
+          <li>Зміни спочатку йдуть у <b>твій</b> customSchedule (як для звичайного юзера)</li>
+          <li>Щоб зміни побачили <b>усі</b> — треба <b>експорт → git commit → git push</b></li>
+          <li>Тоді GitHub Actions задеплоїть → data.js оновиться → всі юзери отримають toast "🔄 Nowa wersja"</li>
+        </ul>
+        <p style="padding:10px; background:var(--bg-info); border-radius:8px; margin-top:12px;">
+          💡 <b>Головне правило:</b> Редагування в браузері = тільки твоє. Deploy через Git = для всіх.
+        </p>
+      `,
+    },
+    {
+      icon: '✨',
+      title: 'Як додати новий рік (2027, 2028...)',
+      content: `
+        <ol style="line-height:1.7;">
+          <li><b>Увійди в Google Drive</b> як admin (servitant@gmail.com)</li>
+          <li>Дочекайся появи "👑 Admin Panel" у боковому меню (до 3 сек)</li>
+          <li><b>У year picker</b> (правий верх edit banner) натискай ›  до нового року (напр. 2027)</li>
+          <li>Побачиш "Rok 2027 jest pusty" — це нормально</li>
+          <li>Натисни <b>✏️ Włącz tryb edycji</b> → підтверди</li>
+          <li>Empty state зникне → з'явиться <b>пуста сітка</b> календаря</li>
+          <li>У палеті внизу активуй <b>R</b> (клавіша R або клік)</li>
+          <li>Клікай на клітинки → фарбуй R (ранок)</li>
+          <li>Аналогічно для P (день), N (ніч), W (вихідний)</li>
+          <li>Перемикайся між <b>бригадами A/B/C/D</b> у top-bar</li>
+          <li>Пройди всі 12 місяців для всіх 4 бригад</li>
+          <li>Періодично тисни <b>💾 Zapisz</b> (Ctrl+S)</li>
+          <li>Коли готово → див. секцію "📤 Як експортувати"</li>
+        </ol>
+        <p style="padding:10px; background:var(--bg-info); border-radius:8px; margin-top:12px;">
+          ⏱️ <b>Реалістичний час:</b> 1500 клітинок (12 міс × 4 бриг × ~31 день). При 2 сек/клітинка = ~50 хв на рік.
+        </p>
+        <p style="padding:10px; background:#fff3cd; border-left:3px solid #f39c12; border-radius:6px; margin-top:8px;">
+          ⚠️ <b>Порада:</b> Заводські графіки повторюються по циклах (наприклад, 8-денний цикл RRPPNNWW). Заповни один цикл, потім використовуй copy-paste у VS Code після експорту, щоб прискорити.
+        </p>
+      `,
+    },
+    {
+      icon: '✏️',
+      title: 'Як виправити помилку в існуючому році',
+      content: `
+        <p><b>Сценарій:</b> Ти вже задеплоїв графік, але потім знайшов помилку.</p>
+        <ol style="line-height:1.7;">
+          <li>Увійди як admin</li>
+          <li>Перейди на потрібний рік і місяць</li>
+          <li>Едит режим ✏️</li>
+          <li>У палеті вибери <b>W</b> (чи потрібну зміну) → клікни клітинку → перезапис</li>
+          <li>💾 Zapisz</li>
+          <li>Експорт → deploy (див. наступну секцію)</li>
+        </ol>
+        <p><b>Швидкі способи стерти:</b></p>
+        <ul>
+          <li>Клавіша <code>W</code> + клік → ставить порожню зміну</li>
+          <li>Ctrl+Z → скасовує останню дію</li>
+          <li>Ctrl+Y → повторює скасовану</li>
+        </ul>
+        <p style="padding:10px; background:var(--bg-info); border-radius:8px; margin-top:12px;">
+          💡 <b>Якщо помилок багато:</b> Простіше видалити рік через <b>☰ Menu → 👑 Admin Panel → 🗑 Wyczyść rok</b> і заповнити заново.
+        </p>
+      `,
+    },
+    {
+      icon: '📤',
+      title: 'Як експортувати та задеплоїти (git flow)',
+      content: `
+        <p><b>Крок 1: Експорт у додатку</b></p>
+        <ol style="line-height:1.7;">
+          <li>☰ Menu → 👑 Admin Panel → <b>📤 Export data.js</b></li>
+          <li>Виберіть рік (напр. 2027)</li>
+          <li>Скачається файл <code>data-2027-snippet.js</code></li>
+          <li>Прочитай інструкцію у модалці, що з'явиться</li>
+        </ol>
+        <p><b>Крок 2: Оновлення репозиторію</b></p>
+        <ol style="line-height:1.7;">
+          <li>Відкрий скачаний файл у VS Code (або будь-якому редакторі)</li>
+          <li>Відкрий <code>js/data.js</code> у репо</li>
+          <li>Знайди рядок <code>const factorySchedule = {</code></li>
+          <li>Скопіюй блок <b>"PASTE INSIDE const factorySchedule..."</b> зі скачаного файла</li>
+          <li>Встав його <b>всередину</b> <code>{ ... }</code> — після року 2026, додай кому <code>,</code> між роками</li>
+          <li>Аналогічно для <code>factoryMonthHours</code></li>
+        </ol>
+        <p><b>Крок 3: Git commit + push</b></p>
+        <pre style="background:#2c3e50; color:#fff; padding:10px; border-radius:6px; overflow-x:auto; font-size:12px;">cd Graffik
+git add js/data.js
+git commit -m "chore(data): add 2027 factory schedule"
+git push</pre>
+        <p><b>Крок 4: Автоматичний деплой</b></p>
+        <ul>
+          <li>GitHub Actions запуститься автоматично (2-5 хв)</li>
+          <li>Замінить <code>__BUILD_ID__</code> на git hash</li>
+          <li>Задеплоїть на <code>gh-pages</code></li>
+          <li>Юзери побачать toast: <b>"🔄 Nowa wersja dostępna"</b></li>
+          <li>Клікнуть Odśwież → отримають графік на 2027 🎉</li>
+        </ul>
+      `,
+    },
+    {
+      icon: '⌨️',
+      title: 'Клавіатурні скорочення адміна',
+      content: `
+        <p><b>Palette (тільки в edit mode):</b></p>
+        <table style="width:100%; border-collapse:collapse; margin:8px 0;">
+          <tr style="background:var(--bg-cell);"><th style="padding:6px; text-align:left;">Клавіша</th><th style="padding:6px; text-align:left;">Дія</th></tr>
+          <tr><td style="padding:6px;"><code>U</code></td><td style="padding:6px;">🌴 Urlop</td></tr>
+          <tr><td style="padding:6px;"><code>S</code></td><td style="padding:6px;">➕ Дод. зміна (для юзерів)</td></tr>
+          <tr><td style="padding:6px;"><code>1</code> / <code>2</code></td><td style="padding:6px;">⏱ OT PRZED / PO</td></tr>
+          <tr style="background:#fff3cd;"><td style="padding:6px;"><code>R</code></td><td style="padding:6px;"><b>🌅 Ранок (тільки admin)</b></td></tr>
+          <tr style="background:#fff3cd;"><td style="padding:6px;"><code>P</code></td><td style="padding:6px;"><b>🌤️ День (тільки admin)</b></td></tr>
+          <tr style="background:#fff3cd;"><td style="padding:6px;"><code>N</code></td><td style="padding:6px;"><b>🌙 Ніч (тільки admin)</b></td></tr>
+          <tr style="background:#fff3cd;"><td style="padding:6px;"><code>W</code></td><td style="padding:6px;"><b>🏖️ Вихідний (тільки admin)</b></td></tr>
+        </table>
+        <p><b>Загальні:</b></p>
+        <ul>
+          <li><code>Ctrl+Z</code> — скасувати</li>
+          <li><code>Ctrl+Y</code> / <code>Ctrl+Shift+Z</code> — повторити</li>
+          <li><code>Ctrl+S</code> — зберегти</li>
+          <li><code>Esc</code> — вийти з edit mode / закрити modal</li>
+          <li><code>E</code> — увімкнути/вимкнути edit mode</li>
+          <li><code>←</code> / <code>→</code> — попередній/наступний місяць</li>
+        </ul>
+      `,
+    },
+    {
+      icon: '🚨',
+      title: 'Що робити коли щось пішло не так',
+      content: `
+        <p><b>Проблема 1: Помилково задеплоїв неправильний графік</b></p>
+        <pre style="background:#2c3e50; color:#fff; padding:10px; border-radius:6px; font-size:12px;"># Відкат останнього коміту
+cd Graffik
+git revert HEAD
+git push
+# → GitHub Actions задеплоїть попередню версію</pre>
+        <p><b>Проблема 2: Юзери скаржаться "не бачу нової версії"</b></p>
+        <ul>
+          <li>Юзер має клікнути <b>Ctrl+Shift+R</b> (hard reload)</li>
+          <li>Або: DevTools → Application → Service Workers → Unregister → Reload</li>
+          <li>Або: почекати 1 годину (auto-check у SW)</li>
+        </ul>
+        <p><b>Проблема 3: Admin режим не активується після login</b></p>
+        <ul>
+          <li>Переконайся що логінишся як <code>servitant@gmail.com</code></li>
+          <li>Почекай 3 секунди (polling)</li>
+          <li>Відкрий Console → перевір: <code>console.log(driveUserEmail)</code></li>
+          <li>Якщо email не той → перелогінься</li>
+        </ul>
+        <p><b>Проблема 4: GitHub Actions failed</b></p>
+        <ul>
+          <li>Відкрий: <a href="https://github.com/servitantgit/Graffik/actions" target="_blank">https://github.com/servitantgit/Graffik/actions</a></li>
+          <li>Клікни на червоний workflow</li>
+          <li>Прочитай помилку</li>
+          <li>Найчастіші причини: syntax error у data.js, недостатньо прав</li>
+          <li>Виправ → git commit --amend → git push --force (обережно!)</li>
+        </ul>
+        <p><b>Проблема 5: Втратив локальні зміни в браузері</b></p>
+        <ul>
+          <li>Google Drive backup: ☰ Menu → Google Drive → Pobierz</li>
+          <li>JSON backup: ☰ Menu → 📥 Eksport JSON (робити регулярно!)</li>
+        </ul>
+        <p style="padding:10px; background:#fadbd8; border-left:3px solid #c0392b; border-radius:6px; margin-top:12px;">
+          🚨 <b>Nuclear option:</b> Якщо все зовсім погано → <code>git reset --hard <останній робочий commit></code> + <code>git push --force</code>. Втратиш деякі коміти, але сайт запрацює.
+        </p>
+      `,
+    },
+    {
+      icon: '🔐',
+      title: 'Безпека та бекапи',
+      content: `
+        <p><b>Що зберігається де:</b></p>
+        <ul>
+          <li><b>Код + factorySchedule</b> → GitHub repo (backup через Git history)</li>
+          <li><b>Твої персональні дані</b> (urlopy, OT, notatki) → браузер localStorage</li>
+          <li><b>Синхронізація</b> → Google Drive (лише твого акаунта)</li>
+        </ul>
+        <p><b>Регулярний бекап (раз на місяць):</b></p>
+        <ol>
+          <li>☰ Menu → 👑 Admin Panel → 📥 Eksport JSON</li>
+          <li>Збережи файл у безпечному місці (Google Drive / Dropbox / USB)</li>
+          <li>Це резервна копія на випадок якщо браузер очистять</li>
+        </ol>
+        <p><b>Хто має admin права:</b></p>
+        <ul>
+          <li>Тільки email у списку <code>ADMIN_EMAILS</code> у файлі <code>js/admin.js</code></li>
+          <li>Зараз: <code>servitant@gmail.com</code></li>
+          <li>Щоб додати нового admin — треба редагувати цей файл + git push</li>
+          <li>Знання email <b>НЕ дає доступу</b> — треба фактичний Google login</li>
+        </ul>
+        <p><b>Що робити якщо admin-email скомпрометований:</b></p>
+        <ol>
+          <li>Зміни пароль Google акаунта негайно</li>
+          <li>Google → Security → Third-party apps → Revoke Grafik Gillette</li>
+          <li>Опційно: заміни ADMIN_EMAILS на новий email + git push</li>
+        </ol>
+      `,
+    },
+    {
+      icon: '📞',
+      title: 'Контакти на випадок катастрофи',
+      content: `
+        <p><b>Розробник (я):</b></p>
+        <ul>
+          <li>📧 Особистий: <a href="mailto:servitant@gmail.com">servitant@gmail.com</a></li>
+          <li>📧 Робочий: <a href="mailto:tantsiura.s@pg.com">tantsiura.s@pg.com</a></li>
+        </ul>
+        <p><b>Технічні ресурси:</b></p>
+        <ul>
+          <li>🔧 GitHub repo: <a href="https://github.com/servitantgit/Graffik" target="_blank">github.com/servitantgit/Graffik</a></li>
+          <li>🚀 Live app: <a href="https://servitantgit.github.io/Graffik/" target="_blank">servitantgit.github.io/Graffik</a></li>
+          <li>⚙️ GitHub Actions: <a href="https://github.com/servitantgit/Graffik/actions" target="_blank">Actions page</a></li>
+          <li>📚 Docs: <a href="https://github.com/servitantgit/Graffik/blob/main/PROJECT_DOCS.md" target="_blank">PROJECT_DOCS.md</a></li>
+          <li>📝 CHANGELOG: <a href="https://github.com/servitantgit/Graffik/blob/main/CHANGELOG.md" target="_blank">CHANGELOG.md</a></li>
+        </ul>
+        <p><b>Якщо треба передати проект іншій людині:</b></p>
+        <ol>
+          <li>Дай доступ до GitHub repo (Settings → Collaborators)</li>
+          <li>Додай її email у <code>ADMIN_EMAILS</code> в <code>js/admin.js</code></li>
+          <li>Покажи цей FAQ — тут вся інформація</li>
+          <li>Розкажи де знайти <code>PROJECT_DOCS.md</code> у корені repo</li>
+        </ol>
+        <p><b>Якщо треба відновити з нуля (все зламано):</b></p>
+        <ol>
+          <li>Склонуй repo: <code>git clone https://github.com/servitantgit/Graffik.git</code></li>
+          <li>Відкрий в VS Code</li>
+          <li>Прочитай <code>PROJECT_DOCS.md</code> + <code>CHANGELOG.md</code></li>
+          <li>Дивись цей FAQ (він у самому додатку)</li>
+        </ol>
+        <p style="padding:10px; background:var(--bg-info); border-radius:8px; margin-top:12px; text-align:center;">
+          💚 <b>Головне — не панікуй.</b> Все у Git. Все можна відкотити.
+        </p>
+      `,
+    },
+  ];
+
+  // Build HTML with collapsible sections
+  const sectionsHtml = sections
+    .map(
+      (s, idx) => `
+    <details class="admin-faq-item" ${idx === 0 ? 'open' : ''} style="background:var(--bg-cell); border-radius:10px; border:1px solid var(--border-cell); overflow:hidden; margin-bottom:8px;">
+      <summary style="padding:12px 16px; cursor:pointer; font-weight:600; font-size:15px; color:var(--text-header); list-style:none; display:flex; align-items:center; gap:8px;">
+        <span style="font-size:20px;">${s.icon}</span>
+        <span>${s.title}</span>
+      </summary>
+      <div style="padding:12px 16px 16px; font-size:13px; line-height:1.55; color:var(--text-main); border-top:1px solid var(--border-cell);">
+        ${s.content}
+      </div>
+    </details>
+  `
+    )
+    .join('');
+
+  const body = `
+    <p style="color:var(--text-muted); font-size:13px; margin-bottom:15px;">
+      📚 Детальна інструкція для адміністратора. Клікни на секцію, щоб розгорнути.
+    </p>
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      ${sectionsHtml}
+    </div>
+    <p style="text-align:center; margin-top:16px; padding-top:12px; border-top:1px solid var(--border-cell); font-size:11px; color:var(--text-muted);">
+      💡 Ця сторінка бачите тільки ви (адмін). Юзери її не бачать.<br>
+      Оновлюється разом з кодом додатка. Останнє оновлення: ${new Date().toISOString().slice(0, 10)}
+    </p>
+  `;
+
+  showModal({
+    title: '👑 Admin FAQ — Інструкція адміна',
+    body: body,
+    buttons: [{ text: 'Зрозуміло', class: 'primary' }],
+  });
+}
+
+/* === HANDLER: Admin FAQ button in top-bar === */
+bindClick('adminFaqBtn', () => {
+  renderAdminFaq();
+});
