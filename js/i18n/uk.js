@@ -466,7 +466,7 @@ window.translations.uk = {
   // === MENU: Admin (v3.6.2) ===
   menuSectionAdmin: '👑 Панель адміна',
   menuAdminImport: 'Імпорт CSV/JSON',
-  menuAdminExport: 'Експорт data.js',
+  menuAdminExport: 'Експорт factory-року (.js)',
 
   // === GENERIC ===
   cancel: 'Скасувати',

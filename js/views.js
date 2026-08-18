@@ -392,7 +392,6 @@ function renderEmptyState(container) {
       <p>${t('yearIsEmptyDescription')}</p>
       <div class="es-actions">
         <button class="btn-primary" onclick="document.getElementById('editModeToggle').click()">✏️ ${t('enableEdit')}</button>
-        <button class="btn-secondary" onclick="document.getElementById('importDataBtn').click()">📂 ${t('importJson')}</button>
       </div>
     </div>
   `;

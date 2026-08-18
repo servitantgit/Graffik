@@ -200,8 +200,8 @@ function copyToClipboard(url) {
   }
 }
 
-/* === EXPORT/IMPORT JSON === */
-document.getElementById('exportDataBtn').onclick = () => {
+/* === EXPORT/IMPORT JSON (UI removed — Google Drive is the backup) === */
+function exportPersonalJsonBackup() {
   const data = {
     _meta: { app: t('appName'), v: 3.1, date: new Date().toISOString() },
     customSchedule,
@@ -217,7 +217,7 @@ document.getElementById('exportDataBtn').onclick = () => {
   a.download = `grafik_backup_${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   showToast('success', t('exportJsonSuccess'));
-};
+}
 
 bindClick('menuIcs', () => {
   closeSideMenu();
@@ -309,8 +309,15 @@ function validateImportedData(data) {
   }
 }
 
-bindClick('importDataBtn', () => document.getElementById('importFile').click());
-document.getElementById('importFile').onchange = (e) => {
+/* importDataBtn removed from UI; keep file input handler only if element exists */
+(function bindLegacyImportIfPresent() {
+  const btn = document.getElementById('importDataBtn');
+  const input = document.getElementById('importFile');
+  if (btn && input) {
+    bindClick('importDataBtn', () => input.click());
+  }
+  if (!input) return;
+  input.onchange = (e) => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
@@ -353,6 +360,7 @@ document.getElementById('importFile').onchange = (e) => {
   reader.readAsText(file);
   e.target.value = '';
 };
+})();
 
 /* === MENU: OPCJE === */
 

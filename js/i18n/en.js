@@ -468,7 +468,7 @@ window.translations.en = {
   // === MENU: Admin (v3.6.2) ===
   menuSectionAdmin: '👑 Admin Panel',
   menuAdminImport: 'Import CSV/JSON',
-  menuAdminExport: 'Export data.js',
+  menuAdminExport: 'Export factory year (.js)',
 
   // === GENERIC ===
   cancel: 'Cancel',
