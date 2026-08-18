@@ -171,18 +171,22 @@ js/schedules/
 
 ### js/core.js — Moduł 2: Storage + logika biznesowa
 
-- `loadPrefs/savePrefs`, `loadCustomSchedule/saveCustomSchedule`
-- `loadUrlops/saveUrlops`, `loadNotes/saveNotes`, `loadOvertimes/saveOvertimes`
-- `getShiftAt(y, m, d, brig)` — źródło zmiany dla danego dnia
-- `getShiftAtWithPending(y, m, d, brig)` — z buforem edycji
+- `loadPrefs` / `savePrefs(p, markSync?)` — UI prefs; `markSync=true` tylko dla personal (np. urlopLimits)
+- `loadCustomSchedule/saveCustomSchedule`, `loadUrlops/saveUrlops`, `loadNotes/saveNotes`, `loadOvertimes/saveOvertimes`
+  - wszystkie `save*` (poza zwykłym savePrefs) wołają `updateLastModified()`
+- `getShiftAt(y, m, d, brig)` — customSchedule jeśli jest, inaczej factory
 - `getYearSchedule(y)` — cały rok jako struktura
 - `getMonthHours(y, m)` — sumowanie godzin w miesiącu
-- `isUrlop`, `toggleUrlop`, `getVacationLimit`, `setVacationLimit`, `countWorkingUrlops`
-- `getOvertimes`, `setOvertime`, `removeOvertime`, `categorizeOvertime`, `calcOvertimeTime`, `getActualWorkTime`, `getMonthOvertimeSummary`
+- `isUrlop`, `toggleUrlop`, `getVacationLimit`, `setVacationLimit` (markSync), `countWorkingUrlops`
+- `getOvertimes`, `setOvertime`, `removeOvertime`
 - `getRelief(y, m, d, brig, shift)` — kto przekazuje/przejmuje zmianę
-- `getCycleRange`, `daysToNextWolne`, `getLiveTimer`, `jumpToDate`
-- `hasFactoryData`, `hasCustomData`, `isDirty`
+- `getCycleRange`, `getFactoryCycleRange` (privacy mode), `daysToNextWolne`
+- `hasFactoryData`, `hasCustomData`
 - `getElementByIdSafe` — bezpieczny dostęp do DOM
+
+> `getShiftAtWithPending` / `isDirty` → `js/edit.js`  
+> `getLiveTimer` / `jumpToDate` → `js/dashboard.js`  
+> `categorizeOvertime` / `getActualWorkTime` → `js/overtime-logic.js`
 
 ### js/ui.js — Moduł 3: UI helpers
 
@@ -214,7 +218,9 @@ js/schedules/
   - Karta dzisiejszej zmiany z live timerem
   - Statystyki (najbliższe zmiany, urlopy, nadgodziny)
   - Upcoming days chips
-  - Quick actions
+- **Privacy:** `shouldShowPersonalData()` — gdy `false` (wylogowany):
+  - tylko fabryczny grafik (bez urlopów / OT / notatek / live-timera)
+  - ukryte karty: wykorzystane urlopy, miesięczny overtime
 
 ### js/calendar.js — Moduł 6: Widok Miesiąc
 
@@ -228,6 +234,9 @@ js/schedules/
 - `renderProgress()` — pasek postępu miesiąca
 - `renderInfo()` — panel informacji pod kalendarzem
 - `getLiveShiftInfo()` — info o aktualnej zmianie
+- **Privacy:** komórki, OT, notatki, dirty-edit — za `hidePrivate`
+  - `cycleRange` / `compareShift` używają factory schedule gdy wylogowany
+  - helper: `getFactoryCycleRange()` w `core.js`
 
 ### js/views.js — Moduł 7: Widoki Tydzień, Rok, Tabela
 
@@ -406,14 +415,17 @@ Używany dla wszystkich przycisków w side menu i edit banner.
 ## 5. Znane zagadnienia (Known issues)
 
 - Zmienne stanu są globalne — potencjalne konflikty przy dużych zmianach
-- CSS w jednym pliku inline — trudno modularyzować
+- CSS w jednym pliku — trudno modularyzować
 - Brak testów jednostkowych automatycznych (poza `test_core.js` dla obliczeń)
 - Synchronizacja Google Drive: brak merge/diff — last-write-wins (patrz sekcja 6)
 - `goToMonth` musi być exposed na `window` (patrz `window.goToMonth = goToMonth`)
 - Klucze i18n są rozproszone po 3 plikach — brak central registry i validacji brakujących kluczy
 - Genitive month names są zdublowane w kodzie (monthNames dla nagłówków vs monthNamesGenitive dla dat)
-- Testowanie funkcji `getLiveTimer()` wymaga mockowania `Date`, `getShiftAt`, `isUrlop`, `getOvertimes` jednocześnie — pojedynczy mock jednej zależności może dawać fałszywe wyniki
+- Testowanie funkcji `getLiveTimer()` wymaga mockowania `Date`, `getShiftAt`, `isUrlop`, `getOvertimes` jednocześnie
 - Kompatybilność `chrome-extension://` z Service Worker — wymaga jawnego filtra protokołu w handlerze `fetch`
+- **Relief popups** (`getRelief` → `getShiftAt`) nadal czytają custom schedule nawet gdy UI pokazuje factory — niska waga, możliwe drobne niespójności podświetleń przy wylogowaniu
+- **Edit mode** nie jest twardo zablokowany bez logowania — lokalne edycje customSchedule są możliwe offline; UI i tak ukrywa personal data do logowania
+- Etykieta Admin „Export data.js” jest legacy naming — eksport generuje już format `YYYY.js` (registerYearData)
 
 ## 6. Strategia konfliktów synchronizacji
 
