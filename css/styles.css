@@ -3747,428 +3747,129 @@ a.menu-item {
     font-size: 16px;
   }
 }
+
 /* ============================================================
-   POPUP FIX — Graffik Gillette
-   Resolves overlapping relief-left, relief-right, and OT-detail
-   popups in month-view calendar cells.
-   
-   Strategy:
-   • Relief popups (left/right): positioned outside the cell,
-     stacked with z-index, only the hovered-direction shows prominently
-   • OT detail popup: compact strip above the cell (not full-cell-height)
-   • Mobile: relief popups go below the cell; OT detail above but compact
-   • Shift-rate badge & ot-marker: always visible, raised z-index
+   POPUP FIX — Graffik Gillette (v2)
+   Desktop: keep original popup sizes (full-cell overlay is by design
+   — the user WANTS relief/OT popups to cover adjacent cells).
+   Mobile: enlarge OT detail popup so text fits properly.
    ============================================================ */
 
-/* ── 1. Day-cell: ensure overflow visible for popups ── */
-.day-cell {
-  overflow: visible !important;
-}
-
-/* ── 2. OT detail popup: compact strip, not full-cell ── */
-.day-cell .ot-detail-popup {
-  width: 100%;
-  height: auto;
-  min-height: 44px;
-  max-height: 70px;
-  bottom: 100%;
-  top: auto;
-  left: 0;
-  right: 0;
-  padding: 4px 6px;
-  gap: 2px;
-  z-index: 30;
-  border-radius: 8px 8px 0 0;
-  /* Semi-opaque backdrop so underlying content is hidden */
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-
-/* ── 3. Relief popups: ensure proper dimensions ── */
-/* Desktop: relief popups float left/right of the cell */
-.relief-popup {
-  width: 82px;
-  height: auto;
-  min-height: 60px;
-  max-height: 80px;
-  top: 50%;
-  bottom: auto;
-  transform: translateY(-50%) scale(0.96);
-  z-index: 28;
-  border-radius: 10px;
-  /* Semi-opaque so they don't completely obscure adjacent cell content */
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-
-.day-cell:hover .relief-popup,
-.day-cell.selected .relief-popup {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(-50%) scale(1);
-}
-
-.day-cell.selected .relief-popup {
-  transition-delay: 0s;
-  transform: translateY(-50%) scale(1);
-}
-
-/* Left relief: positioned to the left of the cell */
-.relief-popup.left {
-  right: calc(100% + 4px);
-  left: auto;
-}
-
-/* Right relief: positioned to the right of the cell */
-.relief-popup.right {
-  left: calc(100% + 4px);
-  right: auto;
-}
-
-/* Top relief (edge-column fallback): positioned above the cell */
-.relief-popup.top {
-  left: 0;
-  right: 0;
-  width: 100%;
-  top: auto;
-  bottom: calc(100% + 4px);
-  height: auto;
-  min-height: 54px;
-  max-height: 72px;
-  transform: scale(0.96);
-  border-radius: 10px 10px 0 0;
-}
-
-.day-cell:hover .relief-popup.top,
-.day-cell.selected .relief-popup.top {
-  transform: scale(1);
-}
-
-/* ── 4. Edge column adjustments ── */
-/* First column (Monday): left relief goes below the cell */
-.day-cell.col-first .relief-popup.left {
-  right: auto;
-  left: 0;
-  width: 100%;
-  top: calc(100% + 4px);
-  bottom: auto;
-  height: auto;
-  min-height: 54px;
-  max-height: 72px;
-  transform: scale(0.96);
-  border-radius: 0 0 10px 10px;
-}
-.day-cell.col-first:hover .relief-popup.left,
-.day-cell.col-first.selected .relief-popup.left {
-  transform: scale(1);
-}
-.day-cell.col-first .relief-popup.left::before {
-  right: auto;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-bottom-color: inherit;
-  border-left-color: transparent;
-}
-
-/* Last column (Sunday): right relief goes below the cell */
-.day-cell.col-last .relief-popup.right {
-  left: 0;
-  right: auto;
-  width: 100%;
-  top: calc(100% + 4px);
-  bottom: auto;
-  height: auto;
-  min-height: 54px;
-  max-height: 72px;
-  transform: scale(0.96);
-  border-radius: 0 0 10px 10px;
-}
-.day-cell.col-last:hover .relief-popup.right,
-.day-cell.col-last.selected .relief-popup.right {
-  transform: scale(1);
-}
-.day-cell.col-last .relief-popup.right::before {
-  left: auto;
-  top: -10px;
-  right: 50%;
-  transform: translateX(50%);
-  border: 6px solid transparent;
-  border-bottom-color: inherit;
-  border-right-color: transparent;
-}
-
-/* ── 5. Arrow (pseudo-element) adjustments ── */
-.relief-popup::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  border: 8px solid transparent;
-}
-.relief-popup.left::before {
-  right: -16px;
-  border-left-color: inherit;
-}
-.relief-popup.right::before {
-  left: -16px;
-  border-right-color: inherit;
-}
-.relief-popup.top::before {
-  top: auto;
-  bottom: -16px;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 8px solid transparent;
-  border-top-color: inherit;
-}
-
-/* ── 6. Z-index hierarchy ── */
-/*   ot-marker / shift-rate-badge : always visible, z-index 5
-     relief-popup                 : z-index 28 (on hover/selected)
-     ot-detail-popup              : z-index 30 (on hover/selected)
-     day-cell:hover               : z-index 35 (lifts whole cell)
-*/
-
-.day-cell .shift-rate-badge {
-  z-index: 5;
-}
-
+/* ── 1. Z-index hierarchy (desktop) ── */
 .day-cell .ot-marker {
   z-index: 5;
 }
-
+.day-cell .shift-rate-badge {
+  z-index: 5;
+}
+.day-cell .relief-popup {
+  z-index: 28;
+}
+.day-cell .ot-detail-popup {
+  z-index: 30;
+}
 .day-cell:hover {
   z-index: 35;
 }
-
 .day-cell.selected {
   z-index: 36;
 }
 
-/* ── 7. Content inside popups: tighter layout ── */
-.relief-popup .rp-label {
-  font-size: 9px;
-  text-transform: uppercase;
-  opacity: 0.9;
-  margin-bottom: 1px;
-  letter-spacing: 0.3px;
-  line-height: 1.15;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.relief-popup .rp-brig {
-  font-size: 20px;
-  font-weight: bold;
-  line-height: 1;
-  padding: 2px 0;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 5px;
-  margin: 1px 0;
-  width: 100%;
-}
-
-.relief-popup .rp-info {
-  font-size: 10px;
-  opacity: 0.95;
-  margin-top: 1px;
-  line-height: 1.15;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* ── 8. OT detail popup content ── */
-.day-cell .ot-detail-popup .rp-label {
-  font-size: 9px;
-}
-
-.day-cell .ot-detail-popup .rp-brig {
-  font-size: 18px;
-  padding: 1px 0;
-}
-
-.day-cell .ot-detail-popup .rp-info {
-  font-size: 9px;
-  line-height: 1.2;
-}
-
-.day-cell .ot-detail-popup .otp-time {
-  font-size: 10px;
-  font-weight: 700;
-  margin-top: 1px;
+/* ── 2. Desktop: ensure overflow visible for popups ── */
+.day-cell {
+  overflow: visible !important;
 }
 
 /* ============================================================
-   9. MOBILE FIXES (max-width: 600px)
+   3. MOBILE FIXES (max-width: 600px)
+   Enlarge OT detail popup so text fits on small screens.
+   Relief popups: keep original cell-sized dimensions.
    ============================================================ */
 @media (max-width: 600px) {
-  /* Relief popups: go below the cell (not left/right) on mobile */
-  .relief-popup {
-    width: 100%;
-    height: auto;
-    min-height: 48px;
-    max-height: 64px;
-    top: calc(100% + 4px);
-    bottom: auto;
-    left: 0;
-    right: 0;
-    transform: scale(0.96);
-    border-radius: 0 0 10px 10px;
-  }
-
-  .day-cell:hover .relief-popup,
-  .day-cell.selected .relief-popup {
-    transform: scale(1);
-  }
-
-  /* Override left/right positioning on mobile: both go below cell */
-  .relief-popup.left,
-  .relief-popup.right {
-    right: auto;
-    left: 0;
-  }
-  .relief-popup.left {
-    right: auto;
-    left: 0;
-    width: 50%;
-    border-radius: 0 0 0 10px;
-  }
-  .relief-popup.right {
-    left: 50%;
-    right: auto;
-    width: 50%;
-    border-radius: 0 0 10px 0;
-  }
-
-  /* Edge columns: same as above on mobile */
-  .day-cell.col-first .relief-popup.left {
-    right: auto;
-    left: 0;
-    width: 50%;
-  }
-  .day-cell.col-last .relief-popup.right {
-    left: 50%;
-    right: auto;
-    width: 50%;
-  }
-
-  /* .top variant also goes below on mobile */
-  .relief-popup.top {
-    top: calc(100% + 4px);
-    bottom: auto;
-    width: 100%;
-    height: auto;
-    min-height: 48px;
-    max-height: 64px;
-    border-radius: 0 0 10px 10px;
-  }
-
-  /* Arrows point upward on mobile (popup below cell) */
-  .relief-popup::before {
-    top: -12px;
-    bottom: auto;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 6px solid transparent;
-    border-bottom-color: inherit;
-  }
-  .relief-popup.left::before {
-    left: 25%;
-    right: auto;
-    transform: translateX(-50%);
-  }
-  .relief-popup.right::before {
-    left: 75%;
-    right: auto;
-    transform: translateX(-50%);
-  }
-
-  /* OT detail popup: compact above cell */
+  /* OT detail popup: full-cell-height above, so all text is visible */
   .day-cell .ot-detail-popup {
     width: 100%;
-    height: auto;
-    min-height: 40px;
-    max-height: 56px;
-    bottom: calc(100% + 4px);
+    height: 100%;
+    min-height: 80px;
+    padding: 4px 3px;
+    font-size: 10px;
+    bottom: 100%;
     top: auto;
-    padding: 3px 5px;
-    font-size: 9px;
-    border-radius: 10px 10px 0 0;
   }
   .day-cell .ot-detail-popup .rp-brig {
-    font-size: 16px;
+    font-size: 20px;
+    padding: 3px 0;
+  }
+  .day-cell .ot-detail-popup .rp-label {
+    font-size: 9px;
+  }
+  .day-cell .ot-detail-popup .rp-info {
+    font-size: 10px;
+    line-height: 1.3;
+  }
+  .day-cell .ot-detail-popup .otp-time {
+    font-size: 11px;
+    font-weight: 700;
   }
 
-  /* Relief popup text sizes */
+  /* Relief popups on mobile: keep original cell-sized overlay */
+  .relief-popup .rp-label {
+    font-size: 8px;
+    letter-spacing: 0.2px;
+  }
+  .relief-popup .rp-brig {
+    font-size: 20px;
+    padding: 2px 0;
+  }
+  .relief-popup .rp-info {
+    font-size: 9px;
+  }
+}
+
+/* ============================================================
+   4. SMALL MOBILE (max-width: 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+  /* OT detail popup: even more height for tiny screens */
+  .day-cell .ot-detail-popup {
+    min-height: 70px;
+    padding: 3px 2px;
+    font-size: 9px;
+  }
+  .day-cell .ot-detail-popup .rp-brig {
+    font-size: 18px;
+  }
+  .day-cell .ot-detail-popup .rp-label {
+    font-size: 8px;
+  }
+  .day-cell .ot-detail-popup .rp-info {
+    font-size: 9px;
+    line-height: 1.25;
+  }
+
   .relief-popup .rp-label {
     font-size: 7px;
     letter-spacing: 0;
   }
   .relief-popup .rp-brig {
-    font-size: 16px;
+    font-size: 18px;
     padding: 2px 0;
   }
   .relief-popup .rp-info {
     font-size: 8px;
   }
 
-  /* When OT detail + relief popups both appear, offset the cell to avoid overlapping each other */
-  .day-cell:hover,
-  .day-cell.selected {
-    z-index: 40;
-  }
-
-  /* When a cell has OT: on mobile, only show OT detail popup on hover,
-     hide relief popups to prevent 3 vertical popups stacking */
-  .day-cell.has-ot:hover .relief-popup,
-  .day-cell.has-ot.selected .relief-popup {
-    opacity: 0 !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-  }
-}
-
-/* ============================================================
-   10. SMALL MOBILE (max-width: 480px)
-   ============================================================ */
-@media (max-width: 480px) {
-  .relief-popup .rp-label {
-    font-size: 6px;
-    letter-spacing: 0;
-  }
-  .relief-popup .rp-brig {
-    font-size: 14px;
-    padding: 1px 0;
-  }
-  .relief-popup .rp-info {
-    font-size: 7px;
-  }
   .day-cell .ot-marker {
-    width: 18px;
-    height: 18px;
-    font-size: 10px;
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
     top: 2px;
     right: 2px;
   }
-  .day-cell .ot-detail-popup {
-    min-height: 36px;
-    max-height: 50px;
-    padding: 2px 4px;
-    font-size: 8px;
-  }
-  .day-cell .ot-detail-popup .rp-brig {
-    font-size: 14px;
-  }
 }
 
 /* ============================================================
-   11. PRINT: hide all popups
+   5. PRINT: hide all popups
    ============================================================ */
 @media print {
   .relief-popup,
