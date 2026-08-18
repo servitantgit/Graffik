@@ -3638,3 +3638,25 @@ small {
     break-inside: avoid;
   }
 }
+
+/* Vacation limit in edit banner */
+.edit-banner-limit {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: inherit;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+}
+.edit-banner-limit:hover {
+  background: rgba(255,255,255,0.28);
+}
+a.menu-item {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: inherit;
+}

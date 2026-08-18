@@ -6,6 +6,11 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 
 ## [Unreleased]
 
+### Changed
+- **Menu:** Limit urlopu przeniesiony do edit banner (🌴); sekcja Zaawansowane usunięta
+- **Menu Info** na końcu listy: Pomoc/FAQ + link GitHub dewelopera
+- Personal JSON import/export usunięty (backup = Drive)
+
 ### Naprawione
 
 - **PWA Service Worker install** — `sw.js` ASSETS zawierał nieistniejący `js/data.js`
