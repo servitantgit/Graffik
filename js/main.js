@@ -1,5 +1,5 @@
 /* ================================================================
-   GRAFIK GILLETTE — Moduł 9: STAN + NAWIGACJA + ZDARZENIA + START
+   GRAFIK GILLETTE — Module 9: STATE + NAVIGATION + EVENTS + STARTUP
    ================================================================ */
 
 /* === STAN === */
@@ -15,7 +15,7 @@ let editMode = false;
 let editPaletteMode = 'URLOP';
 let popupFadeTimer = null;
 
-/* === HELPER: Bezpieczne bindowanie eventów === */
+/* === HELPER: Safe event binding === */
 function bindEvent(id, event, handler) {
   const el = document.getElementById(id);
   if (el) {
@@ -43,40 +43,40 @@ function bindEvent(id, event, handler) {
     prefs.yearMode = true;
   }
 
-  // Рік
+  // Year
   const y = parseInt(p.get('y'), 10);
   if (y >= MIN_YEAR && y <= MAX_YEAR) {
     currentYear = y;
     prefs.year = y;
   }
 
-  // Місяць
+  // Month
   const m = parseInt(p.get('m'), 10);
   if (m >= 1 && m <= 12) {
     currentMonth = m;
   }
 
-  // День
+  // Day
   const d = parseInt(p.get('d'), 10);
   if (d >= 1 && d <= 31) {
     selectedDay = d;
   }
 
-  // Бригада
+  // Brigade
   const b = (p.get('brig') || '').toUpperCase();
   if (['A', 'B', 'C', 'D'].includes(b)) {
     selectedShift = b;
     prefs.shift = b;
   }
 
-  // Зберегти оновлені prefs
+  // Save updated prefs
   savePrefs(prefs);
 })();
 
 if (currentYear < MIN_YEAR) currentYear = MIN_YEAR;
 if (currentYear > MAX_YEAR) currentYear = MAX_YEAR;
 
-// Очистити URL після завантаження параметрів
+// Clear the URL after loading parameters
 if (window.location.search) {
   history.replaceState({}, '', window.location.pathname);
 }
@@ -133,7 +133,7 @@ function refreshViews() {
     currentView !== 'dashboard' &&
     !editMode;
 
-  // Usuwamy stare podsumowanie nadgodzin przy przełączaniu widoku
+  // Remove the old overtime summary when switching views
   const oldOtSum = document.getElementById('otMonthSummary');
   if (oldOtSum) oldOtSum.remove();
 
@@ -469,7 +469,7 @@ document.addEventListener('touchend', (e) => {
   }
 });
 
-/* === WYBÓR BRYGADY === */
+/* === BRIGADE SELECTION === */
 document.querySelectorAll('.shift-btn').forEach((btn) => {
   btn.onclick = (e) => {
     if (e.ctrlKey || e.metaKey) {
@@ -497,7 +497,7 @@ document.querySelectorAll('.shift-btn').forEach((btn) => {
   };
 });
 
-/* === DZIŚ === */
+/* === TODAY === */
 bindClick('todayBtn', () => {
   const today = new Date(); // ← przejrenął `t` (bo kolíży z i18n t()!)
   currentYear = today.getFullYear();
@@ -545,7 +545,7 @@ refreshViews();
 
 if (!prefs.welcomed) {
   setTimeout(() => {
-    showToast('info', '👋 Witaj! Kliknij ☰ Menu → Pomoc, aby zobaczyć wszystkie funkcje.', 6000);
+    showToast('info', t('welcome'), 6000);
     prefs.welcomed = true;
     savePrefs(prefs);
   }, 500);
@@ -558,13 +558,13 @@ if (langToggleBtn && langDropdown) {
   langToggleBtn.onclick = () => {
     langDropdown.classList.toggle('show');
   };
-  // Закрываем выпадающий список при клике вне него
+  // Close the dropdown when clicking outside it
   document.addEventListener('click', (e) => {
     if (!langToggleBtn.contains(e.target) && !langDropdown.contains(e.target)) {
       langDropdown.classList.remove('show');
     }
   });
-  // Обработчики для опций языка
+  // Handlers for language options
   document.querySelectorAll('.lang-option').forEach((opt) => {
     opt.onclick = () => {
       const lang = opt.dataset.lang;
@@ -574,5 +574,5 @@ if (langToggleBtn && langDropdown) {
   });
 }
 
-/* === ПРИМЕНЕНИЕ ЛОКАЛИЗАЦИИ === */
+/* === APPLY LOCALIZATION === */
 applyTranslations();

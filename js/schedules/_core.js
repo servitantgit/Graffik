@@ -160,7 +160,7 @@ function formatTimeRange(from, to) {
 /**
  * Builds map of Polish public holidays for a year.
  * @param {number} year
- * @returns {object} - { "1-1": "Nowy Rok", "1-6": "Trzech Króli", ... }
+ * @returns {object} - { "1-1": "New Year", "1-6": "Epiphany", ... }
  */
 function buildHolidays(year) {
   // Fixed-date holidays

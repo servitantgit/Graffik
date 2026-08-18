@@ -1,5 +1,5 @@
 /* ================================================================
-   GRAFIK GILLETTE — Moduł 5: DASHBOARD
+   GRAFIK GILLETTE — Module 5: DASHBOARD
    ================================================================ */
 
 function renderDashboard() {
@@ -132,7 +132,7 @@ function renderDashboard() {
         }
       });
 
-      // Dodana zmiana w święto/niedzielę (fabrycznie było wolno)
+      // Added holiday/Sunday shift (factory day was free)
       const factoryShift =
         factorySchedule[yy] && factorySchedule[yy][mm] && factorySchedule[yy][mm][selectedShift]
           ? factorySchedule[yy][mm][selectedShift][dd - 1]
@@ -184,7 +184,7 @@ function renderDashboard() {
     `;
   }
 
-  // Sprawdź czy jest notatka dla dzisiaj
+  // Check whether there's a note for today
   const todayNoteKey = `${y}-${m}-${d}-${selectedShift}`;
   const todayNote = notes[todayNoteKey];
   const greetingContent = todayNote
@@ -266,8 +266,8 @@ function getLiveTimer(shift, y, m, d) {
   if (now.getFullYear() !== y || now.getMonth() + 1 !== m || now.getDate() !== d) return null;
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
-  // === PRZYPADEK SPECJALNY: noc po północy ===
-  // Sprawdzamy najpierw czy WCZORAJ była zmiana N, która JESZCZE trwa
+  // === SPECIAL CASE: night shift past midnight ===
+  // First check whether YESTERDAY had a night (N) shift that is STILL ongoing
   if (nowMinutes < 6 * 60) {
     const yesterday = new Date(now);
     yesterday.setDate(yesterday.getDate() - 1);
@@ -286,10 +286,10 @@ function getLiveTimer(shift, y, m, d) {
         return t('timerNightEndsIn', { h: Math.floor(rem / 60), m: rem % 60 });
       }
     }
-    // Jeśli wczoraj nie było N (albo już się skończyła) — kontynuujemy normalną logikę
+    // If yesterday wasn't a night shift (or it already ended) — continue with normal logic
   }
 
-  // === NORMALNA LOGIKA: zmiana zaczyna się/trwa dzisiaj ===
+  // === NORMAL LOGIC: shift starts/is ongoing today ===
   if (!shift || isWolne(shift)) return null;
 
   let startMin, endMin;
@@ -304,19 +304,19 @@ function getLiveTimer(shift, y, m, d) {
   } else if (shift === 'N') {
     startMin = 22 * 60;
     endMin = 30 * 60;
-  } // 30:00 = 06:00 następnego dnia
+  } // 30:00 = 06:00 the next day
   else return null;
 
   if (ot.przed) startMin -= ot.przed.hours * 60;
   if (ot.po) endMin += ot.po.hours * 60;
 
-  // Zmiana trwa
+  // Shift is ongoing
   if (nowMinutes >= startMin && nowMinutes < endMin) {
     const rem = endMin - nowMinutes;
     return t('timerEndsIn', { h: Math.floor(rem / 60), m: rem % 60 });
   }
 
-  // Zmiana zaczyna się w ciągu godziny
+  // Shift starts within the hour
   if (nowMinutes < startMin && startMin - nowMinutes <= 60) {
     return t('timerStartsIn', { m: startMin - nowMinutes });
   }

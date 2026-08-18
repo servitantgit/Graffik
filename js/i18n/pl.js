@@ -1,5 +1,5 @@
 /* ================================================================
-   GRAFIK GILLETTE — Tłumaczenia: POLSKI (domyślny)
+   GRAFIK GILLETTE — Translations: POLISH (default)
    ================================================================ */
 
 window.translations = window.translations || {};
@@ -182,6 +182,7 @@ window.translations.pl = {
   otCategory100: '🟣 +100%',
   otCategory200: '🔴 +200%',
   otPayment: '💰 Razem płatne',
+  otTodaySummary: '📊 Razem dziś: <b>{h}h</b> pracy · 💰 <b>{paid}h</b> płatne',
   otSaved: 'Zapisano {h}h nadgodzin',
   otDeleted: 'Nadgodziny usunięte',
   otSelectHours: 'Wybierz liczbę godzin',
@@ -204,6 +205,8 @@ window.translations.pl = {
   otWeekendSunday: '📅 Niedziela',
   otWeekendDayOff: '🏖️ Dzień wolny',
   otRate: 'Stawka',
+  labelHoliday: 'Święto',
+  labelSunday: 'Niedziela',
   otDeleteWeekend: 'Usunąć zapis pracy w dzień wolny?',
 
   // === VACATION ===

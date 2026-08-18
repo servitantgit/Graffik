@@ -1,5 +1,5 @@
 /* ================================================================
-   GRAFIK GILLETTE — Moduł 8: AKCJE (ICS, JSON, SHARE, MENU)
+   GRAFIK GILLETTE — Module 8: ACTIONS (ICS, JSON, SHARE, MENU)
    ================================================================ */
 
 function bindClick(id, handler) {
@@ -111,18 +111,18 @@ function buildShareUrl() {
     params.set('rok', '1');
   }
 
-  // Місяць (для month/week/table без yearMode)
+  // Month (for month/week/table without yearMode)
   if (currentView === 'month' || currentView === 'week' || (currentView === 'table' && !yearMode)) {
     params.set('m', currentMonth);
   }
 
-  // День (тільки для month з вибраним днем, або week)
+  // Day (only for month with a selected day, or week)
   if ((currentView === 'month' && selectedDay && !yearMode) || currentView === 'week') {
     const d = selectedDay || new Date().getDate();
     params.set('d', d);
   }
 
-  // Бригада (для всіх видів окрім table)
+  // Brigade (for all views except table)
   if (currentView !== 'table') {
     params.set('brig', selectedShift);
   }
@@ -131,7 +131,7 @@ function buildShareUrl() {
 }
 
 function buildShareText() {
-  // Опис того, чим ділимося (для тексту повідомлення)
+  // Description of what is being shared (for the message text)
   const viewNames = {
     dashboard: t('viewDashboard'),
     week: t('viewWeek'),
@@ -164,7 +164,7 @@ function shareCurrent() {
   const text = buildShareText();
   const isLocal = location.protocol === 'file:' || !location.origin || location.origin === 'null';
 
-  // Локальний файл: копіюємо текст без URL
+  // Local file: copy text without URL
   if (isLocal) {
     const content = `${text}\n🏭 ${t('appName')}`;
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -432,12 +432,12 @@ bindClick('resetCustomBtn', () => {
 
 /* === SHARE APP (link + QR code) === */
 function getAppUrl() {
-  // Базовий URL додатку (без параметрів)
+  // Base app URL (without parameters)
   return `${location.origin}${location.pathname}`;
 }
 
 function buildQRCodeUrl(text, size = 250) {
-  // Використовуємо публічний сервіс QR Server (безкоштовний, без ключа)
+  // Use the public QR Server service (free, no key required)
   const encoded = encodeURIComponent(text);
   return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encoded}&margin=10`;
 }
@@ -497,7 +497,7 @@ function shareApp() {
             .then(() => showToast('success', t('shareAppCopied')))
             .catch(() => showToast('error', t('shareCopyFailed')));
         } else {
-          // Fallback для старих браузерів
+          // Fallback for older browsers
           const textarea = document.createElement('textarea');
           textarea.value = appUrl;
           textarea.style.position = 'fixed';
@@ -526,13 +526,13 @@ function shareApp() {
             })
             .then(() => showToast('success', t('shareSuccess')))
             .catch((err) => {
-              // Користувач скасував — не показуємо помилку
+              // User cancelled — don't show an error
               if (err.name !== 'AbortError') {
                 showToast('error', t('shareCopyFailed'));
               }
             });
         } else {
-          // Немає Web Share API — просто копіюємо
+          // No Web Share API — just copy
           navigator.clipboard
             .writeText(appUrl)
             .then(() => showToast('info', t('shareLinkCopied')))
@@ -891,7 +891,7 @@ function renderAdminFaq() {
           <li>Ctrl+Y → повторює скасовану</li>
         </ul>
         <p style="padding:10px; background:var(--bg-info); border-radius:8px; margin-top:12px;">
-          💡 <b>Якщо помилок багато:</b> Простіше видалити рік через <b>☰ Menu → 👑 Admin Panel → 🗑 Wyczyść rok</b> і заповнити заново.
+          💡 <b>Якщо помилок багато:</b> Простіше видалити рік через <b>☰ Menu → 👑 Admin Panel → 🗑 Очистити рік</b> і заповнити заново.
         </p>
       `,
     },
@@ -930,7 +930,7 @@ git push</pre>
           <li>Замінить <code>__BUILD_ID__</code> на git hash</li>
           <li>Задеплоїть на <code>gh-pages</code></li>
           <li>Юзери побачать toast: <b>"🔄 Nowa wersja dostępna"</b></li>
-          <li>Клікнуть Odśwież → отримають графік на 2027 🎉</li>
+          <li>Клікнуть Оновити → отримають графік на 2027 🎉</li>
         </ul>
         
         <p style="padding:10px; background:#e8f5e9; border-left:3px solid #4caf50; border-radius:6px; margin-top:12px;">

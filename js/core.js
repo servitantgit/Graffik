@@ -1,5 +1,5 @@
 /* ================================================================
-   GRAFIK GILLETTE — Moduł 2: UTILITY + ŚWIĘTA + PERSISTENCJA + ROZKŁAD
+   GRAFIK GILLETTE — Module 2: UTILITY + HOLIDAYS + PERSISTENCE + SCHEDULE
    ================================================================ */
 
 /* === PERSISTENCJA === */
@@ -58,7 +58,7 @@ function saveOvertimes(o) {
   if (typeof updateLastModified === 'function') updateLastModified();
 }
 
-/* === Stan trwały === */
+/* === Persistent state === */
 const prefs = loadPrefs();
 const notes = loadNotes();
 const urlops = loadUrlops();
@@ -86,7 +86,7 @@ function setVacationLimit(brigade, value) {
   return limit;
 }
 
-/* === Rozkład (schedule) === */
+/* === Schedule === */
 function makeEmptyMonth(year, month) {
   const dim = new Date(year, month, 0).getDate();
   return {

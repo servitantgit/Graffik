@@ -1,5 +1,5 @@
 /* ================================================================
-   GRAFIK GILLETTE — Переклади: УКРАЇНСЬКА
+   GRAFIK GILLETTE — Translations: UKRAINIAN
    ================================================================ */
 
 window.translations = window.translations || {};
@@ -182,6 +182,7 @@ window.translations.uk = {
   otCategory100: '🟣 +100%',
   otCategory200: '🔴 +200%',
   otPayment: '💰 Разом оплачується',
+  otTodaySummary: '📊 Разом сьогодні: <b>{h}год</b> відпрацьовано · 💰 <b>{paid}год</b> оплачено',
   otSaved: 'Збережено {h}год надгодин',
   otDeleted: 'Надгодини видалено',
   otSelectHours: 'Виберіть кількість годин',
@@ -204,6 +205,8 @@ window.translations.uk = {
   otWeekendSunday: '📅 Неділя',
   otWeekendDayOff: '🏖️ Вихідний',
   otRate: 'Ставка',
+  labelHoliday: 'Свято',
+  labelSunday: 'Неділя',
   otDeleteWeekend: 'Видалити запис роботи у вихідний?',
 
   // === VACATION ===
@@ -432,13 +435,13 @@ window.translations.uk = {
   faqBugNote:
     'При повідомленні про помилку вкажіть рік, дату, бригаду, браузер і короткий опис проблеми.',
 
-  // === MENU (заголовки секцій) ===
+  // === MENU (section headers) ===
   menuSectionDrive: 'Google Drive',
   menuSectionExport: 'Експорт',
   menuSectionNotifications: 'Сповіщення',
   menuSectionInfo: 'Інфо',
 
-  // === MENU (пункти) ===
+  // === MENU (items) ===
   menuDrive: 'Google Drive (увійти)',
   menuSyncNow: 'Синхронізувати зараз',
   menuDriveLogout: 'Вийти з Google Drive',
@@ -516,7 +519,7 @@ window.translations.uk = {
   month11Short: 'Лис',
   month12Short: 'Гру',
 
-  // === MONTHS (родовий відмінок — для дат "12 серпня 2026") ===
+  // === MONTHS (genitive case — for dates like "12 серпня 2026", e.g. August) ===
   month1Genitive: 'січня',
   month2Genitive: 'лютого',
   month3Genitive: 'березня',

@@ -1,5 +1,5 @@
 /* ================================================================
-   GRAFIK GILLETTE — Moduł 7: WIDOKI (TYDZIEŃ, ROK, TABELA)
+   GRAFIK GILLETTE — Module 7: VIEWS (WEEK, YEAR, TABLE)
    ================================================================ */
 
 let weekStartDate = null;

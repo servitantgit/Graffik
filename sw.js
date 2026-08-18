@@ -2,7 +2,7 @@
    GRAFIK GILLETTE — Service Worker (PWA)
    Cache'owanie + powiadomienia push o zmianach
    ================================================================ */
-const CACHE_NAME = 'grafik-gillette-' + '338617d';
+const CACHE_NAME = 'grafik-gillette-' + '70cc70e';
 const ASSETS = [
   './',
   './index.html',
@@ -51,11 +51,11 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-/* === FETCH: najpierw sieć, potem cache (stale-while-revalidate) === */
+/* === FETCH: network first, then cache (stale-while-revalidate) === */
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
-  // Ignoruj żądania z rozszerzeń przeglądarki (chrome-extension://, moz-extension:// itp.)
+  // Ignore requests from browser extensions (chrome-extension://, moz-extension://, etc.)
   const url = new URL(event.request.url);
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
 
@@ -94,7 +94,7 @@ self.addEventListener('push', (event) => {
   event.waitUntil(self.registration.showNotification(data.title || '⏰ Grafik Gillette', options));
 });
 
-/* === NOTIFICATION CLICK: otwieramy aplikację === */
+/* === NOTIFICATION CLICK: open the app === */
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const url =
@@ -111,7 +111,7 @@ self.addEventListener('notificationclick', (event) => {
     })
   );
 });
-/* === MESSAGE: обробка команд від клієнта === */
+/* === MESSAGE: handling commands from the client === */
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();

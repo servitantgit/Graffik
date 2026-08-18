@@ -1,5 +1,5 @@
 /* ================================================================
-   GRAFIK GILLETTE — Moduł 10: PWA + POWIADOMIENIA
+   GRAFIK GILLETTE — Module 10: PWA + NOTIFICATIONS
    ================================================================ */
 
 /* === STAN === */
@@ -15,33 +15,33 @@ function registerServiceWorker() {
       .register('./sw.js')
       .then((reg) => {
 
-        // Перевіряємо оновлення одразу
+        // Check for updates right away
         reg.update();
 
-        // Періодична перевірка (кожні 60 хв)
+        // Periodic check (every 60 min)
         setInterval(() => reg.update(), 60 * 60 * 1000);
 
-        // 1) Нова версія вже чекає в waiting (наприклад, після F5)
+        // 1) A new version is already waiting (e.g. after F5)
         if (reg.waiting) {
           promptUserToUpdate(reg.waiting);
         }
 
-        // 2) Знайдено оновлення — стежимо за станом
+        // 2) An update was found — watch its state
         reg.addEventListener('updatefound', () => {
           const newSW = reg.installing;
           if (!newSW) return;
 
           newSW.addEventListener('statechange', () => {
             if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-              // Нова версія встановлена, стара ще активна → пропонуємо оновити
+              // New version installed, old one still active → prompt to update
               promptUserToUpdate(newSW);
             }
           });
         });
       })
-      .catch((err) => console.warn('[PWA] SW błąd:', err));
+      .catch((err) => console.warn('[PWA] SW error:', err));
 
-    // Коли новий SW активувався → перезавантажуємо сторінку
+    // When the new SW activates → reload the page
     let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (refreshing) return;
@@ -51,14 +51,14 @@ function registerServiceWorker() {
   });
 }
 
-/* === Toast з кнопкою "Оновити" === */
+/* === Toast with an "Update" button === */
 function promptUserToUpdate(waitingSW) {
-  // Не показувати, якщо вже показали в цій сесії
+  // Don't show it again if already shown this session
   if (window._updatePromptShown) return;
   window._updatePromptShown = true;
 
   showUpdateToast(() => {
-    // Кажемо новому SW взяти управління → controllerchange → reload
+    // Tell the new SW to take control → controllerchange → reload
     waitingSW.postMessage({ type: 'SKIP_WAITING' });
   });
 }
@@ -66,8 +66,8 @@ function promptUserToUpdate(waitingSW) {
 function showUpdateToast(onUpdate) {
   const container = document.getElementById('toastContainer');
   if (!container) {
-    // Fallback — якщо toast-контейнер не готовий
-    if (confirm('🔄 Dostępna jest nowa wersja aplikacji. Odświeżyć teraz?')) {
+    // Fallback — if the toast container isn't ready
+    if (confirm(`🔄 ${t('updateAvailable') || 'New version available'}. ${t('updateHint') || 'Click to refresh'}`)) {
       onUpdate();
     }
     return;
@@ -79,8 +79,8 @@ function showUpdateToast(onUpdate) {
   toast.innerHTML = `
     <span class="toast-icon">🔄</span>
     <div style="flex:1;">
-      <div style="font-weight:700; margin-bottom:2px;">${t('updateAvailable') || 'Nowa wersja dostępna'}</div>
-      <div style="font-size:12px; opacity:0.85;">${t('updateHint') || 'Kliknij, aby odświeżyć'}</div>
+      <div style="font-weight:700; margin-bottom:2px;">${t('updateAvailable') || 'New version available'}</div>
+      <div style="font-size:12px; opacity:0.85;">${t('updateHint') || 'Click to refresh'}</div>
     </div>
     <button id="updateNowBtn" style="
       background: var(--text-header);
@@ -92,7 +92,7 @@ function showUpdateToast(onUpdate) {
       cursor: pointer;
       font-size: 13px;
       white-space: nowrap;
-    ">${t('updateNow') || '🔄 Odśwież'}</button>
+    ">${t('updateNow') || '🔄 Update'}</button>
   `;
   container.appendChild(toast);
 
@@ -101,7 +101,7 @@ function showUpdateToast(onUpdate) {
     onUpdate();
   };
 
-  // НЕ автоматично закриваємо — користувач має сам вирішити
+  // Do NOT auto-close — the user decides
 }
 
 /* === WYKRYWANIE PLATFORMY === */
@@ -118,12 +118,12 @@ function isStandalone() {
   );
 }
 
-/* === INSTALL PROMPT (Dodaj do ekranu głównego) === */
+/* === INSTALL PROMPT (Add to Home Screen) === */
 function setupInstallPrompt() {
   const installItem = document.getElementById('menuInstallApp');
   if (!installItem) return;
 
-  // iOS nie obsługuje beforeinstallprompt — pokazujemy instrukcję manualną
+  // iOS doesn't support beforeinstallprompt — show manual instructions
   if (isIOS()) {
     if (!isStandalone()) {
       installItem.style.display = 'flex';
@@ -199,10 +199,10 @@ function updateNotificationUI() {
   if (label) label.textContent = t('notificationsAboutShifts');
   item.title = enabled ? t('notificationsEnabledHint') : t('notificationsDisabledHint');
 
-  // Upewnij się, że prefs.notificationsLead istnieje
+  // Make sure prefs.notificationsLead exists
   if (typeof prefs.notificationsLead === 'undefined') prefs.notificationsLead = 1;
 
-  // Kontener z przyciskami — pokazujemy tylko gdy notifications ON
+  // Button container — only shown when notifications are ON
   let leadContainer = document.getElementById('notifLeadContainer');
 
   if (enabled) {
@@ -241,7 +241,7 @@ function updateNotificationUI() {
   }
 }
 
-// Pomocnik — aktualizuje aktywny przycisk
+// Helper — updates the active button
 function updateLeadButtonsActive() {
   const lead = prefs.notificationsLead || 1;
   document.querySelectorAll('.notif-lead-btn').forEach((btn) => {
@@ -300,7 +300,7 @@ function toggleNotifications() {
   }
 }
 
-/* === SPRAWDZANIE POCZĄTKU ZMIANY (co minutę) === */
+/* === CHECK FOR SHIFT START (every minute) === */
 function notifyCurrentShift() {
   if (!areNotificationsEnabled()) return;
 
@@ -309,7 +309,7 @@ function notifyCurrentShift() {
   const m = now.getMonth() + 1;
   const d = now.getDate();
 
-  // Zmiana zgodnie z grafikiem wybranej brygady na dziś
+  // Shift for today according to the selected brigade's schedule
   const s = getShiftAt(y, m, d, selectedShift);
   if (isWolne(s) || isUrlop(y, m, d, selectedShift)) return;
 
@@ -317,16 +317,16 @@ function notifyCurrentShift() {
   if (!hours) return;
   const startHour = hours[0];
 
-  // Pokazujemy powiadomienie, gdy godzina = początek zmiany (0 minut)
+  // Show the notification when the hour = shift start (0 minutes)
   if (now.getHours() === startHour && now.getMinutes() === 0) {
     const key = `${y}-${m}-${d}:${s}`;
-    if (lastNotified === key) return; // już pokazaliśmy dzisiaj
+    if (lastNotified === key) return; // already shown today
     lastNotified = key;
     localStorage.setItem('grafik_last_notified', key);
 
     const [sh, eh] = hours;
     const timeRange = `${String(sh).padStart(2, '0')}:00 – ${String(eh % 24).padStart(2, '0')}:00`;
-    // Używamy istniejących nazw zmian (shiftLongNames / shiftEmoji z data.js) zamiast duplikować tłumaczenia
+    // Use the existing shift names (shiftLongNames / shiftEmoji from data.js) instead of duplicating translations
     const shiftLabel = `${shiftEmoji[s] || ''} ${shiftLongNames[s] || s}`;
 
     const title = `⏰ ${t('shift')} ${s} — ${shiftLabel}`;
@@ -352,25 +352,25 @@ function initPwa() {
   registerServiceWorker();
   setupInstallPrompt();
 
-  // Przywróć ostatnie powiadomienie
+  // Restore the last notification
   lastNotified = localStorage.getItem('grafik_last_notified');
 
-  // Menu: powiadomienia
+  // Menu: notifications
   const notifItem = document.getElementById('menuNotifications');
   if (notifItem) notifItem.onclick = toggleNotifications;
 
-  // Ukrywamy pozycję instalacji domyślnie (nie na iOS — tam pokazujemy instrukcję)
+  // Hide the install menu item by default (not on iOS — we show instructions there)
   const installItem = document.getElementById('menuInstallApp');
   if (installItem && !isIOS()) installItem.style.display = 'none';
 
   updateNotificationUI();
 
-  // Sprawdzanie co minutę
+  // Check every minute
   window._notifyTimer = setInterval(notifyCurrentShift, 60000);
   notifyCurrentShift();
 }
 
-// Uruchamiamy po załadowaniu DOM
+// Run once the DOM has loaded
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initPwa);
 } else {

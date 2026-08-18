@@ -1,5 +1,5 @@
 /* ================================================================
-   GRAFIK GILLETTE — Moduł 11: SYNCHRONIZACJA PRZEZ GOOGLE DRIVE
+   GRAFIK GILLETTE — Module 11: GOOGLE DRIVE SYNC
    (bez serwera / bez bazy danych — czysto klienckie)
    ================================================================ */
 
@@ -24,10 +24,10 @@ function isDriveTokenValid() {
 }
 
 /**
- * Pobiera email zalogowanego użytkownika z Google API.
+ * Fetches the logged-in user's email from the Google API.
  * Wymagany scope: 'openid email' w DRIVE_SCOPE.
  * Wynik zapisywany do driveUserEmail + localStorage.
- * Wywoływane po pomyślnym login.
+ * Called after a successful login.
  */
 async function fetchDriveUserEmail() {
   if (!gDriveToken) {
@@ -103,14 +103,14 @@ async function driveFetch(url, options = {}, retry = true) {
   headers['Authorization'] = 'Bearer ' + gDriveToken;
   const resp = await fetch(url, { ...options, headers });
   if (resp.status === 401 && retry) {
-    // token wygasł — zaloguj ponownie
+    // token expired — log in again
     const ok = await new Promise((resolve) => {
       if (!gDriveTokenClient) {
         resolve(false);
         return;
       }
       gDriveTokenClient.requestAccessToken();
-      // GIS wywoła callback, który ustawi nowy token
+      // GIS will call the callback, which sets a new token
       const checkTimer = setInterval(() => {
         if (isDriveTokenValid()) {
           clearInterval(checkTimer);
@@ -129,7 +129,7 @@ async function driveFetch(url, options = {}, retry = true) {
 
 /* === SZUKANIE PLIKU W DRIVE === */
 async function findDriveFile() {
-  // Szukamy WSZYSTKICH plików o naszej nazwie w App Data
+  // Look for ALL files with our name in App Data
   const query = `name='${DRIVE_FILE_NAME}' and trashed=false`;
   const url = `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${encodeURIComponent(query)}&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc`;
 
@@ -144,10 +144,10 @@ async function findDriveFile() {
 
   if (files.length === 0) return null;
 
-  // Najnowszy plik — pierwszy na liście (orderBy=modifiedTime desc)
+  // Newest file — first in the list (orderBy=modifiedTime desc)
   const newest = files[0];
 
-  // Usuwamy duplikaty (wszystkie oprócz pierwszego)
+  // Remove duplicates (all except the first one)
   if (files.length > 1) {
     for (let i = 1; i < files.length; i++) {
       try {
@@ -186,7 +186,7 @@ async function uploadToDrive(force = false) {
 
   try {
     if (!gDriveFileId) {
-      // Szukamy istniejącego pliku
+      // Look for an existing file
       const found = await findDriveFile();
       if (found) gDriveFileId = found.id;
     }
@@ -220,7 +220,7 @@ async function uploadToDrive(force = false) {
       gDriveFileId = data.id;
       localStorage.setItem('grafik_drive_file_id', gDriveFileId);
     } else {
-      // Aktualizujemy istniejący plik
+      // Update the existing file
       const resp = await driveFetch(
         `https://www.googleapis.com/upload/drive/v3/files/${gDriveFileId}?uploadType=media`,
         { method: 'PATCH', body: json, headers: { 'Content-Type': DRIVE_MIME } }
@@ -276,7 +276,7 @@ async function downloadFromDrive(confirmOverwrite = false) {
     const doApply = () => {
       let applyErrors = [];
 
-      // customSchedule — MUTUJEMY obiekt (nie nadpisujemy)
+      // customSchedule — we MUTATE the object (not overwrite)
       if (data.customSchedule && typeof customSchedule !== 'undefined') {
         try {
           Object.keys(customSchedule).forEach((k) => delete customSchedule[k]);
@@ -288,7 +288,7 @@ async function downloadFromDrive(confirmOverwrite = false) {
         }
       }
 
-      // urlops — MUTUJEMY obiekt (KRYTYCZNE — tu był problem!)
+      // urlops — we MUTATE the object (CRITICAL — this used to be a bug!)
       if (data.urlops && typeof urlops !== 'undefined') {
         try {
           Object.keys(urlops).forEach((k) => delete urlops[k]);
@@ -300,7 +300,7 @@ async function downloadFromDrive(confirmOverwrite = false) {
         }
       }
 
-      // overtimes — MUTUJEMY obiekt
+      // overtimes — we MUTATE the object
       if (data.overtimes && typeof overtimes !== 'undefined') {
         try {
           Object.keys(overtimes).forEach((k) => delete overtimes[k]);
@@ -312,7 +312,7 @@ async function downloadFromDrive(confirmOverwrite = false) {
         }
       }
 
-      // notes — MUTUJEMY obiekt
+      // notes — we MUTATE the object
       if (data.notes && typeof notes !== 'undefined') {
         try {
           Object.keys(notes).forEach((k) => delete notes[k]);
@@ -324,7 +324,7 @@ async function downloadFromDrive(confirmOverwrite = false) {
         }
       }
 
-      // prefs — scalamy (nie usuwamy kluczy!)
+      // prefs — we merge (don't remove keys!)
       if (data.prefs && typeof prefs !== 'undefined') {
         try {
           Object.assign(prefs, data.prefs);
@@ -356,7 +356,7 @@ async function downloadFromDrive(confirmOverwrite = false) {
         applyVacationLimits(data.prefs && data.prefs.urlopLimits, 'data.prefs.urlopLimits');
       }
 
-      // Odświeżamy widok
+      // Refresh the view
       currentView = 'dashboard';
       if (typeof switchView === 'function') {
         try {
@@ -496,7 +496,7 @@ function loginDrive() {
   gDriveTokenClient.requestAccessToken();
 }
 
-/* === GŁÓWNE MENU: synchronizuj === */
+/* === MAIN MENU: sync === */
 async function syncWithDrive() {
   if (!isDriveTokenValid()) {
     showToast('warn', `☁️ ${t('driveLoginRequired')}`);
@@ -546,7 +546,7 @@ function logoutDrive() {
   // Has unsynced changes — show warning modal
   const lastSyncText = typeof timeSinceLastSync === 'function' ? timeSinceLastSync() : 'nieznany';
 
-  const title = (typeof t === 'function' && t('logoutUnsyncedTitle')) || '⚠️ Niezapisane zmiany';
+  const title = (typeof t === 'function' && t('logoutUnsyncedTitle')) || '⚠️ Unsaved changes';
   const body =
     (typeof t === 'function' && t('logoutUnsyncedBody', { time: lastSyncText })) ||
     `<p>Masz lokalne zmiany, których jeszcze nie zsynchronizowano z Google Drive.</p>
@@ -578,7 +578,7 @@ function logoutDrive() {
       },
       {
         text:
-          (typeof t === 'function' && t('logoutUnsyncedSyncFirst')) || '☁️ Synchronizuj i wyloguj',
+          (typeof t === 'function' && t('logoutUnsyncedSyncFirst')) || '☁️ Sync and log out',
         class: 'primary',
         onClick: async () => {
           showToast(
@@ -593,7 +593,7 @@ function logoutDrive() {
               'error',
               '☁️ ' +
                 ((typeof t === 'function' && t('driveSyncFailedNoLogout')) ||
-                  'Synchronizacja nie udała się, wylogowanie przerwane')
+                  'Sync failed, logout cancelled')
             );
           }
         },
@@ -663,7 +663,7 @@ function initSync() {
     };
   }
 
-  // Przycisk w menu akcji — sync tylko dla zalogowanych
+  // Button in the action menu — sync only for logged-in users
   const syncItem = document.getElementById('menuSyncNow');
   if (syncItem) {
     syncItem.onclick = () => {
