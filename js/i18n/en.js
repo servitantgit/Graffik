@@ -1,5 +1,5 @@
 /* ================================================================
-   GRAFIK GILLETTE — Tłumaczenia: ENGLISH
+   GRAFIK GILLETTE — Translations: ENGLISH
    ================================================================ */
 
 window.translations = window.translations || {};
@@ -183,6 +183,7 @@ window.translations.en = {
   otCategory100: '🟣 +100%',
   otCategory200: '🔴 +200%',
   otPayment: '💰 Total paid',
+  otTodaySummary: '📊 Total today: <b>{h}h</b> worked · 💰 <b>{paid}h</b> paid',
   otSaved: 'Saved {h}h overtime',
   otDeleted: 'Overtime deleted',
   otSelectHours: 'Select number of hours',
@@ -205,6 +206,8 @@ window.translations.en = {
   otWeekendSunday: '📅 Sunday',
   otWeekendDayOff: '🏖️ Day off',
   otRate: 'Rate',
+  labelHoliday: 'Holiday',
+  labelSunday: 'Sunday',
   otDeleteWeekend: 'Delete work on day off entry?',
 
   // === VACATION ===

@@ -1,17 +1,17 @@
 /* ================================================================
-   GRAFIK GILLETTE — Moduł ADMIN
-   Identyfikacja administratora + widoczność menu admin
+   GRAFIK GILLETTE — ADMIN module
+   Admin identification + admin menu visibility
    ================================================================ */
 
-/* === LISTA EMAILÓW ADMINÓW ===
-   Publiczne w kodzie — bezpieczne.
-   Znajomość emaila nie daje dostępu — potrzebne jest zalogowanie do Google. */
+/* === ADMIN EMAIL LIST ===
+   Public in the code — safe.
+   Knowing the email doesn't grant access — a Google login is still required. */
 const ADMIN_EMAILS = ['servitant@gmail.com'];
 
-/* === SPRAWDZENIE STANU ADMINA === */
+/* === ADMIN STATE CHECK === */
 
 /**
- * Sprawdza, czy zalogowany użytkownik Google Drive jest adminem.
+ * Checks whether the logged-in Google Drive user is an admin.
  * @returns {boolean}
  */
 function isCurrentUserAdmin() {
@@ -24,8 +24,8 @@ function isCurrentUserAdmin() {
 }
 
 /**
- * Aktualizuje klasę body.admin-mode zgodnie ze stanem admina.
- * Pokazuje/ukrywa elementy z klasą .admin-only (via CSS).
+ * Updates the body.admin-mode class according to admin state.
+ * Shows/hides elements with the .admin-only class (via CSS).
  */
 function updateAdminUI() {
   const isAdmin = isCurrentUserAdmin();

@@ -1,11 +1,11 @@
 /* ================================================================
-   GRAFIK GILLETTE — Moduł i18n: Logika lokalizacji
-   Słowniki tłumaczeń: pl.js / en.js / uk.js (ładowane wcześniej)
+   GRAFIK GILLETTE — i18n module: localization logic
+   Translation dictionaries: pl.js / en.js / uk.js (loaded earlier)
    ================================================================ */
 
 const SUPPORTED_LANGS = ['pl', 'en', 'uk'];
 
-/* === AKTYWNY JĘZYK === */
+/* === ACTIVE LANGUAGE === */
 let currentLang = 'pl';
 
 function detectLanguage() {
@@ -26,7 +26,7 @@ function setLanguage(lang) {
   applyTranslations();
 }
 
-/* === POBIERZ TŁUMACZENIE === */
+/* === GET TRANSLATION === */
 function t(key, params) {
   const translations = window.translations || {};
   const langObj = translations[currentLang] || translations.pl || {};
@@ -247,7 +247,7 @@ function renderFAQ() {
     .join('');
 }
 
-/* === ZASTOSUJ TŁUMACZENIA DO DOM === */
+/* === APPLY TRANSLATIONS TO THE DOM === */
 function applyTranslations() {
   document.querySelectorAll('[data-i18n]').forEach((el) => {
     const key = el.getAttribute('data-i18n');

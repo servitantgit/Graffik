@@ -1,5 +1,5 @@
 /* ================================================================
-   GRAFIK GILLETTE — Moduł Logiki (Nadgodziny)
+   GRAFIK GILLETTE — Logic module (Overtime)
    Ten plik zawiera czyste funkcje obliczeniowe, bez zależności od DOM/LS.
    
    Requires: js/schedules/_core.js (for shiftHours + buildHolidays)
@@ -27,7 +27,7 @@ function categorizeOvertime(year, month, day, shift, position, hours) {
   // Holiday work — always +200%
   if (isHoliday) return { h50: 0, h100: 0, h200: hours };
 
-  // Weekend overtime (praca w dzień wolny/święto)
+  // Weekend overtime (work on a day off/holiday)
   if (position === 'weekend') {
     if (isSunday) return { h50: 0, h100: hours, h200: 0 };
     return { h50: 0, h100: hours, h200: 0 }; // Saturday or dzień wolny — +100%

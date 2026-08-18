@@ -1,7 +1,7 @@
 /* ================================================================
-   GRAFIK GILLETTE — Moduł 6: KALENDARZ MIESIĄCA + INFO + NADGODZINY
+   GRAFIK GILLETTE — Module 6: MONTH CALENDAR + INFO + OVERTIME
    ================================================================ */
-/* === STAN: Kiedy selectedDay został ustawiony (dla mobile UX) === */
+/* === STATE: when selectedDay was set (for mobile UX) === */
 
 /* === RENDER MONTH VIEW === */
 function renderCalendar(direction) {
@@ -58,7 +58,7 @@ function renderCalendar(direction) {
 
     const dow = new Date(currentYear, currentMonth - 1, d).getDay();
     if (dow === 0 || dow === 6) cell.classList.add('day-weekend');
-    // Pozycja w tygodniu (0=Pon, 6=Nd) dla poprawnych pozycji popupów
+    // Position within the week (0=Mon, 6=Sun) for correct popup positioning
     const weekdayIdx = dow === 0 ? 6 : dow - 1;
     if (weekdayIdx === 0) cell.classList.add('col-first');
     if (weekdayIdx === 6) cell.classList.add('col-last');
@@ -116,10 +116,10 @@ function renderCalendar(direction) {
       shiftEl.innerHTML = `<span class="shift-emoji">${shiftEmoji[shiftCode]}</span>${shiftCode}`;
     cell.appendChild(shiftEl);
 
-    // Wysoka stawka: święto (+200%) lub niedziela (+100%) na dniu roboczym
-    // Wysoka stawka: TYLKO gdy zmiana dodana na dzień, który fabrycznie był wolny
+    // Premium rate: holiday (+200%) or Sunday (+100%) on a working day
+    // Premium rate: ONLY when a shift was added on a day that was factory-free
     if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
-      // Sprawdzamy: co było w fabrycznym grafiku dla tego dnia?
+      // Check: what was in the factory schedule for this day?
       const factoryShift =
         factorySchedule[currentYear] &&
         factorySchedule[currentYear][currentMonth] &&
@@ -128,7 +128,7 @@ function renderCalendar(direction) {
           : '';
       const wasFactoryFree = isWolne(factoryShift);
 
-      // Badge pokazujemy TYLKO gdy zmiana dodana (fabrycznie było wolno)
+      // Only show the badge when a shift was added (factory day was free)
       if (wasFactoryFree) {
         const isHoliday = !!yHolidays[currentMonth + '-' + d];
         const dowLocal = new Date(currentYear, currentMonth - 1, d).getDay();
@@ -140,13 +140,13 @@ function renderCalendar(direction) {
           const rateBadge = document.createElement('div');
           rateBadge.className = `shift-rate-badge rate-${rate}`;
           rateBadge.textContent = `+${rate}%`;
-          rateBadge.title = rate === '200' ? 'Święto — stawka +200%' : 'Niedziela — stawka +100%';
+          rateBadge.title = rate === '200' ? `${t('labelHoliday')} — ${t('otRate')} +200%` : `${t('labelSunday')} — ${t('otRate')} +100%`;
           cell.appendChild(rateBadge);
         }
       }
     }
 
-    // NADGODZINY: wizualny podział + etykiety
+    // OVERTIME: visual split + labels
     if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
       const ot = getOvertimes(currentYear, currentMonth, d, selectedShift);
       if (ot.przed || ot.po) {
@@ -337,13 +337,13 @@ function addReliefPopups(cell, d, shiftCode, onUrlop) {
   }
 }
 
-/* === MODAL: DODAJ DODATKOWĄ ZMIANĘ === */
+/* === MODAL: ADD EXTRA SHIFT === */
 function openAddShiftModal(day) {
   const yHolidays = buildHolidays(currentYear);
   const isHoliday = !!yHolidays[currentMonth + '-' + day];
   const dowLocal = new Date(currentYear, currentMonth - 1, day).getDay();
   const isSunday = dowLocal === 0;
-  const rateInfo = isHoliday ? '+200% (święto)' : isSunday ? '+100% (niedziela)' : '';
+  const rateInfo = isHoliday ? `+200% (${t('labelHoliday')})` : isSunday ? `+100% (${t('labelSunday')})` : '';
   const rateHtml = rateInfo
     ? `<div style="margin-top:6px; padding:6px 10px; background:var(--bg-info); border-radius:6px; font-size:13px; text-align:center; font-weight:600;">💰 ${rateInfo}</div>`
     : '';
@@ -355,7 +355,7 @@ function openAddShiftModal(day) {
   const body = `
     <div style="padding:10px 14px; background:var(--bg-cell); border-radius:10px; margin-bottom:15px; font-size:13px;">
       <b>📅 ${day} ${monthNames[currentMonth - 1]} ${currentYear}</b>
-      ${hasExistingShift ? `<div style="margin-top:6px; font-size:12px; opacity:0.85;">${t('addShiftCurrent') || 'Obecnie'}: <b>${existingShift}</b></div>` : ''}
+      ${hasExistingShift ? `<div style="margin-top:6px; font-size:12px; opacity:0.85;">${t('addShiftCurrent') || 'Currently'}: <b>${existingShift}</b></div>` : ''}
       ${rateHtml}
     </div>
     <div style="font-weight:600; margin-bottom:10px;">${t('addShiftSelectType')}:</div>
@@ -363,7 +363,7 @@ function openAddShiftModal(day) {
       <button class="add-shift-modal-btn" data-shift="R" style="flex:1; min-width:90px; padding:14px 8px; border:none; background:var(--color-R); color:#fff; border-radius:10px; cursor:pointer; font-size:15px; font-weight:700;">🌅 R<br><small style="opacity:0.85; font-weight:500;">6:00-14:00</small></button>
       <button class="add-shift-modal-btn" data-shift="P" style="flex:1; min-width:90px; padding:14px 8px; border:none; background:var(--color-P); color:#fff; border-radius:10px; cursor:pointer; font-size:15px; font-weight:700;">🌤️ P<br><small style="opacity:0.85; font-weight:500;">14:00-22:00</small></button>
       <button class="add-shift-modal-btn" data-shift="N" style="flex:1; min-width:90px; padding:14px 8px; border:none; background:var(--color-N); color:#fff; border-radius:10px; cursor:pointer; font-size:15px; font-weight:700;">🌙 N<br><small style="opacity:0.85; font-weight:500;">22:00-6:00</small></button>
-      <button class="add-shift-modal-btn" data-shift="" style="flex:1; min-width:90px; padding:14px 8px; border:none; background:linear-gradient(135deg, #7f8c8d, #5d6d6e); color:#fff; border-radius:10px; cursor:pointer; font-size:15px; font-weight:700;" title="${t('addShiftEraseTitle') || 'Wyczyść zmianę'}">🏖️ —<br><small style="opacity:0.85; font-weight:500;">${t('addShiftEraseLabel') || 'Wolne'}</small></button>
+      <button class="add-shift-modal-btn" data-shift="" style="flex:1; min-width:90px; padding:14px 8px; border:none; background:linear-gradient(135deg, #7f8c8d, #5d6d6e); color:#fff; border-radius:10px; cursor:pointer; font-size:15px; font-weight:700;" title="${t('addShiftEraseTitle') || 'Clear shift'}">🏖️ —<br><small style="opacity:0.85; font-weight:500;">${t('addShiftEraseLabel') || 'Free'}</small></button>
     </div>
   `;
 
@@ -526,7 +526,7 @@ document.getElementById('otCustomHours').addEventListener('input', (e) => {
   }
 });
 
-/* === PODSUMOWANIE NADGODZIN MIESIĄCA === */
+/* === MONTHLY OVERTIME SUMMARY === */
 function renderMonthOvertimeSummary() {
   const old = document.getElementById('otMonthSummary');
   if (old) old.remove();
@@ -644,7 +644,7 @@ function renderInfo() {
     if (lv) liveInfo = lv;
   }
 
-  let cycleInfo = ''; // Prybrane: nie potrzebne w codziennym użytkowaniu
+  let cycleInfo = ''; // Removed: not needed for everyday use
 
   let toWolneInfo = '';
   if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
@@ -656,12 +656,12 @@ function renderInfo() {
     }
   }
 
-  // Nadgodziny dla dnia — pokazujemy WSZYSTKIE godziny ze stawką (włącznie z dodaną zmianą w święto/niedzielę)
+  // Overtime for the day — show ALL hours with a rate (including an added holiday/Sunday shift)
   let overtimeInfo = '';
   if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
     const otData = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
 
-    // Sprawdź czy to dodana zmiana w święto/niedzielę (fabrycznie było wolno)
+    // Check whether this is an added holiday/Sunday shift (factory day was free)
     const factoryShift =
       factorySchedule[currentYear] &&
       factorySchedule[currentYear][currentMonth] &&
@@ -680,17 +680,17 @@ function renderInfo() {
     let totalHours = 0;
     let totalPaid = 0;
 
-    // 1. Dodana zmiana w święto/niedzielę — jako pierwsza pozycja
+    // 1. Added holiday/Sunday shift — as the first entry
     if (isAddedPremiumShift && shiftRate) {
       const [sh, eh] = shiftHours[shiftCode];
       const shiftTimeStr = `${String(sh).padStart(2, '0')}:00 – ${String(eh % 24).padStart(2, '0')}:00`;
-      const shiftLabel = isHoliday ? 'Święto' : 'Niedziela';
+      const shiftLabel = isHoliday ? t('labelHoliday') : t('labelSunday');
       const multiplier = shiftRate === '200' ? 3 : 2;
       items += `
         <div class="ot-list-item" style="border-left: 3px solid ${shiftRate === '200' ? '#c0392b' : '#8e44ad'};">
           <span class="oti-badge b-${shiftRate}">+${shiftRate}%</span>
           <div class="oti-details">
-            <div class="oti-time"><b>Zmiana ${shiftCode}</b>: 8h · ${shiftTimeStr} <small>(${shiftLabel})</small></div>
+            <div class="oti-time"><b>${t('shift')} ${shiftCode}</b>: 8h · ${shiftTimeStr} <small>(${shiftLabel})</small></div>
           </div>
         </div>
       `;
@@ -726,12 +726,12 @@ function renderInfo() {
       totalPaid += otData[pos].hours * multiplier;
     });
 
-    // Pokaż blok TYLKO jeśli są jakieś pozycje ze stawką
+    // Only show the block if there are any rated entries
     if (items) {
       const summary =
         totalHours > 0
           ? `<div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border-cell); font-weight:700; text-align:center;">
-             📊 Razem dziś: <b>${totalHours}h</b> pracy · 💰 <b>${totalPaid}h</b> płatne
+             ${t('otTodaySummary', { h: totalHours, paid: totalPaid })}
            </div>`
           : '';
       overtimeInfo = `<div class="info-card info-section-ot" style="grid-column:1/-1;"><div class="label">${t('infoOvertime')}</div><div class="value">${items}${summary}</div></div>`;
@@ -765,7 +765,7 @@ function renderInfo() {
         return ', ' + t('dayAfter');
       return `, ${d} ${monthNames[m - 1]}${y !== currentYear ? ' ' + y : ''}`;
     }
-    // Kombinowana karta: kto przekazał + kto przyjmie
+    // Combined card: who handed over + who will take over
     const prevPart = info.prevBrig
       ? `<span class="badge ${info.prevBrig}">${info.prevBrig}</span> <small style="opacity:0.85;">${info.prevType}${formatWhen(info.prevYear, info.prevMonth, info.prevDay)}</small>`
       : '<em>—</em>';

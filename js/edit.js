@@ -1,5 +1,5 @@
 /* ================================================================
-   GRAFIK GILLETTE — Moduł 4: BUFOR ZMIAN (EDIT)
+   GRAFIK GILLETTE — Module 4: EDIT BUFFER
    ================================================================ */
 
 let pendingChanges = {};
@@ -40,7 +40,7 @@ function applyEdit(year, month, day, brigade, forcedValue) {
     wasDirty: pendingChanges.hasOwnProperty(k),
   });
   if (undoStack.length > 100) undoStack.shift();
-  redoStack = []; // Nowa akcja czyści historię "w przód"
+  redoStack = []; // A new action clears the "redo" history
 
   if (next === pendingOriginals[k]) {
     delete pendingChanges[k];
@@ -62,7 +62,7 @@ function undoLastEdit() {
   const currentVal = pendingChanges.hasOwnProperty(k) ? pendingChanges[k] : pendingOriginals[k];
   const last = undoStack.pop();
 
-  // Zapamiętaj do Redo
+  // Remember for Redo
   redoStack.push({ ...last, redoVal: currentVal });
   if (redoStack.length > 100) redoStack.shift();
 
@@ -87,7 +87,7 @@ function redoLastEdit() {
   const last = redoStack.pop();
   const k = last.k;
 
-  // Przywróć z powrotem na Undo
+  // Restore back onto the Undo stack
   undoStack.push({ k: last.k, prev: last.prev, orig: last.orig, wasDirty: last.wasDirty });
   if (undoStack.length > 100) undoStack.shift();
 

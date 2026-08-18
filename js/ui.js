@@ -1,5 +1,5 @@
 /* ================================================================
-   GRAFIK GILLETTE — Moduł 3: UI (TOAST, MODAL, MENU, TEMATY)
+   GRAFIK GILLETTE — Module 3: UI (TOAST, MODAL, MENU, THEMES)
    ================================================================ */
 
 /* === THEMES === */
@@ -103,7 +103,7 @@ if (themeToggleBtn) {
   themeToggleBtn.onclick = toggleTheme;
 }
 
-/* === TEMATY — kliknięcia (backward compatibility) === */
+/* === THEMES — clicks (backward compatibility) === */
 document.querySelectorAll('.theme-swatch').forEach((el) => {
   el.onclick = () => {
     applyTheme(el.dataset.theme);
