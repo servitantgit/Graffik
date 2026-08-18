@@ -31,11 +31,19 @@ function renderCalendar(direction) {
   }
 
   const today = new Date();
-  const cycleRange = selectedDay
-    ? getCycleRange(currentYear, currentMonth, selectedDay, selectedShift)
-    : null;
-
   const hidePrivate = !shouldShowPersonalData();
+
+  // cycleRange must use the same data source as cell rendering:
+  // factory schedule when logged out, personal schedule when logged in.
+  // Otherwise cycle highlighting can leak personal edits or disagree with visible cells.
+  let cycleRange = null;
+  if (selectedDay) {
+    if (hidePrivate) {
+      cycleRange = getFactoryCycleRange(currentYear, currentMonth, selectedDay, selectedShift);
+    } else {
+      cycleRange = getCycleRange(currentYear, currentMonth, selectedDay, selectedShift);
+    }
+  }
 
   for (let d = 1; d <= dim; d++) {
     const cell = document.createElement('div');
@@ -81,8 +89,25 @@ function renderCalendar(direction) {
     }
 
     if (compareShift) {
-      const s1 = getShiftAtWithPending(currentYear, currentMonth, d, selectedShift);
-      const s2 = getShiftAtWithPending(currentYear, currentMonth, d, compareShift);
+      // Compare must use the same data source as visible cells (factory when privacy)
+      let s1, s2;
+      if (hidePrivate) {
+        s1 =
+          factorySchedule[currentYear] &&
+          factorySchedule[currentYear][currentMonth] &&
+          factorySchedule[currentYear][currentMonth][selectedShift]
+            ? factorySchedule[currentYear][currentMonth][selectedShift][d - 1]
+            : '';
+        s2 =
+          factorySchedule[currentYear] &&
+          factorySchedule[currentYear][currentMonth] &&
+          factorySchedule[currentYear][currentMonth][compareShift]
+            ? factorySchedule[currentYear][currentMonth][compareShift][d - 1]
+            : '';
+      } else {
+        s1 = getShiftAtWithPending(currentYear, currentMonth, d, selectedShift);
+        s2 = getShiftAtWithPending(currentYear, currentMonth, d, compareShift);
+      }
       if (s1 === s2 && !isWolne(s1)) cell.classList.add('compare-match');
       if (isWolne(s1) && isWolne(s2)) cell.classList.add('compare-match');
     }
