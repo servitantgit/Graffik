@@ -258,7 +258,9 @@ js/schedules/
 - `copyToClipboard(url)` — fallback dla kopiowania
 - Import/eksport JSON: `exportDataBtn`, `importDataBtn`, `importFile`
 - `addPrintHeader()`, `addPrintFooter()` — nagłówek/stopka druku
-- Menu handlers: `menuIcs`, `menuPrint`, `menuShare`, `menuVacationLimit`
+- Menu handlers: `menuIcs`, `menuPrint`, `menuShare`, `menuShareApp`
+- Edit banner: `editVacationLimitBtn` → `openVacationLimitModal()` (limit urlopu)
+- Menu Info (ostatnia sekcja): `menuHelp`, `menuGitHub` → https://github.com/servitantgit/Graffik
 - `clearYearBtn`, `resetCustomBtn` — czyszczenie danych
 - `validateImportedData(data)` — walidacja struktury JSON przy imporcie (typy, formaty dat, długości tablic)
 - `getAppUrl()` — zwraca bazowy URL aplikacji (bez parametrów query)
@@ -575,7 +577,7 @@ Nowa architektura upraszcza dodawanie nowych lat — **każdy rok w osobnym plik
 3. **Włącz tryb edycji** ✏️
 4. **Zaznacz zmiany** klikając komórki (użyj palety R/P/N/W dla admin)
 5. **Zapisz** (Ctrl+S) — dane w localStorage
-6. **Export data.js** (☰ Menu → 👑 Admin Panel → 📤 Export data.js → wybierz rok)
+6. **Export factory year** (☰ Menu → 👑 Admin Panel → 📤 Export factory year → wybierz rok)
 7. **Pobierz plik** `YYYY.js` (np. `2027.js`)
 8. **Umieść plik** w folderze `js/schedules/gillette/`
 9. **Zaktualizuj index.html** — dodaj nowy script tag:

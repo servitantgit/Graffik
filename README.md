@@ -45,7 +45,7 @@ Kliknij dowolny zrzut, aby zobaczyć w pełnym rozmiarze.
 - 📊 **4 brygady** (A/B/C/D) z systemem 3 zmian (R/P/N) + Wolne + Urlop
 - 🏠 **4 widoki**: Dashboard, Tydzień, Miesiąc, Tabela
 - 📈 **Tryb Rok** — rozszerza Miesiąc/Tabelę na cały rok (12 mini-kalendarzy/tabel)
-- ✏️ **Edycja grafiku** z historią cofania (undo/redo)
+- ✏️ **Edycja grafiku** (auto-save; limit urlopu w trybie edycji 🌴)
 - 🌴 **Urlopy** z limitem per brygada i automatycznym liczeniem dni roboczych
 - ⏱ **Nadgodziny** z auto-kategoryzacją (+50%/+100%/+200%) — dla dni roboczych ORAZ dni wolnych/świąt
 - 📝 **Notatki** do dowolnych dni
@@ -58,7 +58,7 @@ Kliknij dowolny zrzut, aby zobaczyć w pełnym rozmiarze.
 - 🔄 **Auto-update** — automatyczne powiadomienie o nowej wersji z jednym kliknięciem
 - ☁️ **Google Drive sync** — dane między urządzeniami
 - 🔗 **Kontekstowe udostępnianie** — link do dokładnie tego widoku
-- 📥 **Eksport .ics** do kalendarza, **drukowanie**, **backup JSON**
+- 📥 **Eksport .ics** do kalendarza, **drukowanie**; personal backup via **Google Drive**
 
 ## 🚀 Szybki start
 
@@ -67,7 +67,7 @@ Kliknij dowolny zrzut, aby zobaczyć w pełnym rozmiarze.
 3. Dashboard pokaże dzisiejszą zmianę z timerem
 4. Przełączaj widoki górnym menu
 
-**Szczegóły funkcji:** zobacz sekcję Pomoc w aplikacji (☰ Menu → ❓)
+**Szczegóły funkcji:** ☰ Menu → ❓ Pomoc / FAQ  ·  kod: [GitHub](https://github.com/servitantgit/Graffik)
 
 ## 📱 Instalacja jako PWA
 

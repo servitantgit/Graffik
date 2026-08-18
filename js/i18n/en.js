@@ -454,6 +454,7 @@ window.translations.en = {
   menuNotifications: 'Shift notifications',
   menuInstallApp: 'Install app',
   menuHelp: 'Help / FAQ',
+  menuGitHub: 'GitHub (developer)',
   menuTheme: 'Theme',
   installPrompt: 'Install app',
 

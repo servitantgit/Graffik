@@ -455,6 +455,7 @@ window.translations.pl = {
   menuNotifications: 'Powiadomienia o zmianach',
   menuInstallApp: 'Zainstaluj aplikację',
   menuHelp: 'Pomoc / FAQ',
+  menuGitHub: 'GitHub (autor)',
   menuTheme: 'Motyw',
   installPrompt: 'Zainstaluj aplikację',
 

@@ -215,8 +215,7 @@ bindClick('menuShare', () => {
 
 /* === MENU: OPCJE === */
 
-bindClick('menuVacationLimit', () => {
-  closeSideMenu();
+function openVacationLimitModal() {
   const currentLimit = getVacationLimit(selectedShift);
   const body = `
     <p>${t('vacationLimitBody', { brig: selectedShift })}</p>
@@ -244,6 +243,10 @@ bindClick('menuVacationLimit', () => {
       },
     ],
   });
+}
+
+bindClick('editVacationLimitBtn', () => {
+  openVacationLimitModal();
 });
 
 /* === CZYSZCZENIE ROKU / RESET === */

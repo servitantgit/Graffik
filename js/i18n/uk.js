@@ -452,6 +452,7 @@ window.translations.uk = {
   menuNotifications: 'Сповіщення про зміни',
   menuInstallApp: 'Встановити додаток',
   menuHelp: 'Довідка / FAQ',
+  menuGitHub: 'GitHub (розробник)',
   menuTheme: 'Тема',
   installPrompt: 'Встановити додаток',
 
