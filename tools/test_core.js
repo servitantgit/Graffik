@@ -3,7 +3,8 @@
    Uruchamianie: node tools/test_core.js
    ================================================================ */
 
-const { easter, categorizeOvertime } = require('../js/overtime-logic.js');
+const { categorizeOvertime } = require('../js/overtime-logic.js');
+const { buildHolidays } = require('../js/schedules/_core.js');
 
 let failedTests = 0;
 
@@ -18,20 +19,21 @@ function runTest(name, fn) {
   }
 }
 
-// 1. TESTY easter(year)
-runTest('easter(year) for historical years', () => {
+// 1. TESTY buildHolidays() / Easter dates
+runTest('buildHolidays(year) - Easter dates for historical years', () => {
   const cases = [
     { year: 2024, month: 3, day: 31 },
     { year: 2025, month: 4, day: 20 },
     { year: 2026, month: 4, day: 5 },
     { year: 2027, month: 3, day: 28 },
-    { year: 2028, month: 4, day: 16 }
+    { year: 2028, month: 4, day: 16 },
   ];
 
-  cases.forEach(c => {
-    const res = easter(c.year);
-    if (res.month !== c.month || res.day !== c.day) {
-      throw new Error(`Dla roku ${c.year} oczekiwano ${c.day}.${c.month}, otrzymano ${res.day}.${res.month}`);
+  cases.forEach((c) => {
+    const holidays = buildHolidays(c.year);
+    const key = `${c.month}-${c.day}`;
+    if (!holidays[key]) {
+      throw new Error(`Dla roku ${c.year} oczekiwano Wielkanocy ${c.day}.${c.month}`);
     }
   });
 });

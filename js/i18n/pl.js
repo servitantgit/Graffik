@@ -663,4 +663,15 @@ window.translations.pl = {
   shareAppHint: 'Kod QR działa z każdą aplikacją do skanowania (aparat, Google Lens itp.)',
   shareAppQrError: 'Nie udało się załadować kodu QR. Sprawdź połączenie z internetem.',
   shareAppText: 'Polecam aplikację do zarządzania grafikiem zmian:',
+  // === SYNC TRACKING ===
+  syncNever: 'nigdy',
+  syncJustNow: 'przed chwilą',
+  syncMinuteAgo: '1 minutę temu',
+  syncMinutesAgo: '{n} minut temu',
+  syncHourAgo: '1 godz. temu',
+  syncHoursAgo: '{n} godz. temu',
+  syncDayAgo: '1 dzień temu',
+  syncDaysAgo: '{n} dni temu',
+  syncUnknown: 'nieznany',
+
 };

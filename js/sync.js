@@ -544,7 +544,7 @@ function logoutDrive() {
   }
 
   // Has unsynced changes — show warning modal
-  const lastSyncText = typeof timeSinceLastSync === 'function' ? timeSinceLastSync() : 'nieznany';
+  const lastSyncText = typeof timeSinceLastSync === 'function' ? timeSinceLastSync() : (typeof t === 'function' ? t('syncUnknown') : 'nieznany');
 
   const title = (typeof t === 'function' && t('logoutUnsyncedTitle')) || '⚠️ Unsaved changes';
   const body =

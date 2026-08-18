@@ -662,4 +662,15 @@ window.translations.en = {
   shareAppHint: 'The QR code works with any scanning app (camera, Google Lens, etc.)',
   shareAppQrError: 'Failed to load QR code. Check your internet connection.',
   shareAppText: 'Check out this shift schedule app:',
+  // === SYNC TRACKING ===
+  syncNever: 'never',
+  syncJustNow: 'just now',
+  syncMinuteAgo: '1 minute ago',
+  syncMinutesAgo: '{n} minutes ago',
+  syncHourAgo: '1 hour ago',
+  syncHoursAgo: '{n} hours ago',
+  syncDayAgo: '1 day ago',
+  syncDaysAgo: '{n} days ago',
+  syncUnknown: 'unknown',
+
 };

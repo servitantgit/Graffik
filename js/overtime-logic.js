@@ -5,8 +5,12 @@
    Requires: js/schedules/_core.js (for shiftHours + buildHolidays)
    ================================================================ */
 
-// Note: shiftHours and buildHolidays are now defined in js/schedules/_core.js
-// This file only contains overtime-specific logic.
+// In the browser, _core.js is loaded before this file and provides these names
+// through the shared classic-script scope. Under Node.js, require the core explicitly.
+const overtimeCore =
+  typeof module !== 'undefined' && module.exports && typeof require === 'function'
+    ? require('./schedules/_core.js')
+    : null;
 
 /**
  * Categorizes overtime hours into pay rates (+50%, +100%, +200%).
@@ -19,7 +23,7 @@
  * @returns {object} - { h50, h100, h200 }
  */
 function categorizeOvertime(year, month, day, shift, position, hours) {
-  const yHolidays = buildHolidays(year);
+  const yHolidays = (overtimeCore ? overtimeCore.buildHolidays : buildHolidays)(year);
   const isHoliday = !!yHolidays[month + '-' + day];
   const dow = new Date(year, month - 1, day).getDay();
   const isSunday = dow === 0;
@@ -33,7 +37,7 @@ function categorizeOvertime(year, month, day, shift, position, hours) {
     return { h50: 0, h100: hours, h200: 0 }; // Saturday or dzień wolny — +100%
   }
 
-  const [shStart, shEnd] = shiftHours[shift];
+  const [shStart, shEnd] = (overtimeCore ? overtimeCore.shiftHours : shiftHours)[shift];
   let curHour;
   if (position === 'przed') curHour = shStart - hours;
   else curHour = shEnd;
@@ -58,7 +62,7 @@ function categorizeOvertime(year, month, day, shift, position, hours) {
  * @returns {object} - { from, to }
  */
 function calcOvertimeTime(shift, position, hours) {
-  const [start, end] = shiftHours[shift];
+  const [start, end] = (overtimeCore ? overtimeCore.shiftHours : shiftHours)[shift];
   let from, to;
   if (position === 'przed') {
     to = start;
