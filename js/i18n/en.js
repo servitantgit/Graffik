@@ -50,7 +50,7 @@ window.translations.en = {
   yearToggle: '📊 Year',
   editBannerTitle: 'Edit mode',
   editBannerHint:
-    'Shortcuts: R P N W = shift • O = overtime • Ctrl+Z = undo • Ctrl+S = save • Esc = exit',
+    'U = vacation • S = extra shift • 1/2 = overtime • Esc = exit (changes save immediately)',
   undoBtn: '↶ Undo',
   redoBtn: '↷ Redo',
   saveBtn: '💾 Save',
@@ -69,7 +69,7 @@ window.translations.en = {
   editNeedLogin: '🔐 Sign in to Google Drive to edit vacations and shifts',
   enableEditTitle: '✏️ Enable edit mode?',
   enableEditBody:
-    'Clicks on cells will change shifts.<br><br>Select a shift to paint in the palette at the bottom (or use shortcut R/P/N/W).<br>To add <b>overtime</b> — select <b>⏱</b> (or press key O).<br><br>Changes are <b>NOT saved automatically</b> — click <b>💾 Save</b>.',
+    'Clicks on cells save immediately.<br><br>Bottom palette: <b>U</b> — vacation, <b>S</b> — extra shift, <b>⏱ 1/2</b> — overtime before/after.<br>To change — tap the cell again. Esc — exit edit mode.',
   enableEditConfirm: '✏️ Enable',
   unsavedChangesTitle: '⚠️ You have {n} unsaved changes',
   unsavedChangesBody: 'Choose what to do:',
@@ -378,16 +378,16 @@ window.translations.en = {
   faqKeyboardEdit1: 'R / P / N / W — select shift to paint',
   faqKeyboardEdit2: 'C — cycle mode',
   faqKeyboardEdit3: 'O — overtime mode',
-  faqKeyboardEdit4: 'Ctrl+Z — undo last change',
-  faqKeyboardEdit5: 'Ctrl+S — save all changes',
+  faqKeyboardEdit4: 'U / S / 1 / 2 — vacation / extra shift / OT',
+  faqKeyboardEdit5: 'All edits save immediately',
   faqKeyboardNav: 'Navigation:',
   faqKeyboardNav1: '← / → — previous/next month',
   faqKeyboardNav2: 'Esc — close popup or exit edit mode',
   faqKeyboardNav3: 'E — enable/disable edit',
   faqSaveTitle: '💾 How is data saved?',
-  faqSaveDesc: 'Schedules are saved by clicking 💾 Save in the yellow banner.',
+  faqSaveDesc: 'All edits (shifts, vacations, overtime, notes) save immediately in the browser.',
   faqSaveNote:
-    "Vacations, overtime and notes are saved automatically. Regularly back up via 📥 JSON so you don't lose data after clearing the browser.",
+    'When signed in to Google Drive, data syncs as one file. Regularly back up via 📥 JSON so you do not lose data after clearing the browser.',
   faqSyncTitle: '☁️ How does Google Drive sync work?',
   faqSyncDesc: 'Sync allows you to transfer app data between devices via Google Drive.',
   faqSync1:

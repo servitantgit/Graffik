@@ -64,36 +64,22 @@
       </label>
     </div>
 
-    <!-- EDIT BANNER (simplified — only essential actions) -->
+    <!-- EDIT BANNER — auto-save; only year nav + status -->
     <div class="edit-banner" id="editBanner">
       <div class="edit-banner-text">
         <span class="ebt-title">
           ✏️ <b data-i18n="editBannerTitle">Tryb edycji</b>
-          <span id="dirtyIndicator" style="display:none;">● <span id="dirtyCount">0</span></span>
         </span>
         <span class="ebt-hint" data-i18n="editBannerHint">
-          R/P/N/W = zmiana • Ctrl+Z = cofnij • Ctrl+S = zapisz • Esc = wyjdź
+          U = urlop • S = dodatkowa zmiana • 1/2 = nadgodziny • Esc = wyjdź
         </span>
       </div>
 
       <div class="edit-banner-actions">
-        <div class="ebg-group">
-          <button id="undoBtn" class="icon-only" data-i18n-title="undoHint"
-            title="Cofnij ostatnią zmianę (Ctrl+Z)">↶</button>
-          <button id="redoBtn" class="icon-only" data-i18n-title="redoHint"
-            title="Ponów cofniętą zmianę (Ctrl+Y)">↷</button>
-        </div>
-
-        <button id="saveChangesBtn" class="save" data-i18n="saveBtn" data-i18n-title="saveHint"
-          title="Zapisz zmiany w przeglądarce (Ctrl+S)">💾 Zapisz</button>
-
-        <div class="ebg-row-discard-year">
-          <button id="discardChangesBtn" data-i18n="discardBtn">↶ Odrzuć wszystko</button>
-          <div class="year-picker" id="yearPicker" data-i18n-title="changeYear" title="Zmień rok">
-            <button id="prevYearBtn">‹</button>
-            <span class="year-current" id="yearCurrent">2026</span>
-            <button id="nextYearBtn">›</button>
-          </div>
+        <div class="year-picker" id="yearPicker" data-i18n-title="changeYear" title="Zmień rok">
+          <button id="prevYearBtn">‹</button>
+          <span class="year-current" id="yearCurrent">2026</span>
+          <button id="nextYearBtn">›</button>
         </div>
       </div>
     </div>

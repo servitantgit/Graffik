@@ -50,7 +50,7 @@ window.translations.pl = {
   yearToggle: 'Rok',
   editBannerTitle: 'Tryb edycji',
   editBannerHint:
-    'Skróty: R P N W = zmiana • O = nadgodziny • Ctrl+Z = cofnij • Ctrl+S = zapisz • Esc = wyjdź',
+    'U = urlop • S = dodatkowa zmiana • 1/2 = nadgodziny • Esc = wyjdź (zmiany zapisują się od razu)',
   undoBtn: '↶ Cofnij',
   redoBtn: '↷ Ponów',
   saveBtn: '💾 Zapisz',
@@ -69,7 +69,7 @@ window.translations.pl = {
   editNeedLogin: '🔐 Aby edytować urlopy i zmiany — zaloguj się do Google Drive',
   enableEditTitle: '✏️ Włączyć tryb edycji?',
   enableEditBody:
-    'Kliknięcia w komórki zmienią zmiany.<br><br>Wybierz "malowaną" zmianę w palecie na dole (lub użyj skrótu R/P/N/W).<br>Aby dodać <b>nadgodziny</b> — wybierz <b>⏱</b> (lub klawisz O).<br><br>Zmiany <b>NIE zapisują się automatycznie</b> — trzeba kliknąć <b>💾 Zapisz</b>.',
+    'Kliknięcia w komórki zapisują się od razu.<br><br>Paleta na dole: <b>U</b> — urlop, <b>S</b> — dodatkowa zmiana, <b>⏱ 1/2</b> — nadgodziny przed/po.<br>Aby zmienić — kliknij komórkę ponownie. Esc — wyjście z trybu.',
   enableEditConfirm: '✏️ Włącz',
   unsavedChangesTitle: '⚠️ Masz {n} niezapisanych zmian',
   unsavedChangesBody: 'Wybierz co zrobić:',
@@ -378,16 +378,16 @@ window.translations.pl = {
   faqKeyboardEdit1: 'R / P / N / W — wybór zmiany do malowania',
   faqKeyboardEdit2: 'C — tryb cyklu',
   faqKeyboardEdit3: 'O — tryb nadgodzin',
-  faqKeyboardEdit4: 'Ctrl+Z — cofnij ostatnią zmianę',
-  faqKeyboardEdit5: 'Ctrl+S — zapisz wszystkie zmiany',
+  faqKeyboardEdit4: 'U / S / 1 / 2 — urlop / dop. zmiana / OT',
+  faqKeyboardEdit5: 'Wszystkie zmiany zapisują się od razu',
   faqKeyboardNav: 'Nawigacja:',
   faqKeyboardNav1: '← / → — poprzedni/następny miesiąc',
   faqKeyboardNav2: 'Esc — zamknij popup lub wyjdź z edycji',
   faqKeyboardNav3: 'E — włącz/wyłącz edycję',
   faqSaveTitle: '💾 Jak zapisują się dane?',
-  faqSaveDesc: 'Grafiki zapisują się po kliknięciu 💾 Zapisz w żółtym banerze.',
+  faqSaveDesc: 'Wszystkie zmiany (grafik, urlopy, nadgodziny, notatki) zapisują się od razu w przeglądarce.',
   faqSaveNote:
-    'Urlopy, nadgodziny i notatki zapisują się automatycznie. Regularnie rób backup przez 📥 JSON, żeby nie stracić danych po czyszczeniu przeglądarki.',
+    'Po zalogowaniu do Google Drive dane synchronizują się w jeden plik. Regularnie rób backup przez 📥 JSON, żeby nie stracić danych po czyszczeniu przeglądarki.',
   faqSyncTitle: '☁️ Jak działa synchronizacja z Google Drive?',
   faqSyncDesc:
     'Synchronizacja pozwala przenieść dane aplikacji między urządzeniami przez Google Drive.',

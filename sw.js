@@ -2,7 +2,7 @@
    GRAFIK GILLETTE — Service Worker (PWA)
    Cache'owanie + powiadomienia push o zmianach
    ================================================================ */
-const CACHE_NAME = 'grafik-gillette-' + 'fbcb51a';
+const CACHE_NAME = 'grafik-gillette-' + '6eba720';
 const ASSETS = [
   './',
   './index.html',
