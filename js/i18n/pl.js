@@ -469,7 +469,7 @@ window.translations.pl = {
   // === MENU: Admin (v3.6.2) ===
   menuSectionAdmin: '👑 Admin Panel',
   menuAdminImport: 'Import CSV/JSON',
-  menuAdminExport: 'Export data.js',
+  menuAdminExport: 'Eksport factory-roku (.js)',
 
   // === GENERIC ===
   cancel: 'Anuluj',
