@@ -236,26 +236,9 @@ bindClick('editModeToggle', () => {
       showToast('info', t('editModeOnShort'));
     }
   } else {
-    const pc = Object.keys(pendingChanges).length;
-    if (pc > 0) {
-      showConfirm(
-        t('unsavedChangesTitle', { n: pc }),
-        t('unsavedChangesBody'),
-        () => {
-          pendingChanges = {};
-          pendingOriginals = {};
-          undoStack = [];
-          redoStack = [];
-          editMode = false;
-          refreshViews();
-          showToast('warn', t('changesDiscarded'));
-        },
-        { primaryText: t('discardAndExit'), primaryClass: 'danger' }
-      );
-    } else {
-      editMode = false;
-      refreshViews();
-    }
+    // Auto-save model — nothing pending; just leave edit mode
+    editMode = false;
+    refreshViews();
   }
 });
 
@@ -287,11 +270,6 @@ function setPaletteMode(mode) {
   showToast('info', t('paletteChanged', { name }), 1000);
 }
 
-bindClick('saveChangesBtn', saveAllPendingChanges);
-bindClick('discardChangesBtn', discardAllPendingChanges);
-bindClick('undoBtn', undoLastEdit);
-bindClick('redoBtn', redoLastEdit);
-
 /* === NAWIGACJA === */
 function goToMonth(delta) {
   currentMonth += delta;
@@ -312,24 +290,6 @@ window.goToMonth = goToMonth;
 function goToYear(delta, keepMonth) {
   const newYear = currentYear + delta;
   if (newYear < MIN_YEAR || newYear > MAX_YEAR) return;
-  const pFY = Object.keys(pendingChanges).filter(
-    (k) => parseInt(k.split('-')[0], 10) === currentYear
-  ).length;
-  if (editMode && pFY > 0) {
-    showConfirm(
-      t('yearSwitchTitle', { n: pFY, year: currentYear }),
-      t('yearSwitchBody'),
-      () => {
-        currentYear = newYear;
-        if (!keepMonth) selectedDay = null;
-        prefs.year = currentYear;
-        savePrefs(prefs);
-        refreshViews();
-      },
-      { primaryText: t('yearSwitchBtn'), primaryClass: 'primary' }
-    );
-    return;
-  }
   currentYear = newYear;
   if (!keepMonth) selectedDay = null;
   prefs.year = currentYear;
@@ -379,21 +339,6 @@ document.addEventListener('keydown', (e) => {
   }
 
   if (editMode) {
-    if (e.ctrlKey && e.key.toLowerCase() === 's') {
-      e.preventDefault();
-      saveAllPendingChanges();
-      return;
-    }
-    if (e.ctrlKey && e.key.toLowerCase() === 'z') {
-      e.preventDefault();
-      undoLastEdit();
-      return;
-    }
-    if (e.ctrlKey && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) {
-      e.preventDefault();
-      redoLastEdit();
-      return;
-    }
     const k = e.key.toLowerCase();
     if (k === 'u') {
       setPaletteMode('URLOP');
@@ -515,13 +460,7 @@ bindClick('todayBtn', () => {
   else switchView('month');
 });
 
-/* === beforeunload === */
-window.addEventListener('beforeunload', (e) => {
-  if (Object.keys(pendingChanges).length > 0) {
-    e.preventDefault();
-    e.returnValue = '';
-  }
-});
+/* beforeunload removed — all edits auto-save to localStorage */
 
 /* === AUTO REFRESH === */
 if (!window._gilletteTimer) {
