@@ -227,7 +227,7 @@ function renderCalendar(direction) {
         );
         const lines = parts.map((p) => `<div class="rp-info">${p}</div>`).join('');
         const timeLine = actualTime ? `<div class="rp-info otp-time">${actualTime}</div>` : '';
-        otPop.innerHTML = `<div class="rp-label">⏱ ${t('otRate') || 'OT'}</div>` + lines + timeLine;
+        otPop.innerHTML = `<div class="rp-label">⏱ OT</div>` + lines + timeLine;
         cell.appendChild(otPop);
       }
     }
