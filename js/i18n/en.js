@@ -66,6 +66,7 @@ window.translations.en = {
   changesDiscarded: 'Changes discarded',
   editModeOnToast: 'Edit mode ON. Shortcuts: R/P/N/W/C/O',
   editModeOnShort: 'Edit mode ON',
+  editNeedLogin: '🔐 Sign in to Google Drive to edit vacations and shifts',
   enableEditTitle: '✏️ Enable edit mode?',
   enableEditBody:
     'Clicks on cells will change shifts.<br><br>Select a shift to paint in the palette at the bottom (or use shortcut R/P/N/W).<br>To add <b>overtime</b> — select <b>⏱</b> (or press key O).<br><br>Changes are <b>NOT saved automatically</b> — click <b>💾 Save</b>.',

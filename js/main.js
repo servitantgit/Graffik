@@ -213,6 +213,12 @@ function updateEditModeUI() {
 /* === EDIT MODE === */
 bindClick('editModeToggle', () => {
   if (!editMode) {
+    // Personal edits (urlop / OT / custom schedule) require login —
+    // otherwise privacy mode hides them and the UI looks "broken".
+    if (typeof shouldShowPersonalData === 'function' && !shouldShowPersonalData()) {
+      showToast('warn', t('editNeedLogin'), 4000);
+      return;
+    }
     if (!prefs.skipEditConfirm) {
       showConfirm(
         t('enableEditTitle'),

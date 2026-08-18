@@ -1247,6 +1247,23 @@ body.theme-dark.admin-mode .menu-section.admin-only .menu-section-title {
   }
 }
 
+/* === Discard + year on one row (mobile-friendly) === */
+.ebg-row-discard-year {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.ebg-row-discard-year #discardChangesBtn {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.ebg-row-discard-year .year-picker {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
 /* === Responsive edit-banner для мобільних === */
 @media (max-width: 700px) {
   .edit-banner {
@@ -1261,20 +1278,28 @@ body.theme-dark.admin-mode .menu-section.admin-only .menu-section-title {
   }
   .edit-banner-actions {
     width: 100%;
-    justify-content: space-between;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
   }
   .edit-banner button.save {
-    flex: 1;
+    flex: 1 1 auto;
     justify-content: center;
     min-width: 120px;
-    order: -1; /* Save завжди першою на мобі */
+    order: 1;
+  }
+  .edit-banner-actions .ebg-group {
+    order: 2;
+  }
+  .ebg-row-discard-year {
+    order: 3;
+    flex: 1 1 100%;
+    width: 100%;
   }
   .edit-banner button:not(.save):not(.icon-only) {
     padding: 8px 10px;
     font-size: 12px;
-  }
-  .edit-banner .year-picker {
-    order: 10; /* Year picker в кінці на мобі */
   }
 }
 
