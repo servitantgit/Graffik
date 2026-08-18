@@ -660,4 +660,15 @@ window.translations.uk = {
   shareAppHint: 'QR-код працює з будь-яким сканером (камера, Google Lens тощо)',
   shareAppQrError: "Не вдалося завантажити QR-код. Перевірте інтернет-з'єднання.",
   shareAppText: 'Рекомендую додаток для керування графіком змін:',
+  // === SYNC TRACKING ===
+  syncNever: 'ніколи',
+  syncJustNow: 'щойно',
+  syncMinuteAgo: '1 хв тому',
+  syncMinutesAgo: '{n} хв тому',
+  syncHourAgo: '1 год тому',
+  syncHoursAgo: '{n} год тому',
+  syncDayAgo: '1 день тому',
+  syncDaysAgo: '{n} днів тому',
+  syncUnknown: 'невідомо',
+
 };

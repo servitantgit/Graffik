@@ -75,20 +75,37 @@ function hasUnsyncedChanges() {
 }
 
 /**
- * Returns human-readable time since last sync.
- * @returns {string} - e.g. "5 minut temu" or "nigdy"
+ * Returns human-readable time since last sync in the active UI language.
+ * Falls back to Polish when i18n is not available (e.g. isolated Node tests).
+ * @returns {string} - e.g. "5 minut temu" / "5 minutes ago" / "5 хв тому"
  */
 function timeSinceLastSync() {
   const meta = getSyncMeta();
-  if (meta.lastSync === 0) return 'nigdy';
-  const diffMs = Date.now() - meta.lastSync;
+  const translate = (key, params, fallback) => {
+    if (typeof t === 'function') return t(key, params);
+    return fallback;
+  };
+
+  if (meta.lastSync === 0) return translate('syncNever', undefined, 'nigdy');
+
+  const diffMs = Math.max(0, Date.now() - meta.lastSync);
   const diffMin = Math.floor(diffMs / 60000);
-  if (diffMin < 1) return 'przed chwilą';
-  if (diffMin < 60) return diffMin + ' minut temu';
+  if (diffMin < 1) return translate('syncJustNow', undefined, 'przed chwilą');
+
+  if (diffMin < 60) {
+    const key = diffMin === 1 ? 'syncMinuteAgo' : 'syncMinutesAgo';
+    return translate(key, { n: diffMin }, diffMin === 1 ? '1 minutę temu' : diffMin + ' minut temu');
+  }
+
   const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return diffHr + ' godz. temu';
+  if (diffHr < 24) {
+    const key = diffHr === 1 ? 'syncHourAgo' : 'syncHoursAgo';
+    return translate(key, { n: diffHr }, diffHr === 1 ? '1 godz. temu' : diffHr + ' godz. temu');
+  }
+
   const diffDays = Math.floor(diffHr / 24);
-  return diffDays + ' dni temu';
+  const key = diffDays === 1 ? 'syncDayAgo' : 'syncDaysAgo';
+  return translate(key, { n: diffDays }, diffDays === 1 ? '1 dzień temu' : diffDays + ' dni temu');
 }
 
 /* === EXPOSE TO GLOBAL SCOPE === */

@@ -94,6 +94,51 @@ const shiftEmoji = {
   '': '🏖️',
 };
 
+/* === LOCALIZED DISPLAY NAMES === */
+function updateLocalizedNames() {
+  const translate = (key, fallback) => (typeof t === 'function' ? t(key) : fallback);
+
+  monthNames = Array.from({ length: 12 }, (_, i) => translate(`month${i + 1}`, monthNames[i]));
+  monthNamesShort = Array.from({ length: 12 }, (_, i) =>
+    translate(`month${i + 1}Short`, monthNamesShort[i])
+  );
+  monthNamesGenitive = Array.from({ length: 12 }, (_, i) =>
+    translate(`month${i + 1}Genitive`, monthNamesGenitive[i])
+  );
+
+  dayNames = [
+    translate('dayMon', dayNames[0]),
+    translate('dayTue', dayNames[1]),
+    translate('dayWed', dayNames[2]),
+    translate('dayThu', dayNames[3]),
+    translate('dayFri', dayNames[4]),
+    translate('daySat', dayNames[5]),
+    translate('daySun', dayNames[6]),
+  ];
+  dayNamesFull = [
+    translate('daySunday', dayNamesFull[0]),
+    translate('dayMonday', dayNamesFull[1]),
+    translate('dayTuesday', dayNamesFull[2]),
+    translate('dayWednesday', dayNamesFull[3]),
+    translate('dayThursday', dayNamesFull[4]),
+    translate('dayFriday', dayNamesFull[5]),
+    translate('daySaturday', dayNamesFull[6]),
+  ];
+
+  shiftFullName = {
+    R: translate('shiftR', shiftFullName.R),
+    P: translate('shiftP', shiftFullName.P),
+    N: translate('shiftN', shiftFullName.N),
+    '': translate('shiftW', shiftFullName['']),
+  };
+  shiftLongNames = {
+    R: translate('shiftRShort', shiftLongNames.R),
+    P: translate('shiftPShort', shiftLongNames.P),
+    N: translate('shiftNShort', shiftLongNames.N),
+    '': translate('shiftW', shiftLongNames['']),
+  };
+}
+
 /* === APP CONSTANTS === */
 const SHIFT_CYCLE = ['R', 'P', 'N', ''];
 const MIN_YEAR = 2020;
@@ -164,16 +209,17 @@ function formatTimeRange(from, to) {
  */
 function buildHolidays(year) {
   // Fixed-date holidays
+  const translate = (key, fallback) => (typeof t === 'function' ? t(key) : fallback);
   const holidays = {
-    '1-1': 'Nowy Rok',
-    '1-6': 'Trzech Króli',
-    '5-1': 'Święto Pracy',
-    '5-3': 'Święto Konstytucji',
-    '8-15': 'Wniebowzięcie NMP',
-    '11-1': 'Wszystkich Świętych',
-    '11-11': 'Święto Niepodległości',
-    '12-25': 'Boże Narodzenie',
-    '12-26': '2. Dzień Bożego Narodzenia',
+    '1-1': translate('holidayNewYear', 'Nowy Rok'),
+    '1-6': translate('holidayEpiphany', 'Trzech Króli'),
+    '5-1': translate('holidayLabor', 'Święto Pracy'),
+    '5-3': translate('holidayConstitution', 'Święto Konstytucji'),
+    '8-15': translate('holidayAssumption', 'Wniebowzięcie NMP'),
+    '11-1': translate('holidayAllSaints', 'Wszystkich Świętych'),
+    '11-11': translate('holidayIndependence', 'Święto Niepodległości'),
+    '12-25': translate('holidayChristmas1', 'Boże Narodzenie'),
+    '12-26': translate('holidayChristmas2', '2. Dzień Bożego Narodzenia'),
   };
 
   // Moving holidays — computed via Butcher's algorithm (Easter)
@@ -192,21 +238,28 @@ function buildHolidays(year) {
   const easterMonth = Math.floor((h + L - 7 * m + 114) / 31);
   const easterDay = ((h + L - 7 * m + 114) % 31) + 1;
 
-  holidays[`${easterMonth}-${easterDay}`] = 'Wielkanoc';
+  holidays[`${easterMonth}-${easterDay}`] = translate('holidayEaster', 'Wielkanoc');
 
   // Easter Monday — Easter + 1 day
   const easterMondayDate = new Date(year, easterMonth - 1, easterDay + 1);
   holidays[`${easterMondayDate.getMonth() + 1}-${easterMondayDate.getDate()}`] =
-    'Poniedziałek Wielkanocny';
+    translate('holidayEasterMonday', 'Poniedziałek Wielkanocny');
 
   // Pentecost — Easter + 49 days
   const pentecostDate = new Date(year, easterMonth - 1, easterDay + 49);
   holidays[`${pentecostDate.getMonth() + 1}-${pentecostDate.getDate()}`] =
-    'Zesłanie Ducha Świętego';
+    translate('holidayPentecost', 'Zesłanie Ducha Świętego');
 
   // Corpus Christi — Easter + 60 days
   const corpusDate = new Date(year, easterMonth - 1, easterDay + 60);
-  holidays[`${corpusDate.getMonth() + 1}-${corpusDate.getDate()}`] = 'Boże Ciało';
+  holidays[`${corpusDate.getMonth() + 1}-${corpusDate.getDate()}`] =
+    translate('holidayCorpus', 'Boże Ciało');
 
   return holidays;
+}
+
+
+// Node.js exports (for isolated logic tests)
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { buildHolidays, shiftHours };
 }
