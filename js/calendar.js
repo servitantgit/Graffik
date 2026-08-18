@@ -165,7 +165,10 @@ function renderCalendar(direction) {
           const rateBadge = document.createElement('div');
           rateBadge.className = `shift-rate-badge rate-${rate}`;
           rateBadge.textContent = `+${rate}%`;
-          rateBadge.title = rate === '200' ? `${t('labelHoliday')} — ${t('otRate')} +200%` : `${t('labelSunday')} — ${t('otRate')} +100%`;
+          rateBadge.title =
+            rate === '200'
+              ? `${t('labelHoliday')} — ${t('otRate')} +200%`
+              : `${t('labelSunday')} — ${t('otRate')} +100%`;
           cell.appendChild(rateBadge);
         }
       }
@@ -224,11 +227,7 @@ function renderCalendar(direction) {
         );
         const lines = parts.map((p) => `<div class="rp-info">${p}</div>`).join('');
         const timeLine = actualTime ? `<div class="rp-info otp-time">${actualTime}</div>` : '';
-        otPop.innerHTML =
-          `<div class="rp-label">⏱ ${t('otRate') || 'OT'}</div>` +
-          `<div class="rp-brig">+${maxRate}%</div>` +
-          lines +
-          timeLine;
+        otPop.innerHTML = `<div class="rp-label">⏱ ${t('otRate') || 'OT'}</div>` + lines + timeLine;
         cell.appendChild(otPop);
       }
     }
@@ -379,7 +378,11 @@ function openAddShiftModal(day) {
   const isHoliday = !!yHolidays[currentMonth + '-' + day];
   const dowLocal = new Date(currentYear, currentMonth - 1, day).getDay();
   const isSunday = dowLocal === 0;
-  const rateInfo = isHoliday ? `+200% (${t('labelHoliday')})` : isSunday ? `+100% (${t('labelSunday')})` : '';
+  const rateInfo = isHoliday
+    ? `+200% (${t('labelHoliday')})`
+    : isSunday
+      ? `+100% (${t('labelSunday')})`
+      : '';
   const rateHtml = rateInfo
     ? `<div style="margin-top:6px; padding:6px 10px; background:var(--bg-info); border-radius:6px; font-size:13px; text-align:center; font-weight:600;">💰 ${rateInfo}</div>`
     : '';
