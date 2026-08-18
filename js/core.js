@@ -10,8 +10,14 @@ function loadPrefs() {
     return {};
   }
 }
-function savePrefs(p) {
+/**
+ * Persist UI/prefs to localStorage.
+ * @param {object} p - prefs object
+ * @param {boolean} [markSync=false] - if true, mark data as unsynced (for personal fields like urlopLimits)
+ */
+function savePrefs(p, markSync) {
   localStorage.setItem(LS_KEY, JSON.stringify(p));
+  if (markSync && typeof updateLastModified === 'function') updateLastModified();
 }
 function loadNotes() {
   try {
@@ -82,7 +88,8 @@ function setVacationLimit(brigade, value) {
   const limit = Math.max(0, Math.floor(Number(value) || 0));
   if (!prefs.urlopLimits) prefs.urlopLimits = {};
   prefs.urlopLimits[brigade] = limit;
-  savePrefs(prefs);
+  // urlopLimits are personal data synced to Drive — mark as unsynced
+  savePrefs(prefs, true);
   return limit;
 }
 
@@ -283,6 +290,23 @@ function getCycleRange(year, month, day, brigade) {
     end = day;
   while (start > 1 && getShiftAt(year, month, start - 1, brigade) === shift) start--;
   while (end < dim && getShiftAt(year, month, end + 1, brigade) === shift) end++;
+  return { start, end, length: end - start + 1, type: shift };
+}
+
+/** Cycle range based purely on factory schedule (used in privacy / logged-out mode). */
+function getFactoryCycleRange(year, month, day, brigade) {
+  const arr =
+    factorySchedule[year] && factorySchedule[year][month] && factorySchedule[year][month][brigade]
+      ? factorySchedule[year][month][brigade]
+      : null;
+  if (!arr || day < 1 || day > arr.length) return null;
+  const shift = arr[day - 1];
+  if (isWolne(shift)) return null;
+  const dim = arr.length;
+  let start = day,
+    end = day;
+  while (start > 1 && arr[start - 2] === shift) start--;
+  while (end < dim && arr[end] === shift) end++;
   return { start, end, length: end - start + 1, type: shift };
 }
 function daysToNextWolne(year, month, day, brigade) {
