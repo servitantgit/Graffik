@@ -716,11 +716,9 @@ function generateAndDownloadDataJs(year) {
     const now = new Date();
     const dateStr = now.toISOString().slice(0, 10);
 
-    // Format schedule data as pretty-printed JS (indented for readability)
-    // formatYearAsJs returns "    ${year}: { ... }" — we need just the { ... } inner content
-    // Strip the "    ${year}: " prefix and outer wrapping
+    // formatYearAsJs / formatHoursAsJs return "    YYYY: { ... }" (legacy nested shape).
+    // registerYearData expects two plain objects — wrap stripped inner lines in { }.
     const scheduleFormatted = formatYearAsJs(year, merged);
-    // Remove first line ("    YYYY: {") and last line ("    }")
     const scheduleLines = scheduleFormatted.split('\n');
     const scheduleInner = scheduleLines.slice(1, -1).join('\n');
 
@@ -744,8 +742,12 @@ function generateAndDownloadDataJs(year) {
 registerYearData(
   'gillette',
   ${year},
-${scheduleInner},
+  {
+${scheduleInner}
+  },
+  {
 ${hoursInner}
+  }
 );
 `;
 
@@ -783,10 +785,11 @@ function showInstructionsModal(year) {
     <ol style="line-height:1.7; font-size:14px; padding-left:22px;">
       <li>Відкрий проект у VS Code</li>
       <li>Помісти скачаний файл <code>${year}.js</code> у папку <code>js/schedules/gillette/</code></li>
-      <li>Відкрий <code>index.html</code></li>
-      <li>Знайди рядок <code><script src="js/schedules/gillette/2026.js"></code></li>
-      <li>Додай новий рядок ПІСЛЯ нього:<br><code><script src="js/schedules/gillette/${year}.js"></script></code></li>
-      <li>Термінал: <code>git add js/schedules/gillette/${year}.js index.html</code></li>
+      <li>Відкрий <code>index.html</code> — додай після інших year-скриптів:<br>
+        <code>&lt;script src="js/schedules/gillette/${year}.js"&gt;&lt;/script&gt;</code></li>
+      <li>Відкрий <code>sw.js</code> — додай у масив <code>ASSETS</code>:<br>
+        <code>'./js/schedules/gillette/${year}.js',</code></li>
+      <li>Термінал: <code>git add js/schedules/gillette/${year}.js index.html sw.js</code></li>
       <li><code>git commit -m "chore(data): add ${year} factory schedule"</code></li>
       <li><code>git push</code></li>
       <li>GitHub Actions задеплоїть автоматично (2-5 хв)</li>
