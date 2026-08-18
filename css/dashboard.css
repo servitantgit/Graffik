@@ -1,0 +1,312 @@
+/* ================================================================
+   GRAFIK GILLETTE - DASHBOARD.CSS
+   Part of modular CSS split (v3.8.0)
+   ================================================================ */
+
+/* === DASHBOARD === */
+.dashboard {
+  animation: fadeInUp 0.4s ease-out;
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.dash-hero {
+  background: linear-gradient(
+    135deg,
+    var(--text-header),
+    var(--text-header) 50%,
+    rgba(0, 0, 0, 0.15)
+  );
+  color: #fff;
+  padding: 20px;
+  border-radius: 14px;
+  margin-bottom: 15px;
+  text-align: center;
+  box-shadow: 0 6px 20px var(--shadow-color);
+}
+.dash-hero .dash-greeting {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 6px;
+}
+.dash-hero .dash-date {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.dash-hero .dash-brigade {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.dash-today-card {
+  padding: 25px;
+  border-radius: 14px;
+  margin-bottom: 15px;
+  box-shadow: 0 6px 20px var(--shadow-color);
+  color: #fff;
+  text-align: center;
+  animation: fadeInUp 0.5s ease-out;
+}
+.dash-today-card.card-R {
+  background: linear-gradient(135deg, var(--color-R), #d68910);
+}
+.dash-today-card.card-P {
+  background: linear-gradient(135deg, var(--color-P), #117a65);
+}
+.dash-today-card.card-N {
+  background: var(--color-N-grad);
+}
+.dash-today-card.card-W {
+  background: linear-gradient(135deg, #7f8c8d, #95a5a6);
+}
+.dash-today-card.card-U {
+  background: var(--color-U-grad);
+}
+.dash-today-card .dtc-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  opacity: 0.9;
+  margin-bottom: 8px;
+}
+.dash-today-card .dtc-shift {
+  font-size: 42px;
+  font-weight: 700;
+  margin: 5px 0;
+}
+.dash-today-card .dtc-time {
+  font-size: 16px;
+  margin: 8px 0;
+  opacity: 0.95;
+}
+.dash-today-card .dtc-timer {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.25);
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  margin-top: 10px;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+.dash-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.dash-stat-card {
+  background: var(--bg-cell);
+  border: 1px solid var(--border-cell);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s;
+}
+.dash-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+.dash-stat-card .dsc-icon {
+  font-size: 28px;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-controls);
+  border-radius: 10px;
+}
+.dash-stat-card .dsc-info {
+  flex: 1;
+  min-width: 0;
+}
+.dash-stat-card .dsc-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+}
+.dash-stat-card .dsc-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-header);
+  line-height: 1.3;
+  word-break: break-word;
+}
+.dash-stat-card .dsc-value small {
+  display: inline-block;
+  font-size: 11px;
+  margin-left: 3px;
+  color: var(--text-muted);
+}
+
+.dash-upcoming {
+  background: var(--bg-cell);
+  border: 1px solid var(--border-cell);
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+  /* Дозволяємо дочірньому списку мати свій скрол */
+  min-width: 0;
+  overflow: hidden;
+}
+.dash-upcoming h4 {
+  margin: 0 0 10px;
+  color: var(--text-header);
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dash-upcoming-list {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 2px 2px 8px 2px;
+  flex-wrap: nowrap;
+  /* Fallback для старих браузерів */
+  justify-content: flex-start;
+  /* Modern браузери — центр коли влазить, скрол коли ні */
+  justify-content: safe center;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.dash-upcoming-list::-webkit-scrollbar {
+  height: 5px;
+}
+.dash-upcoming-list::-webkit-scrollbar-thumb {
+  background: var(--border-cell);
+  border-radius: 3px;
+}
+
+.dash-day-chip {
+  scroll-snap-align: center;
+  flex-shrink: 0;
+  min-width: 70px;
+  padding: 10px 8px;
+  border-radius: 10px;
+  text-align: center;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.dash-day-chip:hover {
+  transform: translateY(-3px);
+}
+.dash-day-chip.chip-R {
+  background: var(--color-R);
+}
+.dash-day-chip.chip-P {
+  background: var(--color-P);
+}
+.dash-day-chip.chip-N {
+  background: var(--color-N);
+}
+.dash-day-chip.chip-W {
+  background: var(--color-W);
+  color: var(--color-W-text);
+}
+.dash-day-chip.chip-U {
+  background: var(--color-U-grad);
+}
+.dash-day-chip .ddc-day {
+  font-size: 10px;
+  opacity: 0.85;
+  text-transform: uppercase;
+}
+.dash-day-chip .ddc-date {
+  font-size: 20px;
+  margin: 2px 0;
+}
+.dash-day-chip .ddc-shift {
+  font-size: 12px;
+}
+
+.dash-cta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 15px;
+}
+.dash-cta button {
+  flex: 1;
+  min-width: 140px;
+}
+
+/* === EMPTY STATE === */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  background: var(--bg-cell);
+  border-radius: 14px;
+  border: 2px dashed var(--border-cell);
+  margin: 20px 0;
+}
+.empty-state .es-emoji {
+  font-size: 60px;
+  margin-bottom: 15px;
+}
+.empty-state h3 {
+  color: var(--text-header);
+  margin: 0 0 10px;
+  font-size: 22px;
+}
+.empty-state p {
+  color: var(--text-muted);
+  margin: 10px 0;
+  line-height: 1.5;
+}
+.empty-state .es-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+/* === Nadgodziny w Dashboard chip === */
+.dash-day-chip {
+  position: relative;
+}
+.dash-day-chip .ddc-ot {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  font-size: 11px;
+  background: #7f8c8d;
+  color: #fff;
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-weight: 800;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
