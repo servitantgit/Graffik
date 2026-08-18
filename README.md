@@ -156,31 +156,38 @@ Następnie otwórz: `http://localhost:8000`
     Graffik/
     ├── index.html          # HTML (bez inline CSS)
     ├── manifest.json       # PWA manifest
-    ├── sw.js               # Service Worker
+    ├── sw.js               # Service Worker (precache ASSETS)
     ├── css/
-    │   └── styles.css      # Wszystkie style (wcześniej inline)
+    │   └── styles.css      # Wszystkie style
     ├── js/
-    │   ├── data.js         # Stałe, factorySchedule
-    │   ├── overtime-logic.js # Logika nadgodzin (kategoryzacja +50%/100%/200%)
-    │   ├── core.js         # Biznes-logika (getShiftAt, isWolne, isUrlop)
-    │   ├── ui.js           # Toast, Modal, Confirm, motyw
-    │   ├── edit.js         # Tryb edycji, undo/redo
-    │   ├── dashboard.js    # Renderowanie Dashboard
-    │   ├── calendar.js     # Kalendarz, popupy, nadgodziny
-    │   ├── views.js        # Tydzień, Rok, Tabela
-    │   ├── actions.js      # Eksport .ics, share, import/eksport JSON, walidacja
-    │   ├── pwa.js          # Service Worker, powiadomienia
-    │   ├── sync.js         # Google Drive sync
-    │   ├── i18n/           # 🆕 Wielojęzyczność
-    │   │   ├── pl.js       # Polski
-    │   │   ├── en.js       # Angielski
-    │   │   ├── uk.js       # Ukraiński
-    │   │   └── i18n.js     # Logika (t, setLanguage, renderFAQ)
-    │   └── main.js         # Stan aplikacji, events, init
+    │   ├── schedules/           # Modularna architektura danych (v3.7+)
+    │   │   ├── _core.js        # Stałe, helpers (monthNames, shiftHours…)
+    │   │   ├── _registry.js    # Registry + shouldShowPersonalData()
+    │   │   └── gillette/
+    │   │       ├── metadata.js # Metadane schedule (brygady, typy zmian)
+    │   │       └── 2026.js     # Dane roku 2026
+    │   ├── personal/
+    │   │   └── sync-tracking.js # lastModified / lastSync (unsynced state)
+    │   ├── overtime-logic.js    # Kategoryzacja nadgodzin +50%/100%/200%
+    │   ├── core.js              # Storage, getShiftAt, isUrlop, prefs…
+    │   ├── ui.js                # Toast, Modal, Confirm, motyw
+    │   ├── edit.js              # Tryb edycji, undo/redo, pending buffer
+    │   ├── dashboard.js         # Dashboard (gated by shouldShowPersonalData)
+    │   ├── calendar.js          # Kalendarz, popupy, nadgodziny
+    │   ├── views.js             # Tydzień, Rok, Tabela
+    │   ├── actions.js           # .ics, share, import/export JSON, admin export
+    │   ├── pwa.js               # SW registration, powiadomienia
+    │   ├── sync.js              # Google Drive OAuth + upload/download
+    │   ├── admin.js             # Identyfikacja admina (ADMIN_EMAILS)
+    │   ├── i18n/
+    │   │   ├── pl.js / en.js / uk.js
+    │   │   └── i18n.js          # t(), setLanguage(), renderFAQ()
+    │   └── main.js              # Stan, events, init
     ├── icons/
     │   ├── icon-192.png
     │   ├── icon-512.png
     │   └── icon-512-maskable.png
+    ├── tools/                   # Dev helpers (check_js, generate_icons…)
     ├── CHANGELOG.md
     ├── PROJECT_DOCS.md
     └── README.md
@@ -244,6 +251,12 @@ Aplikacja przechowuje dane w trzech miejscach:
 ## 🔒 Prywatność
 
 Wszystkie dane przechowywane są lokalnie w przeglądarce użytkownika. Synchronizacja Google Drive używa własnego konta użytkownika — brak zewnętrznych serwerów. Aplikacja nie wysyła żadnych danych do innych serwisów.
+
+**Widoczność danych osobistych** (urlopy, nadgodziny, notatki, własny grafik):
+- **Zalogowany** do Google Drive → widać pełne dane osobiste
+- **Wylogowany** → tylko fabryczny grafik (bez urlopów / OT / notatek)
+
+To zastępuje stary ręczny „Privacy Mode”. Logowanie = dostęp do personal data.
 
 ## 🐛 Zgłaszanie błędów
 

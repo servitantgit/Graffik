@@ -8,24 +8,37 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 
 ### Naprawione
 
-- **Spójność uprawnień admina** — klik w przyciski palety `.admin-only` (R/P/N/W —
-  struktura fabryczna) teraz też sprawdza `isCurrentUserAdmin()`, tak samo jak
-  skróty klawiszowe. Wcześniej `onclick` był podpięty bezwarunkowo do wszystkich
-  `.palette-btn`, więc ręczne wywołanie `.click()` na ukrytym elemencie (np. z
-  konsoli deweloperskiej) omijało ograniczenie widoczności CSS
-- **Layout przycisków admin w trybie admina** — `.admin-only` wymuszał
-  `display: block !important`, co psuło centrowanie ikony/hotkeya w `.palette-btn`
-  (który polega na `display: flex`). Dodano bardziej specyficzną regułę
-  `body.admin-mode .palette-btn.admin-only { display: flex !important; }`
+- **PWA Service Worker install** — `sw.js` ASSETS zawierał nieistniejący `js/data.js`
+  i pomijał realne moduły (`schedules/*`, `personal/sync-tracking.js`, `admin.js`).
+  `cache.addAll()` mógł failować przy instalacji PWA. Lista ASSETS zsynchronizowana
+  z `<script>` w `index.html`.
+- **Dashboard privacy leak** — `renderDashboard()` nie sprawdzał `shouldShowPersonalData()`.
+  Urlopy, overtime, notatki, live-timer i statystyki były widoczne bez logowania.
+  Teraz pełne gating jak w calendar/views.
+- **Calendar cycleRange / compareShift** — przy `hidePrivate` nadal liczone z personal
+  schedule (`getShiftAt` / `getShiftAtWithPending`). Dodano `getFactoryCycleRange()`
+  i factory path dla compare — spójne z widocznymi komórkami.
+- **prefs / lastModified** — `savePrefs()` nie oznaczał unsynced. Zmiana `urlopLimits`
+  (dane osobiste na Drive) mogła nie wywołać ostrzeżenia przed logout.
+  `savePrefs(p, markSync?)` + `setVacationLimit()` woła z `markSync=true`.
+  UI prefs (lang/theme/view) nadal **nie** blokują logout.
+- **Spójność uprawnień admina** — klik w przyciski palety `.admin-only` (R/P/N/W)
+  teraz też sprawdza `isCurrentUserAdmin()`, tak samo jak skróty klawiszowe.
+- **Layout przycisków admin w trybie admina** — `body.admin-mode .palette-btn.admin-only
+  { display: flex !important; }` zamiast `display: block`.
+
+### Usunięte
+
+- **`tools/apply_calendar_privacy.js`** — jednorazowy skrypt z hardcoded Windows path
+  i niedefiniowanym `calSaveOriginal`. Rola już wykonana.
 
 ### Poprawione (dokumentacja)
 
-- **PROJECT_DOCS.md** — zaktualizowano model danych `customSchedule` (to tablica
-  per-dzień, nie pojedynczy string) i `overtimes` (płaski obiekt kluczowany przez
-  `otKey()`, nie zagnieżdżenie `[brygada][rok][miesiąc][dzień]`) zgodnie z
-  faktyczną implementacją w `js/core.js`
-- Dodano `admin.js` do kolejności ładowania skryptów i do mapy plików (Sekcja 3)
-  — wcześniej brakowało go w obu miejscach
+- **README.md** — aktualna struktura katalogów (schedules/, personal/, admin.js…);
+  sekcja Prywatność opisuje model login-based zamiast starego Privacy Mode
+- **PROJECT_DOCS.md** — dashboard/calendar privacy, `savePrefs(markSync)`,
+  `getFactoryCycleRange`, known issues (relief popups, edit mode, export naming)
+- Model danych `customSchedule` / `overtimes` i obecność `admin.js` w mapie plików
 
 ## [3.7.0] - 2026-08-17
 
