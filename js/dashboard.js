@@ -10,8 +10,21 @@ function renderDashboard() {
     d = today.getDate();
   const limit = getVacationLimit(selectedShift);
   const yHolidays = buildHolidays(y);
-  const shiftCode = getShiftAtWithPending(y, m, d, selectedShift);
-  const onUrlop = isUrlop(y, m, d, selectedShift);
+  const hidePrivate = !shouldShowPersonalData();
+
+  // When not logged in — use pure factory schedule, no personal overrides
+  let shiftCode, onUrlop;
+  if (hidePrivate) {
+    shiftCode =
+      factorySchedule[y] && factorySchedule[y][m] && factorySchedule[y][m][selectedShift]
+        ? factorySchedule[y][m][selectedShift][d - 1]
+        : '';
+    onUrlop = false;
+  } else {
+    shiftCode = getShiftAtWithPending(y, m, d, selectedShift);
+    onUrlop = isUrlop(y, m, d, selectedShift);
+  }
+
   const dayName = dayNamesFull[today.getDay()];
   const holidayName = yHolidays[m + '-' + d];
 
@@ -35,25 +48,27 @@ function renderDashboard() {
     const [sh, eh] = shiftHours[shiftCode];
     let startTxt = `${String(sh).padStart(2, '0')}:00`;
     let endTxt = `${String(eh % 24).padStart(2, '0')}:00`;
-    const timer = getLiveTimer(shiftCode, y, m, d);
+    const timer = hidePrivate ? null : getLiveTimer(shiftCode, y, m, d);
 
-    // Nadgodziny - faktyczny czas
-    const otToday = getOvertimes(y, m, d, selectedShift);
+    // Nadgodziny - tylko gdy залогінений
     let otInfo = '';
-    if (otToday.przed || otToday.po) {
-      const actualTime = getActualWorkTime(y, m, d, selectedShift, shiftCode);
-      const parts = [];
-      if (otToday.przed) {
-        const cat = categorizeOvertime(y, m, d, shiftCode, 'przed', otToday.przed.hours);
-        const dom = cat.h200 > 0 ? '+200%' : cat.h100 > 0 ? '+100%' : '+50%';
-        parts.push(`⬅ ${otToday.przed.hours}h ${dom}`);
+    if (!hidePrivate) {
+      const otToday = getOvertimes(y, m, d, selectedShift);
+      if (otToday.przed || otToday.po) {
+        const actualTime = getActualWorkTime(y, m, d, selectedShift, shiftCode);
+        const parts = [];
+        if (otToday.przed) {
+          const cat = categorizeOvertime(y, m, d, shiftCode, 'przed', otToday.przed.hours);
+          const dom = cat.h200 > 0 ? '+200%' : cat.h100 > 0 ? '+100%' : '+50%';
+          parts.push(`⬅ ${otToday.przed.hours}h ${dom}`);
+        }
+        if (otToday.po) {
+          const cat = categorizeOvertime(y, m, d, shiftCode, 'po', otToday.po.hours);
+          const dom = cat.h200 > 0 ? '+200%' : cat.h100 > 0 ? '+100%' : '+50%';
+          parts.push(`${otToday.po.hours}h ${dom} ➡`);
+        }
+        otInfo = `<div style="margin-top:8px; padding:8px 12px; background:rgba(0,0,0,0.35); border-radius:8px; font-size:13px; font-weight:600; color:#fff;">⏱ ${t('infoOvertime')}: ${parts.join(' · ')}<br><span style="font-size:12px; font-weight:700; color:#fff;">${t('infoTime')} ${actualTime}</span></div>`;
       }
-      if (otToday.po) {
-        const cat = categorizeOvertime(y, m, d, shiftCode, 'po', otToday.po.hours);
-        const dom = cat.h200 > 0 ? '+200%' : cat.h100 > 0 ? '+100%' : '+50%';
-        parts.push(`${otToday.po.hours}h ${dom} ➡`);
-      }
-      otInfo = `<div style="margin-top:8px; padding:8px 12px; background:rgba(0,0,0,0.35); border-radius:8px; font-size:13px; font-weight:600; color:#fff;">⏱ ${t('infoOvertime')}: ${parts.join(' · ')}<br><span style="font-size:12px; font-weight:700; color:#fff;">${t('infoTime')} ${actualTime}</span></div>`;
     }
 
     todayCard = `
@@ -70,8 +85,19 @@ function renderDashboard() {
   const tY = tomorrow.getFullYear(),
     tM = tomorrow.getMonth() + 1,
     tD = tomorrow.getDate();
-  const tShift = getShiftAtWithPending(tY, tM, tD, selectedShift);
-  const tOnU = isUrlop(tY, tM, tD, selectedShift);
+
+  let tShift, tOnU;
+  if (hidePrivate) {
+    tShift =
+      factorySchedule[tY] && factorySchedule[tY][tM] && factorySchedule[tY][tM][selectedShift]
+        ? factorySchedule[tY][tM][selectedShift][tD - 1]
+        : '';
+    tOnU = false;
+  } else {
+    tShift = getShiftAtWithPending(tY, tM, tD, selectedShift);
+    tOnU = isUrlop(tY, tM, tD, selectedShift);
+  }
+
   let tomorrowShift;
   if (tOnU) {
     tomorrowShift = `🌴 ${t('vacation')}`;
@@ -80,26 +106,56 @@ function renderDashboard() {
   } else {
     const [sh, eh] = shiftHours[tShift];
     const timeRange = `${String(sh).padStart(2, '0')}-${String(eh % 24).padStart(2, '0')}`;
-    // Nadgodziny na jutro
-    const otTomorrow = getOvertimes(tY, tM, tD, selectedShift);
     let otIcon = '';
-    if (otTomorrow.przed || otTomorrow.po) {
-      const actualTime = getActualWorkTime(tY, tM, tD, selectedShift, tShift);
-      otIcon = ` <span style="color:#f1c40f;" title="${t('infoOvertime')}">⏱</span> <small style="color:var(--text-muted);">${actualTime}</small>`;
+    if (!hidePrivate) {
+      const otTomorrow = getOvertimes(tY, tM, tD, selectedShift);
+      if (otTomorrow.przed || otTomorrow.po) {
+        const actualTime = getActualWorkTime(tY, tM, tD, selectedShift, tShift);
+        otIcon = ` <span style="color:#f1c40f;" title="${t('infoOvertime')}">⏱</span> <small style="color:var(--text-muted);">${actualTime}</small>`;
+      } else {
+        otIcon = ` <small>(${timeRange})</small>`;
+      }
     } else {
       otIcon = ` <small>(${timeRange})</small>`;
     }
     tomorrowShift = `${shiftEmoji[tShift]} ${shiftLongNames[tShift]}${otIcon}`;
   }
 
-  const wolneInfo = daysToNextWolne(y, m, d, selectedShift);
+  // Next day off — for privacy mode use factory schedule only
   let nextWolneTxt;
-  if (!wolneInfo) nextWolneTxt = t('unknown');
-  else if (wolneInfo.days === 0) nextWolneTxt = `🏖️ ${t('todayLabel')}!`;
-  else if (wolneInfo.days === 1)
-    nextWolneTxt = `${t('tomorrow')} (${wolneInfo.day} ${monthNamesShort[wolneInfo.month - 1]})`;
-  else
-    nextWolneTxt = `${t('inDays', { n: wolneInfo.days })} (${wolneInfo.day} ${monthNamesShort[wolneInfo.month - 1]})`;
+  if (hidePrivate) {
+    // Simple scan of factory schedule for next free day
+    let found = null;
+    for (let i = 0; i < 60; i++) {
+      const dt = new Date(today);
+      dt.setDate(d + i);
+      const yy = dt.getFullYear(),
+        mm = dt.getMonth() + 1,
+        dd = dt.getDate();
+      const s =
+        factorySchedule[yy] && factorySchedule[yy][mm] && factorySchedule[yy][mm][selectedShift]
+          ? factorySchedule[yy][mm][selectedShift][dd - 1]
+          : '';
+      if (isWolne(s)) {
+        found = { days: i, day: dd, month: mm };
+        break;
+      }
+    }
+    if (!found) nextWolneTxt = t('unknown');
+    else if (found.days === 0) nextWolneTxt = `🏖️ ${t('todayLabel')}!`;
+    else if (found.days === 1)
+      nextWolneTxt = `${t('tomorrow')} (${found.day} ${monthNamesShort[found.month - 1]})`;
+    else
+      nextWolneTxt = `${t('inDays', { n: found.days })} (${found.day} ${monthNamesShort[found.month - 1]})`;
+  } else {
+    const wolneInfo = daysToNextWolne(y, m, d, selectedShift);
+    if (!wolneInfo) nextWolneTxt = t('unknown');
+    else if (wolneInfo.days === 0) nextWolneTxt = `🏖️ ${t('todayLabel')}!`;
+    else if (wolneInfo.days === 1)
+      nextWolneTxt = `${t('tomorrow')} (${wolneInfo.day} ${monthNamesShort[wolneInfo.month - 1]})`;
+    else
+      nextWolneTxt = `${t('inDays', { n: wolneInfo.days })} (${wolneInfo.day} ${monthNamesShort[wolneInfo.month - 1]})`;
+  }
 
   const weekCounts = { R: 0, P: 0, N: 0, W: 0, U: 0 };
   const weekOT = { h50: 0, h100: 0, h200: 0 };
@@ -113,50 +169,61 @@ function renderDashboard() {
     const yy = dt.getFullYear(),
       mm = dt.getMonth() + 1,
       dd = dt.getDate();
-    if (isUrlop(yy, mm, dd, selectedShift)) {
-      weekCounts.U++;
-      continue;
-    }
-    const s = getShiftAtWithPending(yy, mm, dd, selectedShift);
-    weekCounts[isWolne(s) ? 'W' : s]++;
 
-    // Nadgodziny tygodnia
-    if (!isWolne(s)) {
-      const otW = getOvertimes(yy, mm, dd, selectedShift);
-      ['przed', 'po'].forEach((pos) => {
-        if (otW[pos]) {
-          const cat = categorizeOvertime(yy, mm, dd, s, pos, otW[pos].hours);
-          weekOT.h50 += cat.h50;
-          weekOT.h100 += cat.h100;
-          weekOT.h200 += cat.h200;
-        }
-      });
-
-      // Added holiday/Sunday shift (factory day was free)
-      const factoryShift =
+    if (hidePrivate) {
+      const s =
         factorySchedule[yy] && factorySchedule[yy][mm] && factorySchedule[yy][mm][selectedShift]
           ? factorySchedule[yy][mm][selectedShift][dd - 1]
           : '';
-      const wasFactoryFree = isWolne(factoryShift);
-      if (wasFactoryFree) {
-        const isHoliday = !!yHolidays[mm + '-' + dd];
-        const dowLocal = dt.getDay();
-        const isSunday = dowLocal === 0;
-        if (isHoliday) {
-          weekOT.h200 += 8;
-        } else if (isSunday) {
-          weekOT.h100 += 8;
+      weekCounts[isWolne(s) ? 'W' : s]++;
+    } else {
+      if (isUrlop(yy, mm, dd, selectedShift)) {
+        weekCounts.U++;
+        continue;
+      }
+      const s = getShiftAtWithPending(yy, mm, dd, selectedShift);
+      weekCounts[isWolne(s) ? 'W' : s]++;
+
+      // Nadgodziny tygodnia
+      if (!isWolne(s)) {
+        const otW = getOvertimes(yy, mm, dd, selectedShift);
+        ['przed', 'po'].forEach((pos) => {
+          if (otW[pos]) {
+            const cat = categorizeOvertime(yy, mm, dd, s, pos, otW[pos].hours);
+            weekOT.h50 += cat.h50;
+            weekOT.h100 += cat.h100;
+            weekOT.h200 += cat.h200;
+          }
+        });
+
+        // Added holiday/Sunday shift (factory day was free)
+        const factoryShift =
+          factorySchedule[yy] && factorySchedule[yy][mm] && factorySchedule[yy][mm][selectedShift]
+            ? factorySchedule[yy][mm][selectedShift][dd - 1]
+            : '';
+        const wasFactoryFree = isWolne(factoryShift);
+        if (wasFactoryFree) {
+          const isHoliday = !!yHolidays[mm + '-' + dd];
+          const dowLocal = dt.getDay();
+          const isSunday = dowLocal === 0;
+          if (isHoliday) {
+            weekOT.h200 += 8;
+          } else if (isSunday) {
+            weekOT.h100 += 8;
+          }
         }
       }
     }
   }
   const weekScheduledHours = (weekCounts.R + weekCounts.P + weekCounts.N) * 8;
-  const weekOTTotal = weekOT.h50 + weekOT.h100 + weekOT.h200;
+  const weekOTTotal = hidePrivate ? 0 : weekOT.h50 + weekOT.h100 + weekOT.h200;
   const weekHours = weekScheduledHours + weekOTTotal;
 
-  const usedUrlop = countWorkingUrlops(y, selectedShift);
+  const usedUrlop = hidePrivate ? 0 : countWorkingUrlops(y, selectedShift);
 
-  const otMonthSum = getMonthOvertimeSummary(y, m, selectedShift);
+  const otMonthSum = hidePrivate
+    ? { h50: 0, h100: 0, h200: 0 }
+    : getMonthOvertimeSummary(y, m, selectedShift);
   const totalOT = otMonthSum.h50 + otMonthSum.h100 + otMonthSum.h200;
 
   let upcomingHtml = '';
@@ -166,14 +233,28 @@ function renderDashboard() {
     const yy = dt.getFullYear(),
       mm = dt.getMonth() + 1,
       dd = dt.getDate();
-    const s = getShiftAtWithPending(yy, mm, dd, selectedShift);
-    const onU = isUrlop(yy, mm, dd, selectedShift);
+
+    let s, onU;
+    if (hidePrivate) {
+      s =
+        factorySchedule[yy] && factorySchedule[yy][mm] && factorySchedule[yy][mm][selectedShift]
+          ? factorySchedule[yy][mm][selectedShift][dd - 1]
+          : '';
+      onU = false;
+    } else {
+      s = getShiftAtWithPending(yy, mm, dd, selectedShift);
+      onU = isUrlop(yy, mm, dd, selectedShift);
+    }
+
     const cls = onU ? 'U' : isWolne(s) ? 'W' : s;
     const label = onU ? '🌴' : isWolne(s) ? '—' : shiftEmoji[s] + ' ' + s;
-    // Znacznik nadgodzin
-    const otChip = getOvertimes(yy, mm, dd, selectedShift);
-    const hasOT = (otChip.przed || otChip.po) && !isWolne(s) && !onU;
-    const otBadge = hasOT ? '<span class="ddc-ot">⏱</span>' : '';
+    // Znacznik nadgodzin — тільки для залогінених
+    let otBadge = '';
+    if (!hidePrivate) {
+      const otChip = getOvertimes(yy, mm, dd, selectedShift);
+      const hasOT = (otChip.przed || otChip.po) && !isWolne(s) && !onU;
+      otBadge = hasOT ? '<span class="ddc-ot">⏱</span>' : '';
+    }
     upcomingHtml += `
       <div class="dash-day-chip chip-${cls}" onclick="jumpToDate(${yy},${mm},${dd})">
         <div class="ddc-day">${dayNames[(dt.getDay() + 6) % 7]}</div>
@@ -184,12 +265,42 @@ function renderDashboard() {
     `;
   }
 
-  // Check whether there's a note for today
-  const todayNoteKey = `${y}-${m}-${d}-${selectedShift}`;
-  const todayNote = notes[todayNoteKey];
-  const greetingContent = todayNote
-    ? `<div class="dash-greeting" style="font-style: italic; opacity: 1;">📝 ${escapeHtml(todayNote)}</div>`
-    : `<div class="dash-greeting">${t('greeting')}</div>`;
+  // Note for today — тільки коли залогінений
+  let greetingContent;
+  if (hidePrivate) {
+    greetingContent = `<div class="dash-greeting">${t('greeting')}</div>`;
+  } else {
+    const todayNoteKey = `${y}-${m}-${d}-${selectedShift}`;
+    const todayNote = notes[todayNoteKey];
+    greetingContent = todayNote
+      ? `<div class="dash-greeting" style="font-style: italic; opacity: 1;">📝 ${escapeHtml(todayNote)}</div>`
+      : `<div class="dash-greeting">${t('greeting')}</div>`;
+  }
+
+  // Vacation stats card — hide when not logged in
+  const vacationCard = hidePrivate
+    ? ''
+    : `
+      <div class="dash-stat-card dash-vacation-stats">
+        <div class="dsc-icon">🌴</div>
+        <div class="dsc-info">
+          <div class="dsc-label">${t('vacation')} ${y}</div>
+          <div class="dsc-value">${usedUrlop} / ${limit} ${t('dayOff')}</div>
+        </div>
+      </div>`;
+
+  // Overtime month summary — hide when not logged in
+  const overtimeCard =
+    !hidePrivate && totalOT > 0
+      ? `
+      <div class="dash-stat-card dash-overtime-summary" style="border:2px solid #f1c40f;">
+        <div class="dsc-icon">⏱</div>
+        <div class="dsc-info">
+          <div class="dsc-label">${t('infoOvertime')} (${monthNamesShort[m - 1]})</div>
+          <div class="dsc-value">${totalOT}h <small>(${otMonthSum.h50}+${otMonthSum.h100}+${otMonthSum.h200})</small></div>
+        </div>
+      </div>`
+      : '';
 
   dv.innerHTML = `
     <div class="dash-hero">
@@ -224,25 +335,8 @@ function renderDashboard() {
           <div class="dsc-value">${weekHours}h${weekOTTotal > 0 ? ` <small style="color:#f1c40f;">(+${weekOTTotal}h ⏱)</small>` : ''} · ${weekCounts.R}🌅 ${weekCounts.P}🌤️ ${weekCounts.N}🌙</div>
         </div>
       </div>
-      <div class="dash-stat-card dash-vacation-stats">
-        <div class="dsc-icon">🌴</div>
-        <div class="dsc-info">
-          <div class="dsc-label">${t('vacation')} ${y}</div>
-          <div class="dsc-value">${usedUrlop} / ${limit} ${t('dayOff')}</div>
-        </div>
-      </div>
-      ${
-        totalOT > 0
-          ? `
-      <div class="dash-stat-card dash-overtime-summary" style="border:2px solid #f1c40f;">
-        <div class="dsc-icon">⏱</div>
-        <div class="dsc-info">
-          <div class="dsc-label">${t('infoOvertime')} (${monthNamesShort[m - 1]})</div>
-          <div class="dsc-value">${totalOT}h <small>(${otMonthSum.h50}+${otMonthSum.h100}+${otMonthSum.h200})</small></div>
-        </div>
-      </div>`
-          : ''
-      }
+      ${vacationCard}
+      ${overtimeCard}
     </div>
 
     <div class="dash-upcoming">
@@ -262,6 +356,9 @@ function jumpToDate(y, m, d) {
 window.jumpToDate = jumpToDate;
 
 function getLiveTimer(shift, y, m, d) {
+  // Live timer shows personal overtime adjustments — only when logged in
+  if (!shouldShowPersonalData()) return null;
+
   const now = new Date();
   if (now.getFullYear() !== y || now.getMonth() + 1 !== m || now.getDate() !== d) return null;
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
