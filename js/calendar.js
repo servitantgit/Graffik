@@ -171,7 +171,7 @@ function renderCalendar(direction) {
       }
     }
 
-    // OVERTIME: single colored clock; details in ot-detail-popup when selected
+    // OVERTIME: colored ⏱ (palette rates) + 3rd popup with relief (hover/selected)
     if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
       const ot = getOvertimes(currentYear, currentMonth, d, selectedShift);
       if (ot.przed || ot.po) {
@@ -204,14 +204,17 @@ function renderCalendar(direction) {
           if (r > maxRate) maxRate = r;
           parts.push(`${t('otAfter') || 'po'}: ${ot.po.hours}h +${r}%`);
         }
+
+        // Corner clock — palette colors: 50 gray, 100 purple, 200 red
         const marker = document.createElement('div');
         marker.className = `ot-marker ot-${maxRate}`;
         marker.textContent = '⏱';
         marker.title = parts.join(' · ');
         cell.appendChild(marker);
 
+        // Third popup — same show rules as relief (no extra click)
         const otPop = document.createElement('div');
-        otPop.className = 'ot-detail-popup';
+        otPop.className = `ot-detail-popup ot-${maxRate}`;
         const actualTime = getActualWorkTime(
           currentYear,
           currentMonth,
@@ -219,11 +222,13 @@ function renderCalendar(direction) {
           selectedShift,
           shiftCode
         );
-        let lines = parts.map((p) => `<div class="otp-line">${p}</div>`).join('');
-        if (actualTime) {
-          lines += `<div class="otp-time">${actualTime}</div>`;
-        }
-        otPop.innerHTML = `<div class="otp-title">⏱ +${maxRate}%</div>${lines}`;
+        const lines = parts.map((p) => `<div class="rp-info">${p}</div>`).join('');
+        const timeLine = actualTime ? `<div class="rp-info otp-time">${actualTime}</div>` : '';
+        otPop.innerHTML =
+          `<div class="rp-label">⏱ ${t('otRate') || 'OT'}</div>` +
+          `<div class="rp-brig">+${maxRate}%</div>` +
+          lines +
+          timeLine;
         cell.appendChild(otPop);
       }
     }
