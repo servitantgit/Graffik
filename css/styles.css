@@ -1909,65 +1909,81 @@ body.theme-contrast .day-cell.day-weekend.cell-W {
   z-index: 3;
 }
 
-/* === NADGODZINY (wizualny podział komórki + popupy) === */
-.day-cell .ot-strip {
+/* === NADGODZINY: colored clock + detail popup on selected day === */
+.day-cell .ot-marker {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 22%;
+  top: 3px;
+  right: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 9px;
-  font-weight: 800;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  letter-spacing: 0.5px;
+  font-size: 12px;
+  line-height: 1;
+  z-index: 4;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
   pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
 }
-.day-cell .ot-strip.ot-left {
-  left: 0;
-  border-right: 1px solid rgba(255, 255, 255, 0.4);
-  border-top-left-radius: 7px;
-  border-bottom-left-radius: 7px;
+.day-cell .ot-marker.ot-50 {
+  background: #f1c40f;
+  color: #1a1a1a;
 }
-.day-cell .ot-strip.ot-right {
-  right: 0;
-  border-left: 1px solid rgba(255, 255, 255, 0.4);
-  border-top-right-radius: 7px;
-  border-bottom-right-radius: 7px;
-}
-.day-cell .ot-strip.ot-50 {
-  background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+.day-cell .ot-marker.ot-100 {
+  background: #e67e22;
   color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
-.day-cell .ot-strip.ot-100 {
-  background: linear-gradient(135deg, #8e44ad, #6c3483);
-}
-.day-cell .ot-strip.ot-200 {
-  background: linear-gradient(135deg, #c0392b, #922b21);
+.day-cell .ot-marker.ot-200 {
+  background: #c0392b;
+  color: #fff;
 }
 
-.day-cell.has-ot .day-actual-time {
+.day-cell .ot-detail-popup {
   position: absolute;
-  top: 2px;
-  left: 25%;
-  right: 25%;
-  text-align: center;
-  font-size: 10px;
-  font-weight: 700;
+  left: 50%;
+  top: calc(100% + 4px);
+  transform: translateX(-50%) scale(0.96);
+  min-width: 120px;
+  max-width: 160px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(30, 30, 40, 0.95);
   color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
-  z-index: 3;
-  background: rgba(0, 0, 0, 0.35);
-  border-radius: 3px;
-  padding: 1px 2px;
+  font-size: 11px;
+  line-height: 1.35;
+  text-align: center;
+  z-index: 30;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    visibility 0.15s;
 }
+.day-cell.selected .ot-detail-popup {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) scale(1);
+}
+.day-cell .ot-detail-popup .otp-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+.day-cell .ot-detail-popup .otp-line {
+  opacity: 0.95;
+}
+.day-cell .ot-detail-popup .otp-time {
+  margin-top: 4px;
+  font-weight: 700;
+  opacity: 0.9;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 4px;
+}
+
 
 .ot-popup {
   position: absolute;
@@ -3288,12 +3304,6 @@ small {
   .ot-popup .otp-time {
     font-size: 9px;
   }
-  .day-cell.has-ot .day-actual-time {
-    font-size: 8px;
-  }
-  .day-cell .ot-strip {
-    font-size: 8px;
-  }
   .ot-summary-grid {
     grid-template-columns: 1fr;
   }
@@ -3691,4 +3701,33 @@ a.menu-item {
   display: flex;
   align-items: center;
   gap: inherit;
+}
+
+
+/* Month grid: mobile relief + OT marker */
+@media (max-width: 480px) {
+  .relief-popup .rp-label {
+    font-size: 7px;
+    letter-spacing: 0;
+  }
+  .relief-popup .rp-brig {
+    font-size: 18px;
+    padding: 2px 0;
+  }
+  .relief-popup .rp-info {
+    font-size: 8px;
+  }
+  .day-cell .ot-marker {
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    top: 2px;
+    right: 2px;
+  }
+  .day-cell .ot-detail-popup {
+    min-width: 110px;
+    max-width: 140px;
+    font-size: 10px;
+    padding: 6px 8px;
+  }
 }

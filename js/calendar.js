@@ -171,11 +171,13 @@ function renderCalendar(direction) {
       }
     }
 
-    // OVERTIME: visual split + labels
+    // OVERTIME: single colored clock; details in ot-detail-popup when selected
     if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
       const ot = getOvertimes(currentYear, currentMonth, d, selectedShift);
       if (ot.przed || ot.po) {
         cell.classList.add('has-ot');
+        let maxRate = 50;
+        const parts = [];
         if (ot.przed) {
           const cat = categorizeOvertime(
             currentYear,
@@ -185,11 +187,9 @@ function renderCalendar(direction) {
             'przed',
             ot.przed.hours
           );
-          const dominant = cat.h200 > 0 ? '200' : cat.h100 > 0 ? '100' : '50';
-          const stripL = document.createElement('div');
-          stripL.className = `ot-strip ot-left ot-${dominant}`;
-          stripL.textContent = `+${dominant}%`;
-          cell.appendChild(stripL);
+          const r = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
+          if (r > maxRate) maxRate = r;
+          parts.push(`${t('otBefore') || 'przed'}: ${ot.przed.hours}h +${r}%`);
         }
         if (ot.po) {
           const cat = categorizeOvertime(
@@ -200,12 +200,18 @@ function renderCalendar(direction) {
             'po',
             ot.po.hours
           );
-          const dominant = cat.h200 > 0 ? '200' : cat.h100 > 0 ? '100' : '50';
-          const stripR = document.createElement('div');
-          stripR.className = `ot-strip ot-right ot-${dominant}`;
-          stripR.textContent = `+${dominant}%`;
-          cell.appendChild(stripR);
+          const r = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
+          if (r > maxRate) maxRate = r;
+          parts.push(`${t('otAfter') || 'po'}: ${ot.po.hours}h +${r}%`);
         }
+        const marker = document.createElement('div');
+        marker.className = `ot-marker ot-${maxRate}`;
+        marker.textContent = '⏱';
+        marker.title = parts.join(' · ');
+        cell.appendChild(marker);
+
+        const otPop = document.createElement('div');
+        otPop.className = 'ot-detail-popup';
         const actualTime = getActualWorkTime(
           currentYear,
           currentMonth,
@@ -213,12 +219,12 @@ function renderCalendar(direction) {
           selectedShift,
           shiftCode
         );
+        let lines = parts.map((p) => `<div class="otp-line">${p}</div>`).join('');
         if (actualTime) {
-          const timeEl = document.createElement('div');
-          timeEl.className = 'day-actual-time';
-          timeEl.textContent = actualTime;
-          cell.appendChild(timeEl);
+          lines += `<div class="otp-time">${actualTime}</div>`;
         }
+        otPop.innerHTML = `<div class="otp-title">⏱ +${maxRate}%</div>${lines}`;
+        cell.appendChild(otPop);
       }
     }
 
@@ -335,7 +341,7 @@ function addReliefPopups(cell, d, shiftCode, onUrlop) {
           : info.prevDay === d - 1
             ? t('dayBefore')
             : `${info.prevDay}`;
-    leftPopup.innerHTML = `<div class="rp-label">⬅ ${t('infoPrevShift')}</div><div class="rp-brig">${info.prevBrig || '—'}</div><div class="rp-info">${info.prevType} · ${prevWhen}</div>`;
+    leftPopup.innerHTML = `<div class="rp-label">⬅ ${t('reliefPrevShort') || t('infoPrevShift')}</div><div class="rp-brig">${info.prevBrig || '—'}</div><div class="rp-info">${info.prevType} · ${prevWhen}</div>`;
     if (info.prevBrig) {
       leftPopup.style.pointerEvents = 'auto';
       leftPopup.style.cursor = 'pointer';
@@ -353,7 +359,7 @@ function addReliefPopups(cell, d, shiftCode, onUrlop) {
           : info.nextDay === d + 1
             ? t('dayAfter')
             : `${info.nextDay}`;
-    rightPopup.innerHTML = `<div class="rp-label">${t('infoNextShift')} ➡</div><div class="rp-brig">${info.nextBrig || '—'}</div><div class="rp-info">${info.nextType} · ${nextWhen}</div>`;
+    rightPopup.innerHTML = `<div class="rp-label">${t('reliefNextShort') || t('infoNextShift')} ➡</div><div class="rp-brig">${info.nextBrig || '—'}</div><div class="rp-info">${info.nextType} · ${nextWhen}</div>`;
     if (info.nextBrig) {
       rightPopup.style.pointerEvents = 'auto';
       rightPopup.style.cursor = 'pointer';

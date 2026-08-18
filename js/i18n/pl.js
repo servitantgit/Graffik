@@ -124,6 +124,8 @@ window.translations.pl = {
   infoShift: 'Zmiana',
   infoPrevShift: '⬅️ Kto przekazał zmianę',
   infoNextShift: '➡️ Kto przejmie zmianę',
+  reliefNextShort: 'Przyjmie',
+  reliefPrevShort: 'Oddał',
   infoCycle: '🔁 Blok',
   infoCycleOf: '{n} z {total}',
   infoNextDayOff: '🏖️ Do wolnego',

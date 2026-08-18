@@ -125,6 +125,8 @@ window.translations.en = {
   infoShift: 'Shift',
   infoPrevShift: '⬅️ Who handed over the shift',
   infoNextShift: '➡️ Who will take over the shift',
+  reliefNextShort: 'To',
+  reliefPrevShort: 'From',
   infoCycle: '🔁 Block',
   infoCycleOf: '{n} of {total}',
   infoNextDayOff: '🏖️ Next day off',

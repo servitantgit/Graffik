@@ -124,6 +124,8 @@ window.translations.uk = {
   infoShift: 'Зміна',
   infoPrevShift: '⬅️ Хто передав зміну',
   infoNextShift: '➡️ Хто прийме зміну',
+  reliefNextShort: 'Прийме',
+  reliefPrevShort: 'Передав',
   infoCycle: '🔁 Блок',
   infoCycleOf: '{n} з {total}',
   infoNextDayOff: '🏖️ До вихідного',
