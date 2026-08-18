@@ -717,7 +717,7 @@ function generateAndDownloadDataJs(year) {
     const dateStr = now.toISOString().slice(0, 10);
 
     // formatYearAsJs / formatHoursAsJs return "    YYYY: { ... }" (legacy nested shape).
-    // registerYearData expects two plain objects — wrap stripped inner lines in { }.
+    // registerYearData expects two plain objects — wrap stripped inner lines in обʼєкти.
     const scheduleFormatted = formatYearAsJs(year, merged);
     const scheduleLines = scheduleFormatted.split('\n');
     const scheduleInner = scheduleLines.slice(1, -1).join('\n');
@@ -779,27 +779,21 @@ function showInstructionsModal(year) {
         ✅ Файл скачано: <code>${year}.js</code>
       </p>
     </div>
-    <p style="font-weight:600; margin-bottom:10px;">
-      📦 Кроки для деплою (нова архітектура):
-    </p>
+    <p style="font-weight:600; margin-bottom:10px;">📦 Деплой (автопідключення script + SW):</p>
     <ol style="line-height:1.7; font-size:14px; padding-left:22px;">
-      <li>Відкрий проект у VS Code</li>
-      <li>Помісти скачаний файл <code>${year}.js</code> у папку <code>js/schedules/gillette/</code></li>
-      <li>Відкрий <code>index.html</code> — додай після інших year-скриптів:<br>
-        <code>&lt;script src="js/schedules/gillette/${year}.js"&gt;&lt;/script&gt;</code></li>
-      <li>Відкрий <code>sw.js</code> — додай у масив <code>ASSETS</code>:<br>
-        <code>'./js/schedules/gillette/${year}.js',</code></li>
-      <li>Термінал: <code>git add js/schedules/gillette/${year}.js index.html sw.js</code></li>
+      <li>Помісти <code>${year}.js</code> у <code>js/schedules/gillette/</code></li>
+      <li>У корені проєкту запусти:<br>
+        <code>python3 tools/sync_schedule_assets.py</code><br>
+        <span style="font-size:12px;color:var(--text-muted);">Скрипт сам оновить <code>index.html</code> і <code>sw.js</code></span>
+      </li>
+      <li><code>git add js/schedules/gillette/${year}.js index.html sw.js</code></li>
       <li><code>git commit -m "chore(data): add ${year} factory schedule"</code></li>
-      <li><code>git push</code></li>
-      <li>GitHub Actions задеплоїть автоматично (2-5 хв)</li>
-      <li>Юзери побачать toast "🔄 Nowa wersja dostępna"</li>
+      <li><code>git push</code> → GitHub Actions задеплоїть (2–5 хв)</li>
+      <li>Юзери побачать toast про нову версію</li>
     </ol>
     <p style="font-size:12px; color:var(--text-muted); margin-top:12px; padding-top:12px; border-top:1px solid var(--border-cell);">
-      💡 <b>Перевага нової архітектури:</b> Кожен рік у власному файлі — не треба редагувати спільний data.js, немає ризику зіпсувати старі роки.
-    </p>
-    <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">
-      💡 Детальна інструкція у самому файлі (коментар зверху) + у Admin FAQ (❓ у top-bar).
+      💡 Для <b>оновлення існуючого</b> року достатньо замінити файл і push
+      (sync-скрипт можна не запускати, якщо index/sw уже містять цей рік).
     </p>
   `;
 
@@ -829,19 +823,18 @@ function renderAdminFaq() {
       icon: '🎯',
       title: 'Як я редагую графік? (базові концепції)',
       content: `
-        <p><b>У додатку є 2 типи графіка:</b></p>
+        <p><b>У додатку є 2 шари графіка:</b></p>
         <ul>
-          <li><b>Фабричний (<code>factorySchedule</code>)</b> — базовий графік з файлу <code>js/data.js</code>. Його бачать <b>усі</b> користувачі. Зашитий у код.</li>
-          <li><b>Персональний (<code>customSchedule</code>)</b> — редагування конкретного користувача, зберігається в <code>localStorage</code> його браузера. Інші не бачать.</li>
+          <li><b>Фабричний (<code>factorySchedule</code>)</b> — з файлів <code>js/schedules/gillette/YYYY.js</code>. Бачать усі. Потрапляє на прод через git.</li>
+          <li><b>Персональний (<code>customSchedule</code>)</b> — localStorage користувача (відпустки, OT, нотатки, локальні правки змін). Інші не бачать, поки не sync на <b>свій</b> Drive.</li>
         </ul>
-        <p><b>Коли ти адмін і редагуєш через палету R/P/N/W:</b></p>
+        <p><b>Адмін + палітра R/P/N/W:</b></p>
         <ul>
-          <li>Зміни спочатку йдуть у <b>твій</b> customSchedule (як для звичайного юзера)</li>
-          <li>Щоб зміни побачили <b>усі</b> — треба <b>експорт → git commit → git push</b></li>
-          <li>Тоді GitHub Actions задеплоїть → data.js оновиться → всі юзери отримають toast "🔄 Nowa wersja"</li>
+          <li>Правки одразу пишуться в <b>твій</b> customSchedule (auto-save, кнопки «Зберегти» немає)</li>
+          <li>Щоб зміни стали фабричними для всіх: <b>Export → файл у repo → sync-скрипт → commit → push</b></li>
         </ul>
         <p style="padding:10px; background:var(--bg-info); border-radius:8px; margin-top:12px;">
-          💡 <b>Головне правило:</b> Редагування в браузері = тільки твоє. Deploy через Git = для всіх.
+          💡 <b>Правило:</b> браузер = твоя чернетка. Git push = для всіх.
         </p>
       `,
     },
@@ -849,28 +842,20 @@ function renderAdminFaq() {
       icon: '✨',
       title: 'Як додати новий рік (2027, 2028...)',
       content: `
-        <p><b>🎉 Нова архітектура (v3.7.0+) — набагато простіше!</b></p>
-        <p>Кожен рік тепер у власному файлі. Додавання = один новий файл + один рядок у index.html.</p>
         <ol style="line-height:1.7;">
-          <li><b>Увійди в Google Drive</b> як admin (servitant@gmail.com)</li>
-          <li>Дочекайся появи "👑 Admin Panel" у боковому меню (до 3 сек)</li>
-          <li><b>У year picker</b> натискай ›  до нового року (напр. 2027)</li>
-          <li>Побачиш "Rok 2027 jest pusty" — це нормально</li>
-          <li>Натисни <b>✏️ Włącz tryb edycji</b> → підтверди</li>
-          <li>Empty state зникне → з'явиться <b>пуста сітка</b> календаря</li>
-          <li>У палеті внизу активуй <b>R</b> (клавіша R або клік)</li>
-          <li>Клікай на клітинки → фарбуй R (ранок)</li>
-          <li>Аналогічно для P (день), N (ніч), W (вихідний)</li>
-          <li>Перемикайся між <b>бригадами A/B/C/D</b> у top-bar</li>
-          <li>Пройди всі 12 місяців для всіх 4 бригад</li>
-          <li>Періодично тисни <b>💾 Zapisz</b> (Ctrl+S)</li>
-          <li>Коли готово → див. секцію "📤 Як експортувати"</li>
+          <li>Увійди в Google Drive як admin</li>
+          <li>Дочекайся «👑 Admin Panel» у меню</li>
+          <li>Year picker → новий рік (напр. 2027)</li>
+          <li>✏️ Режим редагування</li>
+          <li>Палітра <b>R / P / N / W</b> — намалюй графік по бригадах і місяцях</li>
+          <li>Усі кліки <b>зберігаються одразу</b> (немає Ctrl+S)</li>
+          <li>☰ → Admin → <b>Export</b> → вибери рік → скачається <code>YYYY.js</code></li>
+          <li>Поклади файл у <code>js/schedules/gillette/</code></li>
+          <li><code>python3 tools/sync_schedule_assets.py</code> — підключить рік у <code>index.html</code> і <code>sw.js</code></li>
+          <li><code>git add … && git commit && git push</code></li>
         </ol>
-        <p style="padding:10px; background:var(--bg-info); border-radius:8px; margin-top:12px;">
-          ⏱️ <b>Реалістичний час:</b> 1460 клітинок (12 міс × 4 бриг × ~30 днів). При 2 сек/клітинка = ~50 хв на рік.
-        </p>
         <p style="padding:10px; background:#e8f5e9; border-left:3px solid #4caf50; border-radius:6px; margin-top:8px;">
-          ✅ <b>Нова архітектура:</b> Ти редагуєш свій customSchedule, Export генерує окремий файл <code>2027.js</code> який просто додається до <code>js/schedules/gillette/</code>. Zero ризик зіпсувати 2026!
+          ✅ Кожен рік — окремий файл. 2026 не чіпається при додаванні 2027.
         </p>
       `,
     },
@@ -878,212 +863,107 @@ function renderAdminFaq() {
       icon: '✏️',
       title: 'Як виправити помилку в існуючому році',
       content: `
-        <p><b>Сценарій:</b> Ти вже задеплоїв графік, але потім знайшов помилку.</p>
         <ol style="line-height:1.7;">
-          <li>Увійди як admin</li>
-          <li>Перейди на потрібний рік і місяць</li>
-          <li>Едит режим ✏️</li>
-          <li>У палеті вибери <b>W</b> (чи потрібну зміну) → клікни клітинку → перезапис</li>
-          <li>💾 Zapisz</li>
-          <li>Експорт → deploy (див. наступну секцію)</li>
+          <li>Admin login → потрібний рік/місяць → ✏️ edit</li>
+          <li>Палітра R/P/N/W → клік по клітинці (зміна одразу збережена локально)</li>
+          <li>Export цього року → замінити <code>js/schedules/gillette/YYYY.js</code></li>
+          <li><code>git commit && git push</code> (sync-скрипт не обов’язковий, якщо рік уже в index/sw)</li>
         </ol>
-        <p><b>Швидкі способи стерти:</b></p>
-        <ul>
-          <li>Клавіша <code>W</code> + клік → ставить порожню зміну</li>
-          <li>Ctrl+Z → скасовує останню дію</li>
-          <li>Ctrl+Y → повторює скасовану</li>
-        </ul>
-        <p style="padding:10px; background:var(--bg-info); border-radius:8px; margin-top:12px;">
-          💡 <b>Якщо помилок багато:</b> Простіше видалити рік через <b>☰ Menu → 👑 Admin Panel → 🗑 Очистити рік</b> і заповнити заново.
-        </p>
+        <p><b>Стерти зміну:</b> клавіша/палітра <code>W</code> + клік (порожній день).</p>
+        <p style="font-size:12px;color:var(--text-muted);">Undo/Redo і «Зберегти» прибрані — модель як у відпусток/OT: тап = запис.</p>
       `,
     },
     {
       icon: '📤',
-      title: 'Як експортувати та задеплоїти (git flow)',
+      title: 'Експорт і деплой (git flow)',
       content: `
-        <p><b>🎉 Нова архітектура (v3.7.0+):</b> тепер кожен рік у власному файлі — простіший і безпечніший деплой.</p>
-        
-        <p><b>Крок 1: Експорт у додатку</b></p>
+        <p><b>1. У додатку</b></p>
         <ol style="line-height:1.7;">
-          <li>☰ Menu → 👑 Admin Panel → <b>📤 Export data.js</b></li>
-          <li>Вибери рік (напр. 2027)</li>
-          <li>Скачається файл <code>2027.js</code> (новий формат — standalone JS)</li>
-          <li>Прочитай інструкцію у модалці, що з'явиться</li>
+          <li>☰ → 👑 Admin → <b>Export</b></li>
+          <li>Обери рік (✏️ = є локальні правки, 🆕 = лише custom)</li>
+          <li>Скачається валідний <code>YYYY.js</code> з <code>registerYearData(...)</code></li>
         </ol>
-        
-        <p><b>Крок 2: Розмістити файл у репо</b></p>
-        <ol style="line-height:1.7;">
-          <li>Відкрий проект у VS Code</li>
-          <li>Помісти скачаний <code>2027.js</code> у папку <code>js/schedules/gillette/</code></li>
-          <li>Відкрий <code>index.html</code></li>
-          <li>Знайди рядок:<br><code><script src="js/schedules/gillette/2026.js"></script></code></li>
-          <li>Додай новий рядок ПІСЛЯ нього:<br><code><script src="js/schedules/gillette/2027.js"></script></code></li>
-        </ol>
-        
-        <p><b>Крок 3: Git commit + push</b></p>
-        <pre style="background:#2c3e50; color:#fff; padding:10px; border-radius:6px; overflow-x:auto; font-size:12px;">cd Graffik
-git add js/schedules/gillette/2027.js index.html
+        <p><b>2. У репо</b></p>
+        <pre style="background:#2c3e50;color:#fff;padding:10px;border-radius:6px;font-size:12px;overflow:auto;"># покласти файл
+cp ~/Downloads/2027.js js/schedules/gillette/
+
+# авто: script tags + SW ASSETS
+python3 tools/sync_schedule_assets.py
+
+git add js/schedules/gillette/2027.js index.html sw.js
 git commit -m "chore(data): add 2027 factory schedule"
 git push</pre>
-        
-        <p><b>Крок 4: Автоматичний деплой</b></p>
-        <ul>
-          <li>GitHub Actions запуститься автоматично (2-5 хв)</li>
-          <li>Замінить <code>__BUILD_ID__</code> на git hash</li>
-          <li>Задеплоїть на <code>gh-pages</code></li>
-          <li>Юзери побачать toast: <b>"🔄 Nowa wersja dostępna"</b></li>
-          <li>Клікнуть Оновити → отримають графік на 2027 🎉</li>
-        </ul>
-        
-        <p style="padding:10px; background:#e8f5e9; border-left:3px solid #4caf50; border-radius:6px; margin-top:12px;">
-          ✅ <b>Zalety нової архітектури:</b>
-          <ul style="margin:8px 0 0 0; padding-left:20px;">
-            <li>Не редагуєш спільний <code>data.js</code> (його вже нема!)</li>
-            <li>Просто додаєш новий файл — 2026 залишається недоторканим</li>
-            <li>Git показує один новий файл — чиста історія</li>
-            <li>Легкий rollback: <code>git revert HEAD</code> → 2027 зникне, 2026 залишиться</li>
-          </ul>
+        <p style="padding:10px; background:var(--bg-info); border-radius:8px; margin-top:12px;">
+          🔧 <code>tools/sync_schedule_assets.py</code> сканує всі <code>YYYY.js</code> у папці gillette і синхронізує підключення. Без нього новий рік на проді не завантажиться.
         </p>
       `,
     },
     {
-      icon: '⌨️',
-      title: 'Клавіатурні скорочення адміна',
+      icon: '💾',
+      title: 'Що зберігається одразу, що йде на Drive',
       content: `
-        <p><b>Palette (тільки в edit mode):</b></p>
-        <table style="width:100%; border-collapse:collapse; margin:8px 0;">
-          <tr style="background:var(--bg-cell);"><th style="padding:6px; text-align:left;">Клавіша</th><th style="padding:6px; text-align:left;">Дія</th></tr>
-          <tr><td style="padding:6px;"><code>U</code></td><td style="padding:6px;">🌴 Urlop</td></tr>
-          <tr><td style="padding:6px;"><code>S</code></td><td style="padding:6px;">➕ Дод. зміна (для юзерів)</td></tr>
-          <tr><td style="padding:6px;"><code>1</code> / <code>2</code></td><td style="padding:6px;">⏱ OT PRZED / PO</td></tr>
-          <tr style="background:#fff3cd;"><td style="padding:6px;"><code>R</code></td><td style="padding:6px;"><b>🌅 Ранок (тільки admin)</b></td></tr>
-          <tr style="background:#fff3cd;"><td style="padding:6px;"><code>P</code></td><td style="padding:6px;"><b>🌤️ День (тільки admin)</b></td></tr>
-          <tr style="background:#fff3cd;"><td style="padding:6px;"><code>N</code></td><td style="padding:6px;"><b>🌙 Ніч (тільки admin)</b></td></tr>
-          <tr style="background:#fff3cd;"><td style="padding:6px;"><code>W</code></td><td style="padding:6px;"><b>🏖️ Вихідний (тільки admin)</b></td></tr>
-        </table>
-        <p><b>Загальні:</b></p>
         <ul>
-          <li><code>Ctrl+Z</code> — скасувати</li>
-          <li><code>Ctrl+Y</code> / <code>Ctrl+Shift+Z</code> — повторити</li>
-          <li><code>Ctrl+S</code> — зберегти</li>
-          <li><code>Esc</code> — вийти з edit mode / закрити modal</li>
-          <li><code>E</code> — увімкнути/вимкнути edit mode</li>
-          <li><code>←</code> / <code>→</code> — попередній/наступний місяць</li>
+          <li><b>Одразу в localStorage:</b> зміни графіка (edit), відпустки, надгодини, нотатки, ліміти urlop</li>
+          <li><b>Google Drive (твій акаунт):</b> один JSON — customSchedule, urlops, overtimes, notes, prefs</li>
+          <li><b>Фабричний графік для всіх:</b> лише через Export + git (не через Drive)</li>
         </ul>
+        <p>Login потрібен для personal data UI та admin. Logout ховає personal, але localStorage не чистить.</p>
+      `,
+    },
+    {
+      icon: '⌨️',
+      title: 'Клавіші в edit mode',
+      content: `
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+          <tr><td style="padding:6px;"><code>U</code></td><td style="padding:6px;">🌴 Відпустка</td></tr>
+          <tr><td style="padding:6px;"><code>S</code></td><td style="padding:6px;">➕ Дод. зміна</td></tr>
+          <tr><td style="padding:6px;"><code>1</code> / <code>2</code></td><td style="padding:6px;">⏱ OT перед / після</td></tr>
+          <tr style="background:#fff3cd;"><td style="padding:6px;"><code>R</code> <code>P</code> <code>N</code> <code>W</code></td><td style="padding:6px;"><b>Лише admin — factory shift</b></td></tr>
+          <tr><td style="padding:6px;"><code>E</code> / <code>Esc</code></td><td style="padding:6px;">Увімк./вимк. edit</td></tr>
+          <tr><td style="padding:6px;"><code>←</code> <code>→</code></td><td style="padding:6px;">Місяць</td></tr>
+        </table>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:8px;">Ctrl+S / Ctrl+Z більше не використовуються (auto-save).</p>
       `,
     },
     {
       icon: '🚨',
       title: 'Що робити коли щось пішло не так',
       content: `
-        <p><b>Проблема 1: Помилково задеплоїв неправильний графік</b></p>
-        <pre style="background:#2c3e50; color:#fff; padding:10px; border-radius:6px; font-size:12px;"># Відкат останнього коміту
-cd Graffik
-git revert HEAD
-git push
-# → GitHub Actions задеплоїть попередню версію</pre>
-        <p><b>Проблема 2: Юзери скаржаться "не бачу нової версії"</b></p>
+        <p><b>Помилковий деплой графіка</b></p>
+        <pre style="background:#2c3e50;color:#fff;padding:10px;border-radius:6px;font-size:12px;">git revert HEAD
+git push</pre>
+        <p><b>Юзери не бачать нову версію</b></p>
         <ul>
-          <li>Юзер має клікнути <b>Ctrl+Shift+R</b> (hard reload)</li>
-          <li>Або: DevTools → Application → Service Workers → Unregister → Reload</li>
-          <li>Або: почекати 1 годину (auto-check у SW)</li>
+          <li>Hard reload (Ctrl+Shift+R) або Unregister SW</li>
+          <li>Переконайся, що в коміті є year-файл <b>і</b> оновлені index.html / sw.js (або прогнаний sync-скрипт)</li>
         </ul>
-        <p><b>Проблема 3: Admin режим не активується після login</b></p>
+        <p><b>Admin не з’являється</b></p>
         <ul>
-          <li>Переконайся що логінишся як <code>servitant@gmail.com</code></li>
-          <li>Почекай 3 секунди (polling)</li>
-          <li>Відкрий Console → перевір: <code>console.log(driveUserEmail)</code></li>
-          <li>Якщо email не той → перелогінься</li>
+          <li>Логін саме з email з <code>ADMIN_EMAILS</code> у <code>js/admin.js</code></li>
+          <li>Console: <code>driveUserEmail</code></li>
         </ul>
-        <p><b>Проблема 4: GitHub Actions failed</b></p>
+        <p><b>Export «не відкривається» / SyntaxError</b></p>
         <ul>
-          <li>Відкрий: <a href="https://github.com/servitantgit/Graffik/actions" target="_blank">https://github.com/servitantgit/Graffik/actions</a></li>
-          <li>Клікни на червоний workflow</li>
-          <li>Прочитай помилку</li>
-          <li>Найчастіші причини: syntax error у data.js, недостатньо прав</li>
-          <li>Виправ → git commit --amend → git push --force (обережно!)</li>
+          <li>Має бути формат <code>registerYearData('gillette', YEAR, scheduleObj, hoursObj)</code></li>
+          <li>Перевір свіжий білд додатка (фікс обгортки обʼєктів schedule/hours у експорті)</li>
         </ul>
-        <p><b>Проблема 5: Втратив локальні зміни в браузері</b></p>
-        <ul>
-          <li>Google Drive backup: ☰ Menu → Google Drive → Pobierz</li>
-          <li>JSON backup: ☰ Menu → 📥 Eksport JSON (робити регулярно!)</li>
-        </ul>
-        <p style="padding:10px; background:#fadbd8; border-left:3px solid #c0392b; border-radius:6px; margin-top:12px;">
-          🚨 <b>Nuclear option:</b> Якщо все зовсім погано → <code>git reset --hard <останній робочий commit></code> + <code>git push --force</code>. Втратиш деякі коміти, але сайт запрацює.
-        </p>
-      `,
-    },
-    {
-      icon: '🔐',
-      title: 'Безпека та бекапи',
-      content: `
-        <p><b>Що зберігається де:</b></p>
-        <ul>
-          <li><b>Код + factorySchedule</b> → GitHub repo (backup через Git history)</li>
-          <li><b>Твої персональні дані</b> (urlopy, OT, notatki) → браузер localStorage</li>
-          <li><b>Синхронізація</b> → Google Drive (лише твого акаунта)</li>
-        </ul>
-        <p><b>Регулярний бекап (раз на місяць):</b></p>
-        <ol>
-          <li>☰ Menu → 👑 Admin Panel → 📥 Eksport JSON</li>
-          <li>Збережи файл у безпечному місці (Google Drive / Dropbox / USB)</li>
-          <li>Це резервна копія на випадок якщо браузер очистять</li>
-        </ol>
-        <p><b>Хто має admin права:</b></p>
-        <ul>
-          <li>Тільки email у списку <code>ADMIN_EMAILS</code> у файлі <code>js/admin.js</code></li>
-          <li>Зараз: <code>servitant@gmail.com</code></li>
-          <li>Щоб додати нового admin — треба редагувати цей файл + git push</li>
-          <li>Знання email <b>НЕ дає доступу</b> — треба фактичний Google login</li>
-        </ul>
-        <p><b>Що робити якщо admin-email скомпрометований:</b></p>
-        <ol>
-          <li>Зміни пароль Google акаунта негайно</li>
-          <li>Google → Security → Third-party apps → Revoke Grafik Gillette</li>
-          <li>Опційно: заміни ADMIN_EMAILS на новий email + git push</li>
-        </ol>
       `,
     },
     {
       icon: '📞',
-      title: 'Контакти на випадок катастрофи',
+      title: 'Контакти / передача проєкту',
       content: `
-        <p><b>Розробник (я):</b></p>
         <ul>
-          <li>📧 Особистий: <a href="mailto:servitant@gmail.com">servitant@gmail.com</a></li>
-          <li>📧 Робочий: <a href="mailto:tantsiura.s@pg.com">tantsiura.s@pg.com</a></li>
+          <li>📧 <a href="mailto:servitant@gmail.com">servitant@gmail.com</a> · <a href="mailto:tantsiura.s@pg.com">tantsiura.s@pg.com</a></li>
+          <li>🔧 <a href="https://github.com/servitantgit/Graffik" target="_blank">GitHub repo</a></li>
+          <li>🚀 <a href="https://servitantgit.github.io/Graffik/" target="_blank">Live app</a></li>
+          <li>📚 <code>PROJECT_DOCS.md</code>, <code>CHANGELOG.md</code></li>
         </ul>
-        <p><b>Технічні ресурси:</b></p>
-        <ul>
-          <li>🔧 GitHub repo: <a href="https://github.com/servitantgit/Graffik" target="_blank">github.com/servitantgit/Graffik</a></li>
-          <li>🚀 Live app: <a href="https://servitantgit.github.io/Graffik/" target="_blank">servitantgit.github.io/Graffik</a></li>
-          <li>⚙️ GitHub Actions: <a href="https://github.com/servitantgit/Graffik/actions" target="_blank">Actions page</a></li>
-          <li>📚 Docs: <a href="https://github.com/servitantgit/Graffik/blob/main/PROJECT_DOCS.md" target="_blank">PROJECT_DOCS.md</a></li>
-          <li>📝 CHANGELOG: <a href="https://github.com/servitantgit/Graffik/blob/main/CHANGELOG.md" target="_blank">CHANGELOG.md</a></li>
-        </ul>
-        <p><b>Якщо треба передати проект іншій людині:</b></p>
-        <ol>
-          <li>Дай доступ до GitHub repo (Settings → Collaborators)</li>
-          <li>Додай її email у <code>ADMIN_EMAILS</code> в <code>js/admin.js</code></li>
-          <li>Покажи цей FAQ — тут вся інформація</li>
-          <li>Розкажи де знайти <code>PROJECT_DOCS.md</code> у корені repo</li>
-        </ol>
-        <p><b>Якщо треба відновити з нуля (все зламано):</b></p>
-        <ol>
-          <li>Склонуй repo: <code>git clone https://github.com/servitantgit/Graffik.git</code></li>
-          <li>Відкрий в VS Code</li>
-          <li>Прочитай <code>PROJECT_DOCS.md</code> + <code>CHANGELOG.md</code></li>
-          <li>Дивись цей FAQ (він у самому додатку)</li>
-        </ol>
-        <p style="padding:10px; background:var(--bg-info); border-radius:8px; margin-top:12px; text-align:center;">
-          💚 <b>Головне — не панікуй.</b> Все у Git. Все можна відкотити.
-        </p>
+        <p><b>Передача адмінки:</b> Collaborator на GitHub + email у <code>ADMIN_EMAILS</code> + цей FAQ.</p>
       `,
     },
   ];
 
-  // Build HTML with collapsible sections
   const sectionsHtml = sections
     .map(
       (s, idx) => `
@@ -1102,19 +982,18 @@ git push
 
   const body = `
     <p style="color:var(--text-muted); font-size:13px; margin-bottom:15px;">
-      📚 Детальна інструкція для адміністратора. Клікни на секцію, щоб розгорнути.
+      📚 Інструкція для адміністратора. Клікни секцію, щоб розгорнути.
     </p>
     <div style="display:flex; flex-direction:column; gap:6px;">
       ${sectionsHtml}
     </div>
     <p style="text-align:center; margin-top:16px; padding-top:12px; border-top:1px solid var(--border-cell); font-size:11px; color:var(--text-muted);">
-      💡 Ця сторінка бачите тільки ви (адмін). Юзери її не бачать.<br>
-      Оновлюється разом з кодом додатка. Останнє оновлення: ${new Date().toISOString().slice(0, 10)}
+      Лише для admin. Оновлення разом із кодом додатка.
     </p>
   `;
 
   showModal({
-    title: '👑 Admin FAQ — Інструкція адміна',
+    title: '👑 Admin FAQ',
     body: body,
     buttons: [{ text: 'Зрозуміло', class: 'primary' }],
   });
