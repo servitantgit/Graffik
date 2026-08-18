@@ -66,6 +66,7 @@ window.translations.pl = {
   changesDiscarded: 'Zmiany odrzucone',
   editModeOnToast: 'Tryb edycji WŁ. Skróty: R/P/N/W/C/O',
   editModeOnShort: 'Tryb edycji WŁ',
+  editNeedLogin: '🔐 Aby edytować urlopy i zmiany — zaloguj się do Google Drive',
   enableEditTitle: '✏️ Włączyć tryb edycji?',
   enableEditBody:
     'Kliknięcia w komórki zmienią zmiany.<br><br>Wybierz "malowaną" zmianę w palecie na dole (lub użyj skrótu R/P/N/W).<br>Aby dodać <b>nadgodziny</b> — wybierz <b>⏱</b> (lub klawisz O).<br><br>Zmiany <b>NIE zapisują się automatycznie</b> — trzeba kliknąć <b>💾 Zapisz</b>.',
