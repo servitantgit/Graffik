@@ -387,7 +387,7 @@ window.translations.en = {
   faqSaveTitle: '💾 How is data saved?',
   faqSaveDesc: 'All edits (shifts, vacations, overtime, notes) save immediately in the browser.',
   faqSaveNote:
-    'When signed in to Google Drive, data syncs as one file. Regularly back up via 📥 JSON so you do not lose data after clearing the browser.',
+    'When signed in to Google Drive, data syncs as one file in the cloud. Without login, data stays only in the browser localStorage.',
   faqSyncTitle: '☁️ How does Google Drive sync work?',
   faqSyncDesc: 'Sync allows you to transfer app data between devices via Google Drive.',
   faqSync1:

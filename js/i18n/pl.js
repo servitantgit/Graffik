@@ -387,7 +387,7 @@ window.translations.pl = {
   faqSaveTitle: '💾 Jak zapisują się dane?',
   faqSaveDesc: 'Wszystkie zmiany (grafik, urlopy, nadgodziny, notatki) zapisują się od razu w przeglądarce.',
   faqSaveNote:
-    'Po zalogowaniu do Google Drive dane synchronizują się w jeden plik. Regularnie rób backup przez 📥 JSON, żeby nie stracić danych po czyszczeniu przeglądarki.',
+    'Po zalogowaniu do Google Drive dane synchronizują się w jeden plik w chmurze. Bez logowania dane są tylko w localStorage przeglądarki.',
   faqSyncTitle: '☁️ Jak działa synchronizacja z Google Drive?',
   faqSyncDesc:
     'Synchronizacja pozwala przenieść dane aplikacji między urządzeniami przez Google Drive.',
