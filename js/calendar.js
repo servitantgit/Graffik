@@ -112,13 +112,6 @@ function renderCalendar(direction) {
       if (isWolne(s1) && isWolne(s2)) cell.classList.add('compare-match');
     }
 
-    if (onUrlop) {
-      const icon = document.createElement('div');
-      icon.className = 'urlop-icon';
-      icon.textContent = '🌴';
-      cell.appendChild(icon);
-    }
-
     const numEl = document.createElement('div');
     numEl.className = 'day-num';
     numEl.innerHTML = d;
@@ -134,8 +127,9 @@ function renderCalendar(direction) {
     const shiftEl = document.createElement('div');
     shiftEl.className = 'day-shift';
     if (onUrlop) {
-      shiftEl.textContent = '';
+      shiftEl.innerHTML = `<span class="shift-emoji">🌴</span>`;
       shiftEl.title = t('vacation');
+      shiftEl.classList.add('day-shift-urlop');
     } else if (isWolne(shiftCode)) shiftEl.textContent = '—';
     else
       shiftEl.innerHTML = `<span class="shift-emoji">${shiftEmoji[shiftCode]}</span>${shiftCode}`;
