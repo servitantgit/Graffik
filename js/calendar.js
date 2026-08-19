@@ -804,14 +804,34 @@ function renderInfo() {
         return ', ' + t('dayAfter');
       return `, ${d} ${monthNames[m - 1]}${y !== currentYear ? ' ' + y : ''}`;
     }
-    // Combined card: who handed over + who will take over
-    const prevPart = info.prevBrig
-      ? `<span class="badge ${info.prevBrig}">${info.prevBrig}</span> <small style="opacity:0.85;">${info.prevType}${formatWhen(info.prevYear, info.prevMonth, info.prevDay)}</small>`
-      : '<em>—</em>';
-    const nextPart = info.nextBrig
-      ? `<span class="badge ${info.nextBrig}">${info.nextBrig}</span> <small style="opacity:0.85;">${info.nextType}${formatWhen(info.nextYear, info.nextMonth, info.nextDay)}</small>`
-      : '<em>—</em>';
-    const reliefCard = `
+    // Combined card: Timeline widget (prev → self → [OT] → next)
+    // Fallback to classic view if smart-popup.js not loaded
+    let reliefCard;
+    if (typeof renderReliefTimeline === 'function') {
+      const timelineHtml = renderReliefTimeline(
+        info,
+        currentYear,
+        currentMonth,
+        selectedDay,
+        shiftCode,
+        selectedShift,
+        null // otData: null for now, OT stays in separate section
+      );
+      reliefCard = `
+      <div class="info-card" style="grid-column:1/-1;">
+        <div class="label">🔄 ${t('infoPrevShift').replace('⬅️ ', '').replace('⬅ ', '')} / ${t('infoNextShift').replace('➡️ ', '').replace('➡ ', '')}</div>
+        <div class="value">${timelineHtml}</div>
+      </div>
+    `;
+    } else {
+      // Fallback: classic prev/next display
+      const prevPart = info.prevBrig
+        ? `<span class="badge ${info.prevBrig}">${info.prevBrig}</span> <small style="opacity:0.85;">${info.prevType}${formatWhen(info.prevYear, info.prevMonth, info.prevDay)}</small>`
+        : '<em>—</em>';
+      const nextPart = info.nextBrig
+        ? `<span class="badge ${info.nextBrig}">${info.nextBrig}</span> <small style="opacity:0.85;">${info.nextType}${formatWhen(info.nextYear, info.nextMonth, info.nextDay)}</small>`
+        : '<em>—</em>';
+      reliefCard = `
       <div class="info-card" style="grid-column:1/-1;">
         <div class="label">🔄 ${t('infoPrevShift').replace('⬅️ ', '').replace('⬅ ', '')} / ${t('infoNextShift').replace('➡️ ', '').replace('➡ ', '')}</div>
         <div class="value" style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-around;">
@@ -827,6 +847,7 @@ function renderInfo() {
         </div>
       </div>
     `;
+    }
 
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
       ${urlopStats}
