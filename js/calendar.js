@@ -141,40 +141,7 @@ function renderCalendar(direction) {
       shiftEl.innerHTML = `<span class="shift-emoji">${shiftEmoji[shiftCode]}</span>${shiftCode}`;
     cell.appendChild(shiftEl);
 
-    // Premium rate: holiday (+200%) or Sunday (+100%) on a working day
-    // Premium rate: ONLY when a shift was added on a day that was factory-free
-    if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
-      // Check: what was in the factory schedule for this day?
-      const factoryShift =
-        factorySchedule[currentYear] &&
-        factorySchedule[currentYear][currentMonth] &&
-        factorySchedule[currentYear][currentMonth][selectedShift]
-          ? factorySchedule[currentYear][currentMonth][selectedShift][d - 1]
-          : '';
-      const wasFactoryFree = isWolne(factoryShift);
-
-      // Only show the badge when a shift was added (factory day was free)
-      if (wasFactoryFree) {
-        const isHoliday = !!yHolidays[currentMonth + '-' + d];
-        const dowLocal = new Date(currentYear, currentMonth - 1, d).getDay();
-        let rate = null;
-        if (isHoliday) rate = '200';
-        else if (dowLocal === 0) rate = '100';
-
-        if (rate) {
-          const rateBadge = document.createElement('div');
-          rateBadge.className = `shift-rate-badge rate-${rate}`;
-          rateBadge.textContent = `+${rate}%`;
-          rateBadge.title =
-            rate === '200'
-              ? `${t('labelHoliday')} — ${t('otRate')} +200%`
-              : `${t('labelSunday')} — ${t('otRate')} +100%`;
-          cell.appendChild(rateBadge);
-        }
-      }
-    }
-
-    // OVERTIME: colored ⏱ (palette rates) + 3rd popup with relief (hover/selected)
+    // OVERTIME: colored ⏱ marker (detail in info-panel)
     if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
       const ot = getOvertimes(currentYear, currentMonth, d, selectedShift);
       if (ot.przed || ot.po) {
@@ -607,20 +574,15 @@ function renderInfo() {
     ? false
     : isUrlop(currentYear, currentMonth, selectedDay, selectedShift);
 
-  const totalUrlop = (urlops[selectedShift] || []).filter((k) =>
-    k.startsWith(currentYear + '-')
-  ).length;
   const usedUrlop = countWorkingUrlops(currentYear, selectedShift);
   const limit = getVacationLimit(selectedShift);
-  const overLimit = usedUrlop > limit;
+  const remainingUrlop = Math.max(0, limit - usedUrlop);
+  // Simple display-only vacation counter (moved to end of panel)
   const urlopStats = hidePrivate
     ? ''
-    : `<div class="urlop-stats info-section-vacation">
-    <span>${t('infoUrlopStats', { brig: selectedShift, year: currentYear })}<br><small style="opacity:.9;font-weight:normal;">${t('infoUrlopMarked')}: ${totalUrlop} • ${t('infoUrlopWorking')}: ${usedUrlop}</small></span>
-    <div style="display:flex; align-items:center; gap:6px;">
-      <span><span class="us-count ${overLimit ? 'us-over' : ''}">${usedUrlop}</span> / ${limit} ${overLimit ? '⚠️' : ''}</span>
-      <button class="urlop-limit-edit" data-brigade="${selectedShift}" title="${t('infoUrlopLimitEdit', { brig: selectedShift })}" style="border:none; background:rgba(255,255,255,0.18); color:inherit; border-radius:6px; width:24px; height:24px; cursor:pointer;">✏️</button>
-    </div>
+    : `<div class="info-card info-section-vacation" style="grid-column:1/-1;">
+    <div class="label">🌴 ${t('vacation')} ${currentYear}</div>
+    <div class="value">${usedUrlop} / ${limit} <small style="opacity:.85;">(${t('urlopRemaining', { n: remainingUrlop })})</small></div>
   </div>`;
 
   let liveInfo = '';
@@ -631,13 +593,26 @@ function renderInfo() {
 
   let cycleInfo = ''; // Removed: not needed for everyday use
 
+  // Until day off: tomorrow | N day shifts · M night shifts
   let toWolneInfo = '';
   if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
-    const w = daysToNextWolne(currentYear, currentMonth, selectedDay, selectedShift);
+    const w =
+      typeof getUntilDayOff === 'function'
+        ? getUntilDayOff(currentYear, currentMonth, selectedDay, selectedShift)
+        : daysToNextWolne(currentYear, currentMonth, selectedDay, selectedShift);
     if (w && w.days > 0) {
-      const wd = `${w.day} ${monthNamesGenitive[w.month - 1]}${w.year !== currentYear ? ' ' + w.year : ''}`;
-      const label = w.days === 1 ? t('tomorrow') : t('inDays', { n: w.days });
-      toWolneInfo = `<div class="info-card"><div class="label">${t('infoNextDayOff')}</div><div class="value">${label} (${wd})</div></div>`;
+      let valueTxt;
+      if (w.days === 1) {
+        valueTxt = t('tomorrow');
+      } else if (typeof w.dayShifts === 'number') {
+        const parts = [];
+        if (w.dayShifts > 0) parts.push(`${w.dayShifts} ${t('dayShiftsLabel')}`);
+        if (w.nightShifts > 0) parts.push(`${w.nightShifts} ${t('nightShiftsLabel')}`);
+        valueTxt = parts.length ? parts.join(' · ') : t('inDays', { n: w.days });
+      } else {
+        valueTxt = t('inDays', { n: w.days });
+      }
+      toWolneInfo = `<div class="info-card"><div class="label">${t('infoNextDayOff')}</div><div class="value">${valueTxt}</div></div>`;
     }
   }
 
@@ -736,21 +711,20 @@ function renderInfo() {
 
   if (onUrlop) {
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
-      ${urlopStats}
       <div class="info-grid">
         <div class="info-card"><div class="label">${t('infoStatus')}</div><div class="value" style="color:#e67e22;">${t('infoUrlop')}</div></div>
-        <div class="info-card"><div class="label">${t('infoPlannedShift')}</div><div class="value">${isWolne(shiftCode) ? t('infoFree') : `<span class="shift-chip ${shiftCode}">${shiftEmoji[shiftCode]} ${shiftCode}</span>`}</div></div>
         ${hidePrivate ? '' : `<div class="info-card info-section-note" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
+        ${urlopStats}
       </div>`;
   } else if (isWolne(shiftCode)) {
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
-      ${urlopStats}
       <div class="info-grid">
         <div class="info-card"><div class="label">${t('infoStatus')}</div><div class="value">${t('infoFree')}</div></div>
         ${cycleInfo}
         ${overtimeBeforeInfo}
         ${overtimeAfterInfo}
         ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
+        ${urlopStats}
       </div>`;
   } else {
     const info = getRelief(currentYear, currentMonth, selectedDay, selectedShift, shiftCode);
@@ -828,53 +802,18 @@ function renderInfo() {
     `;
     }
 
-    // Order: OT before → shift → flow → live → next day off → OT after → note
+    // Order: OT before → flow → live → next day off → OT after → note → vacation
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
-      ${urlopStats}
       <div class="info-grid">
         ${overtimeBeforeInfo}
-        <div class="info-card"><div class="label">${t('infoShift')}</div><div class="value"><span class="shift-chip ${shiftCode}">${shiftEmoji[shiftCode]} ${shiftCode}</span> ${shiftFullName[shiftCode]}</div></div>
         ${reliefCard}
         ${liveInfo}
         ${cycleInfo}
         ${toWolneInfo}
         ${overtimeAfterInfo}
         ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
+        ${urlopStats}
       </div>`;
-  }
-
-  const editLimitBtn = panel.querySelector('.urlop-limit-edit');
-  if (editLimitBtn) {
-    editLimitBtn.addEventListener('click', () => {
-      const brigade = editLimitBtn.dataset.brigade;
-      const currentLimit = getVacationLimit(brigade);
-      const body = `
-        <p>${t('vacationLimitBody', { brig: brigade })}</p>
-        <input id="vacationLimitInput" type="number" min="0" step="1" value="${currentLimit}" style="width:100%; padding:10px; border:1px solid var(--border-cell); border-radius:8px; font-size:16px;">
-      `;
-      showModal({
-        title: t('vacationLimitTitle'),
-        body,
-        buttons: [
-          { text: t('vacationLimitCancel'), class: 'secondary' },
-          {
-            text: t('vacationLimitSave'),
-            class: 'primary',
-            onClick: () => {
-              const input = document.getElementById('vacationLimitInput');
-              const parsed = Number(input.value);
-              if (!Number.isFinite(parsed) || parsed < 0) {
-                showToast('error', t('vacationLimitInvalid'));
-                return;
-              }
-              setVacationLimit(brigade, parsed);
-              showToast('success', t('vacationLimitSet', { brig: brigade, n: parsed }));
-              renderInfo();
-            },
-          },
-        ],
-      });
-    });
   }
 
   const ni = document.getElementById('noteInput');

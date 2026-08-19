@@ -231,6 +231,8 @@ js/schedules/
 - OT marker ⏱ na komórce (title); `ot-detail-popup` usunięty — szczegóły w info-panel
 - Miesięczne OT summary (`#otMonthSummary`) wstawiane **po** info-panel
 - Daty «dzień + miesiąc» przez `monthNamesGenitive`
+- Info panel: bez karty «Zmiana»; urlop tylko used/remaining na końcu; «Do wolnego» = liczba dziennych/nocnych lub jutro
+- Badge `+200%` na komórce usunięty; `getUntilDayOff()` w core.js
 - `openOvertimeModal(d, shift, type)` — modal edycji nadgodzin
 - `updateOvertimePreview()` — podgląd nadgodzin w modalu
 - `saveOvertimeFromModal()` — zapis nadgodzin
