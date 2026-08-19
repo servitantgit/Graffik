@@ -127,6 +127,8 @@ window.translations.uk = {
   reliefNextShort: 'Прийме',
   reliefPrevShort: 'Передав',
   reliefFlowTitle: 'Flow передачі зміни',
+  flowModeHandoff: 'Передача',
+  flowModeCycle: 'До вільного',
   tlYesterday: 'вч.',
   tlToday: 'сьогодні',
   tlTomorrow: 'завтра',

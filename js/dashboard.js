@@ -28,7 +28,7 @@ function renderDashboard() {
   const dayName = dayNamesFull[today.getDay()];
   const holidayName = yHolidays[m + '-' + d];
 
-  // === Shift handoff flow (first item when working day) ===
+  // === Flow segment: Handoff | Cycle (first item when working day) ===
   let reliefFlowCard = '';
   if (!isWolne(shiftCode) && !onUrlop && typeof renderReliefTimeline === 'function') {
     const info = getRelief(y, m, d, selectedShift, shiftCode);
@@ -45,7 +45,7 @@ function renderDashboard() {
       const after = mk('po');
       if (before || after) timelineOt = { before, after };
     }
-    const timelineHtml = renderReliefTimeline(
+    const handoffHtml = renderReliefTimeline(
       info,
       y,
       m,
@@ -54,13 +54,26 @@ function renderDashboard() {
       selectedShift,
       timelineOt
     );
-    reliefFlowCard = `
+    let cycleHtml = handoffHtml;
+    if (typeof getCyclePath === 'function' && typeof renderCycleTimeline === 'function') {
+      const path = getCyclePath(y, m, d, selectedShift, 8);
+      cycleHtml = renderCycleTimeline(path, y, m, d);
+    }
+    if (typeof renderFlowSegmentWidget === 'function') {
+      reliefFlowCard = renderFlowSegmentWidget({
+        handoffHtml,
+        cycleHtml,
+        defaultMode: 'handoff',
+      });
+    } else {
+      reliefFlowCard = `
       <div class="dash-stat-card" style="grid-column:1/-1;">
         <div class="dsc-info" style="width:100%;">
           <div class="dsc-label">🔄 ${t('reliefFlowTitle')}</div>
-          <div class="dsc-value" style="font-weight:normal;">${timelineHtml}</div>
+          <div class="dsc-value" style="font-weight:normal;">${handoffHtml}</div>
         </div>
       </div>`;
+    }
   }
 
   let todayCard = '';
@@ -309,6 +322,8 @@ function renderDashboard() {
     </div>
 
   `;
+
+  if (typeof bindFlowSegmentToggle === 'function') bindFlowSegmentToggle(dv);
 }
 
 function jumpToDate(y, m, d) {

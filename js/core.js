@@ -366,6 +366,44 @@ function getUntilDayOff(year, month, day, brigade) {
   return null;
 }
 
+/**
+ * Path of own shifts from selected day (inclusive) until next free/vacation.
+ * @returns {{ steps: Array<{year,month,day,shift,isSelf}>, free: {year,month,day}|null }}
+ */
+function getCyclePath(year, month, day, brigade, maxSteps) {
+  maxSteps = maxSteps || 8;
+  const steps = [];
+  let y = year,
+    m = month,
+    d = day;
+  // include current day if working
+  const selfShift = getShiftAt(y, m, d, brigade);
+  if (!isWolne(selfShift) && !isUrlop(y, m, d, brigade)) {
+    steps.push({ year: y, month: m, day: d, shift: selfShift, isSelf: true });
+  }
+  let guard = 0;
+  while (guard < 60 && steps.length < maxSteps) {
+    guard++;
+    d++;
+    if (d > daysInMonthCal(y, m)) {
+      d = 1;
+      m++;
+      if (m > 12) {
+        m = 1;
+        y++;
+      }
+    }
+    if (isUrlop(y, m, d, brigade) || isWolne(getShiftAt(y, m, d, brigade))) {
+      return { steps, free: { year: y, month: m, day: d } };
+    }
+    const s = getShiftAt(y, m, d, brigade);
+    if (s === 'R' || s === 'P' || s === 'N') {
+      steps.push({ year: y, month: m, day: d, shift: s, isSelf: false });
+    }
+  }
+  return { steps, free: null };
+}
+
 /* === Nadgodziny: pomocnicze === */
 function otKey(year, month, day, brigade) {
   return `${year}-${month}-${day}-${brigade}`;

@@ -127,6 +127,8 @@ window.translations.pl = {
   reliefNextShort: 'Przyjmie',
   reliefPrevShort: 'Oddał',
   reliefFlowTitle: 'Flow przekazania zmiany',
+  flowModeHandoff: 'Przekazanie',
+  flowModeCycle: 'Do wolnego',
   tlYesterday: 'wcz.',
   tlToday: 'dziś',
   tlTomorrow: 'jutro',

@@ -128,6 +128,8 @@ window.translations.en = {
   reliefNextShort: 'To',
   reliefPrevShort: 'From',
   reliefFlowTitle: 'Shift handoff flow',
+  flowModeHandoff: 'Handoff',
+  flowModeCycle: 'Until free',
   tlYesterday: 'yest.',
   tlToday: 'today',
   tlTomorrow: 'tmrw',

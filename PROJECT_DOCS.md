@@ -226,7 +226,7 @@ js/schedules/
 ### js/calendar.js — Moduł 6: Widok Miesiąc
 
 - `renderCalendar(direction)` — generowanie siatki kalendarza
-- Relief handoff: **timeline widget** w info-panel (`renderReliefTimeline` z `smart-popup.js`) — layout U4: prev → [OT przed] → dzień+zmiana → [OT po] → next
+- Relief handoff: **timeline widget** w info-panel (`renderReliefTimeline` z `smart-popup.js`) — layout U4 + segment Handoff|Cycle: handoff = prev→[OT]→day→next; cycle = own shifts → 🏖️ free (`getCyclePath` / `renderCycleTimeline`)
 - Cell relief popups usunięte (funkcjonalność w panelu)
 - OT marker ⏱ na komórce (title); `ot-detail-popup` usunięty — szczegóły w info-panel
 - Miesięczne OT summary (`#otMonthSummary`) wstawiane **po** info-panel
