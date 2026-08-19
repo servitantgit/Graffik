@@ -1,0 +1,201 @@
+/ ================================================================*
+GRAFIK GILLETTE - SMART-POPUP.CSS
+Timeline widget for relief handoff visualization in info-panel
+Part of modular CSS split (v3.9.0)
+*================================================================ /
+
+/* === Timeline Widget Container === */
+.timeline-widget {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 4px;
+  flex-wrap: wrap;
+}
+
+/* === Timeline Node (brigade or OT block) === */
+.tl-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  color: #fff;
+  text-align: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s;
+}
+
+.tl-node:hover {
+  transform: translateY(-1px);
+}
+
+/* Node types by shift color */
+.tl-node.tl-shift-R {
+  background: linear-gradient(135deg, var(--color-R), var(--color-R-border));
+  border: 1px solid var(--color-R-border);
+}
+
+.tl-node.tl-shift-P {
+  background: linear-gradient(135deg, var(--color-P), var(--color-P-border));
+  border: 1px solid var(--color-P-border);
+}
+
+.tl-node.tl-shift-N {
+  background: linear-gradient(135deg, var(--color-N), var(--color-N-border));
+  border: 1px solid var(--color-N-border);
+}
+
+/* Self node (current day, larger) */
+.tl-node.tl-self {
+  min-width: 54px;
+  padding: 7px 10px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+/* OT node (red gradient) */
+.tl-node.tl-ot {
+  background: linear-gradient(135deg, #c0392b, #922b21);
+  border: 1px solid #922b21;
+}
+
+.tl-node.tl-ot-50 {
+  background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+  border: 1px solid #7f8c8d;
+}
+
+.tl-node.tl-ot-100 {
+  background: linear-gradient(135deg, #8e44ad, #6c3483);
+  border: 1px solid #6c3483;
+}
+
+/* Empty node (no prev/next) */
+.tl-node.tl-empty {
+  background: linear-gradient(135deg, #7f8c8d, #576269);
+  border: 1px solid #576269;
+  opacity: 0.6;
+}
+
+/* === Node Content === */
+.tl-brig {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.tl-icon {
+  font-size: 12px;
+  margin-top: 2px;
+  line-height: 1;
+}
+
+.tl-label {
+  font-size: 9px;
+  opacity: 0.9;
+  margin-top: 2px;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.tl-value {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* === Flow Arrow === */
+.tl-arrow {
+  font-size: 16px;
+  color: var(--accent);
+  font-weight: 700;
+  opacity: 0.7;
+  flex-shrink: 0;
+  animation: tl-arrow-pulse 2s ease-in-out infinite;
+}
+
+@‌keyframes tl-arrow-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(2px);
+  }
+}
+
+/* === Widget Title (optional) === */
+.timeline-widget-title {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* === Responsive: Mobile === */
+@‌media (max-width: 480px) {
+  .timeline-widget {
+    gap: 4px;
+    padding: 6px 2px;
+  }
+
+  .tl-node {
+    min-width: 40px;
+    padding: 5px 6px;
+  }
+
+  .tl-node.tl-self {
+    min-width: 46px;
+    padding: 6px 8px;
+  }
+
+  .tl-brig {
+    font-size: 15px;
+  }
+
+  .tl-icon {
+    font-size: 10px;
+  }
+
+  .tl-label {
+    font-size: 8px;
+  }
+
+  .tl-value {
+    font-size: 12px;
+  }
+
+  .tl-arrow {
+    font-size: 13px;
+  }
+}
+
+@‌media (max-width: 380px) {
+  .timeline-widget {
+    gap: 3px;
+  }
+
+  .tl-node {
+    min-width: 36px;
+    padding: 4px 5px;
+  }
+
+  .tl-brig {
+    font-size: 13px;
+  }
+
+  .tl-arrow {
+    font-size: 11px;
+  }
+}
