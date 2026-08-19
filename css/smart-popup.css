@@ -200,3 +200,44 @@
     font-size: 11px;
   }
 }
+
+/* === Free / day-off node === */
+.tl-node.tl-free {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: 1px solid #059669;
+}
+
+/* === Segment tabs: Handoff | Cycle === */
+.flow-segment-tabs {
+  display: flex;
+  gap: 6px;
+  margin: 6px 0 10px;
+  flex-wrap: wrap;
+}
+
+.flow-seg-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-cell, #363b4d);
+  background: var(--panel-2, rgba(255, 255, 255, 0.04));
+  color: var(--text-muted, #8b92a5);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.flow-seg-btn.active {
+  background: var(--accent, #ff5722);
+  border-color: var(--accent, #ff5722);
+  color: #fff;
+}
+
+.flow-seg-btn:hover:not(.active) {
+  border-color: var(--accent, #ff5722);
+  color: var(--text, #e8eaf0);
+}
+
+.flow-segment-card .flow-seg-panel {
+  min-height: 48px;
+}

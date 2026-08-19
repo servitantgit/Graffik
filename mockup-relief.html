@@ -844,9 +844,61 @@
             white-space: nowrap;
         }
 
+
         .uw-u4 .node-value {
             font-size: 14px;
             font-weight: 700;
+        }
+
+        /* === U5+: until day-off nodes === */
+        .uw-u4 .uw-node.node-remain {
+            background: linear-gradient(135deg, #6366f1, #4338ca);
+            border: 1px solid #4338ca;
+        }
+        .uw-u4 .uw-node.node-free {
+            background: linear-gradient(135deg, #64748b, #475569);
+            border: 1px solid #475569;
+        }
+        .uw-u4 .uw-node.node-free-strong {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: 1px solid #059669;
+        }
+        .uw-u4 .node-sub {
+            font-size: 8px;
+            opacity: 0.85;
+            margin-top: 1px;
+            white-space: nowrap;
+        }
+        .uw-variant-note {
+            font-size: 11px;
+            color: var(--muted);
+            margin: 4px 0 10px;
+            line-height: 1.4;
+        }
+        .uw-variant-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 99px;
+            background: var(--panel-2);
+            border: 1px solid var(--border);
+            color: var(--accent);
+            margin-right: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .flow-scenario {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 14px;
+        }
+        .flow-scenario h3 {
+            font-size: 13px;
+            margin-bottom: 4px;
+            color: var(--text);
         }
 
         /* ==================================================== */
@@ -1440,6 +1492,183 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- SECTION 2B: FLOW + UNTIL DAY OFF (ideas)    -->
+        <!-- ============================================ -->
+        <div class="section">
+            <div class="section-title">
+                🧪 SECTION 2B: Flow + «до вихідного» — варіанти для рішення
+            </div>
+            <p class="tiny-note">
+                Ідея: прибрати окрему картку «До вихідного» і вбудувати сенс у кінець timeline.
+                Нижче — кілька макетів на одному сценарії (15 серп., OT 5h, до вільного завтра / або 3 зміни).
+            </p>
+
+            <div class="flow-scenario">
+                <h3><span class="uw-variant-badge">V1</span> Два вузли в кінці: «N змін» + «вихідний»</h3>
+                <p class="uw-variant-note">Твоя базова ідея. Явно: ще працювати → відпочинок. Довше на mobile.</p>
+                <div class="unified-widget uw-u4">
+                    <div class="uw-title">🔄 Flow передачі зміни</div>
+                    <div class="uw-body">
+                        <div class="uw-node node-prev"><div class="node-brig">D</div><div class="node-icon">🌙</div><div class="node-label">wcz.</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-self"><div class="node-brig">15</div><div class="node-icon">🌅</div><div class="node-label">R</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-ot"><div class="node-value">5h</div><div class="node-label">+200%</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-next"><div class="node-brig">A</div><div class="node-icon">🌤</div><div class="node-label">dziś</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-remain"><div class="node-value">1</div><div class="node-label">зміна</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-free"><div class="node-brig">🏖️</div><div class="node-label">16.08</div></div>
+                    </div>
+                </div>
+                <div class="unified-widget uw-u4" style="margin-top:8px;">
+                    <div class="uw-title">Той самий V1, якщо ще 3 зміни (2д · 1н)</div>
+                    <div class="uw-body">
+                        <div class="uw-node node-prev"><div class="node-brig">D</div><div class="node-icon">🌙</div><div class="node-label">wcz.</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-self"><div class="node-brig">12</div><div class="node-icon">🌅</div><div class="node-label">R</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-next"><div class="node-brig">A</div><div class="node-icon">🌤</div><div class="node-label">dziś</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-remain"><div class="node-value">3</div><div class="node-label">2д · 1н</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-free"><div class="node-brig">🏖️</div><div class="node-label">15.08</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-scenario">
+                <h3><span class="uw-variant-badge">V2</span> Один фінальний вузол (компакт)</h3>
+                <p class="uw-variant-note">Менше шуму. Підпис несе «завтра» або розбивку змін. Добрий баланс довжини.</p>
+                <div class="unified-widget uw-u4">
+                    <div class="uw-title">🔄 Flow · кінець = «до вільного»</div>
+                    <div class="uw-body">
+                        <div class="uw-node node-prev"><div class="node-brig">D</div><div class="node-icon">🌙</div><div class="node-label">wcz.</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-self"><div class="node-brig">15</div><div class="node-icon">🌅</div><div class="node-label">R</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-ot"><div class="node-value">5h</div><div class="node-label">+200%</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-next"><div class="node-brig">A</div><div class="node-icon">🌤</div><div class="node-label">dziś</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-free-strong"><div class="node-brig">🏖️</div><div class="node-label">завтра</div></div>
+                    </div>
+                </div>
+                <div class="unified-widget uw-u4" style="margin-top:8px;">
+                    <div class="uw-title">V2b · не завтра — число + підпис</div>
+                    <div class="uw-body">
+                        <div class="uw-node node-prev"><div class="node-brig">D</div><div class="node-icon">🌙</div><div class="node-label">wcz.</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-self"><div class="node-brig">12</div><div class="node-icon">🌅</div><div class="node-label">R</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-next"><div class="node-brig">A</div><div class="node-icon">🌤</div><div class="node-label">dziś</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-free-strong"><div class="node-value">3</div><div class="node-label">2д · 1н</div><div class="node-sub">→ 🏖️ 15.08</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-scenario">
+                <h3><span class="uw-variant-badge">V3</span> Без «хто прийме» — одразу до вільного</h3>
+                <p class="uw-variant-note">Коротший ланцюг. Ризик: губиться бригада-приймач (A).</p>
+                <div class="unified-widget uw-u4">
+                    <div class="uw-title">🔄 Flow (без next-brig)</div>
+                    <div class="uw-body">
+                        <div class="uw-node node-prev"><div class="node-brig">D</div><div class="node-icon">🌙</div><div class="node-label">wcz.</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-self"><div class="node-brig">15</div><div class="node-icon">🌅</div><div class="node-label">R</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-ot"><div class="node-value">5h</div><div class="node-label">+200%</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-free-strong"><div class="node-brig">🏖️</div><div class="node-label">завтра</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-scenario">
+                <h3><span class="uw-variant-badge">V4</span> Підпис під flow (не вузол)</h3>
+                <p class="uw-variant-note">Timeline без зайвих вузлів; «до вільного» одним рядком під ним — не окрема картка панелі.</p>
+                <div class="unified-widget uw-u4">
+                    <div class="uw-title">🔄 Flow передачі зміни</div>
+                    <div class="uw-body">
+                        <div class="uw-node node-prev"><div class="node-brig">D</div><div class="node-icon">🌙</div><div class="node-label">wcz.</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-self"><div class="node-brig">15</div><div class="node-icon">🌅</div><div class="node-label">R</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-ot"><div class="node-value">5h</div><div class="node-label">+200%</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-next"><div class="node-brig">A</div><div class="node-icon">🌤</div><div class="node-label">dziś</div></div>
+                    </div>
+                    <div style="text-align:center; margin-top:8px; font-size:12px; color:var(--muted);">
+                        🏖️ До вихідного: <b style="color:var(--text);">завтра</b>
+                        &nbsp;·&nbsp; інший кейс: <b style="color:var(--text);">2 денні · 1 нічна</b>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-scenario">
+                <h3><span class="uw-variant-badge">V5</span> Chip після next (не повний вузол)</h3>
+                <p class="uw-variant-note">Next-brig лишається; до вільного — легкий dashed chip.</p>
+                <div class="unified-widget uw-u4">
+                    <div class="uw-title">🔄 Flow + chip</div>
+                    <div class="uw-body">
+                        <div class="uw-node node-prev"><div class="node-brig">D</div><div class="node-icon">🌙</div><div class="node-label">wcz.</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-self"><div class="node-brig">15</div><div class="node-icon">🌅</div><div class="node-label">R</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-ot"><div class="node-value">5h</div><div class="node-label">+200%</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-next"><div class="node-brig">A</div><div class="node-icon">🌤</div><div class="node-label">dziś</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 8px;border-radius:8px;background:rgba(16,185,129,0.15);border:1px dashed #10b981;min-width:52px;">
+                            <div style="font-size:16px;">🏖️</div>
+                            <div style="font-size:9px;font-weight:600;color:#6ee7b7;">завтра</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-scenario">
+                <h3><span class="uw-variant-badge">V6</span> Два режими: handoff vs cycle</h3>
+                <p class="uw-variant-note">Не змішувати в одному рядку. Сегмент: «Передача» | «До вільного».</p>
+                <div style="display:flex;gap:6px;margin-bottom:10px;">
+                    <span style="padding:6px 12px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:#fff;font-size:12px;font-weight:600;">Передача</span>
+                    <span style="padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel-2);color:var(--text);font-size:12px;">До вільного</span>
+                </div>
+                <div class="unified-widget uw-u4">
+                    <div class="uw-title">Режим «Передача» (як зараз)</div>
+                    <div class="uw-body">
+                        <div class="uw-node node-prev"><div class="node-brig">D</div><div class="node-icon">🌙</div><div class="node-label">wcz.</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-self"><div class="node-brig">15</div><div class="node-icon">🌅</div><div class="node-label">R</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-ot"><div class="node-value">5h</div><div class="node-label">+200%</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-next"><div class="node-brig">A</div><div class="node-icon">🌤</div><div class="node-label">dziś</div></div>
+                    </div>
+                </div>
+                <div class="unified-widget uw-u4" style="margin-top:8px;">
+                    <div class="uw-title">Режим «До вільного» (cycle strip)</div>
+                    <div class="uw-body">
+                        <div class="uw-node node-self"><div class="node-brig">15</div><div class="node-icon">🌅</div><div class="node-label">R</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-next"><div class="node-brig">16</div><div class="node-icon">🌤</div><div class="node-label">P</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-remain"><div class="node-brig">17</div><div class="node-icon">🌙</div><div class="node-label">N</div></div>
+                        <div class="uw-flow-arrow">→</div>
+                        <div class="uw-node node-free-strong"><div class="node-brig">🏖️</div><div class="node-label">18.08</div></div>
+                    </div>
+                    <div style="text-align:center;margin-top:6px;font-size:11px;color:var(--muted);">Показує наступні свої зміни до вільного, не handoff бригад</div>
+                </div>
+            </div>
+
+            <p class="tiny-note" style="margin-top:8px;">
+                <b>Підказка:</b> V2 / V5 найменше ламають поточний U4; V1 — найповніший наратив; V6 — найчистіша семантика, але складніший UX.
+            </p>
         </div>
 
         <!-- ============================================ -->

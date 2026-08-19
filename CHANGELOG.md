@@ -22,6 +22,7 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 - **Until day off** — shows remaining day/night shifts (or “tomorrow”), not a calendar date
 - Removed cell `+200%` / `+100%` rate badge stripe on dates
 - **Info panel** — removed detailed OT cards (before/after + daily summary); OT is shown only in the handoff flow
+- **Flow modes** — segment «Handoff | Until free»: cycle strip shows own shifts until day off; separate «До вихідного» card removed
 
 
 ### Usunięte

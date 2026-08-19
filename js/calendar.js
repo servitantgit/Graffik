@@ -593,29 +593,6 @@ function renderInfo() {
 
   let cycleInfo = ''; // Removed: not needed for everyday use
 
-  // Until day off: tomorrow | N day shifts · M night shifts
-  let toWolneInfo = '';
-  if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
-    const w =
-      typeof getUntilDayOff === 'function'
-        ? getUntilDayOff(currentYear, currentMonth, selectedDay, selectedShift)
-        : daysToNextWolne(currentYear, currentMonth, selectedDay, selectedShift);
-    if (w && w.days > 0) {
-      let valueTxt;
-      if (w.days === 1) {
-        valueTxt = t('tomorrow');
-      } else if (typeof w.dayShifts === 'number') {
-        const parts = [];
-        if (w.dayShifts > 0) parts.push(`${w.dayShifts} ${t('dayShiftsLabel')}`);
-        if (w.nightShifts > 0) parts.push(`${w.nightShifts} ${t('nightShiftsLabel')}`);
-        valueTxt = parts.length ? parts.join(' · ') : t('inDays', { n: w.days });
-      } else {
-        valueTxt = t('inDays', { n: w.days });
-      }
-      toWolneInfo = `<div class="info-card"><div class="label">${t('infoNextDayOff')}</div><div class="value">${valueTxt}</div></div>`;
-    }
-  }
-
   if (onUrlop) {
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
       <div class="info-grid">
@@ -664,9 +641,31 @@ function renderInfo() {
       if (before || after) timelineOt = { before, after };
     }
 
-    // Timeline: prev → [OT przed] → day+shift → [OT po] → next
-    let reliefCard;
-    if (typeof renderReliefTimeline === 'function') {
+    // Segment: Handoff | Cycle (until free)
+    let reliefCard = '';
+    if (typeof renderReliefTimeline === 'function' && typeof renderFlowSegmentWidget === 'function') {
+      const handoffHtml = renderReliefTimeline(
+        info,
+        currentYear,
+        currentMonth,
+        selectedDay,
+        shiftCode,
+        selectedShift,
+        timelineOt
+      );
+      let cycleHtml = '';
+      if (typeof getCyclePath === 'function' && typeof renderCycleTimeline === 'function') {
+        const path = getCyclePath(currentYear, currentMonth, selectedDay, selectedShift, 8);
+        cycleHtml = renderCycleTimeline(path, currentYear, currentMonth, selectedDay);
+      } else {
+        cycleHtml = handoffHtml;
+      }
+      reliefCard = renderFlowSegmentWidget({
+        handoffHtml,
+        cycleHtml,
+        defaultMode: 'handoff',
+      });
+    } else if (typeof renderReliefTimeline === 'function') {
       const timelineHtml = renderReliefTimeline(
         info,
         currentYear,
@@ -680,44 +679,21 @@ function renderInfo() {
       <div class="info-card" style="grid-column:1/-1;">
         <div class="label">🔄 ${t('reliefFlowTitle')}</div>
         <div class="value">${timelineHtml}</div>
-      </div>
-    `;
-    } else {
-      const prevPart = info.prevBrig
-        ? `<span class="badge ${info.prevBrig}">${info.prevBrig}</span> <small style="opacity:0.85;">${info.prevType}${formatWhen(info.prevYear, info.prevMonth, info.prevDay)}</small>`
-        : '<em>—</em>';
-      const nextPart = info.nextBrig
-        ? `<span class="badge ${info.nextBrig}">${info.nextBrig}</span> <small style="opacity:0.85;">${info.nextType}${formatWhen(info.nextYear, info.nextMonth, info.nextDay)}</small>`
-        : '<em>—</em>';
-      reliefCard = `
-      <div class="info-card" style="grid-column:1/-1;">
-        <div class="label">🔄 ${t('reliefFlowTitle')}</div>
-        <div class="value" style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-around;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:16px; opacity:0.7;">⬅️</span>
-            <div>${prevPart}</div>
-          </div>
-          <div style="width:1px; background:var(--border-cell); height:28px;"></div>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <div>${nextPart}</div>
-            <span style="font-size:16px; opacity:0.7;">➡️</span>
-          </div>
-        </div>
-      </div>
-    `;
+      </div>`;
     }
 
-    // Order: flow → live → next day off → note → vacation
+    // Order: flow (handoff|cycle) → live → note → vacation
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
       <div class="info-grid">
                 ${reliefCard}
         ${liveInfo}
         ${cycleInfo}
-        ${toWolneInfo}
-                ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
+                        ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
         ${urlopStats}
       </div>`;
   }
+
+  if (typeof bindFlowSegmentToggle === 'function') bindFlowSegmentToggle(panel);
 
   const ni = document.getElementById('noteInput');
   if (ni) {
