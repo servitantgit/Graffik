@@ -330,7 +330,7 @@ function notifyCurrentShift() {
     const shiftLabel = `${shiftEmoji[s] || ''} ${shiftLongNames[s] || s}`;
 
     const title = `⏰ ${t('shift')} ${s} — ${shiftLabel}`;
-    const body = `${t('brigade')} ${selectedShift} • ${d} ${monthNames[m - 1]} ${y}\n${timeRange}`;
+    const body = `${t('brigade')} ${selectedShift} • ${d} ${monthNamesGenitive[m - 1]} ${y}\n${timeRange}`;
     const notification = new Notification(title, {
       body: body,
       icon: './icons/icon-192.png',

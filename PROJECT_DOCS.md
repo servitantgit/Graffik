@@ -214,9 +214,10 @@ js/schedules/
 ### js/dashboard.js — Moduł 5: Widok Dashboard
 
 - `renderDashboard()` — cały widok Dashboard
-  - Hero section z powitaniem i datą
+  - Hero section z powitaniem i datą (genitive month names)
+  - **Flow przekazania zmiany** jako pierwszy blok (timeline U4)
   - Karta dzisiejszej zmiany z live timerem
-  - Statystyki (najbliższe zmiany, urlopy, nadgodziny)
+  - Statystyki (jutro, najbliższy wolny, urlopy, nadgodziny miesięczne) — bez bloku „Ten tydzień”
   - Upcoming days chips
 - **Privacy:** `shouldShowPersonalData()` — gdy `false` (wylogowany):
   - tylko fabryczny grafik (bez urlopów / OT / notatek / live-timera)
@@ -225,9 +226,11 @@ js/schedules/
 ### js/calendar.js — Moduł 6: Widok Miesiąc
 
 - `renderCalendar(direction)` — generowanie siatki kalendarza
-- Relief handoff: **timeline widget** w info-panel (`renderReliefTimeline` z `smart-popup.js`) — layout U4: prev → dzień+zmiana → [OT] → next
+- Relief handoff: **timeline widget** w info-panel (`renderReliefTimeline` z `smart-popup.js`) — layout U4: prev → [OT przed] → dzień+zmiana → [OT po] → next
 - Cell relief popups usunięte (funkcjonalność w panelu)
-- OT marker + ot-detail-popup na komórce (hover/selected) — bez change
+- OT marker ⏱ na komórce (title); `ot-detail-popup` usunięty — szczegóły w info-panel
+- Miesięczne OT summary (`#otMonthSummary`) wstawiane **po** info-panel
+- Daty «dzień + miesiąc» przez `monthNamesGenitive`
 - `openOvertimeModal(d, shift, type)` — modal edycji nadgodzin
 - `updateOvertimePreview()` — podgląd nadgodzin w modalu
 - `saveOvertimeFromModal()` — zapis nadgodzin
