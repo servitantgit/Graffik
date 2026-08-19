@@ -28,6 +28,41 @@ function renderDashboard() {
   const dayName = dayNamesFull[today.getDay()];
   const holidayName = yHolidays[m + '-' + d];
 
+  // === Shift handoff flow (first item when working day) ===
+  let reliefFlowCard = '';
+  if (!isWolne(shiftCode) && !onUrlop && typeof renderReliefTimeline === 'function') {
+    const info = getRelief(y, m, d, selectedShift, shiftCode);
+    let timelineOt = null;
+    if (!hidePrivate) {
+      const otRaw = getOvertimes(y, m, d, selectedShift);
+      const mk = (pos) => {
+        if (!otRaw[pos]) return null;
+        const cat = categorizeOvertime(y, m, d, shiftCode, pos, otRaw[pos].hours);
+        const percent = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
+        return { hours: otRaw[pos].hours, percent };
+      };
+      const before = mk('przed');
+      const after = mk('po');
+      if (before || after) timelineOt = { before, after };
+    }
+    const timelineHtml = renderReliefTimeline(
+      info,
+      y,
+      m,
+      d,
+      shiftCode,
+      selectedShift,
+      timelineOt
+    );
+    reliefFlowCard = `
+      <div class="dash-stat-card" style="grid-column:1/-1;">
+        <div class="dsc-info" style="width:100%;">
+          <div class="dsc-label">🔄 ${t('reliefFlowTitle')}</div>
+          <div class="dsc-value" style="font-weight:normal;">${timelineHtml}</div>
+        </div>
+      </div>`;
+  }
+
   let todayCard = '';
   let cardCls = '';
   if (onUrlop) {
@@ -50,7 +85,7 @@ function renderDashboard() {
     let endTxt = `${String(eh % 24).padStart(2, '0')}:00`;
     const timer = hidePrivate ? null : getLiveTimer(shiftCode, y, m, d);
 
-    // Nadgodziny - tylko gdy залогінений
+    // Nadgodziny - tylko gdy zalogowany
     let otInfo = '';
     if (!hidePrivate) {
       const otToday = getOvertimes(y, m, d, selectedShift);
@@ -124,7 +159,6 @@ function renderDashboard() {
   // Next day off — for privacy mode use factory schedule only
   let nextWolneTxt;
   if (hidePrivate) {
-    // Simple scan of factory schedule for next free day
     let found = null;
     for (let i = 0; i < 60; i++) {
       const dt = new Date(today);
@@ -144,80 +178,18 @@ function renderDashboard() {
     if (!found) nextWolneTxt = t('unknown');
     else if (found.days === 0) nextWolneTxt = `🏖️ ${t('todayLabel')}!`;
     else if (found.days === 1)
-      nextWolneTxt = `${t('tomorrow')} (${found.day} ${monthNamesShort[found.month - 1]})`;
+      nextWolneTxt = `${t('tomorrow')} (${found.day} ${monthNamesGenitive[found.month - 1]})`;
     else
-      nextWolneTxt = `${t('inDays', { n: found.days })} (${found.day} ${monthNamesShort[found.month - 1]})`;
+      nextWolneTxt = `${t('inDays', { n: found.days })} (${found.day} ${monthNamesGenitive[found.month - 1]})`;
   } else {
     const wolneInfo = daysToNextWolne(y, m, d, selectedShift);
     if (!wolneInfo) nextWolneTxt = t('unknown');
     else if (wolneInfo.days === 0) nextWolneTxt = `🏖️ ${t('todayLabel')}!`;
     else if (wolneInfo.days === 1)
-      nextWolneTxt = `${t('tomorrow')} (${wolneInfo.day} ${monthNamesShort[wolneInfo.month - 1]})`;
+      nextWolneTxt = `${t('tomorrow')} (${wolneInfo.day} ${monthNamesGenitive[wolneInfo.month - 1]})`;
     else
-      nextWolneTxt = `${t('inDays', { n: wolneInfo.days })} (${wolneInfo.day} ${monthNamesShort[wolneInfo.month - 1]})`;
+      nextWolneTxt = `${t('inDays', { n: wolneInfo.days })} (${wolneInfo.day} ${monthNamesGenitive[wolneInfo.month - 1]})`;
   }
-
-  const weekCounts = { R: 0, P: 0, N: 0, W: 0, U: 0 };
-  const weekOT = { h50: 0, h100: 0, h200: 0 };
-  const dow = today.getDay();
-  const daysToMon = dow === 0 ? 6 : dow - 1;
-  const monday = new Date(today);
-  monday.setDate(d - daysToMon);
-  for (let i = 0; i < 7; i++) {
-    const dt = new Date(monday);
-    dt.setDate(monday.getDate() + i);
-    const yy = dt.getFullYear(),
-      mm = dt.getMonth() + 1,
-      dd = dt.getDate();
-
-    if (hidePrivate) {
-      const s =
-        factorySchedule[yy] && factorySchedule[yy][mm] && factorySchedule[yy][mm][selectedShift]
-          ? factorySchedule[yy][mm][selectedShift][dd - 1]
-          : '';
-      weekCounts[isWolne(s) ? 'W' : s]++;
-    } else {
-      if (isUrlop(yy, mm, dd, selectedShift)) {
-        weekCounts.U++;
-        continue;
-      }
-      const s = getShiftAtWithPending(yy, mm, dd, selectedShift);
-      weekCounts[isWolne(s) ? 'W' : s]++;
-
-      // Nadgodziny tygodnia
-      if (!isWolne(s)) {
-        const otW = getOvertimes(yy, mm, dd, selectedShift);
-        ['przed', 'po'].forEach((pos) => {
-          if (otW[pos]) {
-            const cat = categorizeOvertime(yy, mm, dd, s, pos, otW[pos].hours);
-            weekOT.h50 += cat.h50;
-            weekOT.h100 += cat.h100;
-            weekOT.h200 += cat.h200;
-          }
-        });
-
-        // Added holiday/Sunday shift (factory day was free)
-        const factoryShift =
-          factorySchedule[yy] && factorySchedule[yy][mm] && factorySchedule[yy][mm][selectedShift]
-            ? factorySchedule[yy][mm][selectedShift][dd - 1]
-            : '';
-        const wasFactoryFree = isWolne(factoryShift);
-        if (wasFactoryFree) {
-          const isHoliday = !!yHolidays[mm + '-' + dd];
-          const dowLocal = dt.getDay();
-          const isSunday = dowLocal === 0;
-          if (isHoliday) {
-            weekOT.h200 += 8;
-          } else if (isSunday) {
-            weekOT.h100 += 8;
-          }
-        }
-      }
-    }
-  }
-  const weekScheduledHours = (weekCounts.R + weekCounts.P + weekCounts.N) * 8;
-  const weekOTTotal = hidePrivate ? 0 : weekOT.h50 + weekOT.h100 + weekOT.h200;
-  const weekHours = weekScheduledHours + weekOTTotal;
 
   const usedUrlop = hidePrivate ? 0 : countWorkingUrlops(y, selectedShift);
 
@@ -248,7 +220,6 @@ function renderDashboard() {
 
     const cls = onU ? 'U' : isWolne(s) ? 'W' : s;
     const label = onU ? '🌴' : isWolne(s) ? '—' : shiftEmoji[s] + ' ' + s;
-    // Znacznik nadgodzin — тільки для залогінених
     let otBadge = '';
     if (!hidePrivate) {
       const otChip = getOvertimes(yy, mm, dd, selectedShift);
@@ -265,7 +236,7 @@ function renderDashboard() {
     `;
   }
 
-  // Note for today — тільки коли залогінений
+  // Note for today — tylko kiedy zalogowany
   let greetingContent;
   if (hidePrivate) {
     greetingContent = `<div class="dash-greeting">${t('greeting')}</div>`;
@@ -277,7 +248,6 @@ function renderDashboard() {
       : `<div class="dash-greeting">${t('greeting')}</div>`;
   }
 
-  // Vacation stats card — hide when not logged in
   const vacationCard = hidePrivate
     ? ''
     : `
@@ -289,7 +259,6 @@ function renderDashboard() {
         </div>
       </div>`;
 
-  // Overtime month summary — hide when not logged in
   const overtimeCard =
     !hidePrivate && totalOT > 0
       ? `
@@ -309,6 +278,8 @@ function renderDashboard() {
       <div class="dash-brigade">${t('brigade')} ${selectedShift}</div>
     </div>
 
+    ${reliefFlowCard ? `<div class="dash-stats" style="margin-bottom:12px;">${reliefFlowCard}</div>` : ''}
+
     <div class="dash-today-card ${cardCls}">
       ${todayCard}
     </div>
@@ -326,13 +297,6 @@ function renderDashboard() {
         <div class="dsc-info">
           <div class="dsc-label">${t('nextDayOff')}</div>
           <div class="dsc-value">${nextWolneTxt}</div>
-        </div>
-      </div>
-      <div class="dash-stat-card">
-        <div class="dsc-icon">📊</div>
-        <div class="dsc-info">
-          <div class="dsc-label">${t('thisWeek')}</div>
-          <div class="dsc-value">${weekHours}h${weekOTTotal > 0 ? ` <small style="color:#f1c40f;">(+${weekOTTotal}h ⏱)</small>` : ''} · ${weekCounts.R}🌅 ${weekCounts.P}🌤️ ${weekCounts.N}🌙</div>
         </div>
       </div>
       ${vacationCard}
@@ -364,7 +328,6 @@ function getLiveTimer(shift, y, m, d) {
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
   // === SPECIAL CASE: night shift past midnight ===
-  // First check whether YESTERDAY had a night (N) shift that is STILL ongoing
   if (nowMinutes < 6 * 60) {
     const yesterday = new Date(now);
     yesterday.setDate(yesterday.getDate() - 1);
@@ -383,7 +346,6 @@ function getLiveTimer(shift, y, m, d) {
         return t('timerNightEndsIn', { h: Math.floor(rem / 60), m: rem % 60 });
       }
     }
-    // If yesterday wasn't a night shift (or it already ended) — continue with normal logic
   }
 
   // === NORMAL LOGIC: shift starts/is ongoing today ===
@@ -401,19 +363,16 @@ function getLiveTimer(shift, y, m, d) {
   } else if (shift === 'N') {
     startMin = 22 * 60;
     endMin = 30 * 60;
-  } // 30:00 = 06:00 the next day
-  else return null;
+  } else return null;
 
   if (ot.przed) startMin -= ot.przed.hours * 60;
   if (ot.po) endMin += ot.po.hours * 60;
 
-  // Shift is ongoing
   if (nowMinutes >= startMin && nowMinutes < endMin) {
     const rem = endMin - nowMinutes;
     return t('timerEndsIn', { h: Math.floor(rem / 60), m: rem % 60 });
   }
 
-  // Shift starts within the hour
   if (nowMinutes < startMin && startMin - nowMinutes <= 60) {
     return t('timerStartsIn', { m: startMin - nowMinutes });
   }

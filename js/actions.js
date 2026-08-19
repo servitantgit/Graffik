@@ -72,7 +72,7 @@ function addPrintHeader() {
   const header = document.createElement('div');
   header.className = 'print-header';
   const today = new Date();
-  const dateStr = `${today.getDate()} ${monthNames[today.getMonth()]} ${today.getFullYear()}`;
+  const dateStr = `${today.getDate()} ${monthNamesGenitive[today.getMonth()]} ${today.getFullYear()}`;
   const viewName =
     {
       dashboard: t('printHeaderDashboard'),
@@ -147,9 +147,9 @@ function buildShareText() {
 
   if (currentView === 'week') {
     const d = selectedDay || new Date().getDate();
-    text = `📆 ${t('viewWeek')} ${d} ${monthNames[currentMonth - 1]} ${currentYear}`;
+    text = `📆 ${t('viewWeek')} ${d} ${monthNamesGenitive[currentMonth - 1]} ${currentYear}`;
   } else if (currentView === 'month' && selectedDay && !yearMode) {
-    text = `📅 ${selectedDay} ${monthNames[currentMonth - 1]} ${currentYear}`;
+    text = `📅 ${selectedDay} ${monthNamesGenitive[currentMonth - 1]} ${currentYear}`;
   }
 
   if (currentView !== 'table') {

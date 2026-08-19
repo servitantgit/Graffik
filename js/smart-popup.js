@@ -1,8 +1,7 @@
 /* ================================================================
    GRAFIK GILLETTE - SMART-POPUP.JS
    Timeline widget renderer for relief handoff visualization
-   Matches mockup U4: D → 15 R → [OT] → A
-   Part of v3.9.0+ refactor
+   Matches mockup U4: D → [OT before] → 15 R → [OT after] → A
    ================================================================ */
 
 /**
@@ -31,7 +30,6 @@ function tlFormatWhen(year, month, day, currentYear, currentMonth, currentDay) {
       return typeof t === 'function' ? t('tlTomorrow') : 'jutro';
     }
   }
-  // Cross-month / far day: short numeric
   return day + '.' + month;
 }
 
@@ -44,10 +42,10 @@ function tlRenderNode(config) {
   const {
     type = 'shift', // 'shift' | 'ot' | 'empty' | 'self'
     brig = null,
-    shift = null, // 'R' | 'P' | 'N'
+    shift = null,
     label = '',
-    value = null, // OT hours
-    otPercent = null, // 50 | 100 | 200
+    value = null,
+    otPercent = null,
     isSelf = false,
   } = config;
 
@@ -65,7 +63,6 @@ function tlRenderNode(config) {
     content = `<div class="tl-value">${value}h</div>`;
     if (otPercent != null) content += `<div class="tl-label">+${otPercent}%</div>`;
   } else if (type === 'self' || isSelf) {
-    // Self = current day: day number as main, shift icon + shift code as label
     if (shift) classes.push('tl-shift-' + shift);
     classes.push('tl-self');
     content = `<div class="tl-brig">${brig != null ? brig : '—'}</div>`;
@@ -74,7 +71,6 @@ function tlRenderNode(config) {
     }
     if (label) content += `<div class="tl-label">${label}</div>`;
   } else {
-    // Prev / next brigade node
     if (shift) classes.push('tl-shift-' + shift);
     content = `<div class="tl-brig">${brig || '—'}</div>`;
     if (shift && TL_SHIFT_ICONS[shift]) {
@@ -95,15 +91,17 @@ function tlRenderArrow() {
 
 /**
  * Main renderer: Timeline Widget matching mockup U4
- * Flow: [prevBrig] → [dayNumber + shift] → [OT?] → [nextBrig]
+ * Flow: [prevBrig] → [OT przed?] → [dayNumber + shift] → [OT po?] → [nextBrig]
  *
  * @param {Object} info - from getRelief()
  * @param {number} currentYear
  * @param {number} currentMonth
  * @param {number} currentDay
  * @param {string} currentShift - 'R' | 'P' | 'N'
- * @param {string} currentBrigade - 'A' | 'B' | 'C' | 'D' (unused for self display; kept for API)
- * @param {Object|null} otData - { hours: number, percent: 50|100|200 } or null
+ * @param {string} currentBrigade - kept for API compatibility
+ * @param {Object|null} otData - either:
+ *   legacy: { hours, percent }  → placed AFTER self
+ *   preferred: { before: {hours,percent}|null, after: {hours,percent}|null }
  * @returns {string} HTML
  */
 function renderReliefTimeline(
@@ -115,9 +113,22 @@ function renderReliefTimeline(
   currentBrigade,
   otData
 ) {
+  // Normalize OT payload
+  let otBefore = null;
+  let otAfter = null;
+  if (otData) {
+    if (otData.before || otData.after) {
+      otBefore = otData.before || null;
+      otAfter = otData.after || null;
+    } else if (otData.hours > 0) {
+      // Legacy single blob → after (old behaviour)
+      otAfter = { hours: otData.hours, percent: otData.percent || 200 };
+    }
+  }
+
   const parts = [];
 
-  // === PREV NODE (brigade that handed over) ===
+  // === PREV NODE ===
   if (info && info.prevBrig) {
     parts.push(
       tlRenderNode({
@@ -143,9 +154,21 @@ function renderReliefTimeline(
     );
   }
 
+  // === OT BEFORE SHIFT (przed) — visually before the day node ===
+  if (otBefore && otBefore.hours > 0) {
+    parts.push(tlRenderArrow());
+    parts.push(
+      tlRenderNode({
+        type: 'ot',
+        value: otBefore.hours,
+        otPercent: otBefore.percent || 200,
+      })
+    );
+  }
+
   parts.push(tlRenderArrow());
 
-  // === SELF NODE (day being viewed) — day number + shift type ===
+  // === SELF NODE (day being viewed) ===
   parts.push(
     tlRenderNode({
       type: 'self',
@@ -156,21 +179,21 @@ function renderReliefTimeline(
     })
   );
 
-  // === OT NODE (optional, between self and next) ===
-  if (otData && otData.hours > 0) {
+  // === OT AFTER SHIFT (po) — visually after the day node ===
+  if (otAfter && otAfter.hours > 0) {
     parts.push(tlRenderArrow());
     parts.push(
       tlRenderNode({
         type: 'ot',
-        value: otData.hours,
-        otPercent: otData.percent || 200,
+        value: otAfter.hours,
+        otPercent: otAfter.percent || 200,
       })
     );
   }
 
   parts.push(tlRenderArrow());
 
-  // === NEXT NODE (brigade that takes over) ===
+  // === NEXT NODE ===
   if (info && info.nextBrig) {
     parts.push(
       tlRenderNode({

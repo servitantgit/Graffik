@@ -14,9 +14,15 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
   `prevBrig → dzień+typ zmiany → [OT h +%] → nextBrig` (dzień jako węzeł self, nie litera brygady)
 - OT z przed/po wpinany w timeline gdy istnieje
 - i18n: `reliefFlowTitle`, `tlYesterday` / `tlToday` / `tlTomorrow` (pl/en/uk)
+- **Timeline OT order** — OT *przed* appears before the day/shift node, OT *po* after it
+- **Info panel** — OT before/after cards ordered around the shift block; monthly OT summary moved to end of month view
+- **Dashboard** — shift handoff flow as first item; removed unused “This week” block
+- **Dates** — day+month strings use genitive month names (uk: «18 липня», pl: «18 lipca»)
 
 ### Usunięte
 - Cell relief popups (`addReliefPopups`) — funkcjonalność w timeline widget info-panel
+- Cell overtime detail popups (`ot-detail-popup`) — details in info-panel / timeline; ⏱ marker kept
+- Dashboard “This week” stats block and related dead code
 
 ### Naprawione
 - CSS `smart-popup.css`: uszkodzony komentarz i `@keyframes` (ZWSP) — animacja strzałek działa

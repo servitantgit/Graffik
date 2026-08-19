@@ -165,7 +165,7 @@ function renderYearView() {
       )
         el.classList.add('mToday');
       if (yHolidays[m + '-' + d]) el.classList.add('mHoliday');
-      el.title = `${d} ${monthNames[m - 1]}: ${onU ? '🌴 ' + t('vacation') : shiftFullName[s] || t('dayOff')}`;
+      el.title = `${d} ${monthNamesGenitive[m - 1]}: ${onU ? '🌴 ' + t('vacation') : shiftFullName[s] || t('dayOff')}`;
       el.onclick = (ev) => {
         ev.stopPropagation();
         if (editMode) {
@@ -332,7 +332,7 @@ function buildMonthTable(month) {
       )
         td.classList.add('today-col');
       if (brig === selectedShift) td.classList.add('my-brigade');
-      td.title = `${brig} • ${d} ${monthNames[month - 1]}: ${onU ? '🌴' : shiftFullName[s] || t('dayOff')}`;
+      td.title = `${brig} • ${d} ${monthNamesGenitive[month - 1]}: ${onU ? '🌴' : shiftFullName[s] || t('dayOff')}`;
       td.onclick = () => {
         if (editMode) {
           // Palette URLOP: toggle vacation

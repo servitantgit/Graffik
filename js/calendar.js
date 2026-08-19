@@ -209,26 +209,12 @@ function renderCalendar(direction) {
         }
 
         // Corner clock — palette colors: 50 gray, 100 purple, 200 red
+        // Detail popup removed — OT details live in info-panel / timeline
         const marker = document.createElement('div');
         marker.className = `ot-marker ot-${maxRate}`;
         marker.textContent = '⏱';
         marker.title = parts.join(' · ');
         cell.appendChild(marker);
-
-        // Third popup — same show rules as relief (no extra click)
-        const otPop = document.createElement('div');
-        otPop.className = `ot-detail-popup ot-${maxRate}`;
-        const actualTime = getActualWorkTime(
-          currentYear,
-          currentMonth,
-          d,
-          selectedShift,
-          shiftCode
-        );
-        const lines = parts.map((p) => `<div class="rp-info">${p}</div>`).join('');
-        const timeLine = actualTime ? `<div class="rp-info otp-time">${actualTime}</div>` : '';
-        otPop.innerHTML = lines + timeLine;
-        cell.appendChild(otPop);
       }
     }
 
@@ -350,7 +336,7 @@ function openAddShiftModal(day) {
 
   const body = `
     <div style="padding:10px 14px; background:var(--bg-cell); border-radius:10px; margin-bottom:15px; font-size:13px;">
-      <b>📅 ${day} ${monthNames[currentMonth - 1]} ${currentYear}</b>
+      <b>📅 ${day} ${monthNamesGenitive[currentMonth - 1]} ${currentYear}</b>
       ${hasExistingShift ? `<div style="margin-top:6px; font-size:12px; opacity:0.85;">${t('addShiftCurrent') || 'Currently'}: <b>${existingShift}</b></div>` : ''}
       ${rateHtml}
     </div>
@@ -399,7 +385,7 @@ function openOvertimeModal(day, shift, position, existing) {
     `${t('otTitle')} ${posArrow} ${posLabel} ${shift}`;
 
   document.getElementById('otContext').innerHTML = `
-    <b>${t('infoDate')}</b> ${day} ${monthNames[currentMonth - 1]} ${currentYear}<br>
+    <b>${t('infoDate')}</b> ${day} ${monthNamesGenitive[currentMonth - 1]} ${currentYear}<br>
     <b>${t('infoShiftLabel')}</b> ${shift} (${shiftTimeStr})<br>
     <b>${t('infoPosition')}</b> ${posArrow} ${posLabel}
   `;
@@ -557,8 +543,11 @@ function renderMonthOvertimeSummary() {
       ${t('otMonthTotal')}: <b>${totalH}h</b> ${t('otMonthWorked')} · 💰 <b>${paid}h</b> ${t('otMonthPaid')}
     </div>
   `;
+  // Place monthly OT summary at the end of the month view (after info panel)
   const infoPanel = document.getElementById('infoPanel');
-  infoPanel.parentNode.insertBefore(el, infoPanel);
+  if (infoPanel && infoPanel.parentNode) {
+    infoPanel.parentNode.insertBefore(el, infoPanel.nextSibling);
+  }
 }
 
 /* === PROGRESS === */
@@ -607,7 +596,7 @@ function renderInfo() {
         ? factorySchedule[currentYear][currentMonth][selectedShift][selectedDay - 1]
         : '';
   }
-  const dateStr = `${selectedDay} ${monthNames[currentMonth - 1]} ${currentYear}`;
+  const dateStr = `${selectedDay} ${monthNamesGenitive[currentMonth - 1]} ${currentYear}`;
   const dowIdx = new Date(currentYear, currentMonth - 1, selectedDay).getDay();
   const dow = dayNamesFull[dowIdx];
   const yHolidays = buildHolidays(currentYear);
@@ -646,18 +635,18 @@ function renderInfo() {
   if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
     const w = daysToNextWolne(currentYear, currentMonth, selectedDay, selectedShift);
     if (w && w.days > 0) {
-      const wd = `${w.day} ${monthNames[w.month - 1]}${w.year !== currentYear ? ' ' + w.year : ''}`;
+      const wd = `${w.day} ${monthNamesGenitive[w.month - 1]}${w.year !== currentYear ? ' ' + w.year : ''}`;
       const label = w.days === 1 ? t('tomorrow') : t('inDays', { n: w.days });
       toWolneInfo = `<div class="info-card"><div class="label">${t('infoNextDayOff')}</div><div class="value">${label} (${wd})</div></div>`;
     }
   }
 
-  // Overtime for the day — show ALL hours with a rate (including an added holiday/Sunday shift)
-  let overtimeInfo = '';
+  // Overtime for the day — split BEFORE / AFTER shift for visual order in panel
+  let overtimeBeforeInfo = '';
+  let overtimeAfterInfo = '';
   if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
     const otData = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
 
-    // Check whether this is an added holiday/Sunday shift (factory day was free)
     const factoryShift =
       factorySchedule[currentYear] &&
       factorySchedule[currentYear][currentMonth] &&
@@ -671,18 +660,50 @@ function renderInfo() {
     const isAddedPremiumShift = wasFactoryFree && (isHoliday || isSunday);
     const shiftRate = isHoliday ? '200' : isSunday ? '100' : null;
 
-    // Zbieramy wszystkie pozycje
-    let items = '';
-    let totalHours = 0;
-    let totalPaid = 0;
+    function buildOtItem(pos, hours, note) {
+      const { from, to } = calcOvertimeTime(shiftCode, pos, hours);
+      const cat = categorizeOvertime(
+        currentYear,
+        currentMonth,
+        selectedDay,
+        shiftCode,
+        pos,
+        hours
+      );
+      const dom = cat.h200 > 0 ? '200' : cat.h100 > 0 ? '100' : '50';
+      const label = pos === 'przed' ? t('otWeekBefore') : t('otWeekAfter');
+      const multiplier = dom === '200' ? 3 : dom === '100' ? 2 : 1.5;
+      const html = `
+        <div class="ot-list-item">
+          <span class="oti-badge b-${dom}">+${dom}%</span>
+          <div class="oti-details">
+            <div class="oti-time">${label}: ${hours}h · ${formatTimeRange(from, to)}</div>
+            ${note ? `<div class="oti-note">📝 ${escapeHtml(note)}</div>` : ''}
+          </div>
+        </div>
+      `;
+      return { html, hours, paid: hours * multiplier, percent: Number(dom) };
+    }
 
-    // 1. Added holiday/Sunday shift — as the first entry
+    let totalOtHours = 0;
+    let totalOtPaid = 0;
+
+    // BEFORE shift (przed) — card appears above the shift block
+    if (otData.przed) {
+      const r = buildOtItem('przed', otData.przed.hours, otData.przed.note);
+      totalOtHours += r.hours;
+      totalOtPaid += r.paid;
+      overtimeBeforeInfo = `<div class="info-card info-section-ot" style="grid-column:1/-1;"><div class="label">⏱ ${t('otWeekBefore')}</div><div class="value">${r.html}</div></div>`;
+    }
+
+    // AFTER shift (po) + optional added holiday/Sunday whole-shift OT
+    let afterItems = '';
     if (isAddedPremiumShift && shiftRate) {
       const [sh, eh] = shiftHours[shiftCode];
       const shiftTimeStr = `${String(sh).padStart(2, '0')}:00 – ${String(eh % 24).padStart(2, '0')}:00`;
       const shiftLabel = isHoliday ? t('labelHoliday') : t('labelSunday');
       const multiplier = shiftRate === '200' ? 3 : 2;
-      items += `
+      afterItems += `
         <div class="ot-list-item" style="border-left: 3px solid ${shiftRate === '200' ? '#c0392b' : '#8e44ad'};">
           <span class="oti-badge b-${shiftRate}">+${shiftRate}%</span>
           <div class="oti-details">
@@ -690,47 +711,26 @@ function renderInfo() {
           </div>
         </div>
       `;
-      totalHours += 8;
-      totalPaid += 8 * multiplier;
+      totalOtHours += 8;
+      totalOtPaid += 8 * multiplier;
     }
-
-    // 2. Standardowe nadgodziny PRZED/PO
-    ['przed', 'po'].forEach((pos) => {
-      if (!otData[pos]) return;
-      const { from, to } = calcOvertimeTime(shiftCode, pos, otData[pos].hours);
-      const cat = categorizeOvertime(
-        currentYear,
-        currentMonth,
-        selectedDay,
-        shiftCode,
-        pos,
-        otData[pos].hours
-      );
-      const dom = cat.h200 > 0 ? '200' : cat.h100 > 0 ? '100' : '50';
-      const label = pos === 'przed' ? t('otWeekBefore') : t('otWeekAfter');
-      const multiplier = dom === '200' ? 3 : dom === '100' ? 2 : 1.5;
-      items += `
-        <div class="ot-list-item">
-          <span class="oti-badge b-${dom}">+${dom}%</span>
-          <div class="oti-details">
-            <div class="oti-time">${label}: ${otData[pos].hours}h · ${formatTimeRange(from, to)}</div>
-            ${otData[pos].note ? `<div class="oti-note">📝 ${escapeHtml(otData[pos].note)}</div>` : ''}
-          </div>
-        </div>
-      `;
-      totalHours += otData[pos].hours;
-      totalPaid += otData[pos].hours * multiplier;
-    });
-
-    // Only show the block if there are any rated entries
-    if (items) {
-      const summary =
-        totalHours > 0
-          ? `<div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border-cell); font-weight:700; text-align:center;">
-             ${t('otTodaySummary', { h: totalHours, paid: totalPaid })}
+    if (otData.po) {
+      const r = buildOtItem('po', otData.po.hours, otData.po.note);
+      afterItems += r.html;
+      totalOtHours += r.hours;
+      totalOtPaid += r.paid;
+    }
+    const daySummary =
+      totalOtHours > 0
+        ? `<div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border-cell); font-weight:700; text-align:center;">
+             ${t('otTodaySummary', { h: totalOtHours, paid: totalOtPaid })}
            </div>`
-          : '';
-      overtimeInfo = `<div class="info-card info-section-ot" style="grid-column:1/-1;"><div class="label">${t('infoOvertime')}</div><div class="value">${items}${summary}</div></div>`;
+        : '';
+    if (afterItems) {
+      overtimeAfterInfo = `<div class="info-card info-section-ot" style="grid-column:1/-1;"><div class="label">⏱ ${t('infoOvertime')}</div><div class="value">${afterItems}${daySummary}</div></div>`;
+    } else if (otData.przed) {
+      const r = buildOtItem('przed', otData.przed.hours, otData.przed.note);
+      overtimeBeforeInfo = `<div class="info-card info-section-ot" style="grid-column:1/-1;"><div class="label">⏱ ${t('otWeekBefore')}</div><div class="value">${r.html}${daySummary}</div></div>`;
     }
   }
 
@@ -748,7 +748,8 @@ function renderInfo() {
       <div class="info-grid">
         <div class="info-card"><div class="label">${t('infoStatus')}</div><div class="value">${t('infoFree')}</div></div>
         ${cycleInfo}
-        ${overtimeInfo}
+        ${overtimeBeforeInfo}
+        ${overtimeAfterInfo}
         ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
       </div>`;
   } else {
@@ -759,18 +760,15 @@ function renderInfo() {
         return ', ' + t('dayBefore');
       if (y === currentYear && m === currentMonth && d === selectedDay + 1)
         return ', ' + t('dayAfter');
-      return `, ${d} ${monthNames[m - 1]}${y !== currentYear ? ' ' + y : ''}`;
+      return `, ${d} ${monthNamesGenitive[m - 1]}${y !== currentYear ? ' ' + y : ''}`;
     }
 
-    // Build optional OT summary for timeline (przed + po only)
+    // Timeline OT: przed before self, po after self
     let timelineOt = null;
     if (!hidePrivate) {
       const otRaw = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
-      let otHours = 0;
-      let otPercent = 50;
-      ['przed', 'po'].forEach((pos) => {
-        if (!otRaw[pos]) return;
-        otHours += otRaw[pos].hours;
+      const mk = (pos) => {
+        if (!otRaw[pos]) return null;
         const cat = categorizeOvertime(
           currentYear,
           currentMonth,
@@ -779,13 +777,15 @@ function renderInfo() {
           pos,
           otRaw[pos].hours
         );
-        const r = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
-        if (r > otPercent) otPercent = r;
-      });
-      if (otHours > 0) timelineOt = { hours: otHours, percent: otPercent };
+        const percent = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
+        return { hours: otRaw[pos].hours, percent };
+      };
+      const before = mk('przed');
+      const after = mk('po');
+      if (before || after) timelineOt = { before, after };
     }
 
-    // Timeline widget: prev → day+shift → [OT] → next  (mockup U4)
+    // Timeline: prev → [OT przed] → day+shift → [OT po] → next
     let reliefCard;
     if (typeof renderReliefTimeline === 'function') {
       const timelineHtml = renderReliefTimeline(
@@ -804,7 +804,6 @@ function renderInfo() {
       </div>
     `;
     } else {
-      // Fallback: classic prev/next display
       const prevPart = info.prevBrig
         ? `<span class="badge ${info.prevBrig}">${info.prevBrig}</span> <small style="opacity:0.85;">${info.prevType}${formatWhen(info.prevYear, info.prevMonth, info.prevDay)}</small>`
         : '<em>—</em>';
@@ -829,15 +828,17 @@ function renderInfo() {
     `;
     }
 
+    // Order: OT before → shift → flow → live → next day off → OT after → note
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
       ${urlopStats}
       <div class="info-grid">
+        ${overtimeBeforeInfo}
         <div class="info-card"><div class="label">${t('infoShift')}</div><div class="value"><span class="shift-chip ${shiftCode}">${shiftEmoji[shiftCode]} ${shiftCode}</span> ${shiftFullName[shiftCode]}</div></div>
         ${reliefCard}
         ${liveInfo}
         ${cycleInfo}
         ${toWolneInfo}
-        ${overtimeInfo}
+        ${overtimeAfterInfo}
         ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
       </div>`;
   }
