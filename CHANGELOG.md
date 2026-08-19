@@ -21,6 +21,7 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 - **Info panel (month)** — removed redundant “current shift” card; vacation is display-only used/remaining at end
 - **Until day off** — shows remaining day/night shifts (or “tomorrow”), not a calendar date
 - Removed cell `+200%` / `+100%` rate badge stripe on dates
+- **Info panel** — removed detailed OT cards (before/after + daily summary); OT is shown only in the handoff flow
 
 
 ### Usunięte

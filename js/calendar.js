@@ -616,99 +616,6 @@ function renderInfo() {
     }
   }
 
-  // Overtime for the day — split BEFORE / AFTER shift for visual order in panel
-  let overtimeBeforeInfo = '';
-  let overtimeAfterInfo = '';
-  if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
-    const otData = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
-
-    const factoryShift =
-      factorySchedule[currentYear] &&
-      factorySchedule[currentYear][currentMonth] &&
-      factorySchedule[currentYear][currentMonth][selectedShift]
-        ? factorySchedule[currentYear][currentMonth][selectedShift][selectedDay - 1]
-        : '';
-    const wasFactoryFree = isWolne(factoryShift);
-    const isHoliday = !!yHolidays[currentMonth + '-' + selectedDay];
-    const dowLocal = new Date(currentYear, currentMonth - 1, selectedDay).getDay();
-    const isSunday = dowLocal === 0;
-    const isAddedPremiumShift = wasFactoryFree && (isHoliday || isSunday);
-    const shiftRate = isHoliday ? '200' : isSunday ? '100' : null;
-
-    function buildOtItem(pos, hours, note) {
-      const { from, to } = calcOvertimeTime(shiftCode, pos, hours);
-      const cat = categorizeOvertime(
-        currentYear,
-        currentMonth,
-        selectedDay,
-        shiftCode,
-        pos,
-        hours
-      );
-      const dom = cat.h200 > 0 ? '200' : cat.h100 > 0 ? '100' : '50';
-      const label = pos === 'przed' ? t('otWeekBefore') : t('otWeekAfter');
-      const multiplier = dom === '200' ? 3 : dom === '100' ? 2 : 1.5;
-      const html = `
-        <div class="ot-list-item">
-          <span class="oti-badge b-${dom}">+${dom}%</span>
-          <div class="oti-details">
-            <div class="oti-time">${label}: ${hours}h · ${formatTimeRange(from, to)}</div>
-            ${note ? `<div class="oti-note">📝 ${escapeHtml(note)}</div>` : ''}
-          </div>
-        </div>
-      `;
-      return { html, hours, paid: hours * multiplier, percent: Number(dom) };
-    }
-
-    let totalOtHours = 0;
-    let totalOtPaid = 0;
-
-    // BEFORE shift (przed) — card appears above the shift block
-    if (otData.przed) {
-      const r = buildOtItem('przed', otData.przed.hours, otData.przed.note);
-      totalOtHours += r.hours;
-      totalOtPaid += r.paid;
-      overtimeBeforeInfo = `<div class="info-card info-section-ot" style="grid-column:1/-1;"><div class="label">⏱ ${t('otWeekBefore')}</div><div class="value">${r.html}</div></div>`;
-    }
-
-    // AFTER shift (po) + optional added holiday/Sunday whole-shift OT
-    let afterItems = '';
-    if (isAddedPremiumShift && shiftRate) {
-      const [sh, eh] = shiftHours[shiftCode];
-      const shiftTimeStr = `${String(sh).padStart(2, '0')}:00 – ${String(eh % 24).padStart(2, '0')}:00`;
-      const shiftLabel = isHoliday ? t('labelHoliday') : t('labelSunday');
-      const multiplier = shiftRate === '200' ? 3 : 2;
-      afterItems += `
-        <div class="ot-list-item" style="border-left: 3px solid ${shiftRate === '200' ? '#c0392b' : '#8e44ad'};">
-          <span class="oti-badge b-${shiftRate}">+${shiftRate}%</span>
-          <div class="oti-details">
-            <div class="oti-time"><b>${t('shift')} ${shiftCode}</b>: 8h · ${shiftTimeStr} <small>(${shiftLabel})</small></div>
-          </div>
-        </div>
-      `;
-      totalOtHours += 8;
-      totalOtPaid += 8 * multiplier;
-    }
-    if (otData.po) {
-      const r = buildOtItem('po', otData.po.hours, otData.po.note);
-      afterItems += r.html;
-      totalOtHours += r.hours;
-      totalOtPaid += r.paid;
-    }
-    const daySummary =
-      totalOtHours > 0
-        ? `<div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border-cell); font-weight:700; text-align:center;">
-             ${t('otTodaySummary', { h: totalOtHours, paid: totalOtPaid })}
-           </div>`
-        : '';
-    if (afterItems) {
-      overtimeAfterInfo = `<div class="info-card info-section-ot" style="grid-column:1/-1;"><div class="label">⏱ ${t('infoOvertime')}</div><div class="value">${afterItems}${daySummary}</div></div>`;
-    } else if (otData.przed) {
-      const r = buildOtItem('przed', otData.przed.hours, otData.przed.note);
-      overtimeBeforeInfo = `<div class="info-card info-section-ot" style="grid-column:1/-1;"><div class="label">⏱ ${t('otWeekBefore')}</div><div class="value">${r.html}${daySummary}</div></div>`;
-    }
-  }
-
   if (onUrlop) {
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
       <div class="info-grid">
@@ -721,9 +628,7 @@ function renderInfo() {
       <div class="info-grid">
         <div class="info-card"><div class="label">${t('infoStatus')}</div><div class="value">${t('infoFree')}</div></div>
         ${cycleInfo}
-        ${overtimeBeforeInfo}
-        ${overtimeAfterInfo}
-        ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
+                        ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
         ${urlopStats}
       </div>`;
   } else {
@@ -802,16 +707,14 @@ function renderInfo() {
     `;
     }
 
-    // Order: OT before → flow → live → next day off → OT after → note → vacation
+    // Order: flow → live → next day off → note → vacation
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
       <div class="info-grid">
-        ${overtimeBeforeInfo}
-        ${reliefCard}
+                ${reliefCard}
         ${liveInfo}
         ${cycleInfo}
         ${toWolneInfo}
-        ${overtimeAfterInfo}
-        ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
+                ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
         ${urlopStats}
       </div>`;
   }
