@@ -79,21 +79,22 @@
   opacity: 0.85;
   margin-top: 3px;
 }
-.week-day-cell .wdc-shift.R {
-  background: linear-gradient(135deg, var(--color-R), var(--color-R-border));
-}
-.week-day-cell .wdc-shift.P {
-  background: linear-gradient(135deg, var(--color-P), var(--color-P-border));
-}
-.week-day-cell .wdc-shift.N {
-  background: var(--color-N-grad);
-}
-.week-day-cell .wdc-shift.W {
-  background: var(--color-W);
-  color: var(--color-W-text);
-}
+.week-day-cell .wdc-shift.R,
+.week-day-cell .wdc-shift.P,
+.week-day-cell .wdc-shift.N,
+.week-day-cell .wdc-shift.W,
 .week-day-cell .wdc-shift.U {
-  background: var(--color-U-grad);
+  background: transparent;
+  color: var(--text-main);
+}
+.week-day-cell .wdc-shift.R { color: var(--color-R); }
+.week-day-cell .wdc-shift.P { color: var(--color-P); }
+.week-day-cell .wdc-shift.N { color: var(--color-N); }
+.week-day-cell .wdc-shift.W { color: var(--color-W-text); }
+.week-day-cell .wdc-shift.U { color: #d97706; }
+.week-day-cell .wdc-shift .wdc-time {
+  color: var(--text-muted);
+  opacity: 1;
 }
 .week-day-cell.weekend .wdc-day {
   color: #c0392b;
@@ -452,4 +453,28 @@ body.edit-active .brigade-table td.tc:hover {
 }
 .mini-weekday {
   color: var(--text-muted);
+}
+
+
+/* Year: weekend columns more visible */
+.mini-weekday.mini-weekend {
+  color: #f87171;
+  font-weight: 800;
+}
+.mini-day.mWeekend {
+  box-shadow: inset 0 0 0 1.5px rgba(239, 68, 68, 0.85);
+}
+.mini-day.mW.mWeekend {
+  background: rgba(239, 68, 68, 0.18);
+  color: #fca5a5;
+  text-shadow: none;
+}
+body:not(.theme-dark) .mini-day.mW.mWeekend {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+.mini-day.mWeekend:not(.mW):not(.mE) {
+  /* working weekend still has shift color + red ring */
+  outline: 1.5px solid rgba(239, 68, 68, 0.9);
+  outline-offset: -1px;
 }

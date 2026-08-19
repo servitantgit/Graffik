@@ -205,45 +205,64 @@ body.edit-active .day-cell:not(.empty):hover {
   transform: scale(1.04);
 }
 
-.day-cell.cell-R {
-  background: var(--color-R);
-  color: #fff;
-  border-color: var(--color-R-border);
-}
-.day-cell.cell-P {
-  background: var(--color-P);
-  color: #fff;
-  border-color: var(--color-P-border);
-}
-.day-cell.cell-N {
-  background: var(--color-N-grad);
-  color: #fff;
-  border-color: var(--color-N-border);
-}
-.day-cell.cell-N::after {
-  content: '✦';
-  position: absolute;
-  top: 4px;
-  right: 6px;
-  font-size: 8px;
-  color: rgba(255, 255, 255, 0.4);
-}
+/* Neutral body + factory-color strip at bottom (same R/P/N palette) */
+.day-cell.cell-R,
+.day-cell.cell-P,
+.day-cell.cell-N,
 .day-cell.cell-W {
-  background: var(--color-W);
-  color: var(--color-W-text);
-  border-color: var(--color-W-border);
+  background: var(--bg-cell);
+  color: var(--text-main);
+  border-color: var(--border-cell);
+  box-shadow: none;
 }
+.day-cell.cell-R::after,
+.day-cell.cell-P::after,
+.day-cell.cell-N::after,
+.day-cell.cell-W::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 3px;
+  height: 4px;
+  border-radius: 3px;
+  pointer-events: none;
+}
+.day-cell.cell-R::after { background: var(--color-R); }
+.day-cell.cell-P::after { background: var(--color-P); }
+.day-cell.cell-N::after { background: var(--color-N); }
+.day-cell.cell-W::after { background: var(--color-W-border); opacity: 0.5; }
+.day-cell.cell-R .day-shift { color: var(--color-R); font-weight: 700; }
+.day-cell.cell-P .day-shift { color: var(--color-P); font-weight: 700; }
+.day-cell.cell-N .day-shift { color: var(--color-N); font-weight: 700; }
+.day-cell.cell-W .day-shift { color: var(--color-W-text); }
 .day-cell.holiday.cell-W {
-  background: #ffe0e0;
-  color: #c0392b;
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+body:not(.theme-dark) .day-cell.holiday.cell-W {
+  background: #fee2e2;
+  color: #b91c1c;
   border-color: #f5b7b1;
 }
 
 .day-cell.urlop {
-  background: var(--color-U-grad) !important;
-  color: #fff !important;
-  border-color: #075985 !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  background: var(--bg-cell) !important;
+  color: var(--text-main) !important;
+  border-color: var(--border-cell) !important;
+  text-shadow: none !important;
+}
+.day-cell.urlop::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 3px;
+  height: 4px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #d97706, #0e7490);
+  pointer-events: none;
 }
 .day-cell.urlop-icon {
   position: absolute;

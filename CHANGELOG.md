@@ -25,6 +25,7 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 - **Flow modes** — segment «Handoff | Until free»: cycle strip shows own shifts until day off; separate «До вихідного» card removed
 - **Visual polish** — table date headers neutral gray (not blue≈N); weekend/holiday headers use accent line; dashboard hero neutral; week cards top strip; year titles neutral. Shift R/P/N colors unchanged (factory palette)
 - **Week view** — tap day opens detail panel (flow handoff/cycle, live timer, notes) instead of jumping to month calendar
+- **Calm UI (mockup)** — month cells: neutral body + R/P/N color strip; week: top strip + neutral body (shift text in factory colors); dashboard chips: quiet + color dots; year: weekend columns/days highlighted (red ring / tint for free weekends)
 
 
 ### Usunięte

@@ -311,3 +311,32 @@ body:not(.theme-dark) .dash-hero {
   font-weight: 800;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
+
+/* Quiet chips: neutral body, factory color as dot */
+.dash-day-chip.chip-quiet {
+  background: var(--bg-controls) !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--border-cell);
+}
+.dash-day-chip.chip-quiet .ddc-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+  background: var(--text-muted);
+}
+.dash-day-chip.chip-quiet.chip-R .ddc-dot { background: var(--color-R); }
+.dash-day-chip.chip-quiet.chip-P .ddc-dot { background: var(--color-P); }
+.dash-day-chip.chip-quiet.chip-N .ddc-dot { background: var(--color-N); }
+.dash-day-chip.chip-quiet.chip-W .ddc-dot { background: #64748b; }
+.dash-day-chip.chip-quiet.chip-U .ddc-dot { background: #d97706; }
+.dash-day-chip.chip-quiet .ddc-day,
+.dash-day-chip.chip-quiet .ddc-shift {
+  opacity: 1;
+  color: var(--text-muted);
+}
+.dash-day-chip.chip-quiet .ddc-date {
+  color: var(--text-main);
+}
