@@ -1,8 +1,9 @@
-/ ================================================================*
-GRAFIK GILLETTE - SMART-POPUP.CSS
-Timeline widget for relief handoff visualization in info-panel
-Part of modular CSS split (v3.9.0)
-*================================================================ /
+/* ================================================================
+   GRAFIK GILLETTE - SMART-POPUP.CSS
+   Timeline widget for relief handoff visualization in info-panel
+   Matches mockup U4 (Flow передачі зміни)
+   Part of modular CSS split (v3.9.0+)
+   ================================================================ */
 
 /* === Timeline Widget Container === */
 .timeline-widget {
@@ -50,14 +51,14 @@ Part of modular CSS split (v3.9.0)
   border: 1px solid var(--color-N-border);
 }
 
-/* Self node (current day, larger) */
+/* Self node (current day, slightly larger + highlight border) */
 .tl-node.tl-self {
   min-width: 54px;
   padding: 7px 10px;
   border: 2px solid rgba(255, 255, 255, 0.4);
 }
 
-/* OT node (red gradient) */
+/* OT node (red gradient by default / rate variants) */
 .tl-node.tl-ot {
   background: linear-gradient(135deg, #c0392b, #922b21);
   border: 1px solid #922b21;
@@ -118,7 +119,7 @@ Part of modular CSS split (v3.9.0)
   animation: tl-arrow-pulse 2s ease-in-out infinite;
 }
 
-@‌keyframes tl-arrow-pulse {
+@keyframes tl-arrow-pulse {
   0%,
   100% {
     opacity: 0.5;
@@ -144,7 +145,7 @@ Part of modular CSS split (v3.9.0)
 }
 
 /* === Responsive: Mobile === */
-@‌media (max-width: 480px) {
+@media (max-width: 480px) {
   .timeline-widget {
     gap: 4px;
     padding: 6px 2px;
@@ -181,7 +182,7 @@ Part of modular CSS split (v3.9.0)
   }
 }
 
-@‌media (max-width: 380px) {
+@media (max-width: 380px) {
   .timeline-widget {
     gap: 3px;
   }
