@@ -119,15 +119,25 @@
   text-align: center;
   font-weight: bold;
   padding: 6px;
-  background: var(--text-header);
-  color: #fff;
+  background: linear-gradient(180deg, #4b5563, #374151);
+  color: #f3f4f6;
   border-radius: 6px;
   font-size: 13px;
 }
+body:not(.theme-dark) .day-header {
+  background: linear-gradient(180deg, #e5e7eb, #d1d5db);
+  color: #1f2937;
+}
 .day-header.weekend {
-  background: linear-gradient(135deg, #c0392b, #922b21);
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(180deg, #4b5563, #374151);
+  color: #fca5a5;
+  box-shadow: inset 0 -2px 0 #ef4444;
+  text-shadow: none;
+}
+body:not(.theme-dark) .day-header.weekend {
+  background: linear-gradient(180deg, #e5e7eb, #d1d5db);
+  color: #b91c1c;
+  box-shadow: inset 0 -2px 0 #ef4444;
 }
 
 .day-cell {
@@ -264,12 +274,16 @@ body:not(.theme-dark) .day-cell.holiday.cell-W {
   background: linear-gradient(90deg, #d97706, #0e7490);
   pointer-events: none;
 }
-.day-cell.urlop-icon {
-  position: absolute;
-  top: 3px;
-  right: 4px;
-  font-size: 14px;
-  z-index: 2;
+.day-cell .urlop-icon {
+  display: none; /* legacy — urlop is bottom day-shift */
+}
+.day-shift.day-shift-urlop {
+  color: #d97706;
+  font-size: 22px;
+}
+.day-shift.day-shift-urlop .shift-emoji {
+  font-size: 20px;
+  opacity: 1;
 }
 
 .day-cell.cycle-start {
@@ -600,4 +614,43 @@ small {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+/* Stable cell layout: date top-left, marker bottom-center */
+.day-cell:not(.empty) {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+}
+.day-cell .day-num {
+  align-self: flex-start;
+  margin: 0;
+  padding: 0;
+}
+.day-cell .day-shift {
+  align-self: center;
+  margin-top: auto;
+  margin-bottom: 6px; /* room above color strip */
+  min-height: 1.2em;
+}
+.day-cell .ot-badge,
+.day-cell .ot-marker {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 3;
+}
+
+.day-cell .day-note {
+  position: absolute;
+  top: 4px;
+  right: 22px; /* left of ot-marker when both present */
+  z-index: 3;
+  font-size: 12px;
+  line-height: 1;
+  pointer-events: none;
+}
+.day-cell.has-ot .day-note {
+  right: 22px;
 }
