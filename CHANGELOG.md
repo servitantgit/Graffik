@@ -18,6 +18,10 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 - **Info panel** — OT before/after cards ordered around the shift block; monthly OT summary moved to end of month view
 - **Dashboard** — shift handoff flow as first item; removed unused “This week” block
 - **Dates** — day+month strings use genitive month names (uk: «18 липня», pl: «18 lipca»)
+- **Info panel (month)** — removed redundant “current shift” card; vacation is display-only used/remaining at end
+- **Until day off** — shows remaining day/night shifts (or “tomorrow”), not a calendar date
+- Removed cell `+200%` / `+100%` rate badge stripe on dates
+
 
 ### Usunięte
 - Cell relief popups (`addReliefPopups`) — funkcjonalność w timeline widget info-panel

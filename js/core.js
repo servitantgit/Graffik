@@ -332,6 +332,40 @@ function daysToNextWolne(year, month, day, brigade) {
   return null;
 }
 
+/**
+ * Work remaining until next free/vacation day.
+ * Counts shifts of each type between current day (exclusive) and day off.
+ * @returns {{ days, dayShifts, nightShifts, year, month, day } | null}
+ *   dayShifts = R+P count, nightShifts = N count
+ */
+function getUntilDayOff(year, month, day, brigade) {
+  let y = year,
+    m = month,
+    d = day,
+    count = 0;
+  let dayShifts = 0;
+  let nightShifts = 0;
+  while (count < 60) {
+    d++;
+    count++;
+    if (d > daysInMonthCal(y, m)) {
+      d = 1;
+      m++;
+      if (m > 12) {
+        m = 1;
+        y++;
+      }
+    }
+    if (isUrlop(y, m, d, brigade) || isWolne(getShiftAt(y, m, d, brigade))) {
+      return { days: count, dayShifts, nightShifts, year: y, month: m, day: d };
+    }
+    const s = getShiftAt(y, m, d, brigade);
+    if (s === 'N') nightShifts++;
+    else if (s === 'R' || s === 'P') dayShifts++;
+  }
+  return null;
+}
+
 /* === Nadgodziny: pomocnicze === */
 function otKey(year, month, day, brigade) {
   return `${year}-${month}-${day}-${brigade}`;
