@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI Ideas Mockup — Grafik Gillette</title>
+<style>
+  :root {
+    --bg: #0f1419;
+    --panel: #1a1f2e;
+    --panel-2: #242838;
+    --text: #e8eaf0;
+    --muted: #8b92a5;
+    --border: #363b4d;
+    --accent: #ff5722;
+    --color-R: #f39c12;
+    --color-P: #16a085;
+    --color-N: #2980b9;
+    --color-W: #3d4454;
+    --color-W-text: #a0a8b8;
+    --brig-A: #e74c3c;
+    --brig-B: #27ae60;
+    --brig-C: #2980b9;
+    --brig-D: #8e44ad;
+    /* proposed header (not blue = not N) */
+    --header-prop: #4b5563;
+    --header-prop-2: #374151;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 16px;
+    line-height: 1.45;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 22px; color: var(--accent); margin-bottom: 4px; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+  .section {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+  .section h2 {
+    font-size: 15px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .note { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  .note b { color: var(--text); }
+  .cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 720px) { .cols { grid-template-columns: 1fr; } }
+  .col-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    color: var(--muted);
+  }
+  .col-label.now { color: #f87171; }
+  .col-label.prop { color: #34d399; }
+  .frame {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px;
+    overflow: hidden;
+  }
+
+  /* ===== TABLE DATE HEADERS ===== */
+  .mini-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .mini-table th, .mini-table td {
+    border: 1px solid var(--border);
+    text-align: center;
+    padding: 4px 2px;
+    height: 28px;
+  }
+  .mini-table th.hdr-now {
+    background: #1e3c72; /* current text-header blue — clashes with N */
+    color: #fff;
+  }
+  .mini-table th.hdr-prop {
+    background: linear-gradient(180deg, #4b5563, #374151);
+    color: #f3f4f6;
+  }
+  .mini-table th.hdr-prop-soft {
+    background: #e5e7eb;
+    color: #1f2937;
+  }
+  .mini-table th.weekend-now { background: linear-gradient(135deg, #c0392b, #922b21); color: #fff; }
+  .mini-table th.weekend-prop { background: #4b5563; color: #fca5a5; box-shadow: inset 0 -2px 0 #ef4444; }
+  .mini-table th.today-prop { background: #f59e0b; color: #111; }
+  .cell-R { background: var(--color-R); color: #fff; font-weight: 700; }
+  .cell-P { background: var(--color-P); color: #fff; font-weight: 700; }
+  .cell-N { background: var(--color-N); color: #fff; font-weight: 700; }
+  .cell-W { background: var(--color-W); color: var(--color-W-text); }
+
+  /* ===== YEAR MINI ===== */
+  .year-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+  .yd {
+    height: 22px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+  .yd.R { background: var(--color-R); }
+  .yd.P { background: var(--color-P); }
+  .yd.N { background: var(--color-N); }
+  .yd.W { background: var(--color-W); color: var(--color-W-text); }
+  .yd.N-alt { background: #7c3aed; } /* proposed: violet night */
+  .yd.N-alt2 { background: linear-gradient(135deg, #1e293b, #334155); border: 1px solid #64748b; }
+  .yd.head {
+    background: transparent;
+    color: var(--muted);
+    font-size: 9px;
+    font-weight: 600;
+    height: 16px;
+  }
+  .yd.head-prop {
+    background: #374151;
+    color: #d1d5db;
+    border-radius: 3px;
+    font-size: 9px;
+    height: 16px;
+  }
+
+  /* ===== MONTH CELL ===== */
+  .month-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .mcell {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    position: relative;
+    border: 1px solid transparent;
+  }
+  .mcell .num { font-size: 12px; opacity: 0.9; }
+  .mcell.R { background: linear-gradient(135deg, #f39c12, #d68910); color: #fff; }
+  .mcell.P { background: linear-gradient(135deg, #16a085, #117a65); color: #fff; }
+  .mcell.N { background: linear-gradient(135deg, #2980b9, #1a1a3e); color: #fff; }
+  .mcell.W { background: var(--color-W); color: var(--color-W-text); border-color: var(--border); }
+  .mcell.today-ring { box-shadow: 0 0 0 2px #f1c40f; }
+  .mcell .ot { position: absolute; top: 3px; right: 4px; font-size: 10px; }
+  .mcell.density {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .mcell.density .bar {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 4px; border-radius: 0 0 9px 9px;
+  }
+  .mcell.density .bar.R { background: var(--color-R); }
+  .mcell.density .bar.N { background: var(--color-N); }
+  .mcell.density .bar.P { background: var(--color-P); }
+
+  /* ===== WEEK ===== */
+  .week-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .wcard {
+    border-radius: 10px;
+    padding: 8px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    min-height: 70px;
+  }
+  .wcard .d { font-size: 10px; color: var(--muted); }
+  .wcard .s { font-size: 18px; font-weight: 700; margin-top: 4px; }
+  .wcard.filled-R { background: linear-gradient(160deg, #f39c12, #b9770e); color: #fff; border: none; }
+  .wcard.filled-R .d { color: rgba(255,255,255,0.85); }
+  .wcard.strip-R { border-top: 3px solid var(--color-R); }
+  .wcard.strip-N { border-top: 3px solid var(--color-N); }
+  .wcard.strip-P { border-top: 3px solid var(--color-P); }
+
+  /* ===== DASHBOARD ===== */
+  .dash-hero {
+    border-radius: 12px;
+    padding: 14px;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    margin-bottom: 8px;
+  }
+  .dash-hero-prop {
+    background: linear-gradient(135deg, #1f2937, #111827);
+    border: 1px solid var(--border);
+  }
+  .dash-hero .g { font-size: 12px; opacity: 0.85; }
+  .dash-hero .dt { font-size: 16px; font-weight: 700; margin-top: 4px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .chip {
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.25);
+    font-size: 11px;
+    text-align: center;
+    min-width: 40px;
+  }
+  .chip.R { background: var(--color-R); }
+  .chip.N { background: var(--color-N); }
+  .chip.W { background: var(--color-W); color: var(--color-W-text); }
+  .chip.prop-quiet {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+  }
+  .chip.prop-quiet .dot {
+    width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px;
+  }
+
+  /* ===== IDEA LIST ===== */
+  ul.ideas { margin: 8px 0 0 18px; font-size: 13px; color: var(--muted); }
+  ul.ideas li { margin-bottom: 6px; }
+  ul.ideas li b { color: var(--text); }
+  .prio {
+    display: inline-block;
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    margin-left: 4px;
+  }
+  .p-high { background: #7f1d1d; color: #fca5a5; }
+  .p-med { background: #78350f; color: #fcd34d; }
+  .p-low { background: #1e3a5f; color: #93c5fd; }
+
+  .swatch-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .swatch {
+    width: 48px; height: 36px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: #fff;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>UI / UX ideas — mockup</h1>
+  <p class="sub">Порівняння «зараз» vs пропозиції. Без змін у проді — лише для рішення. Фокус: рік, табель, місяць, тиждень, дашборд.</p>
+
+  <!-- ========== 1. TABLE HEADERS ========== -->
+  <div class="section">
+    <h2>1. Табель — заголовки дат <span class="badge">колір</span></h2>
+    <p class="note">
+      <b>Проблема:</b> заголовки колонок використовують <code>--text-header</code> (#1e3c72 / у dark #64b5f6) —
+      візуально близькі до нічної зміни <code>--color-N</code> (#2980b9). Легко сплутати «шапка» і «N».
+    </p>
+    <div class="cols">
+      <div>
+        <div class="col-label now">Зараз (синя шапка ≈ N)</div>
+        <div class="frame">
+          <table class="mini-table">
+            <tr>
+              <th class="hdr-now" style="width:36px">C</th>
+              <th class="hdr-now">Пн<br>11</th>
+              <th class="hdr-now">Вт<br>12</th>
+              <th class="hdr-now">Ср<br>13</th>
+              <th class="weekend-now">Сб<br>16</th>
+              <th class="hdr-now">Нд<br>17</th>
+            </tr>
+            <tr>
+              <td style="background:#2a2e3a;color:#64b5f6;font-weight:700">C</td>
+              <td class="cell-R">R</td>
+              <td class="cell-R">R</td>
+              <td class="cell-N">N</td>
+              <td class="cell-W">—</td>
+              <td class="cell-W">—</td>
+            </tr>
+          </table>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#1e3c72">hdr</div>
+            <div class="swatch" style="background:#2980b9">N</div>
+            <span style="font-size:11px;color:var(--muted);align-self:center">майже один відтінок синього</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="col-label prop">A) Нейтральний сірий</div>
+        <div class="frame">
+          <table class="mini-table">
+            <tr>
+              <th class="hdr-prop" style="width:36px">C</th>
+              <th class="hdr-prop">Пн<br>11</th>
+              <th class="hdr-prop">Вт<br>12</th>
+              <th class="hdr-prop">Ср<br>13</th>
+              <th class="weekend-prop">Сб<br>16</th>
+              <th class="hdr-prop">Нд<br>17</th>
+            </tr>
+            <tr>
+              <td style="background:#2a2e3a;color:#e5e7eb;font-weight:700">C</td>
+              <td class="cell-R">R</td>
+              <td class="cell-R">R</td>
+              <td class="cell-N">N</td>
+              <td class="cell-W">—</td>
+              <td class="cell-W">—</td>
+            </tr>
+          </table>
+          <p class="note" style="margin:8px 0 0">Шапка ≠ зміна. Вихідні — сірі + червона риска знизу, не повний червоний фон.</p>
+        </div>
+        <div class="col-label prop" style="margin-top:12px">B) Світла «паперова» шапка</div>
+        <div class="frame">
+          <table class="mini-table">
+            <tr>
+              <th class="hdr-prop-soft" style="width:36px">C</th>
+              <th class="hdr-prop-soft">Пн<br>11</th>
+              <th class="hdr-prop-soft">Вт<br>12</th>
+              <th class="hdr-prop-soft">Ср<br>13</th>
+              <th class="hdr-prop-soft" style="color:#b91c1c">Сб<br>16</th>
+              <th class="hdr-prop-soft" style="color:#b91c1c">Нд<br>17</th>
+            </tr>
+            <tr>
+              <td style="background:#f3f4f6;color:#111;font-weight:700">C</td>
+              <td class="cell-R">R</td>
+              <td class="cell-N">N</td>
+              <td class="cell-P">P</td>
+              <td class="cell-W">—</td>
+              <td class="cell-W">—</td>
+            </tr>
+          </table>
+          <p class="note" style="margin:8px 0 0">Добре для light theme / друку. Дати нейтральні, зміни — кольорові.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 2. YEAR ========== -->
+  <div class="section">
+    <h2>2. Рік — міні-календарі <span class="badge">N vs chrome</span></h2>
+    <p class="note">Міні-дні вже кольорові за зміною — ок. Але підписи днів тижня / рамки місяця інколи «синіють» у dark theme через <code>--text-header</code>.</p>
+    <div class="cols">
+      <div>
+        <div class="col-label now">N = синій (як зараз)</div>
+        <div class="frame">
+          <div style="font-size:12px;font-weight:700;margin-bottom:6px;color:#64b5f6">Серпень</div>
+          <div class="year-grid">
+            <div class="yd head">П</div><div class="yd head">В</div><div class="yd head">С</div><div class="yd head">Ч</div><div class="yd head">П</div><div class="yd head">С</div><div class="yd head">Н</div>
+            <div class="yd W">1</div><div class="yd W">2</div><div class="yd R">3</div><div class="yd R">4</div><div class="yd N">5</div><div class="yd N">6</div><div class="yd W">7</div>
+            <div class="yd W">8</div><div class="yd P">9</div><div class="yd P">10</div><div class="yd R">11</div><div class="yd R">12</div><div class="yd N">13</div><div class="yd W">14</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="col-label prop">A) N → фіолетовий (унікальний)</div>
+        <div class="frame">
+          <div style="font-size:12px;font-weight:700;margin-bottom:6px;color:#d1d5db">Серпень</div>
+          <div class="year-grid">
+            <div class="yd head-prop">П</div><div class="yd head-prop">В</div><div class="yd head-prop">С</div><div class="yd head-prop">Ч</div><div class="yd head-prop">П</div><div class="yd head-prop">С</div><div class="yd head-prop">Н</div>
+            <div class="yd W">1</div><div class="yd W">2</div><div class="yd R">3</div><div class="yd R">4</div><div class="yd N-alt">5</div><div class="yd N-alt">6</div><div class="yd W">7</div>
+            <div class="yd W">8</div><div class="yd P">9</div><div class="yd P">10</div><div class="yd R">11</div><div class="yd R">12</div><div class="yd N-alt">13</div><div class="yd W">14</div>
+          </div>
+          <p class="note" style="margin-top:8px">R помаранч · P бірюза · <b>N фіолет</b> — три різні «родини», без перетину з UI-синім.</p>
+        </div>
+        <div class="col-label prop" style="margin-top:10px">B) N → темний slate + обводка</div>
+        <div class="frame">
+          <div class="year-grid">
+            <div class="yd R">3</div><div class="yd R">4</div><div class="yd N-alt2">5</div><div class="yd N-alt2">6</div><div class="yd W">7</div><div class="yd P">9</div><div class="yd P">10</div>
+          </div>
+          <p class="note" style="margin-top:8px">«Ніч» = темна клітина, не синя. Добре в dark UI.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 3. MONTH ========== -->
+  <div class="section">
+    <h2>3. Місяць — клітинки <span class="badge">щільність</span></h2>
+    <div class="cols">
+      <div>
+        <div class="col-label now">Зараз — повний заливка</div>
+        <div class="frame">
+          <div class="month-row">
+            <div class="mcell R"><span class="num">11</span>R</div>
+            <div class="mcell P"><span class="num">12</span>P</div>
+            <div class="mcell N today-ring"><span class="num">13</span>N<span class="ot">⏱</span></div>
+            <div class="mcell W"><span class="num">14</span>—</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="col-label prop">Ідея: нейтральна клітина + кольорова смужка</div>
+        <div class="frame">
+          <div class="month-row">
+            <div class="mcell density"><span class="num">11</span>R<div class="bar R"></div></div>
+            <div class="mcell density"><span class="num">12</span>P<div class="bar P"></div></div>
+            <div class="mcell density today-ring"><span class="num">13</span>N<span class="ot">⏱</span><div class="bar N"></div></div>
+            <div class="mcell density"><span class="num">14</span>—</div>
+          </div>
+          <p class="note" style="margin-top:8px">Менше «кислоти», дата читається однаково; зміна = колір знизу. Опційно toggle «яскравий / спокійний».</p>
+        </div>
+      </div>
+    </div>
+    <ul class="ideas">
+      <li><b>Свято</b> — замість червоної обводки: маленька 🎉 у куті (менше шуму поруч з today-ring).</li>
+      <li><b>Блок змін</b> — тонкі з’єднувачі між сусідніми днями одного типу (R–R–R), щоб «цикл» читався без окремого тексту.</li>
+    </ul>
+  </div>
+
+  <!-- ========== 4. WEEK ========== -->
+  <div class="section">
+    <h2>4. Тиждень <span class="badge">картки</span></h2>
+    <div class="cols">
+      <div>
+        <div class="col-label now">Повна заливка картки</div>
+        <div class="frame">
+          <div class="week-row">
+            <div class="wcard filled-R"><div class="d">Пн 11</div><div class="s">🌅 R</div></div>
+            <div class="wcard filled-R" style="background:linear-gradient(160deg,#2980b9,#1a1a3e)"><div class="d">Вт 12</div><div class="s">🌙 N</div></div>
+            <div class="wcard"><div class="d">Ср 13</div><div class="s" style="color:var(--muted)">—</div></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="col-label prop">Смужка зверху + нейтральне тіло</div>
+        <div class="frame">
+          <div class="week-row">
+            <div class="wcard strip-R"><div class="d">Пн 11</div><div class="s">🌅 Rano</div><div style="font-size:10px;color:var(--muted)">06–14</div></div>
+            <div class="wcard strip-N"><div class="d">Вт 12</div><div class="s">🌙 Noc</div><div style="font-size:10px;color:var(--muted)">22–06</div></div>
+            <div class="wcard"><div class="d">Ср 13</div><div class="s" style="color:var(--muted)">🏖️</div></div>
+          </div>
+          <p class="note" style="margin-top:8px">Текст завжди контрастний; колір лише акцент. Краще для OT/нотаток у картці.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 5. DASHBOARD ========== -->
+  <div class="section">
+    <h2>5. Дашборд <span class="badge">hero / chips</span></h2>
+    <div class="cols">
+      <div>
+        <div class="col-label now">Синій hero (знову UI-синій)</div>
+        <div class="frame">
+          <div class="dash-hero">
+            <div class="g">Доброго ранку</div>
+            <div class="dt">Субота, 15 серпня 2026</div>
+            <div class="chips">
+              <div class="chip R">11<br>R</div>
+              <div class="chip N">12<br>N</div>
+              <div class="chip W">13<br>—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="col-label prop">Нейтральний hero + тихі chips</div>
+        <div class="frame">
+          <div class="dash-hero dash-hero-prop">
+            <div class="g">Доброго ранку</div>
+            <div class="dt">Субота, 15 серпня 2026</div>
+            <div class="chips">
+              <div class="chip prop-quiet"><span class="dot" style="background:var(--color-R)"></span>11 R</div>
+              <div class="chip prop-quiet"><span class="dot" style="background:var(--color-N)"></span>12 N</div>
+              <div class="chip prop-quiet"><span class="dot" style="background:#64748b"></span>13 —</div>
+            </div>
+          </div>
+          <p class="note" style="margin-top:8px">Hero не конкурує зі змінами. Колір зміни = крапка, не вся плитка.</p>
+        </div>
+      </div>
+    </div>
+    <ul class="ideas">
+      <li><b>Flow вже є</b> — ок; можна дефолт сегмента пам’ятати (localStorage last tab).</li>
+      <li><b>«Наступний вихідний»</b> на дашборді лишити однією цифрою/чипом, бо cycle-mode у flow глибший.</li>
+    </ul>
+  </div>
+
+  <!-- ========== 6. CROSS-CUTTING ========== -->
+  <div class="section">
+    <h2>6. Наскрізні ідеї <span class="badge">продукт</span></h2>
+    <ul class="ideas">
+      <li>
+        <b>Розвести «UI-синій» і «N»</b>
+        <span class="prio p-high">high</span><br>
+        Заголовки / посилання / focus = нейтраль сірий або amber accent; ніч = окрема палітра (фіолет або slate).
+      </li>
+      <li>
+        <b>Єдина легенда кольорів</b>
+        <span class="prio p-high">high</span><br>
+        R/P/N/W/U однаково в місяці, тижні, році, табелі. Зараз дрібні розбіжності в градієнтах.
+      </li>
+      <li>
+        <b>Режим «спокійний календар»</b>
+        <span class="prio p-med">med</span><br>
+        Toggle: full fill ↔ color strip only (менше рябіння при довгому перегляді).
+      </li>
+      <li>
+        <b>Табель: sticky first column + denser headers</b>
+        <span class="prio p-med">med</span><br>
+        Дата одним рядком <code>11<br>Пн</code> → <code>11 Пн</code> дрібніше; більше днів на екрані.
+      </li>
+      <li>
+        <b>Рік: клік по місяцю = місяць, long-press/secondary = табель</b>
+        <span class="prio p-low">low</span>
+      </li>
+      <li>
+        <b>Тиждень: вертикальний timeline на mobile</b>
+        <span class="prio p-med">med</span><br>
+        Замість 7 вузьких колонок — список днів зліва направо скрол або stack.
+      </li>
+      <li>
+        <b>Контраст W (вільний)</b>
+        <span class="prio p-med">med</span><br>
+        Зараз сірий зливається з фоном клітинки; трохи світліший/темніший + іконка 🏖️ опційно.
+      </li>
+      <li>
+        <b>Today</b>
+        <span class="prio p-low">low</span><br>
+        Єдиний маркер (золота обводка) у всіх виглядах; не жовта заливка шапки в табелі (плутанина зі «святом»).
+      </li>
+      <li>
+        <b>Доступність</b>
+        <span class="prio p-med">med</span><br>
+        Не лише колір: літера R/P/N завжди видима; pattern (смужки) для N опційно.
+      </li>
+    </ul>
+  </div>
+
+  <!-- ========== 7. RECOMMENDED PACK ========== -->
+  <div class="section">
+    <h2>7. Рекомендований пакет для першої ітерації</h2>
+    <p class="note">Якщо брати мінімум з максимальним ефектом:</p>
+    <ol style="margin:8px 0 0 18px;font-size:13px;color:var(--muted)">
+      <li style="margin-bottom:6px"><b style="color:var(--text)">Табель:</b> сірі заголовки дат (варіант A), вихідні — риска, не червоний блок.</li>
+      <li style="margin-bottom:6px"><b style="color:var(--text)">N:</b> зсунути в фіолет <code>#7c3aed</code> (або slate) глобально — рік/місяць/тиждень/табель.</li>
+      <li style="margin-bottom:6px"><b style="color:var(--text)">Дашборд hero:</b> нейтральний градієнт замість синього «corporate».</li>
+      <li style="margin-bottom:6px"><b style="color:var(--text)">Тиждень:</b> strip-картки замість full-bleed (опційно).</li>
+    </ol>
+    <p class="note" style="margin-top:12px">Напиши номери/варіанти (напр. «1A + N фіолет + hero»), тоді перенесемо в прод.</p>
+  </div>
+</div>
+</body>
+</html>

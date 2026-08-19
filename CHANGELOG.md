@@ -23,6 +23,8 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 - Removed cell `+200%` / `+100%` rate badge stripe on dates
 - **Info panel** — removed detailed OT cards (before/after + daily summary); OT is shown only in the handoff flow
 - **Flow modes** — segment «Handoff | Until free»: cycle strip shows own shifts until day off; separate «До вихідного» card removed
+- **Visual polish** — table date headers neutral gray (not blue≈N); weekend/holiday headers use accent line; dashboard hero neutral; week cards top strip; year titles neutral. Shift R/P/N colors unchanged (factory palette)
+- **Week view** — tap day opens detail panel (flow handoff/cycle, live timer, notes) instead of jumping to month calendar
 
 
 ### Usunięte

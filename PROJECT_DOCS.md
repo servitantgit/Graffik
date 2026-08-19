@@ -211,6 +211,10 @@ js/schedules/
 - `updateDirtyIndicator` — licznik niezapisanych zmian
 - `redoLastEdit()` — przywraca cofniętą zmianę (Ctrl+Y lub Ctrl+Shift+Z)
 
+### js/views.js — Week detail
+
+- `selectWeekDay` / `renderWeekDayPanel` — panel pod siatką tygodnia (flow + notatka), bez jumpToDate
+
 ### js/dashboard.js — Moduł 5: Widok Dashboard
 
 - `renderDashboard()` — cały widok Dashboard
