@@ -76,7 +76,6 @@ function addPrintHeader() {
   const viewName =
     {
       dashboard: t('printHeaderDashboard'),
-      week: t('printHeaderWeek'),
       month: t('printHeaderMonth'),
       table: t('printHeaderTable'),
     }[currentView] || '';
@@ -111,13 +110,13 @@ function buildShareUrl() {
     params.set('rok', '1');
   }
 
-  // Month (for month/week/table without yearMode)
-  if (currentView === 'month' || currentView === 'week' || (currentView === 'table' && !yearMode)) {
+  // Month (for month/table without yearMode)
+  if (currentView === 'month' || (currentView === 'table' && !yearMode)) {
     params.set('m', currentMonth);
   }
 
-  // Day (only for month with a selected day, or week)
-  if ((currentView === 'month' && selectedDay && !yearMode) || currentView === 'week') {
+  // Day (only for month with a selected day)
+  if (currentView === 'month' && selectedDay && !yearMode) {
     const d = selectedDay || new Date().getDate();
     params.set('d', d);
   }
@@ -134,7 +133,6 @@ function buildShareText() {
   // Description of what is being shared (for the message text)
   const viewNames = {
     dashboard: t('viewDashboard'),
-    week: t('viewWeek'),
     month: yearMode
       ? t('yearViewTitle', { year: currentYear })
       : `${monthNames[currentMonth - 1]} ${currentYear}`,
@@ -145,10 +143,7 @@ function buildShareText() {
 
   let text = `📅 ${viewNames[currentView]}`;
 
-  if (currentView === 'week') {
-    const d = selectedDay || new Date().getDate();
-    text = `📆 ${t('viewWeek')} ${d} ${monthNamesGenitive[currentMonth - 1]} ${currentYear}`;
-  } else if (currentView === 'month' && selectedDay && !yearMode) {
+  if (currentView === 'month' && selectedDay && !yearMode) {
     text = `📅 ${selectedDay} ${monthNamesGenitive[currentMonth - 1]} ${currentYear}`;
   }
 

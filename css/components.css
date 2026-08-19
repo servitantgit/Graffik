@@ -33,33 +33,6 @@ body.privacy-mode .dtc-timer,     /* Timer details in dashboard today card */
 body.privacy-mode .calendar-day .day-ot,     /* Overtime markers in month view */
 body.privacy-mode .calendar-day .day-u,      /* Vacation markers in month view */
 body.privacy-mode .calendar-day .day-note-icon, /* Note icons in month view */
-body.privacy-mode .week-day .wd-ot,           /* Overtime indicators in week view */
-body.privacy-mode .week-day .wd-u,            /* Vacation indicators in week view */
-body.privacy-mode .info-section-ot,           /* Overtime in info panel */
-body.privacy-mode .info-section-note,         /* Notes in info panel */
-body.privacy-mode .info-section-vacation,     /* Vacation stats in info panel */
-body.privacy-mode .ot-indicator,              /* Any other overtime indicators */
-body.privacy-mode #otMonthSummary             /* Monthly overtime summary in month view */ {
-  display: none !important;
-}
-
-/* Specific for table view — hide custom cells if they contain personal data markers */
-body.privacy-mode .table-cell.custom-urlop,
-body.privacy-mode .table-cell.custom-ot {
-  background: var(--bg-cell) !important;
-  color: var(--text-main) !important;
-  border-color: var(--border-cell) !important;
-}
-
-/* === PRIVACY MODE === */
-body.privacy-mode .dash-stat-card.dash-overtime-summary,
-body.privacy-mode .dash-stat-card.dash-vacation-stats,
-body.privacy-mode .dtc-timer,     /* Timer details in dashboard today card */
-body.privacy-mode .calendar-day .day-ot,     /* Overtime markers in month view */
-body.privacy-mode .calendar-day .day-u,      /* Vacation markers in month view */
-body.privacy-mode .calendar-day .day-note-icon, /* Note icons in month view */
-body.privacy-mode .week-day .wd-ot,           /* Overtime indicators in week view */
-body.privacy-mode .week-day .wd-u,            /* Vacation indicators in week view */
 body.privacy-mode .info-section-ot,           /* Overtime in info panel */
 body.privacy-mode .info-section-note,         /* Notes in info panel */
 body.privacy-mode .info-section-vacation,     /* Vacation stats in info panel */

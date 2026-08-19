@@ -19,8 +19,6 @@ window.translations.en = {
   today: '📅 Today',
   prevMonth: 'Previous month (←)',
   nextMonth: 'Next month (→)',
-  prevWeek: '‹',
-  nextWeek: '›',
 
   // === SHIFTS ===
   shiftR: 'Morning (6:00–14:00)',
@@ -117,8 +115,6 @@ window.translations.en = {
   // === INFO PANEL ===
   infoPanelTitle: 'ℹ️ Select a day in the calendar',
   infoPanelHint: 'Click any day to see details.',
-  infoStatus: 'Status',
-  infoPlannedShift: 'Planned shift',
   infoNote: '📝 Note',
   infoNotePlaceholder: 'Add a note...',
   infoNoteSaved: 'Note saved',
@@ -155,7 +151,6 @@ window.translations.en = {
   infoBrigadeHours: 'Brigade {brig}: {worked}h / {total}h ({pct}%)',
   infoDayTooltip: '{d} {month}: {status}',
   infoTableTooltip: '{brig} • {d} {month}: {status}',
-  infoStatusFree: '🏖️ Free',
 
   // === OVERTIME ===
   otHoursLabel: 'How many hours?',
@@ -268,7 +263,6 @@ window.translations.en = {
 
   // === PRINT ===
   printHeaderDashboard: 'Dashboard',
-  printHeaderWeek: 'Week',
   printHeaderMonth: 'Month',
   printHeaderTable: 'Table',
   printYearSuffix: ' — full year',
@@ -276,11 +270,9 @@ window.translations.en = {
 
   // === VIEWS ===
   viewDashboard: '🏠 Dashboard',
-  viewWeek: '7️⃣ Week',
   viewMonth: '📅 Month',
   viewTable: '📋 Table',
   viewYear: '📊 Year',
-  weekTitle: '📆 {range} · Brigade {brig}',
   yearViewTitle: '📋 Full year {year} — all brigades',
   monthViewTitle: '📋 {month} {year} — all brigades',
   tableCorner: 'Brigade\\Day',
@@ -296,10 +288,8 @@ window.translations.en = {
   greeting: 'Hello! 👋',
   tomorrow: 'Tomorrow',
   nextDayOff: 'Next day off',
-  thisWeek: 'This week',
   upcomingDays: 'Next 7 days',
   seeMonth: '📅 See month',
-  seeWeek: '📆 See week',
   unknown: 'Unknown',
   todayLabel: 'Today!',
   daysAgo: 'yesterday',
@@ -328,11 +318,9 @@ window.translations.en = {
   faqLangNote:
     'The selected language is saved automatically and restored on next launch. On first launch the language is auto-detected from browser settings.',
   faqViewsTitle: '📋 What are the main tabs and what does each show?',
-  faqViewsDesc: 'The application has several main views, each serving different purposes:',
+  faqViewsDesc: 'The application has three main views, each serving a different purpose:',
   faqViewsDashboard:
     "🏠 Dashboard — start screen. Shows today's shift, upcoming days, week summary, vacation status and quick links to other views.",
-  faqViewsWeek:
-    '📆 Week — shows the schedule for 7 days in a larger, more organized form, useful for planning the coming days.',
   faqViewsMonth:
     '📅 Month — main calendar. Here you can see shifts, days off, vacations, notes, overtime and additional popups with information about the previous and next shift.',
   faqViewsTable:
@@ -340,7 +328,7 @@ window.translations.en = {
   faqViewsYear:
     '📊 Year — expands the month or table view to the entire year and shows 12 mini-calendars or 12 tables.',
   faqViewsNote:
-    'Each tab serves a different purpose: quick overview, planning, editing and analysis of the entire period.',
+    'Year mode expands the Month or Table view to the entire year.',
   faqFeaturesTitle: '🧩 What are the key features of the program?',
   faqFeaturesDesc:
     'The program can do much more than just show the schedule. Here are its key features:',

@@ -211,10 +211,6 @@ js/schedules/
 - `updateDirtyIndicator` — licznik niezapisanych zmian
 - `redoLastEdit()` — przywraca cofniętą zmianę (Ctrl+Y lub Ctrl+Shift+Z)
 
-### js/views.js — Week detail
-
-- `selectWeekDay` / `renderWeekDayPanel` — panel pod siatką tygodnia (flow + notatka), bez jumpToDate
-
 ### js/dashboard.js — Moduł 5: Widok Dashboard
 
 - `renderDashboard()` — cały widok Dashboard
@@ -248,11 +244,8 @@ js/schedules/
   - `cycleRange` / `compareShift` używają factory schedule gdy wylogowany
   - helper: `getFactoryCycleRange()` w `core.js`
 
-### js/views.js — Moduł 7: Widoki Tydzień, Rok, Tabela
+### js/views.js — Moduł 7: Widoki Rok, Tabela
 
-- `renderWeekView()` — widok tygodnia (7 dni)
-- `ensureWeekStart()` — ustawia początek tygodnia na poniedziałek
-- `prevWeek()`, `nextWeek()` — nawigacja tygodniowa
 - `renderYearView()` — 12 mini-kalendarzy (Rok mode)
 - `renderTableView(yearMode)` — tabela wszystkich brygad
 - `buildMonthTable(year, month, yearMode)` — budowa tabeli dla miesiąca
@@ -377,7 +370,6 @@ Przykłady:
 - `?view=month&y=2026&m=8&d=10&brig=C` — dzień 10 sierpnia, brygada C
 - `?view=month&y=2026&m=8&brig=C` — cały sierpień, brygada C
 - `?view=month&y=2026&brig=C&rok=1` — Rok view, brygada C
-- `?view=week&y=2026&m=8&d=10&brig=C` — tydzień z 10 sierpnia
 - `?view=table&y=2026&rok=1` — tabela cały rok
 
 Po załadowaniu URL jest czyszczony przez `history.replaceState` (dla czystości).

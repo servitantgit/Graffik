@@ -9,6 +9,11 @@ let selectedShift = prefs.shift || 'A';
 let compareShift = null;
 let selectedDay = null;
 let currentView = prefs.view || 'dashboard';
+if (currentView === 'week') {
+  currentView = 'month';
+  prefs.view = 'month';
+  savePrefs(prefs);
+}
 let yearMode = prefs.yearMode || false;
 let editMode = false;
 
@@ -32,9 +37,13 @@ function bindEvent(id, event, handler) {
 
   // View
   const v = p.get('view');
-  if (v && ['dashboard', 'week', 'month', 'table'].includes(v)) {
+  if (v && ['dashboard', 'month', 'table'].includes(v)) {
     currentView = v;
     prefs.view = v;
+  } else if (v === 'week') {
+    // Legacy links to the removed Week view open in Month instead.
+    currentView = 'month';
+    prefs.view = 'month';
   }
 
   // Rok mode
@@ -120,7 +129,7 @@ bindEvent('yearToggle', 'change', (e) => {
 });
 
 function refreshViews() {
-  const views = ['dashboardView', 'monthView', 'weekView', 'yearView', 'tableView'];
+  const views = ['dashboardView', 'monthView', 'yearView', 'tableView'];
   views.forEach((v) => (document.getElementById(v).style.display = 'none'));
 
   updateYearPicker();
@@ -140,14 +149,6 @@ function refreshViews() {
   if (currentView === 'dashboard') {
     document.getElementById('dashboardView').style.display = 'block';
     renderDashboard();
-  } else if (currentView === 'week') {
-    document.getElementById('weekView').style.display = 'block';
-    if (empty) {
-      renderEmptyState(document.getElementById('weekViewGrid'));
-      document.getElementById('weekTitle').textContent = `📆 ${currentYear}`;
-      return;
-    }
-    renderWeekView();
   } else if (currentView === 'month') {
     if (yearMode) {
       document.getElementById('yearView').style.display = 'grid';
@@ -386,16 +387,6 @@ document.addEventListener('keydown', (e) => {
   if (currentView === 'month' || currentView === 'table') {
     if (e.key === 'ArrowLeft') goToMonth(-1);
     else if (e.key === 'ArrowRight') goToMonth(1);
-  } else if (currentView === 'week') {
-    if (e.key === 'ArrowLeft') {
-      ensureWeekStart();
-      weekStartDate.setDate(weekStartDate.getDate() - 7);
-      renderWeekView();
-    } else if (e.key === 'ArrowRight') {
-      ensureWeekStart();
-      weekStartDate.setDate(weekStartDate.getDate() + 7);
-      renderWeekView();
-    }
   }
 });
 
@@ -412,11 +403,6 @@ document.addEventListener('touchend', (e) => {
   const dx = e.changedTouches[0].clientX - touchStartX;
   if (Math.abs(dx) > 60) {
     if (currentView === 'month' || currentView === 'table') goToMonth(dx > 0 ? -1 : 1);
-    else if (currentView === 'week') {
-      ensureWeekStart();
-      weekStartDate.setDate(weekStartDate.getDate() + (dx > 0 ? -7 : 7));
-      renderWeekView();
-    }
   }
 });
 
