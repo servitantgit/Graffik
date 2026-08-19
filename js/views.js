@@ -97,10 +97,152 @@ function renderWeekView() {
       </div>
       <div class="wdc-content">${shiftHtml}</div>
     `;
-    cell.onclick = () => jumpToDate(y, m, d);
+    cell.dataset.y = y;
+    cell.dataset.m = m;
+    cell.dataset.d = d;
+    cell.onclick = () => selectWeekDay(y, m, d, cell);
     grid.appendChild(cell);
   }
+
+  // Keep selection if still in this week
+  if (selectedDay && currentYear && currentMonth) {
+    const sel = grid.querySelector(
+      `.week-day-cell[data-y="${currentYear}"][data-m="${currentMonth}"][data-d="${selectedDay}"]`
+    );
+    if (sel) {
+      sel.classList.add('selected-week-day');
+      renderWeekDayPanel(currentYear, currentMonth, selectedDay);
+    } else {
+      const panel = document.getElementById('weekInfoPanel');
+      if (panel) {
+        panel.innerHTML = `<h3>${t('infoPanelTitle')}</h3><p>${t('infoPanelHint')}</p>`;
+      }
+    }
+  }
 }
+
+function selectWeekDay(y, m, d, cellEl) {
+  currentYear = y;
+  currentMonth = m;
+  selectedDay = d;
+  document.querySelectorAll('.week-day-cell.selected-week-day').forEach((c) => {
+    c.classList.remove('selected-week-day');
+  });
+  if (cellEl) cellEl.classList.add('selected-week-day');
+  renderWeekDayPanel(y, m, d);
+}
+
+/**
+ * Day detail under week grid — same content idea as month info-panel / dashboard flow
+ */
+function renderWeekDayPanel(y, m, d) {
+  const panel = document.getElementById('weekInfoPanel');
+  if (!panel) return;
+
+  const hidePrivate = !shouldShowPersonalData();
+  let shiftCode = getShiftAtWithPending(y, m, d, selectedShift);
+  if (hidePrivate) {
+    shiftCode =
+      factorySchedule[y] && factorySchedule[y][m] && factorySchedule[y][m][selectedShift]
+        ? factorySchedule[y][m][selectedShift][d - 1]
+        : '';
+  }
+  const onUrlop = hidePrivate ? false : isUrlop(y, m, d, selectedShift);
+  const dateStr = `${d} ${monthNamesGenitive[m - 1]} ${y}`;
+  const dowIdx = new Date(y, m - 1, d).getDay();
+  const dow = dayNamesFull[dowIdx];
+  const yHolidays = buildHolidays(y);
+  const holidayName = yHolidays[m + '-' + d];
+  const holidayInfo = holidayName ? ` <span style="color:#c0392b;">🎉 ${holidayName}</span>` : '';
+  const noteKey = `${y}-${m}-${d}-${selectedShift}`;
+
+  if (onUrlop) {
+    panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo}</h3>
+      <div class="info-grid">
+        <div class="info-card"><div class="label">${t('infoStatus')}</div><div class="value" style="color:#e67e22;">${t('infoUrlop')}</div></div>
+        ${
+          hidePrivate
+            ? ''
+            : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="weekNoteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`
+        }
+      </div>`;
+  } else if (isWolne(shiftCode)) {
+    panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo}</h3>
+      <div class="info-grid">
+        <div class="info-card"><div class="label">${t('infoStatus')}</div><div class="value">${t('infoFree')}</div></div>
+        ${
+          hidePrivate
+            ? ''
+            : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="weekNoteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`
+        }
+      </div>`;
+  } else {
+    const info = getRelief(y, m, d, selectedShift, shiftCode);
+    let timelineOt = null;
+    if (!hidePrivate) {
+      const otRaw = getOvertimes(y, m, d, selectedShift);
+      const mk = (pos) => {
+        if (!otRaw[pos]) return null;
+        const cat = categorizeOvertime(y, m, d, shiftCode, pos, otRaw[pos].hours);
+        const percent = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
+        return { hours: otRaw[pos].hours, percent };
+      };
+      const before = mk('przed');
+      const after = mk('po');
+      if (before || after) timelineOt = { before, after };
+    }
+
+    let reliefCard = '';
+    if (typeof renderReliefTimeline === 'function' && typeof renderFlowSegmentWidget === 'function') {
+      const handoffHtml = renderReliefTimeline(info, y, m, d, shiftCode, selectedShift, timelineOt);
+      let cycleHtml = handoffHtml;
+      if (typeof getCyclePath === 'function' && typeof renderCycleTimeline === 'function') {
+        cycleHtml = renderCycleTimeline(getCyclePath(y, m, d, selectedShift, 8), y, m, d);
+      }
+      reliefCard = renderFlowSegmentWidget({
+        handoffHtml,
+        cycleHtml,
+        defaultMode: 'handoff',
+      });
+    } else if (typeof renderReliefTimeline === 'function') {
+      reliefCard = `<div class="info-card" style="grid-column:1/-1;"><div class="label">🔄 ${t('reliefFlowTitle')}</div><div class="value">${renderReliefTimeline(info, y, m, d, shiftCode, selectedShift, timelineOt)}</div></div>`;
+    }
+
+    let liveInfo = '';
+    if (!hidePrivate && typeof getLiveTimer === 'function') {
+      const timer = getLiveTimer(shiftCode, y, m, d);
+      if (timer) {
+        liveInfo = `<div class="info-card" style="border:2px solid #27ae60;"><div class="label">${t('infoLiveShift')}</div><div class="value" style="color:#27ae60;">${timer}</div></div>`;
+      }
+    }
+
+    panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
+      <div class="info-grid">
+        ${reliefCard}
+        ${liveInfo}
+        ${
+          hidePrivate
+            ? ''
+            : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="weekNoteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`
+        }
+      </div>`;
+  }
+
+  if (typeof bindFlowSegmentToggle === 'function') bindFlowSegmentToggle(panel);
+
+  const ni = document.getElementById('weekNoteInput');
+  if (ni) {
+    ni.addEventListener('change', () => {
+      const key = `${y}-${m}-${d}-${selectedShift}`;
+      const val = ni.value.trim();
+      if (val) notes[key] = val;
+      else delete notes[key];
+      saveNotes(notes);
+      showToast('success', t('infoNoteSaved'));
+    });
+  }
+}
+
 document.getElementById('prevWeekBtn').onclick = () => {
   ensureWeekStart();
   weekStartDate.setDate(weekStartDate.getDate() - 7);
