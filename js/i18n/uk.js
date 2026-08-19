@@ -19,8 +19,6 @@ window.translations.uk = {
   today: '📅 Сьогодні',
   prevMonth: 'Попередній місяць (←)',
   nextMonth: 'Наступний місяць (→)',
-  prevWeek: '‹',
-  nextWeek: '›',
 
   // === SHIFTS ===
   shiftR: 'Ранок (6:00–14:00)',
@@ -116,8 +114,6 @@ window.translations.uk = {
   // === INFO PANEL ===
   infoPanelTitle: 'ℹ️ Виберіть день у календарі',
   infoPanelHint: 'Клікніть на будь-який день, щоб побачити деталі.',
-  infoStatus: 'Статус',
-  infoPlannedShift: 'Запланована зміна',
   infoNote: '📝 Нотатка',
   infoNotePlaceholder: 'Додайте нотатку...',
   infoNoteSaved: 'Нотатку збережено',
@@ -154,7 +150,6 @@ window.translations.uk = {
   infoBrigadeHours: 'Бригада {brig}: {worked}год / {total}год ({pct}%)',
   infoDayTooltip: '{d} {month}: {status}',
   infoTableTooltip: '{brig} • {d} {month}: {status}',
-  infoStatusFree: '🏖️ Вихідний',
 
   // === OVERTIME ===
   otHoursLabel: 'Скільки годин?',
@@ -267,7 +262,6 @@ window.translations.uk = {
 
   // === PRINT ===
   printHeaderDashboard: 'Панель',
-  printHeaderWeek: 'Тиждень',
   printHeaderMonth: 'Місяць',
   printHeaderTable: 'Таблиця',
   printYearSuffix: ' — весь рік',
@@ -275,11 +269,9 @@ window.translations.uk = {
 
   // === VIEWS ===
   viewDashboard: '🏠 Панель',
-  viewWeek: '7️⃣ Тиждень',
   viewMonth: '📅 Місяць',
   viewTable: '📋 Таблиця',
   viewYear: '📊 Рік',
-  weekTitle: '📆 {range} · Бригада {brig}',
   yearViewTitle: '📋 Весь рік {year} — всі бригади',
   monthViewTitle: '📋 {month} {year} — всі бригади',
   tableCorner: 'Бр.\\День',
@@ -295,10 +287,8 @@ window.translations.uk = {
   greeting: 'Привіт! 👋',
   tomorrow: 'Завтра',
   nextDayOff: 'До вихідного',
-  thisWeek: 'Цей тиждень',
   upcomingDays: 'Наступні 7 днів',
   seeMonth: '📅 Дивитись місяць',
-  seeWeek: '📆 Дивитись тиждень',
   unknown: 'Невідомо',
   todayLabel: 'Сьогодні!',
   daysAgo: 'вчора',
@@ -326,11 +316,9 @@ window.translations.uk = {
   faqLangNote:
     'Обрана мова зберігається автоматично і відновлюється при наступному відкритті. При першому запуску мова визначається з налаштувань браузера.',
   faqViewsTitle: '📋 Які основні вкладки і що показує кожна?',
-  faqViewsDesc: 'Додаток має кілька основних видів, кожен для різних цілей:',
+  faqViewsDesc: 'Додаток має три основні види, кожен для своєї мети:',
   faqViewsDashboard:
     '🏠 Панель — стартовий екран. Показує сьогоднішню зміну, найближчі дні, підсумок тижня, статус відпусток і швидкі переходи до інших видів.',
-  faqViewsWeek:
-    '7️⃣ Тиждень — показує графік на 7 днів у більш зручному вигляді, корисно для планування найближчих днів.',
   faqViewsMonth:
     '📅 Місяць — головний календар. Тут видно зміни, вихідні дні, відпустки, нотатки, надгодини й додаткові попапи з інформацією про попередню та наступну зміну.',
   faqViewsTable:
@@ -338,7 +326,7 @@ window.translations.uk = {
   faqViewsYear:
     '📊 Рік — розширює вид місяця або таблиці на весь рік і показує 12 міні-календарів або 12 таблиць.',
   faqViewsNote:
-    'Кожна вкладка має свою мету: швидкий огляд, планування, редагування та аналіз всього періоду.',
+    'Режим Рік розширює вигляд Місяця або Таблиці на весь рік.',
   faqFeaturesTitle: '🧩 Які основні можливості програми?',
   faqFeaturesDesc:
     'Програма робить набагато більше, ніж просто показує графік. Ось її основні можливості:',

@@ -276,9 +276,6 @@
   .view-btn[data-view='dashboard']::before {
     content: '🏠';
   }
-  .view-btn[data-view='week']::before {
-    content: '7️⃣';
-  }
   .view-btn[data-view='month']::before {
     content: '📅';
   }
@@ -364,31 +361,6 @@
 @media (max-width: 650px) {
   .year-view {
     grid-template-columns: repeat(2, 1fr);
-  }
-  .week-view {
-    grid-template-columns: 1fr;
-    /* Pozwól ułożonemu tygodniowi przewijać się na małych ekranach, aby Niedziela była osiągalna */
-    max-height: calc(100vh - 180px);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-right: 8px;
-  }
-  .week-day-cell {
-    min-height: 70px;
-    margin-bottom: 8px;
-  }
-  .week-day-cell .wdc-shift .wdc-label {
-    font-size: 15px;
-  }
-  /* Wyróżnij bieżący dzień na małych ekranach */
-  .week-day-cell.today {
-    box-shadow:
-      0 0 0 6px #f1c40f,
-      0 0 28px rgba(241, 196, 15, 0.45);
-    transform: translateY(-2px);
-  }
-  .week-day-cell.today .wdc-header::after {
-    display: none;
   }
 }
 

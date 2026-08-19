@@ -7,6 +7,8 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 ## [Unreleased]
 
 ### Changed
+- **Widok Tydzień usunięty** — usunięto zakładkę, renderowanie, nawigację, CSS, obsługę druku/udostępniania oraz nieużywane tłumaczenia; stare linki `view=week` otwierają widok Miesiąc.
+- **Info panel** — usunięto zbędny blok „Status”.
 - **Menu:** Limit urlopu przeniesiony do edit banner (🌴); sekcja Zaawansowane usunięta
 - **Menu Info** na końcu listy: Pomoc/FAQ + link GitHub dewelopera
 - Personal JSON import/export usunięty (backup = Drive)
@@ -18,7 +20,7 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 - **Info panel** — OT before/after cards ordered around the shift block; monthly OT summary moved to end of month view
 - **Dashboard** — shift handoff flow as first item; removed unused “This week” block
 - **Dates** — day+month strings use genitive month names (uk: «18 липня», pl: «18 lipca»)
-- **Info panel (month)** — removed redundant “current shift” card; vacation is display-only used/remaining at end
+- **Info panel (month)** — removed redundant “current shift” and “Status” cards; vacation is display-only used/remaining at end
 - **Until day off** — shows remaining day/night shifts (or “tomorrow”), not a calendar date
 - Removed cell `+200%` / `+100%` rate badge stripe on dates
 - **Info panel** — removed detailed OT cards (before/after + daily summary); OT is shown only in the handoff flow
