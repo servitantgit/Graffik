@@ -241,9 +241,7 @@ function renderCalendar(direction) {
       cell.appendChild(nEl);
     }
 
-    if (!editMode && !isWolne(shiftCode)) {
-      addReliefPopups(cell, d, shiftCode, onUrlop);
-    }
+    // Relief handoff popups removed — functionality lives in info-panel timeline widget
 
     cell.addEventListener('click', () => {
       if (editMode) {
@@ -329,48 +327,7 @@ function renderCalendar(direction) {
   renderMonthOvertimeSummary();
 }
 
-/* === POPUPY ZMIAN (relief) === */
-function addReliefPopups(cell, d, shiftCode, onUrlop) {
-  if (!isWolne(shiftCode) && !onUrlop) {
-    const info = getRelief(currentYear, currentMonth, d, selectedShift, shiftCode);
-
-    const leftPopup = document.createElement('div');
-    const prevCls = info.prevBrig ? info.prevType : 'none';
-    leftPopup.className = 'relief-popup left pop-' + prevCls;
-    const prevWhen =
-      info.prevYear !== currentYear || info.prevMonth !== currentMonth
-        ? `${info.prevDay} ${monthNamesShort[info.prevMonth - 1]}${info.prevYear !== currentYear ? ' ' + info.prevYear : ''}`
-        : info.prevDay === d
-          ? t('todayLabel')
-          : info.prevDay === d - 1
-            ? t('dayBefore')
-            : `${info.prevDay}`;
-    leftPopup.innerHTML = `<div class="rp-label">⬅ ${t('reliefPrevShort') || t('infoPrevShift')}</div><div class="rp-brig">${info.prevBrig || '—'}</div><div class="rp-info">${info.prevType} · ${prevWhen}</div>`;
-    if (info.prevBrig) {
-      leftPopup.style.pointerEvents = 'auto';
-      leftPopup.style.cursor = 'pointer';
-    }
-    cell.appendChild(leftPopup);
-
-    const rightPopup = document.createElement('div');
-    const nextCls = info.nextBrig ? info.nextType : 'none';
-    rightPopup.className = 'relief-popup right pop-' + nextCls;
-    const nextWhen =
-      info.nextYear !== currentYear || info.nextMonth !== currentMonth
-        ? `${info.nextDay} ${monthNamesShort[info.nextMonth - 1]}${info.nextYear !== currentYear ? ' ' + info.nextYear : ''}`
-        : info.nextDay === d
-          ? t('todayLabel')
-          : info.nextDay === d + 1
-            ? t('dayAfter')
-            : `${info.nextDay}`;
-    rightPopup.innerHTML = `<div class="rp-label">${t('reliefNextShort') || t('infoNextShift')} ➡</div><div class="rp-brig">${info.nextBrig || '—'}</div><div class="rp-info">${info.nextType} · ${nextWhen}</div>`;
-    if (info.nextBrig) {
-      rightPopup.style.pointerEvents = 'auto';
-      rightPopup.style.cursor = 'pointer';
-    }
-    cell.appendChild(rightPopup);
-  }
-}
+/* === POPUPY ZMIAN (relief) — removed; timeline widget in info-panel replaces them === */
 
 /* === MODAL: ADD EXTRA SHIFT === */
 function openAddShiftModal(day) {
@@ -804,8 +761,31 @@ function renderInfo() {
         return ', ' + t('dayAfter');
       return `, ${d} ${monthNames[m - 1]}${y !== currentYear ? ' ' + y : ''}`;
     }
-    // Combined card: Timeline widget (prev → self → [OT] → next)
-    // Fallback to classic view if smart-popup.js not loaded
+
+    // Build optional OT summary for timeline (przed + po only)
+    let timelineOt = null;
+    if (!hidePrivate) {
+      const otRaw = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
+      let otHours = 0;
+      let otPercent = 50;
+      ['przed', 'po'].forEach((pos) => {
+        if (!otRaw[pos]) return;
+        otHours += otRaw[pos].hours;
+        const cat = categorizeOvertime(
+          currentYear,
+          currentMonth,
+          selectedDay,
+          shiftCode,
+          pos,
+          otRaw[pos].hours
+        );
+        const r = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
+        if (r > otPercent) otPercent = r;
+      });
+      if (otHours > 0) timelineOt = { hours: otHours, percent: otPercent };
+    }
+
+    // Timeline widget: prev → day+shift → [OT] → next  (mockup U4)
     let reliefCard;
     if (typeof renderReliefTimeline === 'function') {
       const timelineHtml = renderReliefTimeline(
@@ -815,11 +795,11 @@ function renderInfo() {
         selectedDay,
         shiftCode,
         selectedShift,
-        null // otData: null for now, OT stays in separate section
+        timelineOt
       );
       reliefCard = `
       <div class="info-card" style="grid-column:1/-1;">
-        <div class="label">🔄 ${t('infoPrevShift').replace('⬅️ ', '').replace('⬅ ', '')} / ${t('infoNextShift').replace('➡️ ', '').replace('➡ ', '')}</div>
+        <div class="label">🔄 ${t('reliefFlowTitle')}</div>
         <div class="value">${timelineHtml}</div>
       </div>
     `;
@@ -833,7 +813,7 @@ function renderInfo() {
         : '<em>—</em>';
       reliefCard = `
       <div class="info-card" style="grid-column:1/-1;">
-        <div class="label">🔄 ${t('infoPrevShift').replace('⬅️ ', '').replace('⬅ ', '')} / ${t('infoNextShift').replace('➡️ ', '').replace('➡ ', '')}</div>
+        <div class="label">🔄 ${t('reliefFlowTitle')}</div>
         <div class="value" style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-around;">
           <div style="display:flex; align-items:center; gap:8px;">
             <span style="font-size:16px; opacity:0.7;">⬅️</span>

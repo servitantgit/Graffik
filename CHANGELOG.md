@@ -10,8 +10,17 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 - **Menu:** Limit urlopu przeniesiony do edit banner (🌴); sekcja Zaawansowane usunięta
 - **Menu Info** na końcu listy: Pomoc/FAQ + link GitHub dewelopera
 - Personal JSON import/export usunięty (backup = Drive)
+- **Flow przekazania zmiany** — panel w info-panel zgodny z mockupem U4:
+  `prevBrig → dzień+typ zmiany → [OT h +%] → nextBrig` (dzień jako węzeł self, nie litera brygady)
+- OT z przed/po wpinany w timeline gdy istnieje
+- i18n: `reliefFlowTitle`, `tlYesterday` / `tlToday` / `tlTomorrow` (pl/en/uk)
+
+### Usunięte
+- Cell relief popups (`addReliefPopups`) — funkcjonalność w timeline widget info-panel
 
 ### Naprawione
+- CSS `smart-popup.css`: uszkodzony komentarz i `@keyframes` (ZWSP) — animacja strzałek działa
+
 
 - **PWA Service Worker install** — `sw.js` ASSETS zawierał nieistniejący `js/data.js`
   i pomijał realne moduły (`schedules/*`, `personal/sync-tracking.js`, `admin.js`).

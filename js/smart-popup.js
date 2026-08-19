@@ -1,8 +1,10 @@
 /* ================================================================
    GRAFIK GILLETTE - SMART-POPUP.JS
    Timeline widget renderer for relief handoff visualization
-   Part of v3.9.0 refactor
+   Matches mockup U4: D → 15 R → [OT] → A
+   Part of v3.9.0+ refactor
    ================================================================ */
+
 /**
  * Shift emoji icons mapping
  */
@@ -13,28 +15,30 @@ const TL_SHIFT_ICONS = {
   W: '💤',
   U: '🏖️',
 };
+
 /**
- * Format "when" label for timeline node
- * @param {number} year - target year
- * @param {number} month - target month
- * @param {number} day - target day
- * @param {number} currentYear - reference current year
- * @param {number} currentMonth - reference current month
- * @param {number} currentDay - reference current day
- * @returns {string} short label like "wcz.", "dziś", "jutro" or date
+ * Short "when" label for timeline node (wcz. / dziś / jutro)
  */
 function tlFormatWhen(year, month, day, currentYear, currentMonth, currentDay) {
   if (year === currentYear && month === currentMonth) {
-    if (day === currentDay) return typeof t === 'function' ? t('todayLabel') : 'dziś';
-    if (day === currentDay - 1) return 'wcz.';
-    if (day === currentDay + 1) return 'jutro';
+    if (day === currentDay) {
+      return typeof t === 'function' ? t('tlToday') : 'dziś';
+    }
+    if (day === currentDay - 1) {
+      return typeof t === 'function' ? t('tlYesterday') : 'wcz.';
+    }
+    if (day === currentDay + 1) {
+      return typeof t === 'function' ? t('tlTomorrow') : 'jutro';
+    }
   }
+  // Cross-month / far day: short numeric
   return day + '.' + month;
 }
+
 /**
- * Render timeline node (single brigade or OT)
- * @param {Object} config - node configuration
- * @returns {string} HTML string
+ * Render a single timeline node
+ * @param {Object} config
+ * @returns {string} HTML
  */
 function tlRenderNode(config) {
   const {
@@ -42,12 +46,14 @@ function tlRenderNode(config) {
     brig = null,
     shift = null, // 'R' | 'P' | 'N'
     label = '',
-    value = null, // for OT: hours
+    value = null, // OT hours
     otPercent = null, // 50 | 100 | 200
     isSelf = false,
   } = config;
-  let classes = ['tl-node'];
+
+  const classes = ['tl-node'];
   let content = '';
+
   if (type === 'empty') {
     classes.push('tl-empty');
     content = `<div class="tl-brig">—</div>`;
@@ -57,38 +63,48 @@ function tlRenderNode(config) {
     else if (otPercent === 100) classes.push('tl-ot-100');
     else classes.push('tl-ot');
     content = `<div class="tl-value">${value}h</div>`;
-    if (label) content += `<div class="tl-label">+${otPercent}%</div>`;
-  } else {
-    // shift node (prev, next, or self)
+    if (otPercent != null) content += `<div class="tl-label">+${otPercent}%</div>`;
+  } else if (type === 'self' || isSelf) {
+    // Self = current day: day number as main, shift icon + shift code as label
     if (shift) classes.push('tl-shift-' + shift);
-    if (isSelf) classes.push('tl-self');
+    classes.push('tl-self');
+    content = `<div class="tl-brig">${brig != null ? brig : '—'}</div>`;
+    if (shift && TL_SHIFT_ICONS[shift]) {
+      content += `<div class="tl-icon">${TL_SHIFT_ICONS[shift]}</div>`;
+    }
+    if (label) content += `<div class="tl-label">${label}</div>`;
+  } else {
+    // Prev / next brigade node
+    if (shift) classes.push('tl-shift-' + shift);
     content = `<div class="tl-brig">${brig || '—'}</div>`;
     if (shift && TL_SHIFT_ICONS[shift]) {
       content += `<div class="tl-icon">${TL_SHIFT_ICONS[shift]}</div>`;
     }
     if (label) content += `<div class="tl-label">${label}</div>`;
   }
+
   return `<div class="${classes.join(' ')}">${content}</div>`;
 }
+
 /**
- * Render flow arrow between nodes
- * @returns {string} HTML string
+ * Flow arrow between nodes
  */
 function tlRenderArrow() {
   return `<div class="tl-arrow">→</div>`;
 }
+
 /**
- * Main renderer: build complete Timeline Widget HTML
- * @param {Object} info - relief info object from getRelief()
- * { prevBrig, prevType, prevYear, prevMonth, prevDay,
- * nextBrig, nextType, nextYear, nextMonth, nextDay }
+ * Main renderer: Timeline Widget matching mockup U4
+ * Flow: [prevBrig] → [dayNumber + shift] → [OT?] → [nextBrig]
+ *
+ * @param {Object} info - from getRelief()
  * @param {number} currentYear
  * @param {number} currentMonth
  * @param {number} currentDay
  * @param {string} currentShift - 'R' | 'P' | 'N'
- * @param {string} currentBrigade - 'A' | 'B' | 'C' | 'D'
- * @param {Object|null} otData - optional { hours, percent } or null
- * @returns {string} complete HTML for timeline widget
+ * @param {string} currentBrigade - 'A' | 'B' | 'C' | 'D' (unused for self display; kept for API)
+ * @param {Object|null} otData - { hours: number, percent: 50|100|200 } or null
+ * @returns {string} HTML
  */
 function renderReliefTimeline(
   info,
@@ -100,8 +116,9 @@ function renderReliefTimeline(
   otData
 ) {
   const parts = [];
-  // === PREV NODE ===
-  if (info.prevBrig) {
+
+  // === PREV NODE (brigade that handed over) ===
+  if (info && info.prevBrig) {
     parts.push(
       tlRenderNode({
         type: 'shift',
@@ -125,31 +142,36 @@ function renderReliefTimeline(
       })
     );
   }
+
   parts.push(tlRenderArrow());
-  // === SELF NODE (current day) ===
+
+  // === SELF NODE (day being viewed) — day number + shift type ===
   parts.push(
     tlRenderNode({
-      type: 'shift',
-      brig: currentBrigade,
+      type: 'self',
+      brig: String(currentDay),
       shift: currentShift,
-      label: currentDay + '.' + currentMonth,
+      label: currentShift || '',
       isSelf: true,
     })
   );
-  // === OT NODE (if exists) ===
-  if (otData && otData.hours && otData.percent) {
+
+  // === OT NODE (optional, between self and next) ===
+  if (otData && otData.hours > 0) {
     parts.push(tlRenderArrow());
     parts.push(
       tlRenderNode({
         type: 'ot',
         value: otData.hours,
-        otPercent: otData.percent,
+        otPercent: otData.percent || 200,
       })
     );
   }
+
   parts.push(tlRenderArrow());
-  // === NEXT NODE ===
-  if (info.nextBrig) {
+
+  // === NEXT NODE (brigade that takes over) ===
+  if (info && info.nextBrig) {
     parts.push(
       tlRenderNode({
         type: 'shift',
@@ -173,7 +195,11 @@ function renderReliefTimeline(
       })
     );
   }
+
   return `<div class="timeline-widget">${parts.join('')}</div>`;
 }
+
 // Export to global scope (no ES modules in this project)
 window.renderReliefTimeline = renderReliefTimeline;
+window.tlFormatWhen = tlFormatWhen;
+window.tlRenderNode = tlRenderNode;

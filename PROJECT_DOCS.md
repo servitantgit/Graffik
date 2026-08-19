@@ -225,14 +225,15 @@ js/schedules/
 ### js/calendar.js — Moduł 6: Widok Miesiąc
 
 - `renderCalendar(direction)` — generowanie siatki kalendarza
-- `addReliefPopups(cell, d, shiftCode, onUrlop)` — popupy z brygadą przekazującą/przejmującą
-- `addOvertimePopups(cell, d, shift)` — popupy PRZED/PO w trybie nadgodzin
+- Relief handoff: **timeline widget** w info-panel (`renderReliefTimeline` z `smart-popup.js`) — layout U4: prev → dzień+zmiana → [OT] → next
+- Cell relief popups usunięte (funkcjonalność w panelu)
+- OT marker + ot-detail-popup na komórce (hover/selected) — bez change
 - `openOvertimeModal(d, shift, type)` — modal edycji nadgodzin
 - `updateOvertimePreview()` — podgląd nadgodzin w modalu
 - `saveOvertimeFromModal()` — zapis nadgodzin
 - `renderMonthOvertimeSummary()` — podsumowanie miesięczne nadgodzin
 - `renderProgress()` — pasek postępu miesiąca
-- `renderInfo()` — panel informacji pod kalendarzem
+- `renderInfo()` — panel informacji pod kalendarzem (zawiera Flow przekazania zmiany)
 - `getLiveShiftInfo()` — info o aktualnej zmianie
 - **Privacy:** komórki, OT, notatki, dirty-edit — za `hidePrivate`
   - `cycleRange` / `compareShift` używają factory schedule gdy wylogowany
@@ -425,7 +426,7 @@ Używany dla wszystkich przycisków w side menu i edit banner.
 - Genitive month names są zdublowane w kodzie (monthNames dla nagłówków vs monthNamesGenitive dla dat)
 - Testowanie funkcji `getLiveTimer()` wymaga mockowania `Date`, `getShiftAt`, `isUrlop`, `getOvertimes` jednocześnie
 - Kompatybilność `chrome-extension://` z Service Worker — wymaga jawnego filtra protokołu w handlerze `fetch`
-- **Relief popups** (`getRelief` → `getShiftAt`) nadal czytają custom schedule nawet gdy UI pokazuje factory — niska waga, możliwe drobne niespójności podświetleń przy wylogowaniu
+- **Relief timeline** (`getRelief` → `getShiftAt`) nadal czyta custom schedule nawet gdy UI pokazuje factory — niska waga, możliwe drobne niespójności przy wylogowaniu
 - **Edit mode** nie jest twardo zablokowany bez logowania — lokalne edycje customSchedule są możliwe offline; UI i tak ukrywa personal data do logowania
 - Etykieta Admin „Export data.js” jest legacy naming — eksport generuje już format `YYYY.js` (registerYearData)
 
