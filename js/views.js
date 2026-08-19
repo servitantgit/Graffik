@@ -267,9 +267,9 @@ function renderYearView() {
     wrap.innerHTML = `<h4>${monthNames[m - 1]}</h4>`;
     const mini = document.createElement('div');
     mini.className = 'mini-calendar';
-    dayNames.forEach((d) => {
+    dayNames.forEach((d, wi) => {
       const h = document.createElement('div');
-      h.className = 'mini-weekday';
+      h.className = 'mini-weekday' + (wi >= 5 ? ' mini-weekend' : '');
       h.textContent = d[0];
       mini.appendChild(h);
     });
@@ -300,6 +300,8 @@ function renderYearView() {
       const el = document.createElement('div');
       el.className = 'mini-day m' + cls + (dirty ? ' mDirty' : '');
       el.textContent = d;
+      const dowY = new Date(currentYear, m - 1, d).getDay();
+      if (dowY === 0 || dowY === 6) el.classList.add('mWeekend');
       if (
         today.getFullYear() === currentYear &&
         today.getMonth() + 1 === m &&
