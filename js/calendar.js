@@ -630,31 +630,9 @@ function renderInfo() {
       if (before || after) timelineOt = { before, after };
     }
 
-    // Segment: Handoff | Cycle (until free)
+    // Handoff flow only (no mode tabs — cycle lives on dashboard)
     let reliefCard = '';
-    if (typeof renderReliefTimeline === 'function' && typeof renderFlowSegmentWidget === 'function') {
-      const handoffHtml = renderReliefTimeline(
-        info,
-        currentYear,
-        currentMonth,
-        selectedDay,
-        shiftCode,
-        selectedShift,
-        timelineOt
-      );
-      let cycleHtml = '';
-      if (typeof getCyclePath === 'function' && typeof renderCycleTimeline === 'function') {
-        const path = getCyclePath(currentYear, currentMonth, selectedDay, selectedShift, 8);
-        cycleHtml = renderCycleTimeline(path, currentYear, currentMonth, selectedDay);
-      } else {
-        cycleHtml = handoffHtml;
-      }
-      reliefCard = renderFlowSegmentWidget({
-        handoffHtml,
-        cycleHtml,
-        defaultMode: 'handoff',
-      });
-    } else if (typeof renderReliefTimeline === 'function') {
+    if (typeof renderReliefTimeline === 'function') {
       const timelineHtml = renderReliefTimeline(
         info,
         currentYear,
@@ -680,8 +658,6 @@ function renderInfo() {
         ${urlopStats}
       </div>`;
   }
-
-  if (typeof bindFlowSegmentToggle === 'function') bindFlowSegmentToggle(panel);
 
   const ni = document.getElementById('noteInput');
   if (ni) {
