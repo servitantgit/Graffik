@@ -133,7 +133,8 @@ function registerYearData(scheduleId, year, scheduleData, hoursData) {
  * @returns {boolean}
  */
 function shouldShowPersonalData() {
-  // Check if Google Drive login is active
+  // Session-based: stay "logged in" until explicit logout (token may refresh in background)
+  if (typeof isDriveLoggedIn === 'function') return isDriveLoggedIn();
   return typeof isDriveTokenValid === 'function' && isDriveTokenValid();
 }
 
