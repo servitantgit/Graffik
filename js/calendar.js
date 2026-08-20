@@ -579,12 +579,6 @@ function renderInfo() {
     <div class="value">${usedUrlop} / ${limit} <small style="opacity:.85;">(${t('urlopRemaining', { n: remainingUrlop })})</small></div>
   </div>`;
 
-  let liveInfo = '';
-  if (!hidePrivate) {
-    const lv = getLiveShiftInfo();
-    if (lv) liveInfo = lv;
-  }
-
   if (onUrlop) {
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span> · 🌴 ${t('infoUrlop')}</h3>
       <div class="info-grid">
@@ -649,12 +643,11 @@ function renderInfo() {
       </div>`;
     }
 
-    // Order: flow (handoff|cycle) → live → note → vacation
+    // Order: flow → note → vacation
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
       <div class="info-grid">
                 ${reliefCard}
-        ${liveInfo}
-                                ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
+                                        ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
         ${urlopStats}
       </div>`;
   }
@@ -673,16 +666,3 @@ function renderInfo() {
   }
 }
 
-function getLiveShiftInfo() {
-  const now = new Date();
-  if (now.getFullYear() !== currentYear) return '';
-  const timer = getLiveTimer(
-    getShiftAt(currentYear, now.getMonth() + 1, now.getDate(), selectedShift),
-    currentYear,
-    now.getMonth() + 1,
-    now.getDate()
-  );
-  if (timer)
-    return `<div class="info-card" style="border:2px solid #27ae60;"><div class="label">${t('infoLiveShift')}</div><div class="value" style="color:#27ae60;">${timer}</div></div>`;
-  return '';
-}
