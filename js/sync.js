@@ -19,8 +19,49 @@ const DEFAULT_CLIENT_ID =
 let gDriveClientId = localStorage.getItem(DRIVE_CLIENT_ID_KEY) || DEFAULT_CLIENT_ID;
 
 /* === POMOCNICZE === */
+const DRIVE_SESSION_KEY = 'grafik_drive_had_session';
+let gDriveRefreshTimer = null;
+let gDriveTokenInflight = null; // Promise for concurrent refresh requests
+
 function isDriveTokenValid() {
-  return gDriveToken && Date.now() < gDriveTokenExpiry - 60000;
+  return !!(gDriveToken && Date.now() < gDriveTokenExpiry - 60000);
+}
+
+/** User had a Drive session before (even if access token expired). */
+function hadDriveSession() {
+  return localStorage.getItem(DRIVE_SESSION_KEY) === '1' || !!driveUserEmail;
+}
+
+function markDriveSession() {
+  localStorage.setItem(DRIVE_SESSION_KEY, '1');
+}
+
+function clearDriveSessionFlag() {
+  localStorage.removeItem(DRIVE_SESSION_KEY);
+}
+
+function persistDriveToken(accessToken, expiresInSec) {
+  gDriveToken = accessToken;
+  const sec = Number(expiresInSec) > 0 ? Number(expiresInSec) : 3600;
+  gDriveTokenExpiry = Date.now() + sec * 1000;
+  localStorage.setItem('grafik_drive_token', gDriveToken);
+  localStorage.setItem('grafik_drive_token_expiry', String(gDriveTokenExpiry));
+  markDriveSession();
+  scheduleDriveTokenRefresh();
+}
+
+/** Refresh a few minutes before expiry (access tokens ~1h). */
+function scheduleDriveTokenRefresh() {
+  if (gDriveRefreshTimer) {
+    clearTimeout(gDriveRefreshTimer);
+    gDriveRefreshTimer = null;
+  }
+  if (!gDriveToken || !gDriveTokenExpiry) return;
+  // refresh 5 min before expiry, but at least 30s from now
+  const ms = Math.max(30 * 1000, gDriveTokenExpiry - Date.now() - 5 * 60 * 1000);
+  gDriveRefreshTimer = setTimeout(() => {
+    trySilentDriveRefresh().catch(() => {});
+  }, ms);
 }
 
 /**
@@ -72,21 +113,48 @@ function loadGis() {
 function initGDriveTokenClient() {
   if (!gDriveClientId || typeof google === 'undefined' || !google.accounts) return false;
   try {
+    // prompt is set per requestAccessToken call ('' = silent, consent = interactive)
     gDriveTokenClient = google.accounts.oauth2.initTokenClient({
       client_id: gDriveClientId,
       scope: DRIVE_SCOPE,
-      prompt: 'consent',
       callback: (resp) => {
-        if (resp.access_token) {
-          gDriveToken = resp.access_token;
-          gDriveTokenExpiry = Date.now() + (resp.expires_in || 3600) * 1000;
-          localStorage.setItem('grafik_drive_token', gDriveToken);
-          localStorage.setItem('grafik_drive_token_expiry', String(gDriveTokenExpiry));
-          showToast('success', `☁️ ${t('driveLoggedIn')}`);
+        if (resp && resp.access_token) {
+          persistDriveToken(resp.access_token, resp.expires_in);
+          if (gDriveTokenInflight && gDriveTokenInflight._resolve) {
+            gDriveTokenInflight._resolve(true);
+            gDriveTokenInflight = null;
+          }
+          // Toast only for interactive login (not silent refresh)
+          if (gDriveTokenClient && gDriveTokenClient._lastInteractive) {
+            showToast('success', `☁️ ${t('driveLoggedIn')}`);
+            gDriveTokenClient._lastInteractive = false;
+          }
           updateDriveUI();
           fetchDriveUserEmail();
+          try {
+            window.dispatchEvent(new CustomEvent('driveAuthChanged', { detail: { loggedIn: true } }));
+          } catch (_) {}
         } else {
+          if (gDriveTokenInflight && gDriveTokenInflight._resolve) {
+            gDriveTokenInflight._resolve(false);
+            gDriveTokenInflight = null;
+          }
+          // Silent failure: do not toast (expired session / no Google cookie)
+          if (gDriveTokenClient && gDriveTokenClient._lastInteractive) {
+            showToast('error', `☁️ ${t('driveLoginFailed')}`);
+            gDriveTokenClient._lastInteractive = false;
+          }
+        }
+      },
+      error_callback: (err) => {
+        console.warn('[SYNC] token error:', err);
+        if (gDriveTokenInflight && gDriveTokenInflight._resolve) {
+          gDriveTokenInflight._resolve(false);
+          gDriveTokenInflight = null;
+        }
+        if (gDriveTokenClient && gDriveTokenClient._lastInteractive) {
           showToast('error', `☁️ ${t('driveLoginFailed')}`);
+          gDriveTokenClient._lastInteractive = false;
         }
       },
     });
@@ -97,31 +165,89 @@ function initGDriveTokenClient() {
   }
 }
 
+/**
+ * Request a new access token.
+ * @param {{ interactive?: boolean }} opts
+ *   interactive true → may show Google UI; false → prompt:'' silent
+ * @returns {Promise<boolean>}
+ */
+function requestDriveAccessToken(opts) {
+  const interactive = !!(opts && opts.interactive);
+  if (!gDriveTokenClient) initGDriveTokenClient();
+  if (!gDriveTokenClient) return Promise.resolve(false);
+
+  // Coalesce parallel requests
+  if (gDriveTokenInflight) return gDriveTokenInflight;
+
+  let resolveFn;
+  gDriveTokenInflight = new Promise((resolve) => {
+    resolveFn = resolve;
+  });
+  gDriveTokenInflight._resolve = resolveFn;
+
+  gDriveTokenClient._lastInteractive = interactive;
+  try {
+    gDriveTokenClient.requestAccessToken(
+      interactive ? { prompt: 'consent' } : { prompt: '' }
+    );
+  } catch (e) {
+    console.warn('[SYNC] requestAccessToken:', e);
+    resolveFn(false);
+    gDriveTokenInflight = null;
+    return Promise.resolve(false);
+  }
+
+  // Safety timeout
+  setTimeout(() => {
+    if (gDriveTokenInflight && gDriveTokenInflight._resolve === resolveFn) {
+      resolveFn(isDriveTokenValid());
+      gDriveTokenInflight = null;
+    }
+  }, interactive ? 120000 : 8000);
+
+  return gDriveTokenInflight;
+}
+
+/** Silent refresh when Google session cookie still exists. */
+async function trySilentDriveRefresh() {
+  if (isDriveTokenValid()) {
+    scheduleDriveTokenRefresh();
+    return true;
+  }
+  if (!hadDriveSession()) return false;
+  await loadGis();
+  if (!gDriveTokenClient) initGDriveTokenClient();
+  const ok = await requestDriveAccessToken({ interactive: false });
+  if (ok) {
+    updateDriveUI();
+    return true;
+  }
+  // Token gone but remember session — UI shows logged out until user taps login
+  updateDriveUI();
+  return false;
+}
+
+/** Ensure valid token before Drive API calls. */
+async function ensureDriveToken(interactiveFallback) {
+  if (isDriveTokenValid()) return true;
+  const silent = await trySilentDriveRefresh();
+  if (silent) return true;
+  if (interactiveFallback) {
+    return requestDriveAccessToken({ interactive: true });
+  }
+  return false;
+}
+
 /* === API WRAPPERS === */
 async function driveFetch(url, options = {}, retry = true) {
+  if (!isDriveTokenValid()) {
+    await ensureDriveToken(false);
+  }
   const headers = options.headers || {};
   headers['Authorization'] = 'Bearer ' + gDriveToken;
   const resp = await fetch(url, { ...options, headers });
   if (resp.status === 401 && retry) {
-    // token expired — log in again
-    const ok = await new Promise((resolve) => {
-      if (!gDriveTokenClient) {
-        resolve(false);
-        return;
-      }
-      gDriveTokenClient.requestAccessToken();
-      // GIS will call the callback, which sets a new token
-      const checkTimer = setInterval(() => {
-        if (isDriveTokenValid()) {
-          clearInterval(checkTimer);
-          resolve(true);
-        }
-      }, 200);
-      setTimeout(() => {
-        clearInterval(checkTimer);
-        resolve(isDriveTokenValid());
-      }, 5000);
-    });
+    const ok = await ensureDriveToken(false);
     if (ok) return driveFetch(url, options, false);
   }
   return resp;
@@ -165,7 +291,7 @@ async function findDriveFile() {
 
 /* === ZAPIS (create lub update) === */
 async function uploadToDrive(force = false) {
-  if (!isDriveTokenValid()) {
+  if (!(await ensureDriveToken(true))) {
     showToast('warn', `☁️ ${t('driveLoginRequired')}`);
     return false;
   }
@@ -246,7 +372,7 @@ async function uploadToDrive(force = false) {
 
 /* === ODCZYT === */
 async function downloadFromDrive(confirmOverwrite = false) {
-  if (!isDriveTokenValid()) {
+  if (!(await ensureDriveToken(true))) {
     showToast('warn', `☁️ ${t('driveLoginRequired')}`);
     return false;
   }
@@ -488,17 +614,19 @@ function loginDrive() {
     askForClientId();
     return;
   }
-  if (!gDriveTokenClient) initGDriveTokenClient();
-  if (!gDriveTokenClient) {
-    showToast('error', `☁️ ${t('driveCannotInitLogin')}`);
-    return;
-  }
-  gDriveTokenClient.requestAccessToken();
+  loadGis().then(() => {
+    if (!gDriveTokenClient) initGDriveTokenClient();
+    if (!gDriveTokenClient) {
+      showToast('error', `☁️ ${t('driveCannotInitLogin')}`);
+      return;
+    }
+    requestDriveAccessToken({ interactive: true });
+  });
 }
 
 /* === MAIN MENU: sync === */
 async function syncWithDrive() {
-  if (!isDriveTokenValid()) {
+  if (!(await ensureDriveToken(true))) {
     showToast('warn', `☁️ ${t('driveLoginRequired')}`);
     loginDrive();
     return;
@@ -607,6 +735,10 @@ function logoutDrive() {
  * Called after user confirms (or if no unsynced changes exist).
  */
 function performLogoutDrive() {
+  if (gDriveRefreshTimer) {
+    clearTimeout(gDriveRefreshTimer);
+    gDriveRefreshTimer = null;
+  }
   gDriveToken = null;
   gDriveTokenExpiry = 0;
   gDriveFileId = null;
@@ -615,11 +747,15 @@ function performLogoutDrive() {
   localStorage.removeItem('grafik_drive_token_expiry');
   localStorage.removeItem('grafik_drive_file_id');
   localStorage.removeItem('grafik_drive_user_email');
+  clearDriveSessionFlag();
   showToast('info', `☁️ ${t('driveLoggedOut')}`);
   updateDriveUI();
   if (typeof updateAdminUI === 'function') {
     updateAdminUI();
   }
+  try {
+    window.dispatchEvent(new CustomEvent('driveAuthChanged', { detail: { loggedIn: false } }));
+  } catch (_) {}
 }
 
 /* === EXPOSE driveUserEmail TO GLOBAL SCOPE (for js/admin.js) === */
@@ -677,9 +813,29 @@ function initSync() {
     };
   }
 
-  loadGis().then(() => {
+  loadGis().then(async () => {
     if (gDriveClientId) initGDriveTokenClient();
     updateDriveUI();
+    // Restore session after reload / SW update if Google cookie still valid
+    if (!isDriveTokenValid() && hadDriveSession()) {
+      await trySilentDriveRefresh();
+    } else if (isDriveTokenValid()) {
+      scheduleDriveTokenRefresh();
+      fetchDriveUserEmail();
+    }
+  });
+
+  // Tab visible again — refresh if token near expiry or gone
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    if (isDriveTokenValid()) {
+      // renew if less than 10 min left
+      if (gDriveTokenExpiry - Date.now() < 10 * 60 * 1000) {
+        trySilentDriveRefresh().catch(() => {});
+      }
+    } else if (hadDriveSession()) {
+      trySilentDriveRefresh().catch(() => {});
+    }
   });
 }
 
