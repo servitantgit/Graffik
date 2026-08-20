@@ -196,17 +196,11 @@ body:not(.theme-dark) .dash-hero {
 }
 .dash-upcoming-list {
   display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding: 2px 2px 8px 2px;
+  gap: 4px;
+  padding: 2px 0;
   flex-wrap: nowrap;
-  /* Fallback для старих браузерів */
-  justify-content: flex-start;
-  /* Modern браузери — центр коли влазить, скрол коли ні */
-  justify-content: safe center;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
+  justify-content: space-between;
+  overflow: visible;
 }
 .dash-upcoming-list::-webkit-scrollbar {
   height: 5px;
@@ -217,16 +211,21 @@ body:not(.theme-dark) .dash-hero {
 }
 
 .dash-day-chip {
-  scroll-snap-align: center;
-  flex-shrink: 0;
-  min-width: 70px;
-  padding: 10px 8px;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 68px;
+  padding: 8px 2px;
   border-radius: 10px;
   text-align: center;
   color: #fff;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 .dash-day-chip:hover {
   transform: translateY(-3px);
@@ -241,8 +240,9 @@ body:not(.theme-dark) .dash-hero {
   background: var(--color-N);
 }
 .dash-day-chip.chip-W {
-  background: var(--color-W);
-  color: var(--color-W-text);
+  background: var(--color-W, #4b5563);
+  color: var(--color-W-text, #e5e7eb);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 .dash-day-chip.chip-U {
   background: var(--color-U-grad);
@@ -253,8 +253,9 @@ body:not(.theme-dark) .dash-hero {
   text-transform: uppercase;
 }
 .dash-day-chip .ddc-date {
-  font-size: 20px;
+  font-size: 16px;
   margin: 2px 0;
+  line-height: 1.1;
 }
 .dash-day-chip .ddc-shift {
   font-size: 12px;
