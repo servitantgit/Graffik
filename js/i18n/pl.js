@@ -19,6 +19,8 @@ window.translations.pl = {
   today: '📅 Dziś',
   prevMonth: 'Poprzedni miesiąc (←)',
   nextMonth: 'Następny miesiąc (→)',
+  prevWeek: '‹',
+  nextWeek: '›',
 
   // === SHIFTS ===
   shiftR: 'Rano (R)',
@@ -114,6 +116,8 @@ window.translations.pl = {
   // === INFO PANEL ===
   infoPanelTitle: 'ℹ️ Wybierz dzień w kalendarzu',
   infoPanelHint: 'Kliknij dowolny dzień, aby zobaczyć szczegóły.',
+  infoStatus: 'Status',
+  infoPlannedShift: 'Zaplanowana zmiana',
   infoNote: '📝 Notatka',
   infoNotePlaceholder: 'Dodaj notatkę...',
   infoNoteSaved: 'Notatka zapisana',
@@ -150,6 +154,7 @@ window.translations.pl = {
   infoBrigadeHours: 'Brygada {brig}: {worked}h / {total}h ({pct}%)',
   infoDayTooltip: '{d} {month}: {status}',
   infoTableTooltip: '{brig} • {d} {month}: {status}',
+  infoStatusFree: '🏖️ Wolne',
 
   // === OVERTIME ===
   otHoursLabel: 'Ile godzin?',
@@ -262,6 +267,7 @@ window.translations.pl = {
 
   // === PRINT ===
   printHeaderDashboard: 'Dashboard',
+  printHeaderWeek: 'Tydzień',
   printHeaderMonth: 'Miesiąc',
   printHeaderTable: 'Tabela',
   printYearSuffix: ' — cały rok',
@@ -269,9 +275,11 @@ window.translations.pl = {
 
   // === VIEWS ===
   viewDashboard: '🏠 Dashboard',
+  viewWeek: '7️⃣ Tydzień',
   viewMonth: '📅 Miesiąc',
   viewTable: '📋 Tabela',
   viewYear: '📊 Rok',
+  weekTitle: '📆 {range} · Brygada {brig}',
   yearViewTitle: '📋 Cały rok {year} — wszystkie brygady',
   monthViewTitle: '📋 {month} {year} — wszystkie brygady',
   tableCorner: 'Br.\\Dz.',
@@ -287,8 +295,10 @@ window.translations.pl = {
   greeting: 'Cześć! 👋',
   tomorrow: 'Jutro',
   nextDayOff: 'Do wolnego',
+  thisWeek: 'Ten tydzień',
   upcomingDays: 'Najbliższe 7 dni',
   seeMonth: '📅 Zobacz miesiąc',
+  seeWeek: '📆 Zobacz tydzień',
   unknown: 'Nieznane',
   todayLabel: 'Dziś!',
   daysAgo: 'wczoraj',
@@ -317,9 +327,11 @@ window.translations.pl = {
   faqLangNote:
     'Wybrany język zapisuje się automatycznie i jest przywracany przy kolejnym uruchomieniu. Przy pierwszym starcie język jest wykrywany z ustawień przeglądarki.',
   faqViewsTitle: '📋 Jakie są główne zakładki i co każda z nich pokazuje?',
-  faqViewsDesc: 'Aplikacja ma trzy główne widoki, które służą do różnych zadań:',
+  faqViewsDesc: 'Aplikacja ma kilka głównych widoków, które służą do różnych zadań:',
   faqViewsDashboard:
     '🏠 Dashboard — ekran startowy. Pokazuje dzisiejszą zmianę, najbliższe dni, podsumowanie tygodnia, status urlopów i szybkie przejścia do innych widoków.',
+  faqViewsWeek:
+    '📆 Tydzień — pokazuje grafik na 7 dni w większej, bardziej uporządkowanej formie, przydatnej do planowania najbliższych dni.',
   faqViewsMonth:
     '📅 Miesiąc — główny kalendarz. Tutaj widać zmiany, dni wolne, urlopy, notatki, nadgodziny i dodatkowe popupy z informacją o poprzedniej i następnej zmianie.',
   faqViewsTable:
@@ -327,7 +339,7 @@ window.translations.pl = {
   faqViewsYear:
     '📊 Rok — rozszerza widok miesiąca lub tabeli na cały rok i pokazuje 12 mini-kalendarzy albo 12 tabel.',
   faqViewsNote:
-    'Tryb Rok rozszerza widok Miesiąca lub Tabeli na cały rok.',
+    'Każda zakładka odpowiada innemu celowi: szybki przegląd, planowanie, edycja i analiza całego okresu.',
   faqFeaturesTitle: '🧩 Jakie są najważniejsze możliwości programu?',
   faqFeaturesDesc:
     'Program potrafi robić znacznie więcej niż tylko pokazywać grafik. Oto jego najważniejsze możliwości:',

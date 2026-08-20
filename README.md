@@ -19,6 +19,10 @@ Kliknij dowolny zrzut, aby zobaczyć w pełnym rozmiarze.
       <sub><b>🏠 Dashboard</b></sub>
     </td>
     <td align="center">
+      <a href="screenshots/2.jpg"><img src="screenshots/2.jpg" width="180" alt="Tydzień"/></a><br>
+      <sub><b>📆 Tydzień</b></sub>
+    </td>
+    <td align="center">
       <a href="screenshots/3.jpg"><img src="screenshots/3.jpg" width="180" alt="Miesiąc"/></a><br>
       <sub><b>📅 Miesiąc</b></sub>
     </td>
@@ -39,7 +43,7 @@ Kliknij dowolny zrzut, aby zobaczyć w pełnym rozmiarze.
 ## ✨ Główne funkcje
 
 - 📊 **4 brygady** (A/B/C/D) z systemem 3 zmian (R/P/N) + Wolne + Urlop
-- 🏠 **3 widoki**: Dashboard, Miesiąc, Tabela
+- 🏠 **4 widoki**: Dashboard, Tydzień, Miesiąc, Tabela
 - 📈 **Tryb Rok** — rozszerza Miesiąc/Tabelę na cały rok (12 mini-kalendarzy/tabel)
 - ✏️ **Edycja grafiku** (auto-save; limit urlopu w trybie edycji 🌴)
 - 🌴 **Urlopy** z limitem per brygada i automatycznym liczeniem dni roboczych
@@ -89,7 +93,7 @@ Funkcja **🔗 Udostępnij widok** w bocznym menu tworzy link do dokładnie tego
 
 | Parametr | Znaczenie                                         | Przykład     | Opcjonalny |
 | -------- | ------------------------------------------------- | ------------ | ---------- |
-| `view`   | Typ widoku: `dashboard`, `month`, `table` | `view=month` | Nie        |
+| `view`   | Typ widoku: `dashboard`, `week`, `month`, `table` | `view=month` | Nie        |
 | `y`      | Rok                                               | `y=2026`     | Nie        |
 | `m`      | Miesiąc (1-12)                                    | `m=8`        | Tak\*      |
 | `d`      | Dzień (1-31)                                      | `d=10`       | Tak\*      |
@@ -109,6 +113,9 @@ Funkcja **🔗 Udostępnij widok** w bocznym menu tworzy link do dokładnie tego
 
 # Rok view, brygada C
 ?view=month&y=2026&brig=C&rok=1
+
+# Tydzień z 10 sierpnia, brygada C
+?view=week&y=2026&m=8&d=10&brig=C
 
 # Tabela — cały rok
 ?view=table&y=2026&rok=1
@@ -167,7 +174,7 @@ Następnie otwórz: `http://localhost:8000`
     │   ├── edit.js              # Tryb edycji, undo/redo, pending buffer
     │   ├── dashboard.js         # Dashboard (gated by shouldShowPersonalData)
     │   ├── calendar.js          # Kalendarz, popupy, nadgodziny
-    │   ├── views.js             # Rok, Tabela
+    │   ├── views.js             # Tydzień, Rok, Tabela
     │   ├── actions.js           # .ics, share, import/export JSON, admin export
     │   ├── pwa.js               # SW registration, powiadomienia
     │   ├── sync.js              # Google Drive OAuth + upload/download
@@ -204,7 +211,7 @@ Następnie otwórz: `http://localhost:8000`
 
 | Skrót     | Działanie                              |
 | --------- | -------------------------------------- |
-| `←` / `→` | Poprzedni/następny miesiąc |
+| `←` / `→` | Poprzedni/następny miesiąc lub tydzień |
 | `E`       | Włącz/wyłącz tryb edycji               |
 | `Esc`     | Zamknij popup/modal lub wyjdź z edycji |
 

@@ -77,6 +77,7 @@ function renderFAQ() {
                 <p>${t('faqViewsDesc')}</p>
                 <ul>
                     <li>${t('faqViewsDashboard')}</li>
+                    <li>${t('faqViewsWeek')}</li>
                     <li>${t('faqViewsMonth')}</li>
                     <li>${t('faqViewsTable')}</li>
                     <li>${t('faqViewsYear')}</li>

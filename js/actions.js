@@ -76,6 +76,7 @@ function addPrintHeader() {
   const viewName =
     {
       dashboard: t('printHeaderDashboard'),
+      week: t('printHeaderWeek'),
       month: t('printHeaderMonth'),
       table: t('printHeaderTable'),
     }[currentView] || '';
@@ -110,15 +111,14 @@ function buildShareUrl() {
     params.set('rok', '1');
   }
 
-  // Month (for month/table without yearMode)
-  if (currentView === 'month' || (currentView === 'table' && !yearMode)) {
+  // Month (for month/week/table without yearMode)
+  if (currentView === 'month' || currentView === 'week' || (currentView === 'table' && !yearMode)) {
     params.set('m', currentMonth);
   }
 
-  // Day (only for month with a selected day)
+  // Day (only for month with a selected day, or week)
   if (currentView === 'month' && selectedDay && !yearMode) {
-    const d = selectedDay || new Date().getDate();
-    params.set('d', d);
+    params.set('d', selectedDay);
   }
 
   // Brigade (for all views except table)

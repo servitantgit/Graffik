@@ -8,12 +8,7 @@ let currentMonth = new Date().getMonth() + 1;
 let selectedShift = prefs.shift || 'A';
 let compareShift = null;
 let selectedDay = null;
-let currentView = prefs.view || 'dashboard';
-if (currentView === 'week') {
-  currentView = 'month';
-  prefs.view = 'month';
-  savePrefs(prefs);
-}
+let currentView = prefs.view === 'week' ? 'month' : (prefs.view || 'dashboard');
 let yearMode = prefs.yearMode || false;
 let editMode = false;
 
@@ -40,10 +35,6 @@ function bindEvent(id, event, handler) {
   if (v && ['dashboard', 'month', 'table'].includes(v)) {
     currentView = v;
     prefs.view = v;
-  } else if (v === 'week') {
-    // Legacy links to the removed Week view open in Month instead.
-    currentView = 'month';
-    prefs.view = 'month';
   }
 
   // Rok mode
