@@ -53,13 +53,14 @@ body:not(.theme-dark) .dash-hero {
 }
 
 .dash-today-card {
-  padding: 25px;
+  padding: 18px 16px;
   border-radius: 14px;
-  margin-bottom: 15px;
-  box-shadow: 0 6px 20px var(--shadow-color);
+  margin-bottom: 12px;
+  box-shadow: 0 4px 14px var(--shadow-color);
   color: #fff;
   text-align: center;
   animation: fadeInUp 0.5s ease-out;
+  border: 1px solid transparent;
 }
 .dash-today-card.card-R {
   background: linear-gradient(135deg, var(--color-R), #d68910);
@@ -91,9 +92,9 @@ body:not(.theme-dark) .dash-hero {
   margin-bottom: 8px;
 }
 .dash-today-card .dtc-shift {
-  font-size: 42px;
+  font-size: 32px;
   font-weight: 700;
-  margin: 5px 0;
+  margin: 4px 0;
 }
 .dash-today-card .dtc-time {
   font-size: 16px;
@@ -349,19 +350,92 @@ body:not(.theme-dark) .dash-hero {
 }
 
 
-/* Flow block under today card */
+
+
+/* === Unified dashboard panels (same chrome) === */
+.dash-panel,
+.dash-flow-wrap .info-card,
 .dash-flow-wrap .flow-segment-card,
-.dash-flow-wrap .info-card {
-  background: var(--bg-info-card, var(--bg-controls));
+.dash-upcoming,
+.dash-stats .dash-stat-card {
+  background: var(--bg-cell);
   border: 1px solid var(--border-cell);
-  border-radius: 12px;
-  padding: 12px 14px;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: none;
 }
-.dash-flow-wrap .label {
+
+.dash-flow-wrap {
+  margin: 0 !important;
+}
+
+.dash-flow-wrap .info-card,
+.dash-flow-wrap .flow-segment-card {
+  margin-top: 0 !important;
+  margin-bottom: 12px;
+}
+
+.dash-flow-wrap .info-card:last-child,
+.dash-flow-wrap .flow-segment-card:last-child {
+  margin-bottom: 12px;
+}
+
+.dash-panel-title,
+.dash-flow-wrap .label,
+.dash-upcoming h4,
+.dash-stat-card .dsc-label {
   font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   color: var(--text-muted);
-  margin-bottom: 4px;
+  margin: 0 0 12px;
 }
+
 .dash-flow-wrap .value {
   overflow: visible;
+  font-weight: normal;
+  color: var(--text-main);
+  margin-top: 0;
+}
+
+.dash-upcoming {
+  /* inherits dash-panel-like rules above */
+  min-width: 0;
+  overflow: hidden;
+}
+
+.dash-upcoming h4 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+}
+
+.dash-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 0;
+}
+
+.dash-stats .dash-stat-card {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Chips aligned with flow node palette */
+.dash-day-chip {
+  min-width: 56px;
+  min-height: 64px;
+  padding: 8px 6px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
