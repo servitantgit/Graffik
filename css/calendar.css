@@ -388,7 +388,7 @@ body.theme-contrast .day-cell.day-weekend.cell-W {
   padding: 16px;
   background: var(--bg-info);
   border-radius: 12px;
-  border-left: 5px solid var(--text-header);
+  border: 1px solid var(--border-cell);
 }
 .info-panel h3 {
   margin: 0 0 8px;
