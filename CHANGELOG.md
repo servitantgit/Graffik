@@ -14,6 +14,8 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 - **Month info-panel flow** — removed undefined `cycleInfo` reference that broke the entire panel render
 - **Cycle «До вільного»** — `getCyclePath` uses same shift source as UI (`getShiftAtWithPending`)
 - **Dashboard** — flow block moved below greeting + today shift card
+- **Dashboard** — removed Tomorrow and Until-day-off cards (duplicate of upcoming strip / cycle flow); cycle path only, no handoff/cycle tabs
+- **Month info** — handoff flow only, mode switcher removed
 
 
 ## [Unreleased]

@@ -28,52 +28,17 @@ function renderDashboard() {
   const dayName = dayNamesFull[today.getDay()];
   const holidayName = yHolidays[m + '-' + d];
 
-  // === Flow segment: Handoff | Cycle (first item when working day) ===
+  // === Until free (cycle path) — single flow, no mode tabs ===
   let reliefFlowCard = '';
-  if (!isWolne(shiftCode) && !onUrlop && typeof renderReliefTimeline === 'function') {
-    const info = getRelief(y, m, d, selectedShift, shiftCode);
-    let timelineOt = null;
-    if (!hidePrivate) {
-      const otRaw = getOvertimes(y, m, d, selectedShift);
-      const mk = (pos) => {
-        if (!otRaw[pos]) return null;
-        const cat = categorizeOvertime(y, m, d, shiftCode, pos, otRaw[pos].hours);
-        const percent = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
-        return { hours: otRaw[pos].hours, percent };
-      };
-      const before = mk('przed');
-      const after = mk('po');
-      if (before || after) timelineOt = { before, after };
-    }
-    const handoffHtml = renderReliefTimeline(
-      info,
-      y,
-      m,
-      d,
-      shiftCode,
-      selectedShift,
-      timelineOt
-    );
-    let cycleHtml = handoffHtml;
-    if (typeof getCyclePath === 'function' && typeof renderCycleTimeline === 'function') {
-      const path = getCyclePath(y, m, d, selectedShift, 8);
-      cycleHtml = renderCycleTimeline(path, y, m, d);
-    }
-    if (typeof renderFlowSegmentWidget === 'function') {
-      reliefFlowCard = renderFlowSegmentWidget({
-        handoffHtml,
-        cycleHtml,
-        defaultMode: 'handoff',
-      });
-    } else {
-      reliefFlowCard = `
-      <div class="dash-stat-card" style="grid-column:1/-1;">
-        <div class="dsc-info" style="width:100%;">
-          <div class="dsc-label">🔄 ${t('reliefFlowTitle')}</div>
-          <div class="dsc-value" style="font-weight:normal;">${handoffHtml}</div>
-        </div>
+  if (!isWolne(shiftCode) && !onUrlop && typeof getCyclePath === 'function' && typeof renderCycleTimeline === 'function') {
+    const path = getCyclePath(y, m, d, selectedShift, 8);
+    const cycleHtml = renderCycleTimeline(path, y, m, d);
+    const cycleTitle = typeof t === 'function' ? t('flowModeCycle') : 'До вільного';
+    reliefFlowCard = `
+      <div class="info-card flow-segment-card" style="grid-column:1/-1;">
+        <div class="label">🏖️ ${cycleTitle}</div>
+        <div class="value">${cycleHtml}</div>
       </div>`;
-    }
   }
 
   let todayCard = '';
@@ -126,82 +91,6 @@ function renderDashboard() {
       ${otInfo}
       ${timer ? `<div class="dtc-timer">${timer}</div>` : ''}
     `;
-  }
-
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
-  const tY = tomorrow.getFullYear(),
-    tM = tomorrow.getMonth() + 1,
-    tD = tomorrow.getDate();
-
-  let tShift, tOnU;
-  if (hidePrivate) {
-    tShift =
-      factorySchedule[tY] && factorySchedule[tY][tM] && factorySchedule[tY][tM][selectedShift]
-        ? factorySchedule[tY][tM][selectedShift][tD - 1]
-        : '';
-    tOnU = false;
-  } else {
-    tShift = getShiftAtWithPending(tY, tM, tD, selectedShift);
-    tOnU = isUrlop(tY, tM, tD, selectedShift);
-  }
-
-  let tomorrowShift;
-  if (tOnU) {
-    tomorrowShift = `🌴 ${t('vacation')}`;
-  } else if (isWolne(tShift)) {
-    tomorrowShift = `🏖️ ${t('free')}`;
-  } else {
-    const [sh, eh] = shiftHours[tShift];
-    const timeRange = `${String(sh).padStart(2, '0')}-${String(eh % 24).padStart(2, '0')}`;
-    let otIcon = '';
-    if (!hidePrivate) {
-      const otTomorrow = getOvertimes(tY, tM, tD, selectedShift);
-      if (otTomorrow.przed || otTomorrow.po) {
-        const actualTime = getActualWorkTime(tY, tM, tD, selectedShift, tShift);
-        otIcon = ` <span style="color:#f1c40f;" title="${t('infoOvertime')}">⏱</span> <small style="color:var(--text-muted);">${actualTime}</small>`;
-      } else {
-        otIcon = ` <small>(${timeRange})</small>`;
-      }
-    } else {
-      otIcon = ` <small>(${timeRange})</small>`;
-    }
-    tomorrowShift = `${shiftEmoji[tShift]} ${shiftLongNames[tShift]}${otIcon}`;
-  }
-
-  // Next day off — for privacy mode use factory schedule only
-  let nextWolneTxt;
-  if (hidePrivate) {
-    let found = null;
-    for (let i = 0; i < 60; i++) {
-      const dt = new Date(today);
-      dt.setDate(d + i);
-      const yy = dt.getFullYear(),
-        mm = dt.getMonth() + 1,
-        dd = dt.getDate();
-      const s =
-        factorySchedule[yy] && factorySchedule[yy][mm] && factorySchedule[yy][mm][selectedShift]
-          ? factorySchedule[yy][mm][selectedShift][dd - 1]
-          : '';
-      if (isWolne(s)) {
-        found = { days: i, day: dd, month: mm };
-        break;
-      }
-    }
-    if (!found) nextWolneTxt = t('unknown');
-    else if (found.days === 0) nextWolneTxt = `🏖️ ${t('todayLabel')}!`;
-    else if (found.days === 1)
-      nextWolneTxt = `${t('tomorrow')} (${found.day} ${monthNamesGenitive[found.month - 1]})`;
-    else
-      nextWolneTxt = `${t('inDays', { n: found.days })} (${found.day} ${monthNamesGenitive[found.month - 1]})`;
-  } else {
-    const wolneInfo = daysToNextWolne(y, m, d, selectedShift);
-    if (!wolneInfo) nextWolneTxt = t('unknown');
-    else if (wolneInfo.days === 0) nextWolneTxt = `🏖️ ${t('todayLabel')}!`;
-    else if (wolneInfo.days === 1)
-      nextWolneTxt = `${t('tomorrow')} (${wolneInfo.day} ${monthNamesGenitive[wolneInfo.month - 1]})`;
-    else
-      nextWolneTxt = `${t('inDays', { n: wolneInfo.days })} (${wolneInfo.day} ${monthNamesGenitive[wolneInfo.month - 1]})`;
   }
 
   const usedUrlop = hidePrivate ? 0 : countWorkingUrlops(y, selectedShift);
@@ -298,20 +187,6 @@ function renderDashboard() {
     ${reliefFlowCard ? `<div class="dash-flow-wrap" style="margin:12px 0;">${reliefFlowCard}</div>` : ''}
 
     <div class="dash-stats">
-      <div class="dash-stat-card">
-        <div class="dsc-icon">📅</div>
-        <div class="dsc-info">
-          <div class="dsc-label">${t('tomorrow')}</div>
-          <div class="dsc-value">${tomorrowShift}</div>
-        </div>
-      </div>
-      <div class="dash-stat-card">
-        <div class="dsc-icon">🏖️</div>
-        <div class="dsc-info">
-          <div class="dsc-label">${t('nextDayOff')}</div>
-          <div class="dsc-value">${nextWolneTxt}</div>
-        </div>
-      </div>
       ${vacationCard}
       ${overtimeCard}
     </div>
@@ -323,7 +198,6 @@ function renderDashboard() {
 
   `;
 
-  if (typeof bindFlowSegmentToggle === 'function') bindFlowSegmentToggle(dv);
 }
 
 function jumpToDate(y, m, d) {
