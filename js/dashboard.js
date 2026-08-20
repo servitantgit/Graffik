@@ -28,17 +28,51 @@ function renderDashboard() {
   const dayName = dayNamesFull[today.getDay()];
   const holidayName = yHolidays[m + '-' + d];
 
-  // === Until free (cycle path) — single flow, no mode tabs ===
+  // === Two flows (no tabs): handoff + until free ===
   let reliefFlowCard = '';
-  if (!isWolne(shiftCode) && !onUrlop && typeof getCyclePath === 'function' && typeof renderCycleTimeline === 'function') {
-    const path = getCyclePath(y, m, d, selectedShift, 8);
-    const cycleHtml = renderCycleTimeline(path, y, m, d);
-    const cycleTitle = typeof t === 'function' ? t('flowModeCycle') : 'До вільного';
-    reliefFlowCard = `
+  if (!isWolne(shiftCode) && !onUrlop) {
+    const parts = [];
+    if (typeof renderReliefTimeline === 'function') {
+      const info = getRelief(y, m, d, selectedShift, shiftCode);
+      let timelineOt = null;
+      if (!hidePrivate) {
+        const otRaw = getOvertimes(y, m, d, selectedShift);
+        const mk = (pos) => {
+          if (!otRaw[pos]) return null;
+          const cat = categorizeOvertime(y, m, d, shiftCode, pos, otRaw[pos].hours);
+          const percent = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
+          return { hours: otRaw[pos].hours, percent };
+        };
+        const before = mk('przed');
+        const after = mk('po');
+        if (before || after) timelineOt = { before, after };
+      }
+      const handoffHtml = renderReliefTimeline(
+        info,
+        y,
+        m,
+        d,
+        shiftCode,
+        selectedShift,
+        timelineOt
+      );
+      parts.push(`
       <div class="info-card flow-segment-card" style="grid-column:1/-1;">
+        <div class="label">🔄 ${t('reliefFlowTitle')}</div>
+        <div class="value">${handoffHtml}</div>
+      </div>`);
+    }
+    if (typeof getCyclePath === 'function' && typeof renderCycleTimeline === 'function') {
+      const path = getCyclePath(y, m, d, selectedShift, 8);
+      const cycleHtml = renderCycleTimeline(path, y, m, d);
+      const cycleTitle = t('flowModeCycle');
+      parts.push(`
+      <div class="info-card flow-segment-card" style="grid-column:1/-1;margin-top:8px;">
         <div class="label">🏖️ ${cycleTitle}</div>
         <div class="value">${cycleHtml}</div>
-      </div>`;
+      </div>`);
+    }
+    reliefFlowCard = parts.join('');
   }
 
   let todayCard = '';
