@@ -207,7 +207,7 @@ function renderDashboard() {
     }
     upcomingHtml += `
       <div class="dash-day-chip chip-${cls}" onclick="jumpToDate(${yy},${mm},${dd})">
-        <div class="ddc-day">${dayNames[(dt.getDay() + 6) % 7]}</div>
+        <div class="ddc-day">${String(dayNames[(dt.getDay() + 6) % 7] || '').slice(0, 2)}</div>
         <div class="ddc-date">${dd}</div>
         <div class="ddc-shift">${label}</div>
         ${otBadge}
