@@ -376,9 +376,15 @@ function getCyclePath(year, month, day, brigade, maxSteps) {
   let y = year,
     m = month,
     d = day;
+  const readShift = (yy, mm, dd) => {
+    if (typeof getShiftAtWithPending === 'function') {
+      return getShiftAtWithPending(yy, mm, dd, brigade);
+    }
+    return getShiftAt(yy, mm, dd, brigade);
+  };
   // include current day if working
-  const selfShift = getShiftAt(y, m, d, brigade);
-  if (!isWolne(selfShift) && !isUrlop(y, m, d, brigade)) {
+  const selfShift = readShift(y, m, d);
+  if (selfShift && !isWolne(selfShift) && !isUrlop(y, m, d, brigade)) {
     steps.push({ year: y, month: m, day: d, shift: selfShift, isSelf: true });
   }
   let guard = 0;
@@ -393,10 +399,13 @@ function getCyclePath(year, month, day, brigade, maxSteps) {
         y++;
       }
     }
-    if (isUrlop(y, m, d, brigade) || isWolne(getShiftAt(y, m, d, brigade))) {
+    if (isUrlop(y, m, d, brigade)) {
       return { steps, free: { year: y, month: m, day: d } };
     }
-    const s = getShiftAt(y, m, d, brigade);
+    const s = readShift(y, m, d);
+    if (isWolne(s)) {
+      return { steps, free: { year: y, month: m, day: d } };
+    }
     if (s === 'R' || s === 'P' || s === 'N') {
       steps.push({ year: y, month: m, day: d, shift: s, isSelf: false });
     }

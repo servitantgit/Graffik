@@ -291,11 +291,11 @@ function renderDashboard() {
       <div class="dash-brigade">${t('brigade')} ${selectedShift}</div>
     </div>
 
-    ${reliefFlowCard ? `<div class="dash-stats" style="margin-bottom:12px;">${reliefFlowCard}</div>` : ''}
-
     <div class="dash-today-card ${cardCls}">
       ${todayCard}
     </div>
+
+    ${reliefFlowCard ? `<div class="dash-flow-wrap" style="margin:12px 0;">${reliefFlowCard}</div>` : ''}
 
     <div class="dash-stats">
       <div class="dash-stat-card">

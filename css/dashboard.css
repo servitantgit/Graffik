@@ -340,3 +340,21 @@ body:not(.theme-dark) .dash-hero {
 .dash-day-chip.chip-quiet .ddc-date {
   color: var(--text-main);
 }
+
+
+/* Flow block under today card */
+.dash-flow-wrap .flow-segment-card,
+.dash-flow-wrap .info-card {
+  background: var(--bg-info-card, var(--bg-controls));
+  border: 1px solid var(--border-cell);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.dash-flow-wrap .label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.dash-flow-wrap .value {
+  overflow: visible;
+}
