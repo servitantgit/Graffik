@@ -191,9 +191,10 @@ function renderReliefTimeline(
  * @param {number} currentDay
  */
 function renderCycleTimeline(path, currentYear, currentMonth, currentDay) {
-  if (!path || !path.steps || !path.steps.length) {
-    return `<div class="timeline-widget"><div class="tl-node tl-empty"><div class="tl-brig">—</div></div></div>`;
+  if (!path || ((!path.steps || !path.steps.length) && !path.free)) {
+    return `<div class="timeline-widget"><div class="tl-node tl-empty"><div class="tl-brig">—</div><div class="tl-label">${typeof t === 'function' ? t('infoFree') : '—'}</div></div></div>`;
   }
+  if (!path.steps) path.steps = [];
 
   const parts = [];
   path.steps.forEach((step, idx) => {

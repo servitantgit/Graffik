@@ -10,6 +10,11 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 - **Status card** in month info-panel (redundant — free/vacation already visible on the cell and in the header)
 - **Week view** tab and all related UI/logic (`renderWeekView`, week navigation, week detail panel)
 
+### Fixed
+- **Month info-panel flow** — removed undefined `cycleInfo` reference that broke the entire panel render
+- **Cycle «До вільного»** — `getCyclePath` uses same shift source as UI (`getShiftAtWithPending`)
+- **Dashboard** — flow block moved below greeting + today shift card
+
 
 ## [Unreleased]
 
