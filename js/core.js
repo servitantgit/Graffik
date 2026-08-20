@@ -338,53 +338,41 @@ function daysToNextWolne(year, month, day, brigade) {
  * @returns {{ days, dayShifts, nightShifts, year, month, day } | null}
  *   dayShifts = R+P count, nightShifts = N count
  */
-function getUntilDayOff(year, month, day, brigade) {
-  let y = year,
-    m = month,
-    d = day,
-    count = 0;
-  let dayShifts = 0;
-  let nightShifts = 0;
-  while (count < 60) {
-    d++;
-    count++;
-    if (d > daysInMonthCal(y, m)) {
-      d = 1;
-      m++;
-      if (m > 12) {
-        m = 1;
-        y++;
-      }
-    }
-    if (isUrlop(y, m, d, brigade) || isWolne(getShiftAt(y, m, d, brigade))) {
-      return { days: count, dayShifts, nightShifts, year: y, month: m, day: d };
-    }
-    const s = getShiftAt(y, m, d, brigade);
-    if (s === 'N') nightShifts++;
-    else if (s === 'R' || s === 'P') dayShifts++;
+/**
+ * Shift for cycle/until-free — same source as calendar cells:
+ * personal data on → getShiftAt (factory + custom);
+ * personal data off → pure factorySchedule.
+ */
+function readShiftForCycle(year, month, day, brigade) {
+  const hidePrivate =
+    typeof shouldShowPersonalData === 'function' ? !shouldShowPersonalData() : false;
+  if (hidePrivate) {
+    const arr =
+      factorySchedule[year] &&
+      factorySchedule[year][month] &&
+      factorySchedule[year][month][brigade];
+    if (!arr || day < 1 || day > arr.length) return '';
+    return arr[day - 1] || '';
   }
-  return null;
+  if (typeof getShiftAtWithPending === 'function') {
+    return getShiftAtWithPending(year, month, day, brigade) || '';
+  }
+  return getShiftAt(year, month, day, brigade) || '';
 }
 
-/**
- * Path of own shifts from selected day (inclusive) until next free/vacation.
- * @returns {{ steps: Array<{year,month,day,shift,isSelf}>, free: {year,month,day}|null }}
- */
 function getCyclePath(year, month, day, brigade, maxSteps) {
   maxSteps = maxSteps || 8;
   const steps = [];
-  let y = year,
-    m = month,
-    d = day;
-  const readShift = (yy, mm, dd) => {
-    if (typeof getShiftAtWithPending === 'function') {
-      return getShiftAtWithPending(yy, mm, dd, brigade);
-    }
-    return getShiftAt(yy, mm, dd, brigade);
+  let y = +year,
+    m = +month,
+    d = +day;
+  const urlopOn = (yy, mm, dd) => {
+    if (typeof shouldShowPersonalData === 'function' && !shouldShowPersonalData()) return false;
+    return isUrlop(yy, mm, dd, brigade);
   };
   // include current day if working
-  const selfShift = readShift(y, m, d);
-  if (selfShift && !isWolne(selfShift) && !isUrlop(y, m, d, brigade)) {
+  const selfShift = readShiftForCycle(y, m, d, brigade);
+  if (!isWolne(selfShift) && !urlopOn(y, m, d)) {
     steps.push({ year: y, month: m, day: d, shift: selfShift, isSelf: true });
   }
   let guard = 0;
@@ -399,10 +387,10 @@ function getCyclePath(year, month, day, brigade, maxSteps) {
         y++;
       }
     }
-    if (isUrlop(y, m, d, brigade)) {
+    if (urlopOn(y, m, d)) {
       return { steps, free: { year: y, month: m, day: d } };
     }
-    const s = readShift(y, m, d);
+    const s = readShiftForCycle(y, m, d, brigade);
     if (isWolne(s)) {
       return { steps, free: { year: y, month: m, day: d } };
     }
@@ -413,6 +401,43 @@ function getCyclePath(year, month, day, brigade, maxSteps) {
   return { steps, free: null };
 }
 
+
+function getUntilDayOff(year, month, day, brigade) {
+  let y = +year,
+    m = +month,
+    d = +day,
+    count = 0;
+  let dayShifts = 0;
+  let nightShifts = 0;
+  const urlopOn = (yy, mm, dd) => {
+    if (typeof shouldShowPersonalData === 'function' && !shouldShowPersonalData()) return false;
+    return isUrlop(yy, mm, dd, brigade);
+  };
+  while (count < 60) {
+    d++;
+    count++;
+    if (d > daysInMonthCal(y, m)) {
+      d = 1;
+      m++;
+      if (m > 12) {
+        m = 1;
+        y++;
+      }
+    }
+    if (urlopOn(y, m, d) || isWolne(readShiftForCycle(y, m, d, brigade))) {
+      return { days: count, dayShifts, nightShifts, year: y, month: m, day: d };
+    }
+    const s = readShiftForCycle(y, m, d, brigade);
+    if (s === 'N') nightShifts++;
+    else if (s === 'R' || s === 'P') dayShifts++;
+  }
+  return null;
+}
+
+/**
+ * Path of own shifts from selected day (inclusive) until next free/vacation.
+ * @returns {{ steps: Array<{year,month,day,shift,isSelf}>, free: {year,month,day}|null }}
+ */
 /* === Nadgodziny: pomocnicze === */
 function otKey(year, month, day, brigade) {
   return `${year}-${month}-${day}-${brigade}`;
