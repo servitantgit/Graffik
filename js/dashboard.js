@@ -28,51 +28,92 @@ function renderDashboard() {
   const dayName = dayNamesFull[today.getDay()];
   const holidayName = yHolidays[m + '-' + d];
 
-  // === Two flows (no tabs): handoff + until free ===
+  // === Compact flow: prev → today → next → tomorrow (no full cycle) ===
   let reliefFlowCard = '';
-  if (!isWolne(shiftCode) && !onUrlop) {
-    const parts = [];
-    if (typeof renderReliefTimeline === 'function') {
-      const info = getRelief(y, m, d, selectedShift, shiftCode);
-      let timelineOt = null;
-      if (!hidePrivate) {
-        const otRaw = getOvertimes(y, m, d, selectedShift);
-        const mk = (pos) => {
-          if (!otRaw[pos]) return null;
-          const cat = categorizeOvertime(y, m, d, shiftCode, pos, otRaw[pos].hours);
-          const percent = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
-          return { hours: otRaw[pos].hours, percent };
-        };
-        const before = mk('przed');
-        const after = mk('po');
-        if (before || after) timelineOt = { before, after };
-      }
-      const handoffHtml = renderReliefTimeline(
-        info,
-        y,
-        m,
-        d,
-        shiftCode,
-        selectedShift,
-        timelineOt
+  if (!isWolne(shiftCode) && !onUrlop && typeof tlRenderNode === 'function') {
+    const info = getRelief(y, m, d, selectedShift, shiftCode);
+    const nodes = [];
+    // 1) Who we take over from
+    if (info && info.prevBrig) {
+      const prevLabel =
+        typeof tlFormatWhen === 'function'
+          ? tlFormatWhen(info.prevYear, info.prevMonth, info.prevDay, y, m, d)
+          : '';
+      nodes.push(
+        tlRenderNode({
+          brig: info.prevBrig,
+          shift: info.prevType || null,
+          label: prevLabel,
+        })
       );
-      parts.push(`
+    } else {
+      nodes.push(tlRenderNode({ type: 'empty', label: '' }));
+    }
+    nodes.push(typeof tlRenderArrow === 'function' ? tlRenderArrow() : '<span class="tl-arrow">→</span>');
+    // 2) Today (self)
+    nodes.push(
+      tlRenderNode({
+        type: 'self',
+        brig: String(d),
+        shift: shiftCode,
+        label: typeof t === 'function' ? t('tlToday') : 'сьогодні',
+        isSelf: true,
+      })
+    );
+    nodes.push(typeof tlRenderArrow === 'function' ? tlRenderArrow() : '<span class="tl-arrow">→</span>');
+    // 3) Who takes over from us
+    if (info && info.nextBrig) {
+      const nextLabel =
+        typeof tlFormatWhen === 'function'
+          ? tlFormatWhen(info.nextYear, info.nextMonth, info.nextDay, y, m, d)
+          : '';
+      nodes.push(
+        tlRenderNode({
+          brig: info.nextBrig,
+          shift: info.nextType || null,
+          label: nextLabel,
+        })
+      );
+    } else {
+      nodes.push(tlRenderNode({ type: 'empty', label: '' }));
+    }
+    nodes.push(typeof tlRenderArrow === 'function' ? tlRenderArrow() : '<span class="tl-arrow">→</span>');
+    // 4) Own shift tomorrow
+    const tom = new Date(today);
+    tom.setDate(today.getDate() + 1);
+    const ty = tom.getFullYear(),
+      tm = tom.getMonth() + 1,
+      td = tom.getDate();
+    let tShift, tUrlop;
+    if (hidePrivate) {
+      tShift =
+        factorySchedule[ty] && factorySchedule[ty][tm] && factorySchedule[ty][tm][selectedShift]
+          ? factorySchedule[ty][tm][selectedShift][td - 1]
+          : '';
+      tUrlop = false;
+    } else {
+      tShift = getShiftAtWithPending(ty, tm, td, selectedShift);
+      tUrlop = isUrlop(ty, tm, td, selectedShift);
+    }
+    const tomLabel = typeof t === 'function' ? t('tlTomorrow') : 'завтра';
+    if (tUrlop) {
+      nodes.push(tlRenderNode({ type: 'free', label: tomLabel, brig: '🌴' }));
+    } else if (isWolne(tShift)) {
+      nodes.push(tlRenderNode({ type: 'free', label: tomLabel }));
+    } else {
+      nodes.push(
+        tlRenderNode({
+          brig: String(td),
+          shift: tShift,
+          label: tomLabel,
+        })
+      );
+    }
+    reliefFlowCard = `
       <div class="info-card flow-segment-card" style="grid-column:1/-1;">
         <div class="label">🔄 ${t('reliefFlowTitle')}</div>
-        <div class="value">${handoffHtml}</div>
-      </div>`);
-    }
-    if (typeof getCyclePath === 'function' && typeof renderCycleTimeline === 'function') {
-      const path = getCyclePath(y, m, d, selectedShift, 8);
-      const cycleHtml = renderCycleTimeline(path, y, m, d);
-      const cycleTitle = t('flowModeCycle');
-      parts.push(`
-      <div class="info-card flow-segment-card" style="grid-column:1/-1;margin-top:8px;">
-        <div class="label">🏖️ ${cycleTitle}</div>
-        <div class="value">${cycleHtml}</div>
-      </div>`);
-    }
-    reliefFlowCard = parts.join('');
+        <div class="value"><div class="timeline-widget">${nodes.join('')}</div></div>
+      </div>`;
   }
 
   let todayCard = '';
@@ -157,7 +198,7 @@ function renderDashboard() {
     }
 
     const cls = onU ? 'U' : isWolne(s) ? 'W' : s;
-    const label = onU ? '🌴' : isWolne(s) ? '—' : shiftEmoji[s] + ' ' + s;
+    const label = onU ? '🌴' : isWolne(s) ? '🏖️' : shiftEmoji[s] + ' ' + s;
     let otBadge = '';
     if (!hidePrivate) {
       const otChip = getOvertimes(yy, mm, dd, selectedShift);
@@ -202,18 +243,17 @@ function renderDashboard() {
       ${todayCard}
     </div>
 
-    ${reliefFlowCard ? `<div class="dash-flow-wrap" style="margin:12px 0;">${reliefFlowCard}</div>` : ''}
-
-    <div class="dash-stats">
-      ${vacationCard}
-      ${overtimeCard}
-    </div>
+    ${reliefFlowCard ? `<div class="dash-flow-wrap">${reliefFlowCard}</div>` : ''}
 
     <div class="dash-upcoming">
       <h4>${t('upcomingDays')}</h4>
       <div class="dash-upcoming-list">${upcomingHtml}</div>
     </div>
 
+    <div class="dash-stats">
+      ${overtimeCard}
+      ${vacationCard}
+    </div>
   `;
 
 }
