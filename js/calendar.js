@@ -585,9 +585,8 @@ function renderInfo() {
     if (lv) liveInfo = lv;
   }
 
-
   if (onUrlop) {
-    panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
+    panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span> · 🌴 ${t('infoUrlop')}</h3>
       <div class="info-grid">
         ${hidePrivate ? '' : `<div class="info-card info-section-note" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
         ${urlopStats}
@@ -595,7 +594,7 @@ function renderInfo() {
   } else if (isWolne(shiftCode)) {
     panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
       <div class="info-grid">
-                        ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
+        ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
         ${urlopStats}
       </div>`;
   } else {
@@ -677,6 +676,7 @@ function renderInfo() {
       <div class="info-grid">
                 ${reliefCard}
         ${liveInfo}
+        ${cycleInfo}
                         ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
         ${urlopStats}
       </div>`;
