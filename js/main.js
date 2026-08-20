@@ -200,6 +200,29 @@ function updateYearPicker() {
     yp.title = t('yearNoData', { year: currentYear });
   }
 }
+function updatePrivacyMenuUI() {
+  const check = document.getElementById('menuPrivacyCheck');
+  const label = document.getElementById('menuPrivacyLabel');
+  const on = !!(prefs && prefs.privacyMode);
+  if (check) check.style.display = on ? 'inline' : 'none';
+  if (label && typeof t === 'function') {
+    label.textContent = on ? t('menuPrivacyOn') : t('menuPrivacyOff');
+  }
+}
+
+bindClick('menuPrivacyToggle', () => {
+  const next = !(prefs && prefs.privacyMode);
+  if (typeof setPrivacyMode === 'function') setPrivacyMode(next);
+  else {
+    prefs.privacyMode = next;
+    savePrefs(prefs);
+    refreshViews();
+  }
+  updatePrivacyMenuUI();
+  showToast('info', next ? t('privacyOnToast') : t('privacyOffToast'), 3000);
+  closeSideMenu();
+});
+
 function updateEditModeUI() {
   document.body.classList.toggle('edit-active', editMode);
   const btn = document.getElementById('editModeToggle');
@@ -213,10 +236,9 @@ function updateEditModeUI() {
 /* === EDIT MODE === */
 bindClick('editModeToggle', () => {
   if (!editMode) {
-    // Personal edits (urlop / OT / custom schedule) require login —
-    // otherwise privacy mode hides them and the UI looks "broken".
+    // Personal edits need privacy mode off (local data always available otherwise)
     if (typeof shouldShowPersonalData === 'function' && !shouldShowPersonalData()) {
-      showToast('warn', t('editNeedLogin'), 4000);
+      showToast('warn', t('editNeedPrivacyOff'), 4000);
       return;
     }
     if (!prefs.skipEditConfirm) {

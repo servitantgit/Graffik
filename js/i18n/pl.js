@@ -686,5 +686,12 @@ window.translations.pl = {
   syncDayAgo: '1 dzień temu',
   syncDaysAgo: '{n} dni temu',
   syncUnknown: 'nieznany',
-
+  menuSectionPrivacy: 'Prywatność',
+  menuPrivacyOn: 'Tryb prywatności: włączony',
+  menuPrivacyOff: 'Tryb prywatności: wyłączony',
+  privacyOnToast: '🔒 Widoczny tylko grafikk fabryczny',
+  privacyOffToast: '👤 Widoczne dane osobiste',
+  editNeedPrivacyOff: '🔒 Wyłącz tryb prywatności w menu, aby edytować',
+  syncStatusOk: 'Wszystkie zmiany zapisane · {time}',
+  syncStatusUnsynced: '⚠ Niezsynchronizowane zmiany · ostatni sync: {time}'
 };

@@ -23,6 +23,11 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 ## [Unreleased]
 
 ### Changed
+- **Local-first personal data** — visible without Google login; account is for backup/sync only
+- **Privacy mode** — toggle in side menu (above Help), not in the header
+- **No auto Google popups** on load; user signs in when they want to sync
+- **Sync status** in side menu (unsaved changes vs last sync)
+
 - **Menu:** Limit urlopu przeniesiony do edit banner (🌴); sekcja Zaawansowane usunięta
 - **Menu Info** na końcu listy: Pomoc/FAQ + link GitHub dewelopera
 - Personal JSON import/export usunięty (backup = Drive)

@@ -123,19 +123,27 @@ function registerYearData(scheduleId, year, scheduleData, hoursData) {
 /* === PERSONAL DATA VISIBILITY === */
 
 /**
- * Determines whether personal data should be shown.
- *
- * Rule: Personal data visible ONLY when user is logged in to Google Drive.
- * When logged out — user sees only public factory schedule.
- *
- * This REPLACES the old privacyMode feature — login state IS the privacy control.
+ * Personal data (urlop, OT, notes, custom shifts) is local-first.
+ * Shown unless prefs.privacyMode is on (factory schedule only).
+ * Google login is only for backup/sync — not a gate for local data.
  *
  * @returns {boolean}
  */
 function shouldShowPersonalData() {
-  // Session-based: stay "logged in" until explicit logout (token may refresh in background)
-  if (typeof isDriveLoggedIn === 'function') return isDriveLoggedIn();
-  return typeof isDriveTokenValid === 'function' && isDriveTokenValid();
+  if (typeof prefs !== 'undefined' && prefs && prefs.privacyMode) return false;
+  return true;
+}
+
+function isPrivacyMode() {
+  return !!(typeof prefs !== 'undefined' && prefs && prefs.privacyMode);
+}
+
+function setPrivacyMode(on) {
+  if (typeof prefs === 'undefined') return;
+  prefs.privacyMode = !!on;
+  if (typeof savePrefs === 'function') savePrefs(prefs);
+  if (typeof refreshViews === 'function') refreshViews();
+  else if (typeof renderDashboard === 'function') renderDashboard();
 }
 
 /* === EXPOSE TO GLOBAL SCOPE === */
@@ -144,3 +152,5 @@ window.AVAILABLE_YEARS = AVAILABLE_YEARS;
 window.registerSchedule = registerSchedule;
 window.registerYearData = registerYearData;
 window.shouldShowPersonalData = shouldShowPersonalData;
+window.isPrivacyMode = isPrivacyMode;
+window.setPrivacyMode = setPrivacyMode;
