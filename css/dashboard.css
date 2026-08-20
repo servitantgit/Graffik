@@ -76,6 +76,13 @@ body:not(.theme-dark) .dash-hero {
 .dash-today-card.card-U {
   background: var(--color-U-grad);
 }
+.dash-today-card .dtc-meta {
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.95;
+  margin-bottom: 6px;
+  letter-spacing: 0.2px;
+}
 .dash-today-card .dtc-label {
   font-size: 12px;
   text-transform: uppercase;

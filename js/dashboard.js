@@ -80,6 +80,7 @@ function renderDashboard() {
   if (onUrlop) {
     cardCls = 'card-U';
     todayCard = `
+      <div class="dtc-meta">${dayName}, ${d} ${monthNamesGenitive[m - 1]} ${y} · ${t('brigade')} ${selectedShift}</div>
       <div class="dtc-label">${t('todayLabel')}</div>
       <div class="dtc-shift">🌴 ${t('infoUrlop')}</div>
       <div class="dtc-time">${t('vacation')}</div>
@@ -87,6 +88,7 @@ function renderDashboard() {
   } else if (isWolne(shiftCode)) {
     cardCls = 'card-W';
     todayCard = `
+    <div class="dtc-meta">${dayName}, ${d} ${monthNamesGenitive[m - 1]} ${y} · ${t('brigade')} ${selectedShift}</div>
     <div class="dtc-label">${t('todayLabel')}</div>
     <div class="dtc-shift">${t('infoFree')}</div>
   `;
@@ -119,6 +121,7 @@ function renderDashboard() {
     }
 
     todayCard = `
+      <div class="dtc-meta">${dayName}, ${d} ${monthNamesGenitive[m - 1]} ${y} · ${t('brigade')} ${selectedShift}</div>
       <div class="dtc-label">${t('todayLabel')} ${holidayName ? '· 🎉 ' + holidayName : ''}</div>
       <div class="dtc-shift">${shiftEmoji[shiftCode]} ${shiftFullName[shiftCode].split(' ')[0]}</div>
       <div class="dtc-time">${startTxt} – ${endTxt}</div>
@@ -163,25 +166,13 @@ function renderDashboard() {
       otBadge = hasOT ? '<span class="ddc-ot">⏱</span>' : '';
     }
     upcomingHtml += `
-      <div class="dash-day-chip chip-quiet chip-${cls}" onclick="jumpToDate(${yy},${mm},${dd})">
+      <div class="dash-day-chip chip-${cls}" onclick="jumpToDate(${yy},${mm},${dd})">
         <div class="ddc-day">${dayNames[(dt.getDay() + 6) % 7]}</div>
         <div class="ddc-date">${dd}</div>
-        <div class="ddc-shift"><span class="ddc-dot"></span>${label}</div>
+        <div class="ddc-shift">${label}</div>
         ${otBadge}
       </div>
     `;
-  }
-
-  // Note for today — tylko kiedy zalogowany
-  let greetingContent;
-  if (hidePrivate) {
-    greetingContent = `<div class="dash-greeting">${t('greeting')}</div>`;
-  } else {
-    const todayNoteKey = `${y}-${m}-${d}-${selectedShift}`;
-    const todayNote = notes[todayNoteKey];
-    greetingContent = todayNote
-      ? `<div class="dash-greeting" style="font-style: italic; opacity: 1;">📝 ${escapeHtml(todayNote)}</div>`
-      : `<div class="dash-greeting">${t('greeting')}</div>`;
   }
 
   const vacationCard = hidePrivate
@@ -208,12 +199,6 @@ function renderDashboard() {
       : '';
 
   dv.innerHTML = `
-    <div class="dash-hero">
-      ${greetingContent}
-      <div class="dash-date">${dayName}, ${d} ${monthNamesGenitive[m - 1]} ${y}</div>
-      <div class="dash-brigade">${t('brigade')} ${selectedShift}</div>
-    </div>
-
     <div class="dash-today-card ${cardCls}">
       ${todayCard}
     </div>
