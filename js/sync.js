@@ -52,6 +52,28 @@ function clearDriveSessionFlag() {
   localStorage.removeItem(DRIVE_SESSION_KEY);
 }
 
+/** Re-render current view so personal data appears right after login. */
+function refreshAfterDriveAuth() {
+  if (typeof updateAdminUI === 'function') {
+    try { updateAdminUI(); } catch (_) {}
+  }
+  if (typeof updateDriveUI === 'function') {
+    try { updateDriveUI(); } catch (_) {}
+  }
+  if (typeof refreshViews === 'function') {
+    try { refreshViews(); return; } catch (_) {}
+  }
+  if (typeof renderDashboard === 'function') {
+    try { renderDashboard(); } catch (_) {}
+  }
+  if (typeof renderCalendar === 'function') {
+    try { renderCalendar(); } catch (_) {}
+  }
+  if (typeof renderInfo === 'function') {
+    try { renderInfo(); } catch (_) {}
+  }
+}
+
 function persistDriveToken(accessToken, expiresInSec) {
   gDriveToken = accessToken;
   const sec = Number(expiresInSec) > 0 ? Number(expiresInSec) : 3600;
@@ -141,11 +163,12 @@ function initGDriveTokenClient() {
             showToast('success', `☁️ ${t('driveLoggedIn')}`);
             gDriveTokenClient._lastInteractive = false;
           }
-          updateDriveUI();
-          fetchDriveUserEmail();
-          try {
-            window.dispatchEvent(new CustomEvent('driveAuthChanged', { detail: { loggedIn: true } }));
-          } catch (_) {}
+          fetchDriveUserEmail().finally(() => {
+            refreshAfterDriveAuth();
+            try {
+              window.dispatchEvent(new CustomEvent('driveAuthChanged', { detail: { loggedIn: true } }));
+            } catch (_) {}
+          });
         } else {
           if (gDriveTokenInflight && gDriveTokenInflight._resolve) {
             gDriveTokenInflight._resolve(false);
@@ -231,10 +254,10 @@ async function trySilentDriveRefresh() {
   if (!gDriveTokenClient) initGDriveTokenClient();
   const ok = await requestDriveAccessToken({ interactive: false });
   if (ok) {
-    updateDriveUI();
+    refreshAfterDriveAuth();
     return true;
   }
-  // Token gone but remember session — UI shows logged out until user taps login
+  // Session kept; token will refresh on next interactive/API need
   updateDriveUI();
   return false;
 }
@@ -761,10 +784,7 @@ function performLogoutDrive() {
   localStorage.removeItem('grafik_drive_user_email');
   clearDriveSessionFlag();
   showToast('info', `☁️ ${t('driveLoggedOut')}`);
-  updateDriveUI();
-  if (typeof updateAdminUI === 'function') {
-    updateAdminUI();
-  }
+  refreshAfterDriveAuth();
   try {
     window.dispatchEvent(new CustomEvent('driveAuthChanged', { detail: { loggedIn: false } }));
   } catch (_) {}
@@ -844,15 +864,13 @@ function initSync() {
     // Restore access token if Google cookie still valid
     if (!isDriveTokenValid() && hadDriveSession()) {
       await trySilentDriveRefresh();
-      updateDriveUI();
-      if (typeof renderCurrentView === 'function') {
-        try { renderCurrentView(); } catch (_) {}
-      } else if (typeof renderDashboard === 'function') {
-        try { renderDashboard(); } catch (_) {}
-      }
+      refreshAfterDriveAuth();
     } else if (isDriveTokenValid()) {
       scheduleDriveTokenRefresh();
-      fetchDriveUserEmail();
+      fetchDriveUserEmail().finally(() => refreshAfterDriveAuth());
+    } else if (hadDriveSession()) {
+      // Session without valid token yet — still show personal local data
+      refreshAfterDriveAuth();
     }
   });
 

@@ -119,6 +119,14 @@ bindEvent('yearToggle', 'change', (e) => {
   refreshViews();
 });
 
+window.addEventListener('driveAuthChanged', () => {
+  try {
+    refreshViews();
+  } catch (e) {
+    console.warn('[main] refresh after auth', e);
+  }
+});
+
 function refreshViews() {
   const views = ['dashboardView', 'monthView', 'yearView', 'tableView'];
   views.forEach((v) => (document.getElementById(v).style.display = 'none'));
