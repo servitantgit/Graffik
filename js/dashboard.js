@@ -198,7 +198,7 @@ function renderDashboard() {
     }
 
     const cls = onU ? 'U' : isWolne(s) ? 'W' : s;
-    const label = onU ? '🌴' : isWolne(s) ? '🏖️' : shiftEmoji[s] + ' ' + s;
+    const label = onU ? '🌴' : isWolne(s) ? '🏖' : s;
     let otBadge = '';
     if (!hidePrivate) {
       const otChip = getOvertimes(yy, mm, dd, selectedShift);

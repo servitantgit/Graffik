@@ -324,10 +324,19 @@
   .ot-summary-grid {
     grid-template-columns: 1fr;
   }
-  /* NEW: Fix для 7-денних chips — скидаємо центрування на мобільному */
+  /* 7-day chips: equal columns, no horizontal scroll */
   .dash-upcoming-list {
-    justify-content: flex-start;
-    scroll-padding-left: 5px;
+    display: grid !important;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 3px !important;
+    overflow: hidden !important;
+    justify-content: stretch;
+  }
+  .dash-day-chip {
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: 100%;
+    padding: 4px 0 !important;
   }
 }
 

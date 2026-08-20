@@ -432,57 +432,61 @@ body:not(.theme-dark) .dash-hero {
 
 /* === 7-day chips: always fit viewport (no horizontal scroll) === */
 .dash-upcoming {
-  overflow: hidden;
+  overflow: hidden !important;
   min-width: 0;
-  padding: 12px 10px;
+  padding: 12px 8px !important;
 }
 .dash-upcoming-list {
-  display: flex;
-  gap: 3px;
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
+  display: grid !important;
+  grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+  gap: 3px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
   flex-wrap: nowrap;
-  justify-content: space-between;
   box-sizing: border-box;
 }
 .dash-day-chip {
-  flex: 1 1 0;
+  flex: unset !important;
   min-width: 0 !important;
-  max-width: none;
-  width: 0; /* equal flex columns */
-  min-height: 56px;
-  padding: 5px 1px;
+  width: auto !important;
+  max-width: 100% !important;
+  min-height: 54px;
+  padding: 4px 0 !important;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 .dash-day-chip .ddc-day {
-  font-size: 8px;
-  letter-spacing: 0;
-  line-height: 1.1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: clip;
+  font-size: 8px !important;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
   max-width: 100%;
+  overflow: hidden;
 }
 .dash-day-chip .ddc-date {
-  font-size: 14px;
+  font-size: 13px !important;
   margin: 1px 0;
+  line-height: 1.1;
 }
 .dash-day-chip .ddc-shift {
-  font-size: 10px;
+  font-size: 11px !important;
   line-height: 1.1;
-  white-space: nowrap;
+  max-width: 100%;
   overflow: hidden;
 }
 .dash-day-chip .ddc-ot {
-  font-size: 9px;
+  font-size: 8px;
+  padding: 0 2px;
+  top: 2px;
+  right: 1px;
 }
 @media (max-width: 400px) {
-  .dash-upcoming-list { gap: 2px; }
-  .dash-day-chip { min-height: 52px; padding: 4px 0; border-radius: 7px; }
-  .dash-day-chip .ddc-day { font-size: 7px; }
-  .dash-day-chip .ddc-date { font-size: 13px; }
-  .dash-day-chip .ddc-shift { font-size: 9px; }
+  .dash-upcoming { padding: 10px 6px !important; }
+  .dash-upcoming-list { gap: 2px !important; }
+  .dash-day-chip { min-height: 50px; padding: 3px 0 !important; border-radius: 6px; }
+  .dash-day-chip .ddc-day { font-size: 7px !important; }
+  .dash-day-chip .ddc-date { font-size: 12px !important; }
+  .dash-day-chip .ddc-shift { font-size: 10px !important; }
 }
