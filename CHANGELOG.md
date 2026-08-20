@@ -12,6 +12,7 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 
 ### Fixed
 - **Google Drive session** — silent access-token refresh before expiry, on tab focus and after reload; no more false “logout” when token hits ~1h TTL (prompt:'' when possible)
+- **Login state** — UI/personal data stay “logged in” until explicit logout (`isDriveLoggedIn`); token refresh is separate from session
 - **Month info-panel flow** — removed undefined `cycleInfo` reference that broke the entire panel render
 - **Cycle «До вільного»** — `getCyclePath` uses same shift source as UI (`getShiftAtWithPending`)
 - **Dashboard** — flow block moved below greeting + today shift card

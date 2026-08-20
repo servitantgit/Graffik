@@ -29,7 +29,19 @@ function isDriveTokenValid() {
 
 /** User had a Drive session before (even if access token expired). */
 function hadDriveSession() {
-  return localStorage.getItem(DRIVE_SESSION_KEY) === '1' || !!driveUserEmail;
+  return (
+    localStorage.getItem(DRIVE_SESSION_KEY) === '1' ||
+    !!driveUserEmail ||
+    !!localStorage.getItem('grafik_drive_token')
+  );
+}
+
+/**
+ * Logged-in for UI / personal data until explicit logout.
+ * Access token may expire (~1h); background refresh restores it for API calls.
+ */
+function isDriveLoggedIn() {
+  return hadDriveSession() || isDriveTokenValid();
 }
 
 function markDriveSession() {
@@ -532,7 +544,7 @@ function updateDriveUI() {
   if (!item) return;
   const check = item.querySelector('.mi-check');
   const label = item.querySelector('span:nth-child(2)');
-  const logged = isDriveTokenValid();
+  const logged = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : isDriveTokenValid();
 
   const logoutBtn = document.getElementById('menuDriveLogout');
   const syncItem = document.getElementById('menuSyncNow');
@@ -763,6 +775,10 @@ Object.defineProperty(window, 'driveUserEmail', {
   get: () => driveUserEmail,
   configurable: true,
 });
+window.isDriveLoggedIn = isDriveLoggedIn;
+window.isDriveTokenValid = isDriveTokenValid;
+window.hadDriveSession = hadDriveSession;
+window.ensureDriveToken = ensureDriveToken;
 
 /* === INIT === */
 function initSync() {
@@ -770,7 +786,7 @@ function initSync() {
   if (menuBtn) {
     menuBtn.onclick = () => {
       closeSideMenu();
-      if (isDriveTokenValid()) {
+      if (isDriveLoggedIn()) {
         syncWithDrive();
       } else {
         loginDrive();
@@ -782,7 +798,7 @@ function initSync() {
   if (authBtn) {
     authBtn.onclick = () => {
       closeSideMenu();
-      if (isDriveTokenValid()) {
+      if (isDriveLoggedIn()) {
         logoutDrive();
       } else {
         loginDrive();
@@ -804,7 +820,7 @@ function initSync() {
   if (syncItem) {
     syncItem.onclick = () => {
       closeSideMenu();
-      if (!isDriveTokenValid()) {
+      if (!isDriveLoggedIn()) {
         showToast('warn', `☁️ ${t('driveLoginRequired')}`);
         loginDrive();
         return;
@@ -815,10 +831,25 @@ function initSync() {
 
   loadGis().then(async () => {
     if (gDriveClientId) initGDriveTokenClient();
+    // Migrate: old installs stored token without session flag
+    if (localStorage.getItem('grafik_drive_token') || driveUserEmail) {
+      markDriveSession();
+    }
     updateDriveUI();
-    // Restore session after reload / SW update if Google cookie still valid
+    if (typeof renderDashboard === 'function' && document.getElementById('dashboardView')) {
+      try {
+        /* refresh personal UI if session restored */
+      } catch (_) {}
+    }
+    // Restore access token if Google cookie still valid
     if (!isDriveTokenValid() && hadDriveSession()) {
       await trySilentDriveRefresh();
+      updateDriveUI();
+      if (typeof renderCurrentView === 'function') {
+        try { renderCurrentView(); } catch (_) {}
+      } else if (typeof renderDashboard === 'function') {
+        try { renderDashboard(); } catch (_) {}
+      }
     } else if (isDriveTokenValid()) {
       scheduleDriveTokenRefresh();
       fetchDriveUserEmail();
