@@ -898,3 +898,24 @@ a.menu-item {
 /* ============================================================
    5. PRINT: hide all popups
    ============================================================ */
+
+/* Sync status row in side menu */
+.menu-sync-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  margin: 4px 8px 8px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  background: var(--bg-controls, rgba(127,140,141,0.12));
+}
+.menu-sync-status.unsynced {
+  color: #f39c12;
+  background: rgba(243, 156, 18, 0.12);
+  border: 1px solid rgba(243, 156, 18, 0.35);
+}
+.menu-sync-status .mi-icon {
+  font-size: 16px;
+}

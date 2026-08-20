@@ -88,6 +88,9 @@ const sideMenuOverlay = document.getElementById('sideMenuOverlay');
 function openSideMenu() {
   sideMenu.classList.add('show');
   sideMenuOverlay.classList.add('show');
+  if (typeof updateMenuSyncStatus === 'function') updateMenuSyncStatus();
+  if (typeof updatePrivacyMenuUI === 'function') updatePrivacyMenuUI();
+  if (typeof updateDriveUI === 'function') updateDriveUI();
 }
 function closeSideMenu() {
   sideMenu.classList.remove('show');

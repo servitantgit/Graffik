@@ -683,5 +683,13 @@ window.translations.uk = {
   syncDayAgo: '1 день тому',
   syncDaysAgo: '{n} днів тому',
   syncUnknown: 'невідомо',
-
+  menuSectionPrivacy: 'Приватність',
+  menuPrivacyOn: 'Режим приватності: увімкнено',
+  menuPrivacyOff: 'Режим приватності: вимкнено',
+  privacyOnToast: '🔒 Показано лише заводський графік',
+  privacyOffToast: '👤 Показано персональні дані',
+  editNeedPrivacyOff: '🔒 Вимкніть режим приватності в меню, щоб редагувати',
+  syncStatusOk: 'Усі зміни збережено · {time}',
+  syncStatusUnsynced: '⚠ Незбережені зміни · останній sync: {time}',
+  editNeedLogin: '🔒 Вимкніть режим приватності в меню, щоб редагувати'
 };

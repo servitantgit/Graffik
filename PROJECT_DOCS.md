@@ -636,3 +636,11 @@ Każdy schedule ma własne metadata + dane per rok.
 
 - Email: tantsiura.s@pg.com
 - Demo: https://servitantgit.github.io/Graffik/
+
+## Privacy & Google Drive (local-first)
+
+- **Personal data** (vacation, overtime, notes, custom shifts) lives in `localStorage` and is shown by default.
+- **Privacy mode** (side menu, above Help): hides personal data and shows factory schedule only. Does not require Google login.
+- **Google account** is optional and used only for **backup/sync**. The app does not prompt for login on startup.
+- Side menu shows **sync status** (synced vs unsaved local changes).
+

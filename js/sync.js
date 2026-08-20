@@ -394,9 +394,9 @@ async function uploadToDrive(force = false) {
       }
     }
     showToast('success', `☁️ ${t('driveSaved')}`);
-    updateDriveUI();
-    // Mark data as synced — clears unsynced state (used by R11 logout warning)
     if (typeof updateLastSync === 'function') updateLastSync();
+    updateDriveUI();
+    updateMenuSyncStatus();
     return true;
   } catch (e) {
     console.error('[SYNC] upload:', e);
@@ -562,7 +562,29 @@ async function downloadFromDrive(confirmOverwrite = false) {
 }
 
 /* === UI === */
+function updateMenuSyncStatus() {
+  const el = document.getElementById('menuSyncStatus');
+  const text = document.getElementById('menuSyncStatusText');
+  if (!el || !text) return;
+  const unsynced = typeof hasUnsyncedChanges === 'function' && hasUnsyncedChanges();
+  el.classList.toggle('unsynced', !!unsynced);
+  if (unsynced) {
+    const when = typeof timeSinceLastSync === 'function' ? timeSinceLastSync() : '';
+    text.textContent =
+      typeof t === 'function'
+        ? t('syncStatusUnsynced', { time: when })
+        : 'Unsaved changes' + (when ? ' · ' + when : '');
+  } else {
+    const when = typeof timeSinceLastSync === 'function' ? timeSinceLastSync() : '';
+    text.textContent =
+      typeof t === 'function'
+        ? t('syncStatusOk', { time: when })
+        : 'All changes synced' + (when ? ' · ' + when : '');
+  }
+}
+
 function updateDriveUI() {
+  updateMenuSyncStatus();
   const item = document.getElementById('menuDriveSync');
   if (!item) return;
   const check = item.querySelector('.mi-check');
@@ -799,6 +821,7 @@ window.isDriveLoggedIn = isDriveLoggedIn;
 window.isDriveTokenValid = isDriveTokenValid;
 window.hadDriveSession = hadDriveSession;
 window.ensureDriveToken = ensureDriveToken;
+window.updateMenuSyncStatus = updateMenuSyncStatus;
 
 /* === INIT === */
 function initSync() {
@@ -849,41 +872,18 @@ function initSync() {
     };
   }
 
-  loadGis().then(async () => {
+  loadGis().then(() => {
     if (gDriveClientId) initGDriveTokenClient();
-    // Migrate: old installs stored token without session flag
     if (localStorage.getItem('grafik_drive_token') || driveUserEmail) {
       markDriveSession();
     }
     updateDriveUI();
-    if (typeof renderDashboard === 'function' && document.getElementById('dashboardView')) {
-      try {
-        /* refresh personal UI if session restored */
-      } catch (_) {}
-    }
-    // Restore access token if Google cookie still valid
-    if (!isDriveTokenValid() && hadDriveSession()) {
-      await trySilentDriveRefresh();
-      refreshAfterDriveAuth();
-    } else if (isDriveTokenValid()) {
-      scheduleDriveTokenRefresh();
-      fetchDriveUserEmail().finally(() => refreshAfterDriveAuth());
-    } else if (hadDriveSession()) {
-      // Session without valid token yet — still show personal local data
-      refreshAfterDriveAuth();
-    }
-  });
-
-  // Tab visible again — refresh if token near expiry or gone
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState !== 'visible') return;
+    updateMenuSyncStatus();
+    // Do NOT auto-request Google tokens on load — login is user-initiated for backup only.
+    // If a still-valid token exists, keep the refresh timer for mid-session sync.
     if (isDriveTokenValid()) {
-      // renew if less than 10 min left
-      if (gDriveTokenExpiry - Date.now() < 10 * 60 * 1000) {
-        trySilentDriveRefresh().catch(() => {});
-      }
-    } else if (hadDriveSession()) {
-      trySilentDriveRefresh().catch(() => {});
+      scheduleDriveTokenRefresh();
+      fetchDriveUserEmail();
     }
   });
 }

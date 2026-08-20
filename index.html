@@ -175,6 +175,10 @@
         <span class="mi-icon">🚪</span>
         <span data-i18n="menuDriveLogout">Wyloguj z Google Drive</span>
       </button>
+      <div class="menu-sync-status" id="menuSyncStatus" aria-live="polite">
+        <span class="mi-icon">💾</span>
+        <span id="menuSyncStatusText" data-i18n="syncStatusOk">All changes synced</span>
+      </div>
     </div>
 
     <div class="menu-section">
@@ -223,6 +227,15 @@
       <button class="menu-item menu-item-danger" id="resetCustomBtn">
         <span class="mi-icon">↺</span>
         <span data-i18n="menuResetAll">Reset wszystkiego</span>
+      </button>
+    </div>
+
+    <div class="menu-section">
+      <div class="menu-section-title" data-i18n="menuSectionPrivacy">Privacy</div>
+      <button class="menu-item" id="menuPrivacyToggle" type="button">
+        <span class="mi-icon">🔒</span>
+        <span id="menuPrivacyLabel" data-i18n="menuPrivacyOff">Privacy mode: off</span>
+        <span class="mi-check" id="menuPrivacyCheck" style="display:none;">✓</span>
       </button>
     </div>
 

@@ -685,5 +685,12 @@ window.translations.en = {
   syncDayAgo: '1 day ago',
   syncDaysAgo: '{n} days ago',
   syncUnknown: 'unknown',
-
+  menuSectionPrivacy: 'Privacy',
+  menuPrivacyOn: 'Privacy mode: on',
+  menuPrivacyOff: 'Privacy mode: off',
+  privacyOnToast: '🔒 Factory schedule only',
+  privacyOffToast: '👤 Personal data visible',
+  editNeedPrivacyOff: '🔒 Turn off privacy mode in the menu to edit',
+  syncStatusOk: 'All changes saved · {time}',
+  syncStatusUnsynced: '⚠ Unsynced changes · last sync: {time}'
 };
