@@ -232,17 +232,21 @@ body:not(.theme-dark) .dash-hero {
 }
 .dash-day-chip.chip-R {
   background: var(--color-R);
+  color: #fff;
 }
 .dash-day-chip.chip-P {
   background: var(--color-P);
+  color: #fff;
 }
 .dash-day-chip.chip-N {
   background: var(--color-N);
+  color: #fff;
 }
 .dash-day-chip.chip-W {
-  background: var(--color-W, #4b5563);
-  color: var(--color-W-text, #e5e7eb);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: var(--text-muted, #8b9bb4);
+  border: 1px dashed var(--border-cell, #3d4a5c);
+  box-shadow: none;
 }
 .dash-day-chip.chip-U {
   background: var(--color-U-grad);
