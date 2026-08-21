@@ -468,7 +468,7 @@ window.translations.en = {
   skinFull: 'Full fill',
   skinFullDesc: 'Solid colors like the paper schedule',
   skinStrip: 'Calm strip',
-  skinStripDesc: 'Color strip on the left; vacation stays filled',
+  skinStripDesc: 'Color strip on the left; vacation is calm too',
   skinQuiet: 'Quiet dots',
   skinQuietDesc: 'Neutral cells with a color dot',
   persVacationHint: 'Vacation day limit for the currently selected brigade.',
