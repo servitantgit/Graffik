@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup — Year table view</title>
+<style>
+  :root {
+    --bg: #0f1419;
+    --panel: #1a2332;
+    --border: #2a3544;
+    --muted: #8b9bb4;
+    --text: #e8eef7;
+    --R: #f39c12;
+    --P: #16a085;
+    --N: #2980b9;
+    --A: #e74c3c;
+    --B: #27ae60;
+    --C: #3498db;
+    --D: #9b59b6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #0a0e14;
+    color: var(--text);
+    padding: 20px;
+    line-height: 1.35;
+  }
+  h1 { font-size: 1.25rem; margin: 0 0 6px; }
+  h2 {
+    font-size: 1rem;
+    color: #7dd3fc;
+    margin: 28px 0 8px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+  }
+  .note { color: var(--muted); font-size: 0.9rem; margin: 0 0 18px; max-width: 900px; }
+  .variant {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 16px 18px;
+    margin-bottom: 22px;
+    overflow-x: auto;
+  }
+  .variant h3 { margin: 0 0 4px; font-size: 0.95rem; }
+  .variant .desc { color: var(--muted); font-size: 12px; margin: 0 0 12px; }
+  .month-title {
+    text-align: center;
+    color: #5dade2;
+    font-weight: 700;
+    margin: 0 0 8px;
+    font-size: 15px;
+  }
+  table {
+    border-collapse: separate;
+    border-spacing: 2px;
+    font-size: 11px;
+    width: max-content;
+    min-width: 100%;
+  }
+  th, td {
+    text-align: center;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+  th {
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 10px;
+  }
+  .wk { color: #e74c3c !important; }
+  .brig {
+    width: 28px;
+    min-width: 28px;
+    font-weight: 800;
+    border-radius: 4px 0 0 4px;
+  }
+  .bA { background: var(--A); color: #fff; }
+  .bB { background: var(--B); color: #fff; }
+  .bC { background: var(--C); color: #fff; }
+  .bD { background: var(--D); color: #fff; }
+  .R { background: var(--R); color: #fff; }
+  .P { background: var(--P); color: #fff; }
+  .N { background: var(--N); color: #fff; }
+  .W { background: transparent; color: #6b7c90; }
+
+  /* A: current-ish */
+  .a td.W { background: #151c27; color: #5a6a7e; }
+
+  /* B: denser, no gaps, sticky brig */
+  .b table { border-spacing: 1px; }
+  .b th, .b td { min-width: 20px; height: 20px; border-radius: 3px; font-size: 10px; }
+  .b td.W { background: transparent; color: #4a5568; border: 1px dashed #2a3544; }
+  .b .brig { position: sticky; left: 0; z-index: 2; }
+
+  /* C: letters only on shifts, free = empty dot */
+  .c td.R, .c td.P, .c td.N { font-size: 10px; }
+  .c td.W { background: transparent; color: transparent; border: 1px solid #243044; }
+  .c td.W::after { content: ''; }
+
+  /* D: weekend columns tinted */
+  .d col.we { background: rgba(192, 57, 43, 0.08); }
+  .d th.wk { background: rgba(192, 57, 43, 0.15); border-radius: 4px; }
+  .d td.we-col.W { background: rgba(90, 30, 30, 0.2); }
+
+  /* E: rounded pills, more padding, zebra brig rows */
+  .e table { border-spacing: 3px; }
+  .e th, .e td { min-width: 24px; height: 24px; border-radius: 6px; }
+  .e tr.rowB td:not(.brig) { filter: brightness(0.92); }
+  .e tr.rowD td:not(.brig) { filter: brightness(0.92); }
+  .e td.W { background: #121820; color: #4a5568; }
+
+  /* F: heatmap style — same colors but soft outer, strong letter */
+  .f td.R, .f td.P, .f td.N {
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+    text-shadow: 0 1px 1px rgba(0,0,0,0.35);
+  }
+  .f td.W { background: #121820; color: #3d4a5c; font-weight: 500; }
+  .f .today { outline: 2px solid #f1c40f; outline-offset: 0; }
+
+  .legend {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    margin-top: 10px; font-size: 11px; color: var(--muted);
+  }
+  .legend span {
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .sw {
+    width: 14px; height: 14px; border-radius: 3px; display: inline-block;
+  }
+  table.cmp { border-collapse: collapse; font-size: 13px; width: 100%; max-width: 920px; }
+  table.cmp th, table.cmp td { border: 1px solid var(--border); padding: 8px; text-align: left; min-width: auto; height: auto; border-radius: 0; font-weight: 400; }
+  table.cmp th { background: #15202b; color: #7dd3fc; }
+  .rec { color: #86efac; }
+</style>
+</head>
+<body>
+<h1>Таблиця року — варіанти візуалу</h1>
+<p class="note">
+  Кольори змін <b>R / P / N</b> заводські, не змінюємо.
+  Нижче — фрагмент січня (дні 1–16), усі 4 бригади. Мета: читабельність, менше «шуму», вихідні й бригади помітніші.
+</p>
+
+<script>
+const days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
+// weekday letters for Jan 2026 starting Thu
+const wd = ['Ч','П','С','Н','П','В','С','Ч','П','С','Н','П','В','С','Ч','П'];
+const isWk = (i) => wd[i] === 'С' || wd[i] === 'Н';
+// sample pattern per brigade (matches real-ish rhythm)
+const data = {
+  A: ['W','N','N','W','W','W','P','P','W','W','R','R','R','R','W','N'],
+  B: ['W','W','P','P','P','W','R','R','R','R','W','N','N','N','N','W'],
+  C: ['W','W','W','N','N','W','W','W','P','P','P','P','P','W','R','R'],
+  D: ['W','W','R','R','R','W','N','N','N','N','N','W','W','P','P','P'],
+};
+function row(brig, clsExtra='') {
+  const cells = data[brig].map((s, i) => {
+    const we = isWk(i) ? ' we-col' : '';
+    const today = (brig === 'C' && i === 2) ? ' today' : '';
+    return `<td class="${s}${we}${today}">${s === 'W' ? '—' : s}</td>`;
+  }).join('');
+  return `<tr class="row${brig} ${clsExtra}"><td class="brig b${brig}">${brig}</td>${cells}</tr>`;
+}
+function head() {
+  return `<tr><th class="brig">Бр.</th>${days.map((d,i) =>
+    `<th class="${isWk(i)?'wk':''}">${d}<br><span style="font-weight:500;opacity:.8">${wd[i]}</span></th>`
+  ).join('')}</tr>`;
+}
+function table(extraClass='') {
+  return `<table class="${extraClass}"><thead>${head()}</thead><tbody>
+    ${row('A')}${row('B')}${row('C')}${row('D')}
+  </tbody></table>`;
+}
+</script>
+
+<div class="variant a">
+  <h3>A. Як зараз (орієнтир)</h3>
+  <p class="desc">Повна заливка R/P/N, вільні — темні клітини з «—». Щільно, але вихідні слабко відділені.</p>
+  <div class="month-title">Січень 2026</div>
+  <div id="vA"></div>
+</div>
+
+<div class="variant b">
+  <h3>B. Компактніше + порожні вихідні + sticky бригада</h3>
+  <p class="desc">Менший gap, вільні — пунктир без заливки (як style E у місяці). Колонка A–D липне при горизонтальному скролі.</p>
+  <div class="month-title">Січень 2026</div>
+  <div id="vB"></div>
+</div>
+
+<div class="variant c">
+  <h3>C. Мінімалізм: лише кольорові блоки змін</h3>
+  <p class="desc">Вільні майже «дірки» в сітці — ритм змін читається швидше. Добре для огляду всього року.</p>
+  <div class="month-title">Січень 2026</div>
+  <div id="vC"></div>
+</div>
+
+<div class="variant d">
+  <h3>D. Підсвітка колонок суботи/неділі</h3>
+  <p class="desc">Ті самі кольори змін + легкий червоний tint на вихідних колонках (як у шапці дат).</p>
+  <div class="month-title">Січень 2026</div>
+  <div id="vD"></div>
+</div>
+
+<div class="variant e">
+  <h3>E. «Пігулки» + чергування рядків бригад</h3>
+  <p class="desc">Більший radius і spacing; рядки B/D трохи темніші — легше вести очима горизонтально.</p>
+  <div class="month-title">Січень 2026</div>
+  <div id="vE"></div>
+</div>
+
+<div class="variant f">
+  <h3>F. Контрастні літери + обводка «сьогодні»</h3>
+  <p class="desc">Зміни з легким inner highlight; today — жовтий outline (як у місяці). Вільні приглушені.</p>
+  <div class="month-title">Січень 2026</div>
+  <div id="vF"></div>
+</div>
+
+<script>
+['A','B','C','D','E','F'].forEach(k => {
+  document.getElementById('v'+k).innerHTML = table();
+});
+</script>
+
+<div class="legend">
+  <span><i class="sw" style="background:var(--R)"></i> R</span>
+  <span><i class="sw" style="background:var(--P)"></i> P</span>
+  <span><i class="sw" style="background:var(--N)"></i> N</span>
+  <span><i class="sw" style="background:#151c27;border:1px dashed #2a3544"></i> вільний</span>
+  <span><i class="sw" style="background:var(--A)"></i> A</span>
+  <span><i class="sw" style="background:var(--B)"></i> B</span>
+  <span><i class="sw" style="background:var(--C)"></i> C</span>
+  <span><i class="sw" style="background:var(--D)"></i> D</span>
+</div>
+
+<h2>Порівняння</h2>
+<table class="cmp">
+  <tr>
+    <th>Варіант</th>
+    <th>Огляд року</th>
+    <th>Вихідні</th>
+    <th>Скрол на мобільному</th>
+  </tr>
+  <tr>
+    <td><b>A</b> зараз</td>
+    <td>добре</td>
+    <td>слабко</td>
+    <td>середньо</td>
+  </tr>
+  <tr>
+    <td><b>B</b> компакт + sticky</td>
+    <td class="rec">дуже добре</td>
+    <td class="rec">краще</td>
+    <td class="rec">краще</td>
+  </tr>
+  <tr>
+    <td><b>C</b> мінімалізм</td>
+    <td class="rec">найчистіший ритм</td>
+    <td>як «дірки»</td>
+    <td>добре</td>
+  </tr>
+  <tr>
+    <td><b>D</b> колонки сб/нд</td>
+    <td>добре</td>
+    <td class="rec">найясніше</td>
+    <td>як A</td>
+  </tr>
+  <tr>
+    <td><b>E</b> пігулки + zebra</td>
+    <td>м’якше</td>
+    <td>середньо</td>
+    <td>трохи ширше</td>
+  </tr>
+  <tr>
+    <td><b>F</b> today + contrast</td>
+    <td>добре</td>
+    <td>середньо</td>
+    <td>як A</td>
+  </tr>
+</table>
+
+<p class="note" style="margin-top:16px">
+  <b>Ідея міксу:</b> <b>B + D</b> — компактні клітини, порожні вихідні, sticky бригада, підсвітка сб/нд.
+  Кольори R/P/N без змін. Напиши літери — можна впровадити в код.
+</p>
+</body>
+</html>
