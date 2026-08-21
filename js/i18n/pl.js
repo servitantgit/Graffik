@@ -469,7 +469,7 @@ window.translations.pl = {
   skinFull: 'Pełne wypełnienie',
   skinFullDesc: 'Jednolite kolory jak na papierowym grafiku',
   skinStrip: 'Spokojny pasek',
-  skinStripDesc: 'Kolorowy pasek z lewej; urlop nadal wypełniony',
+  skinStripDesc: 'Kolorowy pasek z lewej; urlop też w spokojnym stylu',
   skinQuiet: 'Ciche kropki',
   skinQuietDesc: 'Neutralne komórki z kolorową kropką',
   persVacationHint: 'Limit dni urlopu dla aktualnie wybranej brygady.',

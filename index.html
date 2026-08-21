@@ -196,18 +196,16 @@
       </button>
     </div>
 
-    <div class="menu-section">
-      <div class="menu-section-title" data-i18n="menuSectionNotifications">Powiadomienia</div>
-      <button class="menu-item" id="menuNotifications">
-        <span class="mi-icon">🔔</span>
-        <span data-i18n="menuNotifications">Powiadomienia o zmianach</span>
-        <span class="mi-check" style="display:none;">✓</span>
-      </button>
+    <!-- Notifications: only via Settings hub; hidden trigger for existing handler -->
+    <button class="menu-item" id="menuNotifications" type="button" style="display:none;" aria-hidden="true"></button>
+
+    <div class="menu-section" id="menuInstallSection" style="display:none;">
       <button class="menu-item" id="menuInstallApp" style="display:none;">
         <span class="mi-icon">📲</span>
         <span data-i18n="menuInstallApp">Zainstaluj aplikację</span>
       </button>
     </div>
+
 
     <div class="menu-section admin-only">
       <div class="menu-section-title" data-i18n="menuSectionAdmin">👑 Admin Panel</div>

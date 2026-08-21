@@ -202,7 +202,8 @@ function applyPersonalization() {
     .skin-mini .sm-U { background: var(--color-U); }
     .skin-mini.strip .sm-R,
     .skin-mini.strip .sm-P,
-    .skin-mini.strip .sm-N {
+    .skin-mini.strip .sm-N,
+    .skin-mini.strip .sm-U {
       background: var(--bg-cell, #1a2438);
     }
     .skin-mini.strip .sm-R::before,
@@ -213,23 +214,18 @@ function applyPersonalization() {
     .skin-mini.strip .sm-R::before { background: var(--color-R); }
     .skin-mini.strip .sm-P::before { background: var(--color-P); }
     .skin-mini.strip .sm-N::before { background: var(--color-N); }
+    .skin-mini.strip .sm-U::before { background: var(--color-U); }
     .skin-mini.quiet .sm-R,
     .skin-mini.quiet .sm-P,
     .skin-mini.quiet .sm-N,
     .skin-mini.quiet .sm-U {
       background: var(--bg-cell, #1a2438);
+      box-shadow: inset 0 0 0 2px var(--border-cell, #334155);
     }
-    .skin-mini.quiet .sm-R::after,
-    .skin-mini.quiet .sm-P::after,
-    .skin-mini.quiet .sm-N::after,
-    .skin-mini.quiet .sm-U::after {
-      content: ''; position: absolute; left: 50%; bottom: 4px;
-      width: 6px; height: 6px; border-radius: 50%; transform: translateX(-50%);
-    }
-    .skin-mini.quiet .sm-R::after { background: var(--color-R); }
-    .skin-mini.quiet .sm-P::after { background: var(--color-P); }
-    .skin-mini.quiet .sm-N::after { background: var(--color-N); }
-    .skin-mini.quiet .sm-U::after { background: var(--color-U); }
+    .skin-mini.quiet .sm-R { box-shadow: inset 0 0 0 2px var(--color-R); }
+    .skin-mini.quiet .sm-P { box-shadow: inset 0 0 0 2px var(--color-P); }
+    .skin-mini.quiet .sm-N { box-shadow: inset 0 0 0 2px var(--color-N); }
+    .skin-mini.quiet .sm-U { box-shadow: inset 0 0 0 2px var(--color-U); }
   `;
   document.head.appendChild(s);
 })();
@@ -421,13 +417,13 @@ function openSkinModal() {
     {
       id: 'strip',
       title: t('skinStrip') || 'Calm strip',
-      desc: t('skinStripDesc') || 'Color strip on the left; vacation stays filled',
+      desc: t('skinStripDesc') || 'Color strip on the left; vacation is calm too',
       mini: 'strip',
     },
     {
       id: 'quiet',
-      title: t('skinQuiet') || 'Quiet dots',
-      desc: t('skinQuietDesc') || 'Neutral cells with a color dot',
+      title: t('skinQuiet') || 'Quiet rings',
+      desc: t('skinQuietDesc') || 'Neutral cells with a colored date ring',
       mini: 'quiet',
     },
   ];

@@ -683,8 +683,10 @@ small {
   right: 22px;
 }
 
+
 /* ===== CELL SKINS (body.skin-*) ===== */
-/* strip: neutral body + left color bar; U stays full fill */
+
+/* --- strip: neutral body + left color bar; vacation also calm (strip + light tint) --- */
 body.skin-strip .day-cell.cell-R,
 body.skin-strip .day-cell.cell-P,
 body.skin-strip .day-cell.cell-N {
@@ -695,7 +697,8 @@ body.skin-strip .day-cell.cell-N {
 }
 body.skin-strip .day-cell.cell-R::before,
 body.skin-strip .day-cell.cell-P::before,
-body.skin-strip .day-cell.cell-N::before {
+body.skin-strip .day-cell.cell-N::before,
+body.skin-strip .day-cell.urlop::before {
   content: '';
   position: absolute;
   left: 0;
@@ -708,6 +711,8 @@ body.skin-strip .day-cell.cell-N::before {
 body.skin-strip .day-cell.cell-R::before { background: var(--color-R); }
 body.skin-strip .day-cell.cell-P::before { background: var(--color-P); }
 body.skin-strip .day-cell.cell-N::before { background: var(--color-N); }
+body.skin-strip .day-cell.urlop::before { background: var(--color-U); }
+
 body.skin-strip .day-cell.cell-R .day-shift { color: var(--color-R); text-shadow: none; }
 body.skin-strip .day-cell.cell-P .day-shift { color: var(--color-P); text-shadow: none; }
 body.skin-strip .day-cell.cell-N .day-shift { color: var(--color-N); text-shadow: none; }
@@ -718,7 +723,21 @@ body.skin-strip .day-cell.cell-N .day-num {
   text-shadow: none;
 }
 
-/* quiet: neutral + bottom color dot */
+body.skin-strip .day-cell.urlop {
+  background: color-mix(in srgb, var(--color-U) 18%, var(--bg-cell)) !important;
+  color: var(--text-main) !important;
+  border-color: var(--border-cell) !important;
+  text-shadow: none !important;
+}
+body.skin-strip .day-cell.urlop .day-num,
+body.skin-strip .day-cell.urlop .day-shift {
+  color: var(--text-main) !important;
+}
+body.skin-strip .day-cell.urlop::after {
+  display: none !important;
+}
+
+/* --- quiet: colored ring around the day number (no bottom dots) --- */
 body.skin-quiet .day-cell.cell-R,
 body.skin-quiet .day-cell.cell-P,
 body.skin-quiet .day-cell.cell-N {
@@ -727,57 +746,61 @@ body.skin-quiet .day-cell.cell-N {
   border-color: var(--border-cell);
   box-shadow: none;
 }
+body.skin-quiet .day-cell.cell-R::after,
+body.skin-quiet .day-cell.cell-P::after,
+body.skin-quiet .day-cell.cell-N::after {
+  display: none !important;
+  content: none;
+}
 body.skin-quiet .day-cell.cell-R .day-shift,
 body.skin-quiet .day-cell.cell-P .day-shift,
 body.skin-quiet .day-cell.cell-N .day-shift {
   color: var(--text-main);
   text-shadow: none;
-  font-size: 0.7rem;
-  opacity: 0.85;
 }
 body.skin-quiet .day-cell.cell-R .day-num,
 body.skin-quiet .day-cell.cell-P .day-num,
 body.skin-quiet .day-cell.cell-N .day-num {
   color: var(--text-main);
   text-shadow: none;
-}
-body.skin-quiet .day-cell.cell-R::after,
-body.skin-quiet .day-cell.cell-P::after,
-body.skin-quiet .day-cell.cell-N::after {
-  content: '';
-  display: block;
-  position: absolute;
-  left: 50%;
-  bottom: 5px;
-  width: 7px;
-  height: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.55em;
+  min-height: 1.55em;
   border-radius: 50%;
-  transform: translateX(-50%);
+  border: 2px solid transparent;
+  box-sizing: border-box;
+  line-height: 1;
+  padding: 1px;
 }
-body.skin-quiet .day-cell.cell-R::after { background: var(--color-R); }
-body.skin-quiet .day-cell.cell-P::after { background: var(--color-P); }
-body.skin-quiet .day-cell.cell-N::after { background: var(--color-N); }
+body.skin-quiet .day-cell.cell-R .day-num { border-color: var(--color-R); }
+body.skin-quiet .day-cell.cell-P .day-num { border-color: var(--color-P); }
+body.skin-quiet .day-cell.cell-N .day-num { border-color: var(--color-N); }
 
-/* quiet vacation: outline + teal dot, lighter fill optional */
 body.skin-quiet .day-cell.urlop {
   background: var(--bg-cell) !important;
   color: var(--text-main) !important;
-  border: 1.5px solid var(--color-U-border) !important;
+  border: 1px solid var(--border-cell) !important;
   text-shadow: none !important;
 }
-body.skin-quiet .day-cell.urlop .day-num,
+body.skin-quiet .day-cell.urlop::after {
+  display: none !important;
+  content: none !important;
+}
+body.skin-quiet .day-cell.urlop .day-num {
+  color: var(--text-main) !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.55em;
+  min-height: 1.55em;
+  border-radius: 50%;
+  border: 2px solid var(--color-U) !important;
+  box-sizing: border-box;
+  line-height: 1;
+  padding: 1px;
+}
 body.skin-quiet .day-cell.urlop .day-shift {
   color: var(--text-main) !important;
-}
-body.skin-quiet .day-cell.urlop::after {
-  content: '';
-  display: block !important;
-  position: absolute;
-  left: 50%;
-  bottom: 5px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  transform: translateX(-50%);
-  background: var(--color-U);
 }
