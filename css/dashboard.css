@@ -494,3 +494,53 @@ body:not(.theme-dark) .dash-hero {
   .dash-day-chip .ddc-date { font-size: 12px !important; }
   .dash-day-chip .ddc-shift { font-size: 10px !important; }
 }
+
+/* Dashboard chips respect cell skin */
+body.skin-strip .dash-day-chip.chip-R,
+body.skin-strip .dash-day-chip.chip-P,
+body.skin-strip .dash-day-chip.chip-N,
+body.skin-quiet .dash-day-chip.chip-R,
+body.skin-quiet .dash-day-chip.chip-P,
+body.skin-quiet .dash-day-chip.chip-N {
+  background: var(--bg-cell);
+  color: var(--text-main);
+  box-shadow: none;
+  border: 1px solid var(--border-cell);
+  position: relative;
+}
+body.skin-strip .dash-day-chip.chip-R::before,
+body.skin-strip .dash-day-chip.chip-P::before,
+body.skin-strip .dash-day-chip.chip-N::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  border-radius: 10px 0 0 10px;
+}
+body.skin-strip .dash-day-chip.chip-R::before { background: var(--color-R); }
+body.skin-strip .dash-day-chip.chip-P::before { background: var(--color-P); }
+body.skin-strip .dash-day-chip.chip-N::before { background: var(--color-N); }
+
+body.skin-quiet .dash-day-chip.chip-R::after,
+body.skin-quiet .dash-day-chip.chip-P::after,
+body.skin-quiet .dash-day-chip.chip-N::after,
+body.skin-quiet .dash-day-chip.chip-U::after {
+  content: '';
+  display: block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  margin: 4px auto 0;
+}
+body.skin-quiet .dash-day-chip.chip-R::after { background: var(--color-R); }
+body.skin-quiet .dash-day-chip.chip-P::after { background: var(--color-P); }
+body.skin-quiet .dash-day-chip.chip-N::after { background: var(--color-N); }
+body.skin-quiet .dash-day-chip.chip-U {
+  background: var(--bg-cell);
+  color: var(--text-main);
+  border: 1px solid var(--color-U-border);
+  box-shadow: none;
+}
+body.skin-quiet .dash-day-chip.chip-U::after { background: var(--color-U); }
+body.skin-strip .dash-day-chip.chip-U {
+  /* vacation stays filled in strip skin */
+}

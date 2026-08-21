@@ -545,7 +545,8 @@ async function downloadFromDrive(confirmOverwrite = false) {
         try {
           Object.assign(prefs, data.prefs);
           savePrefs(prefs);
-          if (typeof applyCellColors === 'function') applyCellColors();
+          if (typeof applyPersonalization === 'function') applyPersonalization();
+          else if (typeof applyCellColors === 'function') applyCellColors();
         } catch (e) {
           console.error('[SYNC] prefs error', e);
           applyErrors.push('prefs');
