@@ -78,7 +78,8 @@ function clearStoredRemoteMtime() {
  * Sets gDriveRemoteNewer for menu status.
  */
 async function checkDriveRemoteStatus(force = false) {
-  if (!isDriveTokenValid() && !(await ensureDriveToken(false))) {
+  // Only when a still-valid token exists — never trigger OAuth from menu open
+  if (!isDriveTokenValid()) {
     gDriveRemoteNewer = false;
     return false;
   }
@@ -140,21 +141,14 @@ function persistDriveToken(accessToken, expiresInSec) {
   localStorage.setItem('grafik_drive_token', gDriveToken);
   localStorage.setItem('grafik_drive_token_expiry', String(gDriveTokenExpiry));
   markDriveSession();
-  scheduleDriveTokenRefresh();
 }
 
-/** Refresh a few minutes before expiry (access tokens ~1h). */
+/** Disabled: no background token refresh (user initiates sync/login only). */
 function scheduleDriveTokenRefresh() {
   if (gDriveRefreshTimer) {
     clearTimeout(gDriveRefreshTimer);
     gDriveRefreshTimer = null;
   }
-  if (!gDriveToken || !gDriveTokenExpiry) return;
-  // refresh 5 min before expiry, but at least 30s from now
-  const ms = Math.max(30 * 1000, gDriveTokenExpiry - Date.now() - 5 * 60 * 1000);
-  gDriveRefreshTimer = setTimeout(() => {
-    trySilentDriveRefresh().catch(() => {});
-  }, ms);
 }
 
 /**
@@ -302,30 +296,17 @@ function requestDriveAccessToken(opts) {
   return gDriveTokenInflight;
 }
 
-/** Silent refresh when Google session cookie still exists. */
+/**
+ * No silent OAuth. Returns true only if access token is still valid in memory/LS.
+ * Google popups only via loginDrive() / ensureDriveToken(true) on user action.
+ */
 async function trySilentDriveRefresh() {
-  if (isDriveTokenValid()) {
-    scheduleDriveTokenRefresh();
-    return true;
-  }
-  if (!hadDriveSession()) return false;
-  await loadGis();
-  if (!gDriveTokenClient) initGDriveTokenClient();
-  const ok = await requestDriveAccessToken({ interactive: false });
-  if (ok) {
-    refreshAfterDriveAuth();
-    return true;
-  }
-  // Session kept; token will refresh on next interactive/API need
-  updateDriveUI();
-  return false;
+  return isDriveTokenValid();
 }
 
-/** Ensure valid token before Drive API calls. */
+/** Ensure valid token before Drive API calls. Interactive only when user started the action. */
 async function ensureDriveToken(interactiveFallback) {
   if (isDriveTokenValid()) return true;
-  const silent = await trySilentDriveRefresh();
-  if (silent) return true;
   if (interactiveFallback) {
     return requestDriveAccessToken({ interactive: true });
   }
@@ -335,14 +316,19 @@ async function ensureDriveToken(interactiveFallback) {
 /* === API WRAPPERS === */
 async function driveFetch(url, options = {}, retry = true) {
   if (!isDriveTokenValid()) {
-    await ensureDriveToken(false);
+    // No auto-login; caller must ensureDriveToken(true) on user actions
+    return new Response(JSON.stringify({ error: 'no_token' }), { status: 401 });
   }
   const headers = options.headers || {};
   headers['Authorization'] = 'Bearer ' + gDriveToken;
   const resp = await fetch(url, { ...options, headers });
   if (resp.status === 401 && retry) {
-    const ok = await ensureDriveToken(false);
-    if (ok) return driveFetch(url, options, false);
+    // Token expired — clear so UI shows need to sign in again; no auto popup
+    gDriveToken = null;
+    gDriveTokenExpiry = 0;
+    localStorage.removeItem('grafik_drive_token');
+    localStorage.removeItem('grafik_drive_token_expiry');
+    updateDriveUI();
   }
   return resp;
 }
@@ -976,10 +962,8 @@ function initSync() {
     }
     updateDriveUI();
     updateMenuSyncStatus();
-    // Do NOT auto-request Google tokens on load — login is user-initiated for backup only.
-    // If a still-valid token exists, keep the refresh timer for mid-session sync.
+    // No auto OAuth / silent refresh. Token used only if still valid until user syncs again.
     if (isDriveTokenValid()) {
-      scheduleDriveTokenRefresh();
       fetchDriveUserEmail();
     }
   });
