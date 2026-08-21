@@ -215,70 +215,95 @@ body.edit-active .day-cell:not(.empty):hover {
   transform: scale(1.04);
 }
 
-/* Neutral body + factory-color strip at bottom (same R/P/N palette) */
-.day-cell.cell-R,
-.day-cell.cell-P,
-.day-cell.cell-N,
-.day-cell.cell-W {
-  background: var(--bg-cell);
-  color: var(--text-main);
-  border-color: var(--border-cell);
-  box-shadow: none;
+/* Style E: full factory fill for shifts; empty/dashed free days */
+.day-cell.cell-R {
+  background: var(--color-R);
+  color: #fff;
+  border-color: var(--color-R-border);
+}
+.day-cell.cell-P {
+  background: var(--color-P);
+  color: #fff;
+  border-color: var(--color-P-border, var(--color-P));
+}
+.day-cell.cell-N {
+  background: var(--color-N);
+  color: #fff;
+  border-color: var(--color-N-border, var(--color-N));
 }
 .day-cell.cell-R::after,
 .day-cell.cell-P::after,
-.day-cell.cell-N::after,
-.day-cell.cell-W::after {
-  content: '';
-  position: absolute;
-  left: 4px;
-  right: 4px;
-  bottom: 3px;
-  height: 4px;
-  border-radius: 3px;
-  pointer-events: none;
+.day-cell.cell-N::after {
+  display: none;
 }
-.day-cell.cell-R::after { background: var(--color-R); }
-.day-cell.cell-P::after { background: var(--color-P); }
-.day-cell.cell-N::after { background: var(--color-N); }
-.day-cell.cell-W::after { background: var(--color-W-border); opacity: 0.5; }
-.day-cell.cell-R .day-shift { color: var(--color-R); font-weight: 700; }
-.day-cell.cell-P .day-shift { color: var(--color-P); font-weight: 700; }
-.day-cell.cell-N .day-shift { color: var(--color-N); font-weight: 700; }
-.day-cell.cell-W .day-shift { color: var(--color-W-text); }
+.day-cell.cell-R .day-num,
+.day-cell.cell-P .day-num,
+.day-cell.cell-N .day-num,
+.day-cell.cell-R .day-shift,
+.day-cell.cell-P .day-shift,
+.day-cell.cell-N .day-shift {
+  color: #fff;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+/* Free day — hollow / dashed, no fill */
+.day-cell.cell-W {
+  background: transparent;
+  color: var(--text-muted, #8b9bb4);
+  border: 1px dashed var(--border-cell);
+  box-shadow: none;
+}
+.day-cell.cell-W::after {
+  display: none;
+}
+.day-cell.cell-W .day-num,
+.day-cell.cell-W .day-shift {
+  color: var(--text-muted, #8b9bb4);
+  font-weight: 600;
+}
+
+/* Weekend free — slightly stronger empty state */
+.day-cell.day-weekend.cell-W {
+  background: rgba(90, 30, 30, 0.18);
+  border: 1px dashed rgba(185, 70, 70, 0.45);
+  color: #c4a4a4;
+}
+.day-cell.day-weekend.cell-W .day-num,
+.day-cell.day-weekend.cell-W .day-shift {
+  color: #c4a4a4;
+}
+
 .day-cell.holiday.cell-W {
   background: rgba(239, 68, 68, 0.12);
   color: #fca5a5;
-  border-color: rgba(239, 68, 68, 0.35);
+  border: 1px dashed rgba(239, 68, 68, 0.45);
 }
 body:not(.theme-dark) .day-cell.holiday.cell-W {
   background: #fee2e2;
   color: #b91c1c;
-  border-color: #f5b7b1;
+  border: 1px dashed #f5b7b1;
 }
 
+/* Vacation — full fill */
 .day-cell.urlop {
-  background: var(--bg-cell) !important;
-  color: var(--text-main) !important;
-  border-color: var(--border-cell) !important;
-  text-shadow: none !important;
+  background: linear-gradient(135deg, #16a085, #0e6655) !important;
+  color: #fff !important;
+  border-color: #0e6655 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25) !important;
 }
 .day-cell.urlop::after {
-  content: '';
-  position: absolute;
-  left: 4px;
-  right: 4px;
-  bottom: 3px;
-  height: 4px;
-  border-radius: 3px;
-  background: linear-gradient(90deg, #d97706, #0e7490);
-  pointer-events: none;
+  display: none !important;
+}
+.day-cell.urlop .day-num,
+.day-cell.urlop .day-shift {
+  color: #fff !important;
 }
 .day-cell .urlop-icon {
   display: none; /* legacy — urlop is bottom day-shift */
 }
 .day-shift.day-shift-urlop {
-  color: #d97706;
+  color: #fff;
   font-size: 22px;
 }
 .day-shift.day-shift-urlop .shift-emoji {
@@ -358,14 +383,14 @@ body:not(.theme-dark) .day-cell.holiday.cell-W {
   box-shadow: inset 0 0 0 1px rgba(192, 57, 43, 0.35);
 }
 .day-cell.day-weekend.cell-W {
-  background: linear-gradient(135deg, #fff5f5, #ffe8e8);
-  border-color: #f5b7b1;
+  background: rgba(90, 30, 30, 0.12);
+  border: 1px dashed rgba(185, 70, 70, 0.45);
 }
 body.theme-dark .day-cell.day-weekend.cell-W,
 body.theme-neon .day-cell.day-weekend.cell-W,
 body.theme-contrast .day-cell.day-weekend.cell-W {
-  background: linear-gradient(135deg, #3a1a1a, #2a1010);
-  border-color: #6a3030;
+  background: rgba(90, 30, 30, 0.22);
+  border: 1px dashed rgba(185, 70, 70, 0.5);
 }
 .day-cell.day-weekend .day-num {
   font-style: italic;
