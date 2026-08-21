@@ -19,8 +19,6 @@ window.translations.uk = {
   today: '📅 Сьогодні',
   prevMonth: 'Попередній місяць (←)',
   nextMonth: 'Наступний місяць (→)',
-  prevWeek: '‹',
-  nextWeek: '›',
 
   // === SHIFTS ===
   shiftR: 'Ранок (6:00–14:00)',
@@ -56,7 +54,6 @@ window.translations.uk = {
   saveBtn: '💾 Зберегти',
   discardBtn: '↶ Відхилити все',
   vacationLimitBtn: '🌴 Ліміт відпустки',
-  exportBtn: '📥 JSON',
   importBtn: '📂 Імпорт',
   clearYearBtn: '🗑 Рік',
   resetBtn: '↺ Скинути',
@@ -106,12 +103,10 @@ window.translations.uk = {
   emptyYearBody:
     'Цей рік ще не має заводських даних.<br>Заповніть вручну в режимі редагування або імпортуйте файл JSON.',
   emptyEnableEdit: '✏️ Увімкнути редагування',
-  emptyImport: '📂 Імпорт JSON',
   yearIsEmptyTitle: 'Рік {year} порожній',
   yearIsEmptyDescription:
     'Цей рік ще не має заводських даних.<br>Заповніть вручну в режимі редагування або імпортуйте файл JSON.',
   enableEdit: '✏️ Увімкнути редагування',
-  importJson: '📂 Імпорт JSON',
 
   // === INFO PANEL ===
   infoPanelTitle: 'ℹ️ Виберіть день у календарі',
@@ -235,11 +230,9 @@ window.translations.uk = {
 
   // === EXPORT / IMPORT / SHARE ===
   exportSuccess: 'Календар експортовано',
-  exportJsonSuccess: 'Резервну копію завантажено',
   importReplaceTitle: '⚠️ Замінити поточні дані?',
   importReplaceBody: 'Імпорт перезапише ваші графіки, відпустки, надгодини та нотатки.',
   importSuccess: 'Дані завантажено',
-  importJsonError: 'Помилка синтаксису JSON',
   importError: 'Помилка імпорту: {msg}',
   importDataError: "Дані не є об'єктом",
   importMissingKeys: 'У файлі не знайдено відомих ключів даних',
@@ -256,8 +249,6 @@ window.translations.uk = {
   importInvalidOvertimes: 'Неправильна структура overtimes',
   importInvalidOtEntry: 'Неправильний запис надгодин для ключа {key}',
   importInvalidOtValue: 'Неправильне значення {pos} у надгодин для {key}',
-  importInvalidNotes: 'Неправильна структура notes',
-  importInvalidNote: 'Нотатка для {key} має бути текстом',
   shareCopied: 'Скопійовано в буфер обміну',
   shareCopyFailed: 'Копіювання неможливе',
   shareSuccess: 'Поділились',
@@ -267,7 +258,6 @@ window.translations.uk = {
 
   // === PRINT ===
   printHeaderDashboard: 'Панель',
-  printHeaderWeek: 'Тиждень',
   printHeaderMonth: 'Місяць',
   printHeaderTable: 'Таблиця',
   printYearSuffix: ' — весь рік',
@@ -275,11 +265,9 @@ window.translations.uk = {
 
   // === VIEWS ===
   viewDashboard: '🏠 Панель',
-  viewWeek: '7️⃣ Тиждень',
   viewMonth: '📅 Місяць',
   viewTable: '📋 Таблиця',
   viewYear: '📊 Рік',
-  weekTitle: '📆 {range} · Бригада {brig}',
   yearViewTitle: '📋 Весь рік {year} — всі бригади',
   monthViewTitle: '📋 {month} {year} — всі бригади',
   tableCorner: 'Бр.\\День',
@@ -295,10 +283,8 @@ window.translations.uk = {
   greeting: 'Привіт! 👋',
   tomorrow: 'Завтра',
   nextDayOff: 'До вихідного',
-  thisWeek: 'Цей тиждень',
   upcomingDays: 'Наступні 7 днів',
   seeMonth: '📅 Дивитись місяць',
-  seeWeek: '📆 Дивитись тиждень',
   unknown: 'Невідомо',
   todayLabel: 'Сьогодні!',
   daysAgo: 'вчора',
@@ -328,9 +314,7 @@ window.translations.uk = {
   faqViewsTitle: '📋 Які основні вкладки і що показує кожна?',
   faqViewsDesc: 'Додаток має кілька основних видів, кожен для різних цілей:',
   faqViewsDashboard:
-    '🏠 Панель — стартовий екран. Показує сьогоднішню зміну, найближчі дні, підсумок тижня, статус відпусток і швидкі переходи до інших видів.',
-  faqViewsWeek:
-    '7️⃣ Тиждень — показує графік на 7 днів у більш зручному вигляді, корисно для планування найближчих днів.',
+    '🏠 Панель — стартовий екран. Показує сьогоднішню зміну, найближчі дні, статус відпусток і швидкі переходи до інших видів.',
   faqViewsMonth:
     '📅 Місяць — головний календар. Тут видно зміни, вихідні дні, відпустки, нотатки, надгодини й додаткові попапи з інформацією про попередню та наступну зміну.',
   faqViewsTable:
@@ -470,8 +454,6 @@ window.translations.uk = {
   // === MENU: Advanced (v3.6.1) ===
   menuSectionAdvanced: '⚙️ Розширені',
   menuVacationLimit: 'Ліміт відпустки',
-  menuExportJson: 'Експорт JSON',
-  menuImportJson: 'Імпорт JSON',
   menuClearYear: 'Очистити рік',
   menuResetAll: 'Скинути все',
 

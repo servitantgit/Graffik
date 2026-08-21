@@ -112,7 +112,7 @@ async function checkDriveRemoteStatus(force = false) {
   }
 }
 
-/** Re-render current view so personal data appears right after login. */
+/** Re-render current view after Google Drive authentication. */
 function refreshAfterDriveAuth() {
   if (typeof updateAdminUI === 'function') {
     try { updateAdminUI(); } catch (_) {}

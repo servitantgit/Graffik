@@ -8,42 +8,10 @@ Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w system
 ![PWA](https://img.shields.io/badge/PWA-ready-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-## 📸 Zrzuty ekranu
-
-Kliknij dowolny zrzut, aby zobaczyć w pełnym rozmiarze.
-
-<table>
-  <tr>
-    <td align="center">
-      <a href="screenshots/1.jpg"><img src="screenshots/1.jpg" width="180" alt="Dashboard"/></a><br>
-      <sub><b>🏠 Dashboard</b></sub>
-    </td>
-    <td align="center">
-      <a href="screenshots/2.jpg"><img src="screenshots/2.jpg" width="180" alt="Tydzień"/></a><br>
-      <sub><b>📆 Tydzień</b></sub>
-    </td>
-    <td align="center">
-      <a href="screenshots/3.jpg"><img src="screenshots/3.jpg" width="180" alt="Miesiąc"/></a><br>
-      <sub><b>📅 Miesiąc</b></sub>
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-      <a href="screenshots/4.jpg"><img src="screenshots/4.jpg" width="180" alt="Miesiąc Rok"/></a><br>
-      <sub><b>📋 Tabela</b></sub>
-    </td>
-    <td align="center">
-      <a href="screenshots/5.jpg"><img src="screenshots/5.jpg" width="180" alt="Tabela Rok"/></a><br>
-      <sub><b>📊 Rok</b></sub>
-    </td>
-    <td></td>
-  </tr>
-</table>
-
 ## ✨ Główne funkcje
 
 - 📊 **4 brygady** (A/B/C/D) z systemem 3 zmian (R/P/N) + Wolne + Urlop
-- 🏠 **4 widoki**: Dashboard, Tydzień, Miesiąc, Tabela
+- 🏠 **3 główne widoki**: Dashboard, Miesiąc, Tabela
 - 📈 **Tryb Rok** — rozszerza Miesiąc/Tabelę na cały rok (12 mini-kalendarzy/tabel)
 - ✏️ **Edycja grafiku** (auto-save; limit urlopu w trybie edycji 🌴)
 - 🌴 **Urlopy** z limitem per brygada i automatycznym liczeniem dni roboczych
@@ -58,7 +26,8 @@ Kliknij dowolny zrzut, aby zobaczyć w pełnym rozmiarze.
 - 🔄 **Auto-update** — automatyczne powiadomienie o nowej wersji z jednym kliknięciem
 - ☁️ **Google Drive sync** — dane między urządzeniami
 - 🔗 **Kontekstowe udostępnianie** — link do dokładnie tego widoku
-- 📥 **Eksport .ics** do kalendarza, **drukowanie**; personal backup via **Google Drive**
+- 📥 **Eksport .ics** do kalendarza, **drukowanie**
+- ☁️ **Google Drive** — opcjonalny backup i synchronizacja danych
 
 ## 🚀 Szybki start
 
@@ -93,7 +62,7 @@ Funkcja **🔗 Udostępnij widok** w bocznym menu tworzy link do dokładnie tego
 
 | Parametr | Znaczenie                                         | Przykład     | Opcjonalny |
 | -------- | ------------------------------------------------- | ------------ | ---------- |
-| `view`   | Typ widoku: `dashboard`, `week`, `month`, `table` | `view=month` | Nie        |
+| `view`   | Typ widoku: `dashboard`, `month`, `table` | `view=month` | Nie        |
 | `y`      | Rok                                               | `y=2026`     | Nie        |
 | `m`      | Miesiąc (1-12)                                    | `m=8`        | Tak\*      |
 | `d`      | Dzień (1-31)                                      | `d=10`       | Tak\*      |
@@ -114,12 +83,16 @@ Funkcja **🔗 Udostępnij widok** w bocznym menu tworzy link do dokładnie tego
 # Rok view, brygada C
 ?view=month&y=2026&brig=C&rok=1
 
-# Tydzień z 10 sierpnia, brygada C
-?view=week&y=2026&m=8&d=10&brig=C
-
 # Tabela — cały rok
 ?view=table&y=2026&rok=1
 ```
+
+## 📅 Aktualne dane grafiku
+
+- W repozytorium znajduje się aktualnie fabryczny grafik **Gillette na 2026 rok**.
+- Obsługiwane brygady: **A, B, C, D**.
+- Zmiany: **R (rano), P (popołudnie), N (noc), W (wolne)**.
+- Kolejne lata są dodawane jako osobne pliki w `js/schedules/gillette/`.
 
 ## 🛠 Dla developerów
 
@@ -158,7 +131,16 @@ Następnie otwórz: `http://localhost:8000`
     ├── manifest.json       # PWA manifest
     ├── sw.js               # Service Worker (precache ASSETS)
     ├── css/
-    │   └── styles.css      # Wszystkie style
+    │   ├── calendar.css       # Kalendarz miesiąca
+    │   ├── components.css     # Komponenty i widoczność Privacy Mode
+    │   ├── dashboard.css      # Dashboard
+    │   ├── layout.css         # Układ aplikacji
+    │   ├── overtime.css       # Nadgodziny
+    │   ├── print.css          # Druk
+    │   ├── responsive.css     # Responsywność
+    │   ├── smart-popup.css    # Popupy
+    │   ├── variables.css      # Zmienne motywu
+    │   └── views.css          # Widoki Rok i Tabela
     ├── js/
     │   ├── schedules/           # Modularna architektura danych (v3.7+)
     │   │   ├── _core.js        # Stałe, helpers (monthNames, shiftHours…)
@@ -174,8 +156,8 @@ Następnie otwórz: `http://localhost:8000`
     │   ├── edit.js              # Tryb edycji, undo/redo, pending buffer
     │   ├── dashboard.js         # Dashboard (gated by shouldShowPersonalData)
     │   ├── calendar.js          # Kalendarz, popupy, nadgodziny
-    │   ├── views.js             # Tydzień, Rok, Tabela
-    │   ├── actions.js           # .ics, share, import/export JSON, admin export
+    │   ├── views.js             # Rok, Tabela
+    │   ├── actions.js           # .ics, share, print, admin export
     │   ├── pwa.js               # SW registration, powiadomienia
     │   ├── sync.js              # Google Drive OAuth + upload/download
     │   ├── admin.js             # Identyfikacja admina (ADMIN_EMAILS)
@@ -211,7 +193,7 @@ Następnie otwórz: `http://localhost:8000`
 
 | Skrót     | Działanie                              |
 | --------- | -------------------------------------- |
-| `←` / `→` | Poprzedni/następny miesiąc lub tydzień |
+| `←` / `→` | Poprzedni/następny miesiąc |
 | `E`       | Włącz/wyłącz tryb edycji               |
 | `Esc`     | Zamknij popup/modal lub wyjdź z edycji |
 

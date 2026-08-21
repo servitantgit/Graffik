@@ -19,8 +19,6 @@ window.translations.pl = {
   today: '📅 Dziś',
   prevMonth: 'Poprzedni miesiąc (←)',
   nextMonth: 'Następny miesiąc (→)',
-  prevWeek: '‹',
-  nextWeek: '›',
 
   // === SHIFTS ===
   shiftR: 'Rano (R)',
@@ -56,7 +54,6 @@ window.translations.pl = {
   saveBtn: '💾 Zapisz',
   discardBtn: '↶ Odrzuć wszystko',
   vacationLimitBtn: '🌴 Limit urlopu',
-  exportBtn: '📥 JSON',
   importBtn: '📂 Import',
   clearYearBtn: '🗑 Rok',
   resetBtn: '↺ Reset',
@@ -106,12 +103,10 @@ window.translations.pl = {
   emptyYearBody:
     'Ten rok nie ma jeszcze fabrycznych danych.<br>Wypełnij go ręcznie w trybie edycji lub zaimportuj plik JSON.',
   emptyEnableEdit: '✏️ Włącz edycję',
-  emptyImport: '📂 Import JSON',
   yearIsEmptyTitle: 'Rok {year} jest pusty',
   yearIsEmptyDescription:
     'Ten rok nie ma jeszcze fabrycznych danych.<br>Wypełnij go ręcznie w trybie edycji lub zaimportuj plik JSON.',
   enableEdit: '✏️ Włącz edycję',
-  importJson: '📂 Import JSON',
 
   // === INFO PANEL ===
   infoPanelTitle: 'ℹ️ Wybierz dzień w kalendarzu',
@@ -235,11 +230,9 @@ window.translations.pl = {
 
   // === EXPORT / IMPORT / SHARE ===
   exportSuccess: 'Kalendarz wyeksportowany',
-  exportJsonSuccess: 'Backup pobrany',
   importReplaceTitle: '⚠️ Zastąpić aktualne dane?',
   importReplaceBody: 'Import nadpisze Twoje grafiki, urlopy, nadgodziny i notatki.',
   importSuccess: 'Dane wczytane',
-  importJsonError: 'Błąd składni JSON',
   importError: 'Błąd importu: {msg}',
   importDataError: 'Dane nie są obiektem',
   importMissingKeys: 'Brak znanych kluczy danych w pliku',
@@ -256,8 +249,6 @@ window.translations.pl = {
   importInvalidOvertimes: 'Nieprawidłowa struktura overtimes',
   importInvalidOtEntry: 'Nieprawidłowy wpis nadgodzin dla klucza {key}',
   importInvalidOtValue: 'Nieprawidłowa wartość {pos} w nadgodzinach dla {key}',
-  importInvalidNotes: 'Nieprawidłowa struktura notes',
-  importInvalidNote: 'Notatka dla {key} musi być tekstem',
   shareCopied: 'Skopiowano do schowka',
   shareCopyFailed: 'Kopiowanie niemożliwe',
   shareSuccess: 'Udostępniono',
@@ -267,7 +258,6 @@ window.translations.pl = {
 
   // === PRINT ===
   printHeaderDashboard: 'Dashboard',
-  printHeaderWeek: 'Tydzień',
   printHeaderMonth: 'Miesiąc',
   printHeaderTable: 'Tabela',
   printYearSuffix: ' — cały rok',
@@ -275,11 +265,9 @@ window.translations.pl = {
 
   // === VIEWS ===
   viewDashboard: '🏠 Dashboard',
-  viewWeek: '7️⃣ Tydzień',
   viewMonth: '📅 Miesiąc',
   viewTable: '📋 Tabela',
   viewYear: '📊 Rok',
-  weekTitle: '📆 {range} · Brygada {brig}',
   yearViewTitle: '📋 Cały rok {year} — wszystkie brygady',
   monthViewTitle: '📋 {month} {year} — wszystkie brygady',
   tableCorner: 'Br.\\Dz.',
@@ -295,10 +283,8 @@ window.translations.pl = {
   greeting: 'Cześć! 👋',
   tomorrow: 'Jutro',
   nextDayOff: 'Do wolnego',
-  thisWeek: 'Ten tydzień',
   upcomingDays: 'Najbliższe 7 dni',
   seeMonth: '📅 Zobacz miesiąc',
-  seeWeek: '📆 Zobacz tydzień',
   unknown: 'Nieznane',
   todayLabel: 'Dziś!',
   daysAgo: 'wczoraj',
@@ -329,9 +315,7 @@ window.translations.pl = {
   faqViewsTitle: '📋 Jakie są główne zakładki i co każda z nich pokazuje?',
   faqViewsDesc: 'Aplikacja ma kilka głównych widoków, które służą do różnych zadań:',
   faqViewsDashboard:
-    '🏠 Dashboard — ekran startowy. Pokazuje dzisiejszą zmianę, najbliższe dni, podsumowanie tygodnia, status urlopów i szybkie przejścia do innych widoków.',
-  faqViewsWeek:
-    '📆 Tydzień — pokazuje grafik na 7 dni w większej, bardziej uporządkowanej formie, przydatnej do planowania najbliższych dni.',
+    '🏠 Dashboard — ekran startowy. Pokazuje dzisiejszą zmianę, najbliższe dni, status urlopów i szybkie przejścia do innych widoków.',
   faqViewsMonth:
     '📅 Miesiąc — główny kalendarz. Tutaj widać zmiany, dni wolne, urlopy, notatki, nadgodziny i dodatkowe popupy z informacją o poprzedniej i następnej zmianie.',
   faqViewsTable:
@@ -473,8 +457,6 @@ window.translations.pl = {
   // === MENU: Advanced (v3.6.1) ===
   menuSectionAdvanced: '⚙️ Zaawansowane',
   menuVacationLimit: 'Limit urlopu',
-  menuExportJson: 'Eksport JSON',
-  menuImportJson: 'Import JSON',
   menuClearYear: 'Wyczyść rok',
   menuResetAll: 'Reset wszystkiego',
 

@@ -29,8 +29,7 @@
   }
   .calendar-wrap,
   .table-view,
-  .year-view,
-  .week-view {
+  .year-view {
     page-break-inside: avoid;
   }
   .day-cell {
@@ -121,30 +120,6 @@
   }
   .calendar {
     gap: 2px;
-  }
-  .week-view {
-    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
-    gap: 4px !important;
-  }
-  .week-day-cell {
-    break-inside: avoid;
-    page-break-inside: avoid;
-    min-height: 110px !important;
-    border: 1px solid #999 !important;
-  }
-  .week-day-cell .wdc-header {
-    border-bottom-color: #999 !important;
-  }
-  .week-day-cell .wdc-shift {
-    padding: 8px 4px !important;
-  }
-  .week-day-cell .wdc-shift .wdc-label {
-    font-size: 12px !important;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-  }
-  .week-day-cell .wdc-shift .wdc-time {
-    font-size: 9px !important;
   }
   .year-month {
     break-inside: avoid;

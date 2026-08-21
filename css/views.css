@@ -3,103 +3,6 @@
    Part of modular CSS split (v3.8.0)
    ================================================================ */
 
-/* === WEEK VIEW === */
-.week-view {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 6px;
-  margin-top: 10px;
-  animation: slideIn 0.3s ease-out;
-}
-.week-day-cell {
-  min-height: 130px;
-  min-width: 0;
-  border-radius: 12px;
-  padding: 10px;
-  border: 2px solid var(--border-cell);
-  background: var(--bg-cell);
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
-  transition: all 0.15s;
-  position: relative;
-}
-.week-day-cell:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 18px var(--shadow-color);
-}
-.week-day-cell.today {
-  box-shadow:
-    0 0 0 3px #f1c40f,
-    0 0 20px rgba(241, 196, 15, 0.35);
-}
-.week-day-cell .wdc-header {
-  text-align: center;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border-cell);
-  margin-bottom: 8px;
-}
-.week-day-cell .wdc-day {
-  font-size: 11px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-.week-day-cell .wdc-date {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--text-header);
-}
-.week-day-cell .wdc-content {
-  flex: 1;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-}
-.week-day-cell .wdc-shift {
-  text-align: center;
-  padding: 12px;
-  border-radius: 10px;
-  color: #fff;
-  font-weight: 700;
-  width: 100%;
-}
-.week-day-cell .wdc-shift .wdc-emoji {
-  font-size: 26px;
-  display: block;
-  margin-bottom: 3px;
-}
-.week-day-cell .wdc-shift .wdc-label {
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-}
-.week-day-cell .wdc-shift .wdc-time {
-  font-size: 10px;
-  opacity: 0.85;
-  margin-top: 3px;
-}
-.week-day-cell .wdc-shift.R,
-.week-day-cell .wdc-shift.P,
-.week-day-cell .wdc-shift.N,
-.week-day-cell .wdc-shift.W,
-.week-day-cell .wdc-shift.U {
-  background: transparent;
-  color: var(--text-main);
-}
-.week-day-cell .wdc-shift.R { color: var(--color-R); }
-.week-day-cell .wdc-shift.P { color: var(--color-P); }
-.week-day-cell .wdc-shift.N { color: var(--color-N); }
-.week-day-cell .wdc-shift.W { color: var(--color-W-text); }
-.week-day-cell .wdc-shift.U { color: #d97706; }
-.week-day-cell .wdc-shift .wdc-time {
-  color: var(--text-muted);
-  opacity: 1;
-}
-.week-day-cell.weekend .wdc-day {
-  color: #c0392b;
-}
-
 /* === YEAR VIEW === */
 .year-view {
   display: grid;
@@ -461,27 +364,6 @@ body.edit-active .brigade-table td.tc:hover {
 }
 .table-legend .tl-U {
   background: var(--color-U-grad);
-}
-
-/* === Week: neutral card + color strip (shift colors unchanged on .wdc-shift) === */
-.week-day-cell {
-  background: var(--bg-cell);
-  border: 1px solid var(--border-cell);
-  border-top-width: 3px;
-  border-top-color: var(--border-cell);
-}
-.week-day-cell:has(.wdc-shift.R) { border-top-color: var(--color-R); }
-.week-day-cell:has(.wdc-shift.P) { border-top-color: var(--color-P); }
-.week-day-cell:has(.wdc-shift.N) { border-top-color: var(--color-N); }
-.week-day-cell:has(.wdc-shift.U) { border-top-color: #d97706; }
-.week-day-cell.selected-week-day {
-  box-shadow: 0 0 0 2px var(--accent);
-}
-.week-day-cell .wdc-header {
-  background: transparent;
-}
-.week-info-panel {
-  margin-top: 12px;
 }
 
 /* Year month title: neutral, not header-blue */
