@@ -543,4 +543,5 @@ if (langToggleBtn && langDropdown) {
 applyTranslations();
 
 /* === PERSONALIZATION (cell colors) === */
-if (typeof applyCellColors === 'function') applyCellColors();
+if (typeof applyPersonalization === 'function') applyPersonalization();
+else if (typeof applyCellColors === 'function') applyCellColors();

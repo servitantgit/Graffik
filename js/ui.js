@@ -135,10 +135,11 @@ document.getElementById('modalOverlay').onclick = (e) => {
 };
 
 
-/* Personalization */
-const menuPersBtn = document.getElementById('menuPersonalization');
-if (menuPersBtn) {
-  menuPersBtn.onclick = () => {
-    if (typeof openPersonalizationModal === 'function') openPersonalizationModal();
+/* Settings hub */
+const menuSettingsBtn = document.getElementById('menuSettings') || document.getElementById('menuPersonalization');
+if (menuSettingsBtn) {
+  menuSettingsBtn.onclick = () => {
+    if (typeof openSettingsHub === 'function') openSettingsHub();
+    else if (typeof openPersonalizationModal === 'function') openPersonalizationModal();
   };
 }
