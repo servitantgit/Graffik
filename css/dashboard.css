@@ -344,7 +344,7 @@ body:not(.theme-dark) .dash-hero {
 .dash-day-chip.chip-quiet.chip-P .ddc-dot { background: var(--color-P); }
 .dash-day-chip.chip-quiet.chip-N .ddc-dot { background: var(--color-N); }
 .dash-day-chip.chip-quiet.chip-W .ddc-dot { background: #64748b; }
-.dash-day-chip.chip-quiet.chip-U .ddc-dot { background: #d97706; }
+.dash-day-chip.chip-quiet.chip-U .ddc-dot { background: var(--color-U, #8b5cf6); }
 .dash-day-chip.chip-quiet .ddc-day,
 .dash-day-chip.chip-quiet .ddc-shift {
   opacity: 1;
