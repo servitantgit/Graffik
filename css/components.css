@@ -975,3 +975,14 @@ button.menu-item.menu-sync-status.logged-out {
 #userAuthBtn.auth-logged-in svg {
   display: block;
 }
+
+#userAuthBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+#userAuthBtn svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
