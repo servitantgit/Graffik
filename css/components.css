@@ -953,3 +953,25 @@ button.menu-item.menu-sync-status.logged-out {
   color: var(--text-main);
   background: var(--bg-controls, rgba(127,140,141,0.12));
 }
+
+.mi-icon.mi-icon-svg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25em;
+  height: 1.25em;
+}
+.mi-icon-svg .mi-svg,
+.mi-icon-svg svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+#userAuthBtn.auth-logged-in {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+#userAuthBtn.auth-logged-in svg {
+  display: block;
+}

@@ -702,7 +702,7 @@ function updateDriveUI() {
   if (logoutBtn) logoutBtn.style.display = logged ? 'flex' : 'none';
   if (authBtn) {
     if (logged) {
-      authBtn.textContent = '🚪';
+      authBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#1FA463" d="M8.5 3.5h7L22 15h-7z"/><path fill="#FFBA00" d="M2 15l3.5 6h13L15 15z"/><path fill="#4285F4" d="M8.5 3.5L2 15h7l6.5-11.5z"/></svg>';
       authBtn.title = t('logoutFromDrive');
       authBtn.classList.add('auth-logged-in');
     } else {
