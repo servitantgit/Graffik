@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-21 — cleanup and documentation sync
+
+- Removed the experimental KWGT export integration.
+- Removed the obsolete one-time `tools/apply_calendar_privacy.js` script.
+- Fixed the Service Worker precache list to reference the current modular CSS files instead of the removed `css/styles.css`.
+- Removed stale documentation and localization references to the deleted Week view and personal JSON import/export.
+- Updated README and technical documentation to match the current application structure and the 2026 factory schedule.
+
+
 Wszystkie istotne zmiany w projekcie Grafik Gillette.
 
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).

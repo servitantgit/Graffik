@@ -19,8 +19,6 @@ window.translations.en = {
   today: '📅 Today',
   prevMonth: 'Previous month (←)',
   nextMonth: 'Next month (→)',
-  prevWeek: '‹',
-  nextWeek: '›',
 
   // === SHIFTS ===
   shiftR: 'Morning (6:00–14:00)',
@@ -56,7 +54,6 @@ window.translations.en = {
   saveBtn: '💾 Save',
   discardBtn: '↶ Discard all',
   vacationLimitBtn: '🌴 Vacation limit',
-  exportBtn: '📥 JSON',
   importBtn: '📂 Import',
   clearYearBtn: '🗑 Year',
   resetBtn: '↺ Reset',
@@ -107,12 +104,10 @@ window.translations.en = {
   emptyYearBody:
     'This year has no factory data yet.<br>Fill it manually in edit mode or import a JSON file.',
   emptyEnableEdit: '✏️ Enable edit',
-  emptyImport: '📂 Import JSON',
   yearIsEmptyTitle: 'Year {year} is empty',
   yearIsEmptyDescription:
     'This year has no factory data yet.<br>Fill it manually in edit mode or import a JSON file.',
   enableEdit: '✏️ Enable edit',
-  importJson: '📂 Import JSON',
 
   // === INFO PANEL ===
   infoPanelTitle: 'ℹ️ Select a day in the calendar',
@@ -236,11 +231,9 @@ window.translations.en = {
 
   // === EXPORT / IMPORT / SHARE ===
   exportSuccess: 'Calendar exported',
-  exportJsonSuccess: 'Backup downloaded',
   importReplaceTitle: '⚠️ Replace current data?',
   importReplaceBody: 'Import will overwrite your schedules, vacations, overtime and notes.',
   importSuccess: 'Data loaded',
-  importJsonError: 'JSON syntax error',
   importError: 'Import error: {msg}',
   importDataError: 'Data is not an object',
   importMissingKeys: 'No known data keys found in file',
@@ -257,8 +250,6 @@ window.translations.en = {
   importInvalidOvertimes: 'Invalid overtimes structure',
   importInvalidOtEntry: 'Invalid overtime entry for key {key}',
   importInvalidOtValue: 'Invalid value {pos} in overtime for {key}',
-  importInvalidNotes: 'Invalid notes structure',
-  importInvalidNote: 'Note for {key} must be text',
   shareCopied: 'Copied to clipboard',
   shareCopyFailed: 'Copy not possible',
   shareSuccess: 'Shared',
@@ -268,7 +259,6 @@ window.translations.en = {
 
   // === PRINT ===
   printHeaderDashboard: 'Dashboard',
-  printHeaderWeek: 'Week',
   printHeaderMonth: 'Month',
   printHeaderTable: 'Table',
   printYearSuffix: ' — full year',
@@ -276,11 +266,9 @@ window.translations.en = {
 
   // === VIEWS ===
   viewDashboard: '🏠 Dashboard',
-  viewWeek: '7️⃣ Week',
   viewMonth: '📅 Month',
   viewTable: '📋 Table',
   viewYear: '📊 Year',
-  weekTitle: '📆 {range} · Brigade {brig}',
   yearViewTitle: '📋 Full year {year} — all brigades',
   monthViewTitle: '📋 {month} {year} — all brigades',
   tableCorner: 'Brigade\\Day',
@@ -296,10 +284,8 @@ window.translations.en = {
   greeting: 'Hello! 👋',
   tomorrow: 'Tomorrow',
   nextDayOff: 'Next day off',
-  thisWeek: 'This week',
   upcomingDays: 'Next 7 days',
   seeMonth: '📅 See month',
-  seeWeek: '📆 See week',
   unknown: 'Unknown',
   todayLabel: 'Today!',
   daysAgo: 'yesterday',
@@ -330,9 +316,7 @@ window.translations.en = {
   faqViewsTitle: '📋 What are the main tabs and what does each show?',
   faqViewsDesc: 'The application has several main views, each serving different purposes:',
   faqViewsDashboard:
-    "🏠 Dashboard — start screen. Shows today's shift, upcoming days, week summary, vacation status and quick links to other views.",
-  faqViewsWeek:
-    '📆 Week — shows the schedule for 7 days in a larger, more organized form, useful for planning the coming days.',
+    "🏠 Dashboard — start screen. Shows today's shift, upcoming days, vacation status and quick links to other views.",
   faqViewsMonth:
     '📅 Month — main calendar. Here you can see shifts, days off, vacations, notes, overtime and additional popups with information about the previous and next shift.',
   faqViewsTable:
@@ -472,8 +456,6 @@ window.translations.en = {
   // === MENU: Advanced (v3.6.1) ===
   menuSectionAdvanced: '⚙️ Advanced',
   menuVacationLimit: 'Vacation limit',
-  menuExportJson: 'Export JSON',
-  menuImportJson: 'Import JSON',
   menuClearYear: 'Clear year',
   menuResetAll: 'Reset everything',
 

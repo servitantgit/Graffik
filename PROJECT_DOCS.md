@@ -6,7 +6,7 @@ Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą p
 
 - **Typ projektu**: Vanilla JavaScript PWA, brak frameworków, brak build system
 - **Skrypty**: Klasyczne (bez ES modules), dzielone przez global scope
-- **CSS**: Wydzielony do osobnego pliku `css/styles.css`
+- **CSS**: Modułowy, podzielony na pliki w `css/`
 - **Hosting**: GitHub Pages (https://servitantgit.github.io/Graffik/)
 - **Kolejność ładowania skryptów** (v3.7.0+):
   1. `schedules/_core.js` — stałe i helpers
@@ -217,11 +217,12 @@ js/schedules/
   - Hero section z powitaniem i datą (genitive month names)
   - **Flow przekazania zmiany** jako pierwszy blok (timeline U4)
   - Karta dzisiejszej zmiany z live timerem
-  - Statystyki (jutro, najbliższy wolny, urlopy, nadgodziny miesięczne) — bez bloku „Ten tydzień”
+  - Statystyki (jutro, najbliższy wolny, urlopy, nadgodziny miesięczne)
   - Upcoming days chips
-- **Privacy:** `shouldShowPersonalData()` — gdy `false` (wylogowany):
+- **Privacy:** `shouldShowPersonalData()` — zwraca `false`, gdy użytkownik włączy Privacy Mode:
   - tylko fabryczny grafik (bez urlopów / OT / notatek / live-timera)
   - ukryte karty: wykorzystane urlopy, miesięczny overtime
+  - tryb jest niezależny od logowania Google i służy jako opcjonalny tryb prezentacyjny
 
 ### js/calendar.js — Moduł 6: Widok Miesiąc
 
@@ -241,7 +242,7 @@ js/schedules/
 - `renderInfo()` — panel informacji pod kalendarzem (zawiera Flow przekazania zmiany)
 - `getLiveShiftInfo()` — info o aktualnej zmianie
 - **Privacy:** komórki, OT, notatki, dirty-edit — za `hidePrivate`
-  - `cycleRange` / `compareShift` używają factory schedule gdy wylogowany
+  - `cycleRange` / `compareShift` używają factory schedule, gdy Privacy Mode jest włączony
   - helper: `getFactoryCycleRange()` w `core.js`
 
 ### js/views.js — Moduł 7: Widoki Rok, Tabela
@@ -259,13 +260,11 @@ js/schedules/
 - `buildShareUrl()` — budowa URL z parametrami
 - `buildShareText()` — budowa tekstu do udostępnienia
 - `copyToClipboard(url)` — fallback dla kopiowania
-- Import/eksport JSON: `exportDataBtn`, `importDataBtn`, `importFile`
 - `addPrintHeader()`, `addPrintFooter()` — nagłówek/stopka druku
 - Menu handlers: `menuIcs`, `menuPrint`, `menuShare`, `menuShareApp`
 - Edit banner: `editVacationLimitBtn` → `openVacationLimitModal()` (limit urlopu)
 - Menu Info (ostatnia sekcja): `menuHelp`, `menuGitHub` → https://github.com/servitantgit/Graffik
 - `clearYearBtn`, `resetCustomBtn` — czyszczenie danych
-- `validateImportedData(data)` — walidacja struktury JSON przy imporcie (typy, formaty dat, długości tablic)
 - `getAppUrl()` — zwraca bazowy URL aplikacji (bez parametrów query)
 - `buildQRCodeUrl(text, size)` — generuje URL do api.qrserver.com dla kodu QR
 - `shareApp()` — otwiera modal z QR kodem, linkiem, przyciskami kopiowania i natywnego udostępniania
@@ -412,14 +411,14 @@ Używany dla wszystkich przycisków w side menu i edit banner.
 
 ### CSS
 
-- Wszystkie style w `css/styles.css`
-- Podłączony w index.html: `<link rel="stylesheet" href="css/styles.css">`
-- Zmienne CSS (custom properties) w :root i body.theme-dark
+- Style są podzielone na модулі: `calendar.css`, `components.css`, `dashboard.css`, `layout.css`, `overtime.css`, `print.css`, `responsive.css`, `smart-popup.css`, `variables.css`, `views.css`.
+- `index.html` ładuje moduły CSS osobnymi `<link>` tags.
+- Zmienne CSS (custom properties) znajdują się w `variables.css`.
 
 ## 5. Znane zagadnienia (Known issues)
 
 - Zmienne stanu są globalne — potencjalne konflikty przy dużych zmianach
-- CSS w jednym pliku — trudno modularyzować
+- CSS jest podzielony na moduły według funkcji
 - Brak testów jednostkowych automatycznych (poza `test_core.js` dla obliczeń)
 - Synchronizacja Google Drive: brak merge/diff — last-write-wins (patrz sekcja 6)
 - `goToMonth` musi być exposed na `window` (patrz `window.goToMonth = goToMonth`)
@@ -428,8 +427,8 @@ Używany dla wszystkich przycisków w side menu i edit banner.
 - Testowanie funkcji `getLiveTimer()` wymaga mockowania `Date`, `getShiftAt`, `isUrlop`, `getOvertimes` jednocześnie
 - Kompatybilność `chrome-extension://` z Service Worker — wymaga jawnego filtra protokołu w handlerze `fetch`
 - **Relief timeline** (`getRelief` → `getShiftAt`) nadal czyta custom schedule nawet gdy UI pokazuje factory — niska waga, możliwe drobne niespójności przy wylogowaniu
-- **Edit mode** nie jest twardo zablokowany bez logowania — lokalne edycje customSchedule są możliwe offline; UI i tak ukrywa personal data do logowania
-- Etykieta Admin „Export data.js” jest legacy naming — eksport generuje już format `YYYY.js` (registerYearData)
+- **Edit mode** pozostaje lokalny/offline; Privacy Mode wpływa na widoczność danych, a nie na możliwość edycji
+- Etykieta Admin „Export data.js” jest legacy naming — eksport generuje już format `YYYY.js` (`registerYearData`)
 
 ## 6. Strategia konfliktów synchronizacji
 
@@ -516,7 +515,7 @@ Ustawienia (Settings → Pages):
 - Naprawiono ReferenceError: `goToMonth` (expose na window)
 - Dodano przycisk "Drukuj" w bocznym menu
 - Dodano wielojęzyczność (i18n) — pl/en/uk
-- Wydzielono CSS do osobnego pliku `css/styles.css`
+- CSS podzielono na moduły w katalogu `css/``
 - Wydzielono logikę nadgodzin do `js/overtime-logic.js`
 - Dodano przyciski Undo/Redo w edit banner
 - Dodano walidację struktury JSON przy imporcie
@@ -639,8 +638,8 @@ Każdy schedule ma własne metadata + dane per rok.
 
 ## Privacy & Google Drive (local-first)
 
-- **Personal data** (vacation, overtime, notes, custom shifts) lives in `localStorage` and is shown by default.
-- **Privacy mode** (side menu, above Help): hides personal data and shows factory schedule only. Does not require Google login.
-- **Google account** is optional and used only for **backup/sync**. The app does not prompt for login on startup.
-- Side menu shows **sync status** (synced vs unsaved local changes).
+- **Personal data** (vacation, overtime, notes, custom shifts) is stored locally and is shown by default.
+- **Privacy Mode** is an optional presentation mode. When enabled, personal additions are hidden and the factory schedule is shown instead.
+- **Google account** is optional and is used only for backup/synchronization.
+- The side menu shows sync status and unsaved local changes.
 
