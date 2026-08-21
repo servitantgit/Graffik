@@ -91,6 +91,9 @@ function openSideMenu() {
   if (typeof updateMenuSyncStatus === 'function') updateMenuSyncStatus();
   if (typeof updatePrivacyMenuUI === 'function') updatePrivacyMenuUI();
   if (typeof updateDriveUI === 'function') updateDriveUI();
+  if (typeof checkDriveRemoteStatus === 'function' && typeof isDriveLoggedIn === 'function' && isDriveLoggedIn()) {
+    checkDriveRemoteStatus(false).catch(() => {});
+  }
 }
 function closeSideMenu() {
   sideMenu.classList.remove('show');

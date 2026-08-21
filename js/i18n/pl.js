@@ -693,5 +693,7 @@ window.translations.pl = {
   privacyOffToast: '👤 Widoczne dane osobiste',
   editNeedPrivacyOff: '🔒 Wyłącz tryb prywatności w menu, aby edytować',
   syncStatusOk: 'Wszystkie zmiany zapisane · {time}',
-  syncStatusUnsynced: '⚠ Niezsynchronizowane zmiany · ostatni sync: {time}'
+  syncStatusUnsynced: '⚠ Niezsynchronizowane zmiany · ostatni sync: {time}',
+  syncStatusRemoteNewer: '☁ Na Google Drive jest nowsza wersja — pobierz',
+  syncStatusConflict: '⚠ Zmiany lokalne i na Drive — zsynchronizuj'
 };
