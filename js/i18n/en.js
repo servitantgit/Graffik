@@ -694,5 +694,6 @@ window.translations.en = {
   syncStatusOk: 'All changes saved · {time}',
   syncStatusUnsynced: '⚠ Unsynced changes · last sync: {time}',
   syncStatusRemoteNewer: '☁ Newer version on Google Drive — download',
-  syncStatusConflict: '⚠ Local and Drive both changed — sync needed'
+  syncStatusConflict: '⚠ Local and Drive both changed — sync needed',
+  syncStatusLogin: 'Sign in to Google Drive'
 };

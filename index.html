@@ -162,23 +162,18 @@
 
     <div class="menu-section">
       <div class="menu-section-title" data-i18n="menuSectionDrive">Google Drive</div>
-      <button class="menu-item" id="menuDriveSync">
-        <span class="mi-icon">☁️</span>
-        <span data-i18n="menuDrive">Google Drive ☁️ (zaloguj)</span>
-        <span class="mi-check" style="display:none;">✓</span>
-      </button>
-      <button class="menu-item" id="menuSyncNow" style="display:none;">
-        <span class="mi-icon">🔄</span>
-        <span data-i18n="menuSyncNow">Synchronizuj teraz</span>
+      <!-- C: status is the main action (login / sync / download) -->
+      <button type="button" class="menu-item menu-sync-status" id="menuSyncStatus" aria-live="polite">
+        <span class="mi-icon" id="menuSyncStatusIcon">☁️</span>
+        <span id="menuSyncStatusText" data-i18n="syncStatusLogin">Sign in to Google Drive</span>
       </button>
       <button class="menu-item" id="menuDriveLogout" style="display:none;">
         <span class="mi-icon">🚪</span>
         <span data-i18n="menuDriveLogout">Wyloguj z Google Drive</span>
       </button>
-      <div class="menu-sync-status" id="menuSyncStatus" aria-live="polite">
-        <span class="mi-icon">💾</span>
-        <span id="menuSyncStatusText" data-i18n="syncStatusOk">All changes synced</span>
-      </div>
+      <!-- legacy ids kept hidden for any leftover handlers -->
+      <button class="menu-item" id="menuDriveSync" style="display:none;" aria-hidden="true"></button>
+      <button class="menu-item" id="menuSyncNow" style="display:none;" aria-hidden="true"></button>
     </div>
 
     <div class="menu-section">
