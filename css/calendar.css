@@ -218,17 +218,17 @@ body.edit-active .day-cell:not(.empty):hover {
 /* Style E: full factory fill for shifts; empty/dashed free days */
 .day-cell.cell-R {
   background: var(--color-R);
-  color: #fff;
+  color: var(--color-R-text, #fff);
   border-color: var(--color-R-border);
 }
 .day-cell.cell-P {
   background: var(--color-P);
-  color: #fff;
+  color: var(--color-P-text, #fff);
   border-color: var(--color-P-border, var(--color-P));
 }
 .day-cell.cell-N {
   background: var(--color-N);
-  color: #fff;
+  color: var(--color-N-text, #fff);
   border-color: var(--color-N-border, var(--color-N));
 }
 .day-cell.cell-R::after,
@@ -242,9 +242,9 @@ body.edit-active .day-cell:not(.empty):hover {
 .day-cell.cell-R .day-shift,
 .day-cell.cell-P .day-shift,
 .day-cell.cell-N .day-shift {
-  color: #fff;
+  color: inherit;
   font-weight: 700;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
 }
 
 /* Free day — hollow / dashed, no fill */
@@ -288,8 +288,8 @@ body:not(.theme-dark) .day-cell.holiday.cell-W {
 /* Vacation — full fill */
 .day-cell.urlop {
   background: var(--color-U-grad) !important;
-  color: #fff !important;
-  border-color: var(--color-U-border, #7c3aed) !important;
+  color: var(--color-U-text, #fff) !important;
+  border-color: var(--color-U-border, #0f766e) !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25) !important;
 }
 .day-cell.urlop::after {
@@ -297,7 +297,7 @@ body:not(.theme-dark) .day-cell.holiday.cell-W {
 }
 .day-cell.urlop .day-num,
 .day-cell.urlop .day-shift {
-  color: #fff !important;
+  color: var(--color-U-text, #fff) !important;
 }
 .day-cell .urlop-icon {
   display: none; /* legacy — urlop is bottom day-shift */
@@ -475,12 +475,15 @@ body.theme-contrast .day-cell.day-weekend.cell-W {
 }
 .shift-chip.R {
   background: var(--color-R);
+  color: var(--color-R-text, #fff);
 }
 .shift-chip.P {
   background: var(--color-P);
+  color: var(--color-P-text, #fff);
 }
 .shift-chip.N {
   background: var(--color-N);
+  color: var(--color-N-text, #fff);
 }
 
 .urlop-stats {
