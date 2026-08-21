@@ -692,5 +692,7 @@ window.translations.en = {
   privacyOffToast: '👤 Personal data visible',
   editNeedPrivacyOff: '🔒 Turn off privacy mode in the menu to edit',
   syncStatusOk: 'All changes saved · {time}',
-  syncStatusUnsynced: '⚠ Unsynced changes · last sync: {time}'
+  syncStatusUnsynced: '⚠ Unsynced changes · last sync: {time}',
+  syncStatusRemoteNewer: '☁ Newer version on Google Drive — download',
+  syncStatusConflict: '⚠ Local and Drive both changed — sync needed'
 };

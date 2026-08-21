@@ -20,6 +20,10 @@ let gDriveClientId = localStorage.getItem(DRIVE_CLIENT_ID_KEY) || DEFAULT_CLIENT
 
 /* === POMOCNICZE === */
 const DRIVE_SESSION_KEY = 'grafik_drive_had_session';
+const DRIVE_REMOTE_MT_KEY = 'grafik_drive_remote_mtime';
+let gDriveRemoteNewer = false;
+let gDriveRemoteCheckAt = 0;
+
 let gDriveRefreshTimer = null;
 let gDriveTokenInflight = null; // Promise for concurrent refresh requests
 
@@ -50,6 +54,58 @@ function markDriveSession() {
 
 function clearDriveSessionFlag() {
   localStorage.removeItem(DRIVE_SESSION_KEY);
+}
+
+function getStoredRemoteMtime() {
+  const n = Number(localStorage.getItem(DRIVE_REMOTE_MT_KEY) || 0);
+  return Number.isFinite(n) ? n : 0;
+}
+function setStoredRemoteMtime(isoOrMs) {
+  let ms = 0;
+  if (typeof isoOrMs === 'number') ms = isoOrMs;
+  else if (isoOrMs) ms = Date.parse(isoOrMs) || 0;
+  if (ms > 0) localStorage.setItem(DRIVE_REMOTE_MT_KEY, String(ms));
+}
+function clearStoredRemoteMtime() {
+  localStorage.removeItem(DRIVE_REMOTE_MT_KEY);
+}
+
+/**
+ * Compare Drive file modifiedTime with last local sync.
+ * Sets gDriveRemoteNewer for menu status.
+ */
+async function checkDriveRemoteStatus(force = false) {
+  if (!isDriveTokenValid() && !(await ensureDriveToken(false))) {
+    gDriveRemoteNewer = false;
+    return false;
+  }
+  // throttle: max once per 30s unless forced
+  if (!force && Date.now() - gDriveRemoteCheckAt < 30000) {
+    return gDriveRemoteNewer;
+  }
+  gDriveRemoteCheckAt = Date.now();
+  try {
+    const found = await findDriveFile();
+    if (!found || !found.modifiedTime) {
+      gDriveRemoteNewer = false;
+      updateMenuSyncStatus();
+      return false;
+    }
+    if (found.id) {
+      gDriveFileId = found.id;
+      localStorage.setItem('grafik_drive_file_id', gDriveFileId);
+    }
+    const remoteMs = Date.parse(found.modifiedTime) || 0;
+    setStoredRemoteMtime(remoteMs);
+    const meta = typeof getSyncMeta === 'function' ? getSyncMeta() : { lastSync: 0 };
+    // remote is newer if modified after last successful sync (8s slack for clock skew)
+    gDriveRemoteNewer = remoteMs > (meta.lastSync || 0) + 8000;
+    updateMenuSyncStatus();
+    return gDriveRemoteNewer;
+  } catch (e) {
+    console.warn('[SYNC] checkDriveRemoteStatus', e);
+    return gDriveRemoteNewer;
+  }
 }
 
 /** Re-render current view so personal data appears right after login. */
@@ -395,6 +451,13 @@ async function uploadToDrive(force = false) {
     }
     showToast('success', `☁️ ${t('driveSaved')}`);
     if (typeof updateLastSync === 'function') updateLastSync();
+    gDriveRemoteNewer = false;
+    // Refresh remote mtime so this device is not flagged as behind
+    setStoredRemoteMtime(Date.now());
+    try {
+      const found = await findDriveFile();
+      if (found && found.modifiedTime) setStoredRemoteMtime(found.modifiedTime);
+    } catch (_) {}
     updateDriveUI();
     updateMenuSyncStatus();
     return true;
@@ -542,7 +605,19 @@ async function downloadFromDrive(confirmOverwrite = false) {
       } else {
         showToast('success', `☁️ ${t('driveDownloaded')}`);
       }
-      updateDriveUI();
+      // Saves above bump lastModified — mark synced AFTER apply
+      if (typeof updateLastSync === 'function') updateLastSync();
+      gDriveRemoteNewer = false;
+      setStoredRemoteMtime(Date.now());
+      findDriveFile()
+        .then((found) => {
+          if (found && found.modifiedTime) setStoredRemoteMtime(found.modifiedTime);
+        })
+        .catch(() => {})
+        .finally(() => {
+          updateDriveUI();
+          updateMenuSyncStatus();
+        });
     };
 
     if (confirmOverwrite) {
@@ -567,8 +642,16 @@ function updateMenuSyncStatus() {
   const text = document.getElementById('menuSyncStatusText');
   if (!el || !text) return;
   const unsynced = typeof hasUnsyncedChanges === 'function' && hasUnsyncedChanges();
-  el.classList.toggle('unsynced', !!unsynced);
-  if (unsynced) {
+  const remoteNewer = !!gDriveRemoteNewer;
+  el.classList.toggle('unsynced', !!unsynced && !remoteNewer);
+  el.classList.toggle('remote-newer', !!remoteNewer);
+  if (remoteNewer && unsynced) {
+    text.textContent =
+      typeof t === 'function' ? t('syncStatusConflict') : 'Local and Drive both changed — sync needed';
+  } else if (remoteNewer) {
+    text.textContent =
+      typeof t === 'function' ? t('syncStatusRemoteNewer') : 'Newer version on Google Drive — download';
+  } else if (unsynced) {
     const when = typeof timeSinceLastSync === 'function' ? timeSinceLastSync() : '';
     text.textContent =
       typeof t === 'function'
@@ -822,6 +905,7 @@ window.isDriveTokenValid = isDriveTokenValid;
 window.hadDriveSession = hadDriveSession;
 window.ensureDriveToken = ensureDriveToken;
 window.updateMenuSyncStatus = updateMenuSyncStatus;
+window.checkDriveRemoteStatus = checkDriveRemoteStatus;
 
 /* === INIT === */
 function initSync() {

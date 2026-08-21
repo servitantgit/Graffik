@@ -691,5 +691,7 @@ window.translations.uk = {
   editNeedPrivacyOff: '🔒 Вимкніть режим приватності в меню, щоб редагувати',
   syncStatusOk: 'Усі зміни збережено · {time}',
   syncStatusUnsynced: '⚠ Незбережені зміни · останній sync: {time}',
-  editNeedLogin: '🔒 Вимкніть режим приватності в меню, щоб редагувати'
+  editNeedLogin: '🔒 Вимкніть режим приватності в меню, щоб редагувати',
+  syncStatusRemoteNewer: '☁ На Google Drive є новіша версія — завантажте',
+  syncStatusConflict: '⚠ Локально і на Drive є зміни — синхронізуйте'
 };

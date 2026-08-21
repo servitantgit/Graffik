@@ -24,9 +24,9 @@ body {
   --color-W: #ecf0f1;
   --color-W-text: #7f8c8d;
   --color-W-border: #ccd1d1;
-  --color-U: #8b5cf6;
-  --color-U-border: #7c3aed;
-  --color-U-grad: linear-gradient(135deg, #a78bfa 0%, #7c3aed 55%, #6d28d9 100%);
+  --color-U: #7b6b8f;
+  --color-U-border: #6b5b7f;
+  --color-U-grad: linear-gradient(135deg, #8b7a9e 0%, #6b5b7f 55%, #5a4a6a 100%);
   --accent: #ff5722;
 
   --bg-body: linear-gradient(135deg, #1e3c72, #2a5298);
