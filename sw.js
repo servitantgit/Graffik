@@ -37,6 +37,7 @@ const ASSETS = [
   './js/i18n/en.js',
   './js/i18n/uk.js',
   './js/i18n/i18n.js',
+  './js/personalization.js',
   './js/main.js',
   './icons/icon-192.png',
   './icons/icon-512.png',

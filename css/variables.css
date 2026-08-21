@@ -14,19 +14,24 @@ body {
 }
 
 :root {
-  --color-R: #f39c12;
-  --color-R-border: #d68910;
-  --color-P: #16a085;
-  --color-P-border: #117a65;
-  --color-N: #2980b9;
-  --color-N-border: #1f6391;
-  --color-N-grad: linear-gradient(135deg, #2980b9, #1a1a3e);
+  /* Defaults: R yellow, P green, N light blue, U soft teal (user-overridable via prefs.cellColors) */
+  --color-R: #f1c40f;
+  --color-R-border: #d4ac0d;
+  --color-R-text: #3d2e00;
+  --color-P: #82e0aa;
+  --color-P-border: #27ae60;
+  --color-P-text: #0e3d24;
+  --color-N: #aed6f1;
+  --color-N-border: #5dade2;
+  --color-N-text: #1a3a52;
+  --color-N-grad: linear-gradient(135deg, #aed6f1, #5dade2);
   --color-W: #ecf0f1;
   --color-W-text: #7f8c8d;
   --color-W-border: #ccd1d1;
-  --color-U: #7b6b8f;
-  --color-U-border: #6b5b7f;
-  --color-U-grad: linear-gradient(135deg, #8b7a9e 0%, #6b5b7f 55%, #5a4a6a 100%);
+  --color-U: #14b8a6;
+  --color-U-border: #0f766e;
+  --color-U-text: #ffffff;
+  --color-U-grad: linear-gradient(135deg, #2dd4bf 0%, #0f766e 100%);
   --accent: #ff5722;
 
   --bg-body: linear-gradient(135deg, #1e3c72, #2a5298);

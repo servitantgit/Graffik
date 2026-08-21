@@ -133,3 +133,12 @@ document.getElementById('modalClose').onclick = hideModal;
 document.getElementById('modalOverlay').onclick = (e) => {
   if (e.target.id === 'modalOverlay') hideModal();
 };
+
+
+/* Personalization */
+const menuPersBtn = document.getElementById('menuPersonalization');
+if (menuPersBtn) {
+  menuPersBtn.onclick = () => {
+    if (typeof openPersonalizationModal === 'function') openPersonalizationModal();
+  };
+}
