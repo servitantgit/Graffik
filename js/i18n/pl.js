@@ -695,5 +695,6 @@ window.translations.pl = {
   syncStatusOk: 'Wszystkie zmiany zapisane · {time}',
   syncStatusUnsynced: '⚠ Niezsynchronizowane zmiany · ostatni sync: {time}',
   syncStatusRemoteNewer: '☁ Na Google Drive jest nowsza wersja — pobierz',
-  syncStatusConflict: '⚠ Zmiany lokalne i na Drive — zsynchronizuj'
+  syncStatusConflict: '⚠ Zmiany lokalne i na Drive — zsynchronizuj',
+  syncStatusLogin: 'Zaloguj do Google Drive'
 };

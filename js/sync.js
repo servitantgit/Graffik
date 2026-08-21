@@ -640,24 +640,38 @@ async function downloadFromDrive(confirmOverwrite = false) {
 function updateMenuSyncStatus() {
   const el = document.getElementById('menuSyncStatus');
   const text = document.getElementById('menuSyncStatusText');
+  const icon = document.getElementById('menuSyncStatusIcon');
   if (!el || !text) return;
+  const logged = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : isDriveTokenValid();
   const unsynced = typeof hasUnsyncedChanges === 'function' && hasUnsyncedChanges();
   const remoteNewer = !!gDriveRemoteNewer;
-  el.classList.toggle('unsynced', !!unsynced && !remoteNewer);
-  el.classList.toggle('remote-newer', !!remoteNewer);
+
+  el.classList.toggle('unsynced', !!logged && !!unsynced && !remoteNewer);
+  el.classList.toggle('remote-newer', !!logged && !!remoteNewer);
+  el.classList.toggle('logged-out', !logged);
+
+  if (!logged) {
+    if (icon) icon.textContent = '☁️';
+    text.textContent = typeof t === 'function' ? t('syncStatusLogin') : 'Sign in to Google Drive';
+    return;
+  }
   if (remoteNewer && unsynced) {
+    if (icon) icon.textContent = '⚠️';
     text.textContent =
       typeof t === 'function' ? t('syncStatusConflict') : 'Local and Drive both changed — sync needed';
   } else if (remoteNewer) {
+    if (icon) icon.textContent = '⬇️';
     text.textContent =
       typeof t === 'function' ? t('syncStatusRemoteNewer') : 'Newer version on Google Drive — download';
   } else if (unsynced) {
+    if (icon) icon.textContent = '💾';
     const when = typeof timeSinceLastSync === 'function' ? timeSinceLastSync() : '';
     text.textContent =
       typeof t === 'function'
         ? t('syncStatusUnsynced', { time: when })
         : 'Unsaved changes' + (when ? ' · ' + when : '');
   } else {
+    if (icon) icon.textContent = '✅';
     const when = typeof timeSinceLastSync === 'function' ? timeSinceLastSync() : '';
     text.textContent =
       typeof t === 'function'
@@ -666,37 +680,32 @@ function updateMenuSyncStatus() {
   }
 }
 
+/** Status row click: login | download if remote newer | sync modal */
+function onMenuSyncStatusClick() {
+  const logged = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : isDriveTokenValid();
+  if (!logged) {
+    loginDrive();
+    return;
+  }
+  if (gDriveRemoteNewer && !(typeof hasUnsyncedChanges === 'function' && hasUnsyncedChanges())) {
+    downloadFromDrive(true);
+    return;
+  }
+  syncWithDrive();
+}
+
 function updateDriveUI() {
   updateMenuSyncStatus();
-  const item = document.getElementById('menuDriveSync');
-  if (!item) return;
-  const check = item.querySelector('.mi-check');
-  const label = item.querySelector('span:nth-child(2)');
   const logged = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : isDriveTokenValid();
-
   const logoutBtn = document.getElementById('menuDriveLogout');
-  const syncItem = document.getElementById('menuSyncNow');
   const authBtn = document.getElementById('userAuthBtn');
-
-  if (logged) {
-    item.title = t('driveLoggedInHint');
-    if (check) check.style.display = 'inline';
-    if (label) label.textContent = `Google Drive ☁️ (${t('loggedIn')})`;
-    item.classList.remove('drive-error');
-    if (logoutBtn) logoutBtn.style.display = 'flex';
-    if (syncItem) syncItem.style.display = 'flex';
-    if (authBtn) {
+  if (logoutBtn) logoutBtn.style.display = logged ? 'flex' : 'none';
+  if (authBtn) {
+    if (logged) {
       authBtn.textContent = '🚪';
       authBtn.title = t('logoutFromDrive');
       authBtn.classList.add('auth-logged-in');
-    }
-  } else {
-    if (check) check.style.display = 'none';
-    if (label) label.textContent = `Google Drive ☁️ (${t('login')})`;
-    item.title = t('driveLoggedOutHint');
-    if (logoutBtn) logoutBtn.style.display = 'none';
-    if (syncItem) syncItem.style.display = 'none';
-    if (authBtn) {
+    } else {
       authBtn.textContent = '👤';
       authBtn.title = t('login');
       authBtn.classList.remove('auth-logged-in');
@@ -906,18 +915,15 @@ window.hadDriveSession = hadDriveSession;
 window.ensureDriveToken = ensureDriveToken;
 window.updateMenuSyncStatus = updateMenuSyncStatus;
 window.checkDriveRemoteStatus = checkDriveRemoteStatus;
+window.onMenuSyncStatusClick = onMenuSyncStatusClick;
 
 /* === INIT === */
 function initSync() {
-  const menuBtn = document.getElementById('menuDriveSync');
-  if (menuBtn) {
-    menuBtn.onclick = () => {
+  const statusBtn = document.getElementById('menuSyncStatus');
+  if (statusBtn) {
+    statusBtn.onclick = () => {
       closeSideMenu();
-      if (isDriveLoggedIn()) {
-        syncWithDrive();
-      } else {
-        loginDrive();
-      }
+      onMenuSyncStatusClick();
     };
   }
 

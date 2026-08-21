@@ -925,3 +925,31 @@ a.menu-item {
   background: rgba(56, 189, 248, 0.12);
   border: 1px solid rgba(56, 189, 248, 0.35);
 }
+
+/* Drive status row = primary action (variant C) */
+button.menu-item.menu-sync-status {
+  width: calc(100% - 16px);
+  margin: 4px 8px 8px;
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid transparent;
+  font: inherit;
+  color: inherit;
+}
+button.menu-item.menu-sync-status:hover {
+  filter: brightness(1.08);
+}
+button.menu-item.menu-sync-status.unsynced {
+  color: #f39c12;
+  background: rgba(243, 156, 18, 0.12);
+  border-color: rgba(243, 156, 18, 0.35);
+}
+button.menu-item.menu-sync-status.remote-newer {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.35);
+}
+button.menu-item.menu-sync-status.logged-out {
+  color: var(--text-main);
+  background: var(--bg-controls, rgba(127,140,141,0.12));
+}

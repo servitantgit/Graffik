@@ -693,5 +693,6 @@ window.translations.uk = {
   syncStatusUnsynced: '⚠ Незбережені зміни · останній sync: {time}',
   editNeedLogin: '🔒 Вимкніть режим приватності в меню, щоб редагувати',
   syncStatusRemoteNewer: '☁ На Google Drive є новіша версія — завантажте',
-  syncStatusConflict: '⚠ Локально і на Drive є зміни — синхронізуйте'
+  syncStatusConflict: '⚠ Локально і на Drive є зміни — синхронізуйте',
+  syncStatusLogin: 'Увійти в Google Drive'
 };
