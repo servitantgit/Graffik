@@ -123,7 +123,7 @@ function renderDashboard() {
     todayCard = `
       <div class="dtc-meta">${dayName}, ${d} ${monthNamesGenitive[m - 1]} ${y} · ${t('brigade')} ${selectedShift}</div>
       <div class="dtc-label">${t('todayLabel')}</div>
-      <div class="dtc-shift">🌴 ${t('infoUrlop')}</div>
+      <div class="dtc-shift">${t('infoUrlop')}</div>
     `;
   } else if (isWolne(shiftCode)) {
     cardCls = 'card-W';
