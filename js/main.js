@@ -412,18 +412,31 @@ document.addEventListener('keydown', (e) => {
 });
 
 /* === GESTY (swipe) === */
+/* Month view only: horizontal swipe changes month.
+   Table view: swipe disabled — it fights horizontal scroll (scroll position
+   was reset because goToMonth() re-rendered the whole table). */
 let touchStartX = 0;
+let touchStartY = 0;
+let touchStartTarget = null;
 document.addEventListener(
   'touchstart',
   (e) => {
     touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touchStartTarget = e.target;
   },
   { passive: true }
 );
 document.addEventListener('touchend', (e) => {
+  if (currentView !== 'month') return;
+  // Ignore swipes that started inside a horizontal scroller
+  if (touchStartTarget && touchStartTarget.closest && touchStartTarget.closest('.table-scroll, .dash-upcoming-list')) {
+    return;
+  }
   const dx = e.changedTouches[0].clientX - touchStartX;
-  if (Math.abs(dx) > 60) {
-    if (currentView === 'month' || currentView === 'table') goToMonth(dx > 0 ? -1 : 1);
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+    goToMonth(dx > 0 ? -1 : 1);
   }
 });
 
