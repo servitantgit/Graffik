@@ -256,7 +256,8 @@ function initGDriveTokenClient() {
 /**
  * Request a new access token.
  * @param {{ interactive?: boolean }} opts
- *   interactive true → may show Google UI; false → prompt:'' silent
+ *   interactive true → user-initiated; Google shows UI only if needed
+ *   interactive false → prompt:'' (no UI when possible)
  * @returns {Promise<boolean>}
  */
 function requestDriveAccessToken(opts) {
@@ -275,9 +276,11 @@ function requestDriveAccessToken(opts) {
 
   gDriveTokenClient._lastInteractive = interactive;
   try {
-    gDriveTokenClient.requestAccessToken(
-      interactive ? { prompt: 'consent' } : { prompt: '' }
-    );
+    // Do NOT force prompt:'consent' on every login — that always shows the
+    // second "app wants access / make sure you trust this app" screen.
+    // Empty options: Google only shows UI when account or grant is missing.
+    // prompt:'' is for non-interactive attempts (no UI if possible).
+    gDriveTokenClient.requestAccessToken(interactive ? {} : { prompt: '' });
   } catch (e) {
     console.warn('[SYNC] requestAccessToken:', e);
     resolveFn(false);
