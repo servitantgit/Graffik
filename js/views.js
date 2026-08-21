@@ -134,9 +134,13 @@ function renderTableView(showAllYear) {
       const block = document.createElement('div');
       block.className = 'table-month-block';
       const h = document.createElement('h3');
+      h.className = 'table-month-title';
       h.textContent = `${monthNames[m - 1]} ${currentYear}`;
       block.appendChild(h);
-      block.appendChild(buildMonthTable(m));
+      const scroll = document.createElement('div');
+      scroll.className = 'table-scroll';
+      scroll.appendChild(buildMonthTable(m));
+      block.appendChild(scroll);
       wrap.appendChild(block);
     }
     tv.appendChild(wrap);
@@ -145,7 +149,10 @@ function renderTableView(showAllYear) {
     monthNav.className = 'month-nav';
     monthNav.innerHTML = `<button onclick="goToMonth(-1)">‹</button><div class="month-title">${monthNames[currentMonth - 1]} ${currentYear}</div><button onclick="goToMonth(1)">›</button>`;
     tv.appendChild(monthNav);
-    tv.appendChild(buildMonthTable(currentMonth));
+    const scroll = document.createElement('div');
+    scroll.className = 'table-scroll';
+    scroll.appendChild(buildMonthTable(currentMonth));
+    tv.appendChild(scroll);
   }
 
   const leg = document.createElement('div');
