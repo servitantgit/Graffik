@@ -263,7 +263,7 @@
   border: none;
   padding: 0;
   text-align: center;
-  height: 32px;
+  height: 40px;
   min-width: 0;
   position: relative;
   overflow: hidden;
@@ -289,8 +289,8 @@ body:not(.theme-dark) .brigade-table th {
   position: sticky;
   left: 0;
   z-index: 5;
-  min-width: 36px;
-  width: 36px;
+  min-width: 40px;
+  width: 40px;
   padding: 2px 4px;
   font-size: 13px;
   border-radius: 2px;
@@ -310,10 +310,11 @@ body:not(.theme-dark) .brigade-table th {
 }
 .brigade-table th.date-header {
   min-width: 0;
-  padding: 2px 1px;
-  font-size: 9px;
-  line-height: 1.1;
+  padding: 3px 1px;
+  font-size: 10px;
+  line-height: 1.15;
   border-radius: 2px;
+  height: 36px;
 }
 .brigade-table th.date-header .dh-day {
   display: block;
@@ -353,7 +354,7 @@ body:not(.theme-dark) .brigade-table th.date-header.holiday {
 }
 .brigade-table td.tc {
   font-weight: 800;
-  font-size: 12px;
+  font-size: 14px;
   color: #fff;
   cursor: pointer;
   transition: transform 0.1s, box-shadow 0.1s;
