@@ -737,15 +737,17 @@ body.skin-strip .day-cell.urlop::after {
   display: none !important;
 }
 
-/* --- quiet: colored ring around the day number (no bottom dots) --- */
+/* --- colored outline skin: colored cell frame + date ring --- */
 body.skin-quiet .day-cell.cell-R,
 body.skin-quiet .day-cell.cell-P,
 body.skin-quiet .day-cell.cell-N {
   background: var(--bg-cell);
   color: var(--text-main);
-  border-color: var(--border-cell);
   box-shadow: none;
 }
+body.skin-quiet .day-cell.cell-R { border-color: var(--color-R); }
+body.skin-quiet .day-cell.cell-P { border-color: var(--color-P); }
+body.skin-quiet .day-cell.cell-N { border-color: var(--color-N); }
 body.skin-quiet .day-cell.cell-R::after,
 body.skin-quiet .day-cell.cell-P::after,
 body.skin-quiet .day-cell.cell-N::after {
@@ -781,7 +783,7 @@ body.skin-quiet .day-cell.cell-N .day-num { border-color: var(--color-N); }
 body.skin-quiet .day-cell.urlop {
   background: var(--bg-cell) !important;
   color: var(--text-main) !important;
-  border: 1px solid var(--border-cell) !important;
+  border: 1px solid var(--color-U) !important;
   text-shadow: none !important;
 }
 body.skin-quiet .day-cell.urlop::after {

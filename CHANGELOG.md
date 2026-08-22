@@ -1,3 +1,9 @@
+# Unreleased — 2026-08-22
+
+- Zmieniono nazwę stylu komórek `quiet` na **Kolorowe obramowanie** w interfejsie i lokalizacjach.
+- Styl `quiet` pokazuje teraz kolorowe obramowanie całej komórki oraz kolorowe obramowanie daty; kolory zmian R/P/N pozostają bez zmian.
+- Zaktualizowano FAQ i dokumentację techniczną, aby opisywały aktualne style komórek i nie używały określenia „kropki”.
+
 # Changelog
 
 ## 2026-08-21 — cleanup and documentation sync

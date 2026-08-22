@@ -198,6 +198,16 @@ js/schedules/
 - `applyTheme(themeName)`, `toggleTheme()` — przełączanie motywów
 - Bindings: `themeToggleBtn`, `menuBtn`, `sideMenuClose`, `faqHelp`
 
+### Personalizacja: style komórek
+
+W `js/personalization.js` dostępne są trzy style komórek:
+
+- **Pełne wypełnienie** (`full`) — pełne wypełnienie kolorem zmiany.
+- **Spokojny pasek** (`strip`) — neutralna komórka z kolorową smużką po lewej.
+- **Kolorowe obramowanie** (`quiet`) — neutralna komórka z kolorowym obramowaniem całej komórki oraz kolorowym okręgiem wokół daty.
+
+W stylu `quiet` kolory zmian R/P/N nie są zmieniane. Kolor odpracowania/urlopu korzysta z `--color-U`. Nazwa techniczna `quiet` pozostaje zachowana dla kompatybilności zapisanych preferencji; w interfejsie użytkownika nie należy nazywać tego stylu „kropkami”.
+
 ### js/edit.js — Moduł 4: Tryb edycji
 
 - `pendingChanges`, `pendingOriginals` — bufor zmian

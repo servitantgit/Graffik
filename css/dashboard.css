@@ -529,13 +529,17 @@ body.skin-strip .dash-day-chip.chip-U {
   background: color-mix(in srgb, var(--color-U) 18%, var(--bg-cell));
 }
 
-/* quiet: color ring on date number */
+/* colored outline: cell frame + date ring */
 body.skin-quiet .dash-day-chip.chip-R::after,
 body.skin-quiet .dash-day-chip.chip-P::after,
 body.skin-quiet .dash-day-chip.chip-N::after,
 body.skin-quiet .dash-day-chip.chip-U::after {
   display: none;
 }
+body.skin-quiet .dash-day-chip.chip-R { border-color: var(--color-R); }
+body.skin-quiet .dash-day-chip.chip-P { border-color: var(--color-P); }
+body.skin-quiet .dash-day-chip.chip-N { border-color: var(--color-N); }
+body.skin-quiet .dash-day-chip.chip-U { border-color: var(--color-U); }
 body.skin-quiet .dash-day-chip .ddc-date {
   display: inline-flex;
   align-items: center;

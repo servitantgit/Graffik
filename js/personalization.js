@@ -422,8 +422,8 @@ function openSkinModal() {
     },
     {
       id: 'quiet',
-      title: t('skinQuiet') || 'Quiet rings',
-      desc: t('skinQuietDesc') || 'Neutral cells with a colored date ring',
+      title: t('skinQuiet') || 'Colored outline',
+      desc: t('skinQuietDesc') || 'Neutral cells with a colored date and cell outline',
       mini: 'quiet',
     },
   ];
