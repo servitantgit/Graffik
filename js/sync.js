@@ -859,13 +859,14 @@ function formatSyncDiffLog(localStats, remoteStats, hasUnsynced, lastSyncText, r
 
   const tr = (key, fb) => (typeof t === 'function' ? t(key) : fb);
 
-  let html = `<p style="margin:0 0 8px;">${tr('driveSyncBody', 'Do you want to send data to Drive or download from Drive?')}</p>`;
+  // No driveSyncBody — title already says "Sync with Google Drive"
+  let html = '';
 
   if (hasUnsynced) {
     html += `<p style="margin:0 0 6px; font-size:13px; color:var(--text-muted);">${tr('driveDiffLastSync', 'Last sync')}: <b>${lastSyncText || '—'}</b></p>`;
   }
 
-  html += `<div class="sync-diff-log" style="font-size:13px; line-height:1.45; padding:10px 12px; background:var(--bg-controls); border-radius:8px; border:1px solid var(--border-cell); margin:8px 0 0;">`;
+  html += `<div class="sync-diff-log" style="font-size:13px; line-height:1.45; padding:10px 12px; background:var(--bg-controls); border-radius:8px; border:1px solid var(--border-cell); margin:0;">`;
   html += `<div style="font-weight:600; margin-bottom:6px;">${tr('driveDiffTitle', 'Short change log')}</div>`;
   html += '<ul style="margin:0; padding-left:18px;">';
   html += line(tr('driveDiffUrlops', 'Vacations'), localStats.urlops, showRemote ? remoteStats.urlops : 0);
@@ -936,21 +937,36 @@ async function syncWithDrive() {
         ? t('syncUnknown')
         : '—';
 
+  // Clear icons: download = arrow-down-to-line, upload = arrow-up-from-line
+  const ICON_DL =
+    '<svg class="modal-btn-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg>';
+  const ICON_UL =
+    '<svg class="modal-btn-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 4l5 5h-3v7h-4V9H7l5-5zM5 18h14v2H5v-2z"/></svg>';
+
   // Show modal immediately with local summary; then refine with remote if available
   showModal({
     title: `☁️ ${t('driveSyncTitle')}`,
     body: formatSyncDiffLog(localStats, null, hasUnsynced, lastSyncText, 'loading'),
     buttons: [
-      { text: t('cancel'), class: 'secondary' },
       {
-        text: t('download'),
+        text: t('driveSyncCancel'),
+        html: t('driveSyncCancel'),
         class: 'secondary',
+        title: t('cancel'),
+      },
+      {
+        text: t('driveSyncDownload'),
+        html: ICON_DL + ' ' + t('driveSyncDownload'),
+        class: 'secondary',
+        title: t('download'),
         onClick: () => downloadFromDrive(true),
         closeOnClick: true,
       },
       {
-        text: t('sendToDrive'),
+        text: t('driveSyncUpload'),
+        html: ICON_UL + ' ' + t('driveSyncUpload'),
         class: 'primary',
+        title: t('sendToDrive'),
         onClick: () => uploadToDrive(true),
         closeOnClick: true,
       },
