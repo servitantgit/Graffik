@@ -230,6 +230,8 @@ Aplikacja przechowuje dane w trzech miejscach:
 2. **Google Drive** (opcjonalne) — ręczna synchronizacja między urządzeniami
 3. **Backup JSON** — eksport/import pliku z całą kopią danych
 
+Przy otwarciu menu synchronizacji z Drive widać **krótki log różnic** (lokalne liczby urlopów / nadgodzin / notatek / własnych zmian vs Drive) oraz przyciski Anuluj / Pobierz / Wyślij w jednym rzędzie.
+
 **Uwaga:** Dane w localStorage można stracić przy wyczyszczeniu pamięci przeglądarki. Regularnie rób backup przez 📥 JSON lub ☁️ Google Drive.
 
 ## 🔒 Prywatność

@@ -305,6 +305,11 @@ W stylu `quiet` kolory zmian R/P/N nie są zmieniane. Kolor odpracowania/urlopu 
 - `downloadFromDrive()` — pobieranie i pełne zastąpienie lokalnych danych
 - `uploadToDrive()` — wysyłanie danych do Drive
 - Obsługa konfliktów (brak merge — last-write-wins)
+- `syncWithDrive()` — modal synchronizacji: krótki log różnic lokalnie vs Drive
+  (`countSyncPayloadStats`, `formatSyncDiffLog`, `fetchDriveRemotePayload`)
+  — liczby urlopów / nadgodzin / notatek / własnych zmian / limitów urlopów
+  oraz ostatni czas sync przy `hasUnsyncedChanges()`; przyciski w jednym rzędzie
+  (klasa `modal-footer-single-row` na `#modalFooter`)
 
 ### js/admin.js — Moduł Admin: identyfikacja administratora
 
@@ -652,4 +657,6 @@ Każdy schedule ma własne metadata + dane per rok.
 - **Privacy Mode** is an optional presentation mode. When enabled, personal additions are hidden and the factory schedule is shown instead.
 - **Google account** is optional and is used only for backup/synchronization.
 - The side menu shows sync status and unsaved local changes.
+- Opening the Drive sync menu shows a short change log (local counts vs Drive)
+  before Upload / Download; action buttons stay on one row.
 
