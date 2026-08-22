@@ -52,7 +52,12 @@ function showModal(opts) {
     (btn) => {
       const b = document.createElement('button');
       b.className = 'modal-btn ' + (btn.class || 'secondary');
-      b.textContent = btn.text;
+      if (btn.html) {
+        b.innerHTML = btn.html;
+      } else {
+        b.textContent = btn.text;
+      }
+      if (btn.title) b.title = btn.title;
       b.onclick = () => {
         if (btn.onClick) btn.onClick();
         if (btn.closeOnClick !== false) hideModal();
