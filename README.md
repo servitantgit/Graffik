@@ -36,6 +36,8 @@ Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w system
 3. Dashboard pokaże dzisiejszą zmianę z timerem
 4. Przełączaj widoki górnym menu
 
+**Style komórek:** w Personalizacji dostępne są trzy warianty: pełne wypełnienie, spokojny pasek oraz kolorowe obramowanie. W ostatnim wariancie kolor obramowania komórki i okręgu wokół daty odpowiada zmianie.
+
 **Szczegóły funkcji:** ☰ Menu → ❓ Pomoc / FAQ  ·  kod: [GitHub](https://github.com/servitantgit/Graffik)
 
 ## 📱 Instalacja jako PWA

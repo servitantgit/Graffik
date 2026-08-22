@@ -102,6 +102,18 @@ function renderFAQ() {
             `,
     },
     {
+      title: t('faqSkinTitle'),
+      content: `
+                <p>${t('faqSkinDesc')}</p>
+                <ul>
+                    <li>${t('faqSkinFull')}</li>
+                    <li>${t('faqSkinStrip')}</li>
+                    <li>${t('faqSkinQuiet')}</li>
+                    <li>${t('faqSkinVacation')}</li>
+                </ul>
+            `,
+    },
+    {
       title: t('faqOvertimeTitle'),
       content: `
                 <ol>
