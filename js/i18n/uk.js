@@ -626,6 +626,17 @@ window.translations.uk = {
   driveSyncTitle: 'Синхронізація з Google Drive',
   driveSyncBody: 'Ви хочете надіслати дані в Drive чи завантажити з Drive?',
   sendToDrive: '📤 Надіслати в Drive',
+  driveDiffTitle: 'Короткий лог змін',
+  driveDiffLastSync: 'Остання синхронізація',
+  driveDiffUrlops: 'Відпустки',
+  driveDiffOvertimes: 'Надурочні',
+  driveDiffNotes: 'Нотатки',
+  driveDiffCustom: 'Власні зміни',
+  driveDiffLimits: 'Ліміти відпусток',
+  driveDiffLoading: 'Порівняння з Drive…',
+  driveDiffNoRemote: 'Не вдалося завантажити версію з Drive для порівняння.',
+  driveDiffIdentical: 'Кількості збігаються з Drive (структурних відмінностей не виявлено).',
+  driveDiffHint: 'Числа: локально / Drive. (+N) більше на пристрої, (−N) більше на Drive.',
   driveLoggedOut: 'Вийшли з Google Drive',
 
   // === LOGOUT UNSYNCED WARNING (v3.7.0) ===

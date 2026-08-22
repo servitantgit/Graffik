@@ -65,6 +65,8 @@ function showModal(opts) {
 function hideModal() {
   const overlay = getElementByIdSafe('modalOverlay');
   if (overlay) overlay.classList.remove('show');
+  const footer = getElementByIdSafe('modalFooter');
+  if (footer) footer.classList.remove('modal-footer-single-row');
 }
 function showConfirm(title, body, onConfirm, opts) {
   opts = opts || {};

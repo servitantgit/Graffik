@@ -629,6 +629,17 @@ window.translations.pl = {
   driveSyncTitle: 'Synchronizacja z Google Drive',
   driveSyncBody: 'Czy chcesz wysłać dane do Drive lub pobrać z Drive?',
   sendToDrive: '📤 Wyślij do Drive',
+  driveDiffTitle: 'Krótki log zmian',
+  driveDiffLastSync: 'Ostatnia synchronizacja',
+  driveDiffUrlops: 'Urlopy',
+  driveDiffOvertimes: 'Nadgodziny',
+  driveDiffNotes: 'Notatki',
+  driveDiffCustom: 'Własne zmiany',
+  driveDiffLimits: 'Limity urlopów',
+  driveDiffLoading: 'Porównywanie z Drive…',
+  driveDiffNoRemote: 'Nie udało się pobrać wersji z Drive do porównania.',
+  driveDiffIdentical: 'Liczby zgodne z Drive (brak różnic strukturalnych).',
+  driveDiffHint: 'Liczby: lokalnie / Drive. (+N) więcej na urządzeniu, (−N) więcej na Drive.',
   driveLoggedOut: 'Wylogowano z Google Drive',
 
   // === LOGOUT UNSYNCED WARNING (v3.7.0) ===

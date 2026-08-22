@@ -628,6 +628,17 @@ window.translations.en = {
   driveSyncTitle: 'Sync with Google Drive',
   driveSyncBody: 'Do you want to send data to Drive or download from Drive?',
   sendToDrive: '📤 Send to Drive',
+  driveDiffTitle: 'Short change log',
+  driveDiffLastSync: 'Last sync',
+  driveDiffUrlops: 'Vacations',
+  driveDiffOvertimes: 'Overtime',
+  driveDiffNotes: 'Notes',
+  driveDiffCustom: 'Custom shifts',
+  driveDiffLimits: 'Vacation limits',
+  driveDiffLoading: 'Comparing with Drive…',
+  driveDiffNoRemote: 'Could not load Drive version for comparison.',
+  driveDiffIdentical: 'Counts match Drive (no structural differences detected).',
+  driveDiffHint: 'Numbers: local / Drive. (+N) more on device, (−N) more on Drive.',
   driveLoggedOut: 'Logged out from Google Drive',
 
   // === LOGOUT UNSYNCED WARNING (v3.7.0) ===

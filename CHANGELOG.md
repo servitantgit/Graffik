@@ -1,5 +1,8 @@
 # Unreleased — 2026-08-22
 
+- **Sync modal** — short change log (vacations, overtime, notes, custom shifts, vacation limits) comparing local counts vs Google Drive; shows last-sync time when there are unsynced changes.
+- **Sync modal buttons** — Cancel / Download / Send to Drive stay on a single row (`modal-footer-single-row`).
+- i18n (pl/en/uk): `driveDiff*` keys for the short log.
 - Zmieniono nazwę stylu komórek `quiet` na **Kolorowe obramowanie** w interfejsie i lokalizacjach.
 - Styl `quiet` pokazuje teraz kolorowe obramowanie całej komórki oraz kolorowe obramowanie daty; kolory zmian R/P/N pozostają bez zmian.
 - Zaktualizowano FAQ i dokumentację techniczną, aby opisywały aktualne style komórek i nie używały określenia „kropki”.

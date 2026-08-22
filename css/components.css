@@ -704,6 +704,20 @@ body.theme-dark.admin-mode .menu-section.admin-only .menu-section-title {
   justify-content: flex-end;
   flex-wrap: wrap;
 }
+/* Sync modal: keep Cancel / Download / Send on a single row */
+.modal-footer.modal-footer-single-row {
+  flex-wrap: nowrap;
+  gap: 8px;
+  justify-content: stretch;
+}
+.modal-footer.modal-footer-single-row .modal-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 10px 12px;
+  font-size: 13px;
+  white-space: nowrap;
+  text-align: center;
+}
 .modal-btn {
   padding: 10px 20px;
   border-radius: 8px;

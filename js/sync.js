@@ -771,6 +771,153 @@ function loginDrive() {
   });
 }
 
+/* === SYNC DIFF SUMMARY (local vs Drive) === */
+
+/** Count entries in personal data objects for a short log. */
+function countSyncPayloadStats(data) {
+  if (!data || typeof data !== 'object') {
+    return { urlops: 0, overtimes: 0, notes: 0, customShifts: 0, vacationLimits: 0 };
+  }
+  let urlops = 0;
+  if (data.urlops && typeof data.urlops === 'object') {
+    Object.keys(data.urlops).forEach((b) => {
+      const list = data.urlops[b];
+      if (Array.isArray(list)) urlops += list.length;
+    });
+  }
+  let overtimes = 0;
+  if (data.overtimes && typeof data.overtimes === 'object') {
+    overtimes = Object.keys(data.overtimes).length;
+  }
+  let notes = 0;
+  if (data.notes && typeof data.notes === 'object') {
+    notes = Object.keys(data.notes).filter((k) => {
+      const v = data.notes[k];
+      return v != null && String(v).trim() !== '';
+    }).length;
+  }
+  let customShifts = 0;
+  if (data.customSchedule && typeof data.customSchedule === 'object') {
+    // structure: year -> month -> brigade -> day array or similar — count leaf day overrides
+    const walk = (obj, depth) => {
+      if (!obj || typeof obj !== 'object') return;
+      if (Array.isArray(obj)) {
+        obj.forEach((v) => {
+          if (v != null && v !== '' && v !== 0) customShifts++;
+        });
+        return;
+      }
+      Object.keys(obj).forEach((k) => walk(obj[k], depth + 1));
+    };
+    walk(data.customSchedule, 0);
+  }
+  let vacationLimits = 0;
+  const limits = data.vacationLimits || (data.prefs && data.prefs.urlopLimits);
+  if (limits && typeof limits === 'object') {
+    vacationLimits = Object.keys(limits).length;
+  }
+  return { urlops, overtimes, notes, customShifts, vacationLimits };
+}
+
+function buildLocalSyncPayload() {
+  return {
+    version: 3,
+    savedAt: new Date().toISOString(),
+    prefs: typeof prefs !== 'undefined' ? prefs : {},
+    customSchedule: typeof customSchedule !== 'undefined' ? customSchedule : {},
+    urlops: typeof urlops !== 'undefined' ? urlops : {},
+    overtimes: typeof overtimes !== 'undefined' ? overtimes : {},
+    notes: typeof notes !== 'undefined' ? notes : {},
+    vacationLimits:
+      typeof prefs !== 'undefined' && prefs.urlopLimits ? prefs.urlopLimits : {},
+  };
+}
+
+/**
+ * Build short HTML log of local stats and optional local-vs-remote deltas.
+ * @param {object} localStats
+ * @param {object|null} remoteStats - null if remote not available / still loading
+ * @param {boolean} hasUnsynced
+ * @param {string} lastSyncText
+ * @param {'loading'|'ready'|'error'} [remoteState='ready']
+ */
+function formatSyncDiffLog(localStats, remoteStats, hasUnsynced, lastSyncText, remoteState) {
+  remoteState = remoteState || (remoteStats == null ? 'error' : 'ready');
+  const showRemote = remoteState === 'ready' && remoteStats != null;
+
+  const line = (label, localN, remoteN) => {
+    if (!showRemote) {
+      return `<li>${label}: <b>${localN}</b></li>`;
+    }
+    const d = localN - remoteN;
+    let delta = '';
+    if (d > 0) delta = ` <span style="color:#27ae60">(+${d})</span>`;
+    else if (d < 0) delta = ` <span style="color:#e74c3c">(${d})</span>`;
+    else delta = ' <span style="color:var(--text-muted)">(0)</span>';
+    return `<li>${label}: <b>${localN}</b> / Drive ${remoteN}${delta}</li>`;
+  };
+
+  const tr = (key, fb) => (typeof t === 'function' ? t(key) : fb);
+
+  let html = `<p style="margin:0 0 8px;">${tr('driveSyncBody', 'Do you want to send data to Drive or download from Drive?')}</p>`;
+
+  if (hasUnsynced) {
+    html += `<p style="margin:0 0 6px; font-size:13px; color:var(--text-muted);">${tr('driveDiffLastSync', 'Last sync')}: <b>${lastSyncText || '—'}</b></p>`;
+  }
+
+  html += `<div class="sync-diff-log" style="font-size:13px; line-height:1.45; padding:10px 12px; background:var(--bg-controls); border-radius:8px; border:1px solid var(--border-cell); margin:8px 0 0;">`;
+  html += `<div style="font-weight:600; margin-bottom:6px;">${tr('driveDiffTitle', 'Short change log')}</div>`;
+  html += '<ul style="margin:0; padding-left:18px;">';
+  html += line(tr('driveDiffUrlops', 'Vacations'), localStats.urlops, showRemote ? remoteStats.urlops : 0);
+  html += line(tr('driveDiffOvertimes', 'Overtime'), localStats.overtimes, showRemote ? remoteStats.overtimes : 0);
+  html += line(tr('driveDiffNotes', 'Notes'), localStats.notes, showRemote ? remoteStats.notes : 0);
+  html += line(tr('driveDiffCustom', 'Custom shifts'), localStats.customShifts, showRemote ? remoteStats.customShifts : 0);
+  html += line(tr('driveDiffLimits', 'Vacation limits'), localStats.vacationLimits, showRemote ? remoteStats.vacationLimits : 0);
+  html += '</ul>';
+
+  if (remoteState === 'loading') {
+    html += `<p style="margin:8px 0 0; font-size:12px; color:var(--text-muted);">${tr('driveDiffLoading', 'Comparing with Drive…')}</p>`;
+  } else if (remoteState === 'error' || remoteStats == null) {
+    html += `<p style="margin:8px 0 0; font-size:12px; color:var(--text-muted);">${tr('driveDiffNoRemote', 'Could not load Drive version for comparison.')}</p>`;
+  } else {
+    const same =
+      localStats.urlops === remoteStats.urlops &&
+      localStats.overtimes === remoteStats.overtimes &&
+      localStats.notes === remoteStats.notes &&
+      localStats.customShifts === remoteStats.customShifts &&
+      localStats.vacationLimits === remoteStats.vacationLimits;
+    if (same && !hasUnsynced) {
+      html += `<p style="margin:8px 0 0; font-size:12px; color:var(--text-muted);">${tr('driveDiffIdentical', 'Counts match Drive (no structural differences detected).')}</p>`;
+    } else {
+      html += `<p style="margin:8px 0 0; font-size:12px; color:var(--text-muted);">${tr('driveDiffHint', 'Numbers: local / Drive. (+N) more on device, (−N) more on Drive.')}</p>`;
+    }
+  }
+  html += '</div>';
+  return html;
+}
+
+/** Fetch remote Drive JSON (or null). Does not apply data. */
+async function fetchDriveRemotePayload() {
+  try {
+    if (!gDriveFileId) {
+      const found = await findDriveFile();
+      if (!found) return null;
+      gDriveFileId = found.id;
+      localStorage.setItem('grafik_drive_file_id', gDriveFileId);
+    }
+    const resp = await driveFetch(
+      `https://www.googleapis.com/drive/v3/files/${gDriveFileId}?alt=media`
+    );
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    if (!data || typeof data !== 'object') return null;
+    return data;
+  } catch (e) {
+    console.warn('[SYNC] fetchDriveRemotePayload', e);
+    return null;
+  }
+}
+
 /* === MAIN MENU: sync === */
 async function syncWithDrive() {
   if (!(await ensureDriveToken(true))) {
@@ -778,10 +925,21 @@ async function syncWithDrive() {
     loginDrive();
     return;
   }
-  // Zalogowano: pokazujemy modal z 3 przyciskami
+
+  const localPayload = buildLocalSyncPayload();
+  const localStats = countSyncPayloadStats(localPayload);
+  const hasUnsynced = typeof hasUnsyncedChanges === 'function' && hasUnsyncedChanges();
+  const lastSyncText =
+    typeof timeSinceLastSync === 'function'
+      ? timeSinceLastSync()
+      : typeof t === 'function'
+        ? t('syncUnknown')
+        : '—';
+
+  // Show modal immediately with local summary; then refine with remote if available
   showModal({
     title: `☁️ ${t('driveSyncTitle')}`,
-    body: `<p>${t('driveSyncBody')}</p>`,
+    body: formatSyncDiffLog(localStats, null, hasUnsynced, lastSyncText, 'loading'),
     buttons: [
       { text: t('cancel'), class: 'secondary' },
       {
@@ -798,6 +956,31 @@ async function syncWithDrive() {
       },
     ],
   });
+
+  // Force buttons on one row
+  const footer = document.getElementById('modalFooter');
+  if (footer) {
+    footer.classList.add('modal-footer-single-row');
+  }
+
+  // Async: replace body with full local vs remote log
+  try {
+    const remote = await fetchDriveRemotePayload();
+    const remoteStats = remote ? countSyncPayloadStats(remote) : null;
+    const bodyEl = document.getElementById('modalBody');
+    const overlay = document.getElementById('modalOverlay');
+    if (bodyEl && overlay && overlay.classList.contains('show')) {
+      bodyEl.innerHTML = formatSyncDiffLog(
+        localStats,
+        remoteStats,
+        hasUnsynced,
+        lastSyncText,
+        remoteStats ? 'ready' : 'error'
+      );
+    }
+  } catch (e) {
+    console.warn('[SYNC] syncWithDrive remote diff', e);
+  }
 }
 
 /* === LOGOUT === */
