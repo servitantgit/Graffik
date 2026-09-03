@@ -1,17 +1,39 @@
 # ================================================================
 # GRAFIK GILLETTE - APPLY UPDATE PATCH
 # ================================================================
-# Version: 1.0
+# Version: 1.2
+#
 # Purpose: Apply structured patch from update_code.md to project files.
 #
-# Workflow:
-#   1. User asks AI in chat for code changes
-#   2. AI responds with structured operations
-#   3. User saves response as update_code.md
-#   4. Run: .\apply-update.ps1
+# Companion of: export-code.ps1 (generates code.json for AI upload)
+# AI response format spec: see code.json.ai_response_contract
 #
-# Supports operations: REPLACE, CREATE, DELETE, INSERT_AFTER, INSERT_BEFORE
-# Safety: git commit backup + per-file .backup + verify + rollback on error
+# TWO-SCRIPT WORKFLOW:
+#   1. .\export-code.ps1        -> creates code.json
+#   2. Upload code.json to AI chat (Claude, ChatGPT, Gemini)
+#   3. Describe desired changes in natural language
+#   4. AI responds using format from code.json.ai_response_contract
+#   5. Save AI response verbatim as: update_code.md
+#   6. .\apply-update.ps1       -> parses, validates, applies patch
+#   7. Verify with: git diff, then commit
+#
+# Supported operations: REPLACE, CREATE, DELETE, INSERT_AFTER, INSERT_BEFORE
+#
+# Safety layers:
+#   - Sanity check: detect invisible chars (ZWS/BOM) that break parser
+#   - Sanity check: detect single-backtick fences (must be triple)
+#   - Optional git commit backup before apply
+#   - Per-file .backup in .update-backups/ with timestamp
+#   - Validate ALL operations first (fail-fast)
+#   - Rollback on error (interactive prompt)
+#
+# CHANGELOG:
+#   v1.2 - Added sanity checks for invisible chars + single backticks
+#          Fixed $matches autovariable conflict (GOTCHA 1)
+#          Fixed array unwrap on single-op return (,$operations)
+#          Better LOCATE not-found error message with preview
+#   v1.1 - Force array wrapping in Parse-UpdateFile return
+#   v1.0 - Initial version
 # ================================================================
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
@@ -26,10 +48,10 @@ $DRY_RUN = $false          # true = show what would happen, don't modify files
 
 # --- COLORS ---
 function Write-Success { param($msg) Write-Host "[OK] $msg" -ForegroundColor Green }
-function Write-Info { param($msg) Write-Host "[INFO] $msg" -ForegroundColor Cyan }
-function Write-Warn { param($msg) Write-Host "[WARN] $msg" -ForegroundColor Yellow }
-function Write-Error2 { param($msg) Write-Host "[ERROR] $msg" -ForegroundColor Red }
-function Write-Step { param($msg) Write-Host ""; Write-Host "=== $msg ===" -ForegroundColor Magenta }
+function Write-Info    { param($msg) Write-Host "[INFO] $msg" -ForegroundColor Cyan }
+function Write-Warn    { param($msg) Write-Host "[WARN] $msg" -ForegroundColor Yellow }
+function Write-Error2  { param($msg) Write-Host "[ERROR] $msg" -ForegroundColor Red }
+function Write-Step    { param($msg) Write-Host ""; Write-Host "=== $msg ===" -ForegroundColor Magenta }
 
 # --- HELPER: UTF-8 file operations ---
 
@@ -112,6 +134,41 @@ function Backup-File {
     return $backupPath
 }
 
+# --- HELPER: Sanity checks for common AI output issues ---
+
+function Test-InvisibleChars {
+    <#
+    Detects zero-width chars and BOM markers that break markdown fence parsing.
+    Real cause: AI chat rendered content with hidden chars, user copy-pasted.
+    Returns count of invisible chars found (0 = clean).
+    #>
+    param([string]$Content)
+
+    $matches = [regex]::Matches($Content, '[\u200B\u200C\u200D\uFEFF\u2060]')
+    return $matches.Count
+}
+
+function Test-SingleBacktickFences {
+    <#
+    Detects lines that start with a single backtick followed by non-backtick.
+    Common AI mistake: uses one backtick instead of three for code fences.
+    Returns line numbers where problematic single backticks were found.
+    #>
+    param([string]$Content)
+
+    $lines = $Content -split "`r?`n"
+    $badLines = @()
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        $trimmed = $lines[$i].Trim()
+        # Match: starts with exactly one backtick then anything non-backtick
+        # Skip: triple backticks (correct fence) and empty lines
+        if ($trimmed -match '^`[^`]') {
+            $badLines += ($i + 1)
+        }
+    }
+    return $badLines
+}
+
 # --- PARSER: update_code.md ---
 
 function Parse-UpdateFile {
@@ -130,8 +187,8 @@ function Parse-UpdateFile {
         $line = $lines[$i]
         $trimmed = $line.Trim()
 
-        # Detect new operation
-        if ($trimmed -match '^### OP\s*(\d+)?\s*:?\s*(.*)$') {
+        # Detect new operation header: ### OP <N>: <title>
+        if ($trimmed -match '^###\s+OP\s+(\d+)\s*:\s*(.+)$') {
             # Save previous operation if exists
             if ($currentOp) {
                 if ($inCodeBlock) {
@@ -148,13 +205,13 @@ function Parse-UpdateFile {
                 $operations += $currentOp
             }
             $currentOp = @{
-                Number = if ($matches[1]) { [int]$matches[1] } else { $operations.Count + 1 }
-                Title = $matches[2]
-                File = ""
-                Action = ""
-                LocateBlock = ""
+                Number       = [int]$Matches[1]
+                Title        = $Matches[2].Trim()
+                File         = ""
+                Action       = ""
+                LocateBlock  = ""
                 ReplaceBlock = ""
-                Content = ""
+                Content      = ""
             }
             $codeBuffer.Clear() | Out-Null
             $inCodeBlock = $false
@@ -167,11 +224,11 @@ function Parse-UpdateFile {
         # Parse headers (before code blocks)
         if (-not $inCodeBlock) {
             if ($trimmed -match '^(?:\*\*)?FILE(?:\*\*)?:\s*[`]?(.+?)[`]?$') {
-                $currentOp.File = $matches[1].Trim() -replace '`', ''
+                $currentOp.File = $Matches[1].Trim() -replace '`', ''
                 continue
             }
             if ($trimmed -match '^(?:\*\*)?ACTION(?:\*\*)?:\s*[`]?(\w+)[`]?') {
-                $currentOp.Action = $matches[1].Trim().ToUpper()
+                $currentOp.Action = $Matches[1].Trim().ToUpper()
                 continue
             }
             if ($trimmed -match '^(?:\*\*)?LOCATE(?:\*\*)?:?\s*$') {
@@ -191,13 +248,14 @@ function Parse-UpdateFile {
             }
         }
 
-        # Handle code blocks
+        # Handle code block open (triple backticks + optional language)
         if ($trimmed -match '^```(\w*)$' -and -not $inCodeBlock) {
             $inCodeBlock = $true
-            $codeBlockLang = $matches[1]
+            $codeBlockLang = $Matches[1]
             $codeBuffer.Clear() | Out-Null
             continue
         }
+        # Handle code block close (triple backticks alone)
         if ($trimmed -match '^```$' -and $inCodeBlock) {
             $inCodeBlock = $false
             $code = $codeBuffer.ToString().TrimEnd("`r", "`n")
@@ -212,6 +270,7 @@ function Parse-UpdateFile {
             continue
         }
 
+        # Content inside a code block
         if ($inCodeBlock) {
             [void]$codeBuffer.AppendLine($line)
         }
@@ -231,7 +290,8 @@ function Parse-UpdateFile {
         $operations += $currentOp
     }
 
-    return $operations
+    # PowerShell unwraps single-element arrays on return. Force array wrapping:
+    return ,$operations
 }
 
 # --- VALIDATOR: check operations ---
@@ -250,7 +310,7 @@ function Test-Operation {
 
     switch ($Op.Action) {
         "REPLACE" {
-            if (-not $Op.LocateBlock) { $errors += "REPLACE requires LOCATE block" }
+            if (-not $Op.LocateBlock)  { $errors += "REPLACE requires LOCATE block" }
             if (-not $Op.ReplaceBlock) { $errors += "REPLACE requires REPLACE_WITH block" }
         }
         "CREATE" {
@@ -260,11 +320,11 @@ function Test-Operation {
             # No additional requirements
         }
         "INSERT_AFTER" {
-            if (-not $Op.LocateBlock) { $errors += "INSERT_AFTER requires LOCATE block" }
+            if (-not $Op.LocateBlock)  { $errors += "INSERT_AFTER requires LOCATE block" }
             if (-not $Op.ReplaceBlock) { $errors += "INSERT_AFTER requires REPLACE_WITH block (content to insert)" }
         }
         "INSERT_BEFORE" {
-            if (-not $Op.LocateBlock) { $errors += "INSERT_BEFORE requires LOCATE block" }
+            if (-not $Op.LocateBlock)  { $errors += "INSERT_BEFORE requires LOCATE block" }
             if (-not $Op.ReplaceBlock) { $errors += "INSERT_BEFORE requires REPLACE_WITH block (content to insert)" }
         }
         default {
@@ -274,6 +334,7 @@ function Test-Operation {
 
     return $errors
 }
+
 # --- EXECUTOR: apply single operation ---
 
 function Invoke-Operation {
@@ -290,13 +351,18 @@ function Invoke-Operation {
             $locateNorm = $Op.LocateBlock -replace "`r`n", "`n"
 
             if ($normalized -notmatch [regex]::Escape($locateNorm)) {
-                throw "LOCATE block not found in file. Check exact match (whitespace, indentation)."
+                # Better error: show first 2 lines of LOCATE for context
+                $preview = ($locateNorm -split "`n" | Select-Object -First 2) -join " | "
+                if ($preview.Length -gt 120) {
+                    $preview = $preview.Substring(0, 120) + "..."
+                }
+                throw "LOCATE block not found in '$($Op.File)'. First lines: [$preview]"
             }
 
-            # Count occurrences (avoid $matches — PowerShell autovariable, see AGENT.md GOTCHA 1)
+            # Count occurrences (use $locateMatches — avoid $matches autovariable, see AGENT.md GOTCHA 1)
             $locateMatches = [regex]::Matches($normalized, [regex]::Escape($locateNorm))
             if ($locateMatches.Count -gt 1) {
-                throw "LOCATE block found $($locateMatches.Count) times. Must be unique. Add more context to LOCATE."
+                throw "LOCATE block found $($locateMatches.Count) times in '$($Op.File)'. Must be unique. Add more context lines to LOCATE."
             }
 
             # Replace on normalized content
@@ -316,7 +382,7 @@ function Invoke-Operation {
 
         "CREATE" {
             if (Test-Path $Op.File) {
-                throw "File already exists. Use REPLACE or DELETE first."
+                throw "File already exists: '$($Op.File)'. Use REPLACE or DELETE first."
             }
             Write-FileUtf8 -Path $Op.File -Content $Op.Content
             $lines = ($Op.Content -split "`n").Count
@@ -346,7 +412,8 @@ function Invoke-Operation {
             $locateNorm = $Op.LocateBlock -replace "`r`n", "`n"
 
             if ($normalized -notmatch [regex]::Escape($locateNorm)) {
-                throw "LOCATE block not found in file"
+                $preview = ($locateNorm -split "`n" | Select-Object -First 2) -join " | "
+                throw "LOCATE block not found in '$($Op.File)'. First lines: [$preview]"
             }
 
             $insertContent = "`n" + $Op.ReplaceBlock
@@ -367,7 +434,8 @@ function Invoke-Operation {
             $locateNorm = $Op.LocateBlock -replace "`r`n", "`n"
 
             if ($normalized -notmatch [regex]::Escape($locateNorm)) {
-                throw "LOCATE block not found in file"
+                $preview = ($locateNorm -split "`n" | Select-Object -First 2) -join " | "
+                throw "LOCATE block not found in '$($Op.File)'. First lines: [$preview]"
             }
 
             $insertContent = $Op.ReplaceBlock + "`n"
@@ -424,6 +492,7 @@ if (-not (Test-Path "index.html")) {
 if (-not (Test-Path $UPDATE_FILE)) {
     Write-Error2 "$UPDATE_FILE not found in current directory."
     Write-Info "Create this file with patch content from AI chat."
+    Write-Info "AI response format: see code.json.ai_response_contract"
     exit 1
 }
 
@@ -449,11 +518,46 @@ if ($AUTO_GIT_COMMIT) {
 # Parse update file
 Write-Step "Parsing $UPDATE_FILE"
 $content = Read-FileUtf8 -Path $UPDATE_FILE
+
+# --- SANITY CHECKS: catch common AI output issues before parsing ---
+
+# Check 1: Invisible characters (ZWS/BOM) — most common issue with copy-paste from chat
+$invisibleCount = Test-InvisibleChars -Content $content
+if ($invisibleCount -gt 0) {
+    Write-Error2 "Found $invisibleCount invisible character(s) in $UPDATE_FILE"
+    Write-Warn "  These break markdown code fence parsing."
+    Write-Warn "  Common cause: copy-paste from rendered HTML/chat."
+    Write-Info ""
+    Write-Info "  Auto-fix command:"
+    Write-Host "    `$c = Get-Content '$UPDATE_FILE' -Raw" -ForegroundColor Gray
+    Write-Host "    `$c = `$c -replace '[\u200B\u200C\u200D\uFEFF\u2060]', ''" -ForegroundColor Gray
+    Write-Host "    [System.IO.File]::WriteAllText((Resolve-Path '$UPDATE_FILE').Path, `$c, [System.Text.UTF8Encoding]::new(`$false))" -ForegroundColor Gray
+    Write-Info ""
+    Write-Info "  Then re-run: .\apply-update.ps1"
+    exit 1
+}
+
+# Check 2: Single-backtick fences (AI sometimes uses one instead of three)
+$badFenceLines = Test-SingleBacktickFences -Content $content
+if ($badFenceLines.Count -gt 0) {
+    Write-Warn "Found $($badFenceLines.Count) line(s) starting with a single backtick."
+    Write-Warn "  Code fences MUST use exactly three backticks."
+    Write-Warn "  Affected lines: $($badFenceLines -join ', ')"
+    Write-Info "  Parser will likely ignore these -- LOCATE/REPLACE blocks may end up empty."
+    Write-Info "  Continue anyway? (y/N)"
+    $answer = Read-Host
+    if ($answer -ne 'y') {
+        Write-Info "Aborted. Fix the file and re-run."
+        exit 1
+    }
+}
+
 $operations = Parse-UpdateFile -Content $content
 
 if ($operations.Count -eq 0) {
     Write-Error2 "No operations found in $UPDATE_FILE"
     Write-Info "Expected format: '### OP N: title' followed by FILE, ACTION, LOCATE/REPLACE_WITH/CONTENT blocks"
+    Write-Info "See code.json.ai_response_contract for full format spec."
     exit 1
 }
 
@@ -510,7 +614,7 @@ foreach ($op in $operations) {
     $wasCreated = -not (Test-Path $op.File)
     $backupPath = if ($op.Action -ne "CREATE") { Backup-File -FilePath $op.File } else { $null }
     $backups += @{
-        FilePath = $op.File
+        FilePath   = $op.File
         BackupPath = $backupPath
         WasCreated = $wasCreated
     }
