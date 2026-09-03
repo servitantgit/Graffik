@@ -8,7 +8,7 @@ let currentMonth = new Date().getMonth() + 1;
 let selectedShift = prefs.shift || 'A';
 let compareShift = null;
 let selectedDay = null;
-let currentView = prefs.view || 'dashboard';
+let currentView = prefs.view === 'week' ? 'month' : (prefs.view || 'dashboard');
 let yearMode = prefs.yearMode || false;
 let editMode = false;
 
