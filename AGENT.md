@@ -1,8 +1,10 @@
 # 🤖 AGENT.md — Guidelines for AI Agents
 
-> **Цей документ призначений для AI агентів** (Cline, Kilo Code, Cursor, Continue, Aider, тощо), які працюють з проектом Grafik Gillette.
+> **Цей документ призначений для AI агентів** (Cline, Kilo Code, Cursor, Continue, Aider, ChatPG, etc.), які працюють з проектом Grafik Gillette.
 
 **READ FIRST. Read fully. Then act.**
+
+**Version:** v2.0 (2026-08-22) — updated with actual project state (v3.9.0 in progress)
 
 ---
 
@@ -14,12 +16,12 @@
 | **Type**                  | Progressive Web App (PWA)                              |
 | **Purpose**               | Shift schedule management for 4 brigades (P&G factory) |
 | **Live URL**              | https://servitantgit.github.io/Graffik/                |
-| **Repository**            | https://github.com/servitantgit/Graffik                |
+| **Repository**            | https://github.com/servitantgit/Graffik (public)       |
 | **Deployment**            | GitHub Pages via GitHub Actions                        |
 | **Owner**                 | Solo developer + ~5-10 colleagues (potential 20-40)    |
 | **Primary language (UI)** | Polish (with EN, UK translations)                      |
 | **Owner language (chat)** | Ukrainian                                              |
-| **Current version**       | v3.9.0 (in progress)                                   |
+| **Current version**       | v3.9.0 (in progress — Timeline widget + cell skins)    |
 
 ---
 
@@ -30,169 +32,323 @@
 - **Vanilla JavaScript** (ES2020+) — NO frameworks
 - **HTML5 + CSS3** — Custom Properties, Flexbox, Grid
 - **NO build system** — direct browser execution
-- **NO npm/node dependencies** at runtime
+- **NO npm/node dependencies** at runtime (only tools/)
 - **NO TypeScript** — plain JS with JSDoc when useful
+- **NO ES Modules** — global scope via `window.*` (see Architecture #1)
 
 **Features:**
 
 - **PWA** — Service Worker + Web App Manifest
 - **Google Drive API** — OAuth 2.0 for user sync + admin identification
 - **i18n** — 3 languages (pl/en/uk), ~350 keys each
+- **Multi-schedule ready** — Registry pattern (currently only Gillette)
+- **Personalization** — 3 cell skin styles (full/strip/quiet)
 
 **CI/CD:**
 
 - **GitHub Actions** — auto-deploy on push to main
-- **Cache busting** — dynamic `__BUILD_ID__` replaced with git hash
+- **Cache busting** — dynamic `__BUILD_ID__` replaced with git hash (see sw.js)
 
 ---
 
 ## 🏗 ARCHITECTURE PRINCIPLES
 
-### 1. **NO ES Modules**
+### 1. **NO ES Modules** ⚠️ CRITICAL
 
-All code uses `<script>` tags with global scope via `window.*`. This is intentional.
+All code uses `<script>` tags with global scope via `window.*`. This is intentional and mandatory.
 
 **❌ WRONG:**
-
-```javascript
+\`\`\`javascript
 import { doStuff } from './module.js';
 export function myFunc() {}
-```
+export { myFunc, anotherFunc };
+\`\`\`
 
 **✅ CORRECT:**
-
-```javascript
+\`\`\`javascript
 // In myFile.js
 function myFunc() {
-  /* ... */
+/_ ... _/
 }
 window.myFunc = myFunc;
 
 // In another file
 if (typeof myFunc === 'function') myFunc();
-```
+\`\`\`
 
-### 2. **Registry Pattern for Multi-Schedule Support**
+**Why:** No build step → browsers must parse directly. ES modules require `type="module"` which changes execution semantics.
 
-```javascript
+### 2. **Registry Pattern for Multi-Schedule**
+
+\`\`\`javascript
 scheduleRegistry.gillette = { data, hours, metadata };
-// Backward-compat aliases:
+// Backward-compat aliases (used everywhere in legacy code):
 factorySchedule[year][month][brigade];
 factoryMonthHours[year][month][brigade];
-```
+\`\`\`
+
+Structure ready for future schedules (office-5x1, production-5x3), but currently only `gillette` is registered.
 
 ### 3. **Privacy-by-Design**
 
 - Personal data (edits, vacations, notes, OT) — **localStorage ONLY**
-- Public data (factory schedule) — in git (js/schedules/gillette/)
+- Public data (factory schedule) — in git (`js/schedules/gillette/`)
 - **NEVER commit personal data** to repo
-- Login state = privacy control (`shouldShowPersonalData()`)
+- **Privacy Mode** — optional toggle in side menu (`body.privacy-mode`)
+- **Google login** — for backup/sync only, NOT for privacy control
 
 ### 4. **Modular CSS (v3.8.0+)**
 
-9 CSS files loaded in specific order (cascade matters):
+**10 CSS files** loaded in this exact order (cascade matters!):
 
-```
-variables.css → layout.css → components.css → calendar.css
-→ overtime.css → views.css → dashboard.css → smart-popup.css
-→ responsive.css → print.css
-```
+\`\`\`
+variables.css ← themes, custom properties
+→ layout.css ← top-bar, menu, controls
+→ components.css ← modals, banners, buttons, palette
+→ calendar.css ← calendar grid, day-cells, info-panel
+→ overtime.css ← OT visuals, popups (relief + ot-detail)
+→ views.css ← year, table views
+→ dashboard.css ← dashboard cards, chips
+→ responsive.css ← ALL @media (max-width) queries
+→ print.css ← ALL @media print queries
+→ smart-popup.css ← Timeline widget (v3.9.0, LAST in cascade)
+\`\`\`
 
-### 5. **Defensive Cross-Module Calls**
+**Actual load order in `index.html` (lines 19-28):**
+\`\`\`html
 
-```javascript
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/calendar.css">
+<link rel="stylesheet" href="css/overtime.css">
+<link rel="stylesheet" href="css/views.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/responsive.css">
+<link rel="stylesheet" href="css/print.css">
+<link rel="stylesheet" href="css/smart-popup.css">  <!-- LAST -->
+\`\`\`
+
+### 5. **Cell Skin System (v3.9.0)**
+
+Users can switch calendar cell appearance via **Personalization** (`js/personalization.js`).
+
+**Three skins** applied via `body.skin-*` class:
+
+| Class        | UI Name              | Behavior                                  |
+| ------------ | -------------------- | ----------------------------------------- |
+| `skin-full`  | Pełne wypełnienie    | Full color fill (classic, default)        |
+| `skin-strip` | Spokojny pasek       | Neutral body + colored left stripe        |
+| `skin-quiet` | Kolorowe obramowanie | Neutral cell + colored border + date ring |
+
+**Note:** Technical name `quiet` is kept for backward compat. Do NOT rename it. UI label uses "Kolorowe obramowanie".
+
+Shift colors (R/P/N) remain identical across all skins — only presentation changes.
+
+### 6. **Defensive Cross-Module Calls**
+
+\`\`\`javascript
 if (typeof someFunction === 'function') {
-  someFunction();
+someFunction();
 }
-```
+\`\`\`
+
+Especially important for:
+
+- `updateLastModified()` (sync tracking)
+- `renderReliefTimeline()` (smart-popup)
+- `applyPersonalization()` (personalization)
+- `isCurrentUserAdmin()` (admin)
+
+### 7. **Info-Panel is Dynamic**
+
+Info-panel content in `index.html` is placeholder ONLY. Actual content generated in `js/calendar.js` via `panel.innerHTML = ...` (line ~640-840).
+
+**Never modify info-panel HTML in index.html** — modify the JS template.
+
+### 8. **Login State vs Privacy**
+
+- **Login (Google Drive)** = backup/sync capability
+- **Privacy Mode** = separate toggle in side menu
+- These are **INDEPENDENT** (unlike old v3.7.0 where they were tied)
+- `shouldShowPersonalData()` in `_registry.js` handles both
 
 ---
 
-## 📁 FILE STRUCTURE (CANONICAL)
+## 📁 FILE STRUCTURE (CANONICAL — as of v3.9.0)
 
-```
+\`\`\`
 Graffik/
-├── index.html                    ← Main entry (~370 lines)
-├── manifest.json                 ← PWA manifest
-├── sw.js                         ← Service Worker with __BUILD_ID__
-├── .nojekyll                     ← ⚠️ CRITICAL: GitHub Pages Jekyll disable
-├── AGENT.md                      ← THIS FILE
-├── HANDOFF.md                    ← Chat session context (owner keeps LOCAL only)
-├── CHANGELOG.md                  ← Version history
-├── README.md                     ← User-facing docs
-├── PROJECT_DOCS.md               ← Extended documentation
+├── index.html ← Main entry (~370 lines)
+├── manifest.json ← PWA manifest
+├── sw.js ← Service Worker with **BUILD_ID**
+├── .nojekyll ← ⚠️ CRITICAL: GitHub Pages Jekyll disable
+├── AGENT.md ← THIS FILE (v2.0)
+├── HANDOFF.md ← Chat session context (owner keeps LOCAL only, NOT in git)
+├── CHANGELOG.md ← Version history (Keep a Changelog format)
+├── README.md ← User-facing docs (Polish)
+├── PROJECT_DOCS.md ← Extended technical docs
 │
-├── css/                          ← Modular CSS (9 files)
-│   ├── variables.css             ← :root, themes (~85 lines)
-│   ├── layout.css                ← top-bar, menu (~420 lines)
-│   ├── components.css            ← modals, buttons (~900 lines)
-│   ├── calendar.css              ← calendar grid (~584 lines)
-│   ├── overtime.css              ← OT visuals (~645 lines)
-│   ├── views.css                 ← week/year/table (~409 lines)
-│   ├── dashboard.css             ← dashboard (~312 lines)
-│   ├── smart-popup.css           ← timeline widget (v3.9.0)
-│   ├── responsive.css            ← @media (max-width) (~399 lines)
-│   └── print.css                 ← @media print (~193 lines)
+├── mockup-_.html ← Design mockups (NOT deployed, kept for reference)
+│ ├── mockup-dashboard-mobile.html
+│ ├── mockup-month-cells.html
+│ ├── mockup-ui-ideas.html
+│ ├── mockup-year-table.html
+│ └── (other mockup-_.html files)
+│
+├── css/ ← Modular CSS (10 files)
+│ ├── variables.css ← :root, themes (~85 lines)
+│ ├── layout.css ← top-bar, menu (~420 lines)
+│ ├── components.css ← modals, buttons, palette (~900 lines)
+│ ├── calendar.css ← calendar grid + cell skins (~584 lines)
+│ ├── overtime.css ← OT visuals + relief popups (~645 lines)
+│ ├── views.css ← year/table views (~409 lines)
+│ ├── dashboard.css ← dashboard + chips (~312 lines)
+│ ├── responsive.css ← @media (max-width) (~399 lines)
+│ ├── print.css ← @media print (~193 lines)
+│ └── smart-popup.css ← Timeline widget (v3.9.0, ~180 lines)
 │
 ├── js/
-│   ├── schedules/                ← 🌍 PUBLIC data
-│   │   ├── _core.js              ← constants (~180 lines)
-│   │   ├── _registry.js          ← registry (~100 lines)
-│   │   └── gillette/
-│   │       ├── metadata.js       ← schedule definition
-│   │       └── 2026.js           ← year data
-│   │
-│   ├── personal/                 ← 🔒 PRIVATE (localStorage only)
-│   │   └── sync-tracking.js      ← unsynced detection (~90 lines)
-│   │
-│   ├── i18n/
-│   │   ├── pl.js                 ← Polish (~350 keys)
-│   │   ├── en.js                 ← English
-│   │   ├── uk.js                 ← Ukrainian
-│   │   └── i18n.js               ← logic + renderFAQ
-│   │
-│   ├── admin.js                  ← ADMIN_EMAILS check (~65 lines)
-│   ├── overtime-logic.js         ← categorizeOvertime()
-│   ├── core.js                   ← business logic + save hooks
-│   ├── ui.js                     ← modals, toasts
-│   ├── edit.js                   ← edit mode, undo/redo
-│   ├── dashboard.js              ← Dashboard view
-│   ├── calendar.js               ← Month view (~840 lines)
-│   ├── views.js                  ← Week/Year/Table views
-│   ├── actions.js                ← export/import/share/admin (~1100 lines)
-│   ├── pwa.js                    ← Service Worker registration
-│   ├── sync.js                   ← Google Drive + logout warning (~450 lines)
-│   ├── smart-popup.js            ← timeline renderer (v3.9.0)
-│   └── main.js                   ← state + init (~600 lines)
+│ ├── schedules/ ← 🌍 PUBLIC data (in git)
+│ │ ├── \_core.js ← constants + helpers (~180 lines)
+│ │ ├── \_registry.js ← registry + shouldShowPersonalData (~100 lines)
+│ │ └── gillette/
+│ │ ├── metadata.js ← Gillette schedule definition
+│ │ └── 2026.js ← Year 2026 data (add 2027.js later)
+│ │
+│ ├── personal/ ← 🔒 PRIVATE (localStorage only)
+│ │ └── sync-tracking.js ← lastModified / lastSync tracking (~90 lines)
+│ │
+│ ├── i18n/
+│ │ ├── pl.js ← Polish (~350 keys) [PRIMARY]
+│ │ ├── en.js ← English
+│ │ ├── uk.js ← Ukrainian
+│ │ └── i18n.js ← t(), setLanguage(), renderFAQ()
+│ │
+│ ├── admin.js ← ADMIN_EMAILS check (~65 lines)
+│ ├── overtime-logic.js ← categorizeOvertime() + helpers
+│ ├── core.js ← business logic + save hooks
+│ ├── ui.js ← modals, toasts, theme toggle
+│ ├── edit.js ← edit mode, undo/redo, pending buffer
+│ ├── dashboard.js ← Dashboard view
+│ ├── smart-popup.js ← Timeline widget (v3.9.0)
+│ ├── calendar.js ← Month view (~840 lines)
+│ ├── views.js ← Year/Table views
+│ ├── actions.js ← export/import/share (~1100 lines)
+│ ├── pwa.js ← Service Worker registration + notifications
+│ ├── sync.js ← Google Drive OAuth + upload/download (~450 lines)
+│ ├── personalization.js ← Cell skins + preferences (v3.9.0)
+│ └── main.js ← state + init (~600 lines)
 │
-├── icons/                        ← PWA icons
-├── screenshots/                  ← PWA screenshots
-├── tools/                        ← Dev tools (not deployed)
+├── icons/ ← PWA icons (192, 512, 512-maskable)
+├── screenshots/ ← PWA screenshots
+├── tools/ ← Dev tools (NOT deployed to prod)
 │
-└── .github/workflows/
-    └── deploy.yml                ← CI/CD pipeline
-```
+├── .github/workflows/
+│ └── deploy.yml ← CI/CD pipeline
+│
+├── .prettierrc.json ← Prettier config
+├── .prettierignore
+└── .vscode/ ← VS Code workspace settings
+└── settings.json
+\`\`\`
 
-**Load order in index.html:** CSS in `<head>`, JS at bottom of `<body>` — see actual file for exact sequence.
+### 📜 Script Load Order (index.html lines 340-361)
+
+\`\`\`html
+
+<!-- 1. Schedule data (public) -->
+<script src="js/schedules/_core.js"></script>
+<script src="js/schedules/_registry.js"></script>
+<script src="js/schedules/gillette/metadata.js"></script>
+<script src="js/schedules/gillette/2026.js"></script>
+
+<!-- 2. Personal tracking (localStorage) -->
+<script src="js/personal/sync-tracking.js"></script>
+
+<!-- 3. Core logic -->
+<script src="js/overtime-logic.js"></script>
+<script src="js/core.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/edit.js"></script>
+
+<!-- 4. Views (dashboard BEFORE smart-popup BEFORE calendar!) -->
+<script src="js/dashboard.js"></script>
+<script src="js/smart-popup.js"></script>  <!-- 🆕 Between dashboard and calendar -->
+<script src="js/calendar.js"></script>
+<script src="js/views.js"></script>
+
+<!-- 5. Actions + integrations -->
+<script src="js/actions.js"></script>
+<script src="js/pwa.js"></script>
+<script src="js/sync.js"></script>
+<script src="js/admin.js"></script>
+
+<!-- 6. i18n (pl → en → uk → logic) -->
+<script src="js/i18n/pl.js"></script>
+<script src="js/i18n/en.js"></script>
+<script src="js/i18n/uk.js"></script>
+<script src="js/i18n/i18n.js"></script>
+
+<!-- 7. Personalization + main init -->
+<script src="js/personalization.js"></script>
+<script src="js/main.js"></script>  <!-- LAST -->
+
+\`\`\`
+
+**⚠️ Order matters:**
+
+- Schedule data BEFORE core.js (core needs it)
+- smart-popup BEFORE calendar (calendar calls `renderReliefTimeline`)
+- i18n loaded per-lang BEFORE i18n.js (which uses them)
+- main.js ALWAYS last (initializes app)
 
 ---
 
 ## 📊 DATA MODELS (localStorage keys)
 
-```javascript
-'gillette_prefs_v1'; // theme, lang, year, brigade
-'gillette_custom_schedule_v2'; // user edits (array per day)
-'gillette_urlops_v1'; // vacations per brigade
-'gillette_notes_v1'; // notes per day
-'gillette_overtimes_v1'; // flat key otKey()
-'grafik_drive_token'; // Google OAuth token
-'grafik_drive_user_email'; // logged-in user email
-'gillette_sync_meta'; // {lastModified, lastSync}
-```
+\`\`\`javascript
+'gillette_prefs_v1' // theme, lang, year, brigade, cellSkin, cellColors
+'gillette_custom_schedule_v2' // user edits (array per day)
+'gillette_urlops_v1' // vacations per brigade
+'gillette_notes_v1' // notes per day
+'gillette_overtimes_v1' // flat key otKey() = 'year-month-day-brigade'
+'grafik_drive_token' // Google OAuth token
+'grafik_drive_user_email' // logged-in user email
+'gillette_sync_meta' // {lastModified, lastSync}
+\`\`\`
 
-**Brigades:** `A`, `B`, `C`, `D`  
-**Shifts:** `R` (6-14), `P` (14-22), `N` (22-6), `''` (wolne/off)  
-**Special:** `U` (urlop/vacation), `W` (wolne/weekend), `S` (dodatkowa/extra shift)
+**Brigades:** \`A\`, \`B\`, \`C\`, \`D\`
+**Shifts:** \`R\` (6-14), \`P\` (14-22), \`N\` (22-6), \`''\` (wolne/off)
+**Special:** \`U\` (urlop/vacation), \`W\` (wolne/weekend), \`S\` (dodatkowa/extra shift)
+
+### Overtime Positions
+
+\`\`\`javascript
+overtimes['2026-8-15-C'] = {
+przed: { hours: 2, note: 'przed zmianą' }, // OT before shift
+po: { hours: 3, note: 'po zmianie' }, // OT after shift
+weekend: { hours: 8, note: 'praca w wolne' } // Weekend/holiday work
+}
+\`\`\`
+
+### Prefs Structure
+
+\`\`\`javascript
+{
+year: 2026, month: 8, shift: 'A', view: 'month', yearMode: false,
+theme: 'light' | 'dark',
+lang: 'pl' | 'en' | 'uk',
+cellSkin: 'full' | 'strip' | 'quiet', // v3.9.0
+cellColors: {...}, // custom shift colors (optional)
+privacyMode: false, // separate from login
+notifications: false,
+notificationsLead: 1,
+vacationLimits: { A: 26, B: 26, C: 26, D: 26 },
+welcomed: true,
+skipEditConfirm: false
+}
+\`\`\`
 
 ---
 
@@ -203,59 +359,71 @@ Graffik/
 **Use LITERAL characters, never hex/unicode escapes.**
 
 **✅ CORRECT:**
-
-```javascript
+\`\`\`javascript
 const label = '📅 Dziś';
 const arrow = '→';
 const emoji = '🌅';
-```
+const polishChar = 'ą';
+\`\`\`
 
-**❌ WRONG (breaks source, causes encoding issues):**
+**❌ WRONG:**
+\`\`\`javascript
+const label = '\\ud83d\\udcc5 Dzi\\u015b';
+const arrow = '\\u2192';
+const emoji = '\\ud83c\\udf05';
+\`\`\`
 
-```javascript
-const label = '\ud83d\udcc5 Dzi\u015b';
-const arrow = '\u2192';
-const emoji = '\ud83c\udf05';
-```
-
-**Why:** These are JS source strings, not HTML content. No parser converts them. Literals preserve readability and prevent double-encoding.
+**Why:** These are JS source strings, not HTML content. Literals preserve readability and prevent double-encoding.
 
 ### RULE 2: UTF-8 SAFETY
 
-**When writing files with PowerShell, NEVER use `Get-Content | Set-Content`** — it corrupts UTF-8.
+**When writing files with PowerShell, NEVER use \`Get-Content | Set-Content\`** — it corrupts UTF-8.
 
 **✅ CORRECT:**
-
-```powershell
+\`\`\`powershell
 [System.IO.File]::WriteAllText(
-  (Resolve-Path "file.js").Path,
-  $content,
-  [System.Text.UTF8Encoding]::new($false)
+(Resolve-Path "file.js").Path,
+\$content,
+[System.Text.UTF8Encoding]::new(\$false)
 )
-```
+\`\`\`
 
 **❌ WRONG:**
+\`\`\`powershell
+Get-Content file.js | Set-Content file.js # corrupts Polish chars
+\`\`\`
 
-```powershell
-Get-Content file.js | Set-Content file.js  # corrupts Polish chars
-```
-
-**Polish chars to preserve:** ą, ć, ę, ł, ń, ó, ś, ź, ż  
+**Polish chars:** ą, ć, ę, ł, ń, ó, ś, ź, ż
 **Ukrainian chars:** а-я, і, ї, є, ґ
 
 ### RULE 3: NO ES MODULES
 
-Use global scope via `window.*` (see Architecture #1).
+Use global scope via \`window.\*\`. See Architecture #1.
+
+**No \`import\` / \`export\` statements EVER.** They will silently fail or throw at runtime.
 
 ### RULE 4: i18n IN 3 LANGUAGES
 
 **Any user-facing string must be added to all 3 files:**
 
-- `js/i18n/pl.js` (primary)
-- `js/i18n/en.js`
-- `js/i18n/uk.js`
+- \`js/i18n/pl.js\` (primary)
+- \`js/i18n/en.js\`
+- \`js/i18n/uk.js\`
 
-**Missing translations break the UI.**
+**Missing translations break the UI** (undefined labels).
+
+**Use in HTML:**
+\`\`\`html
+<button data-i18n="menuHelp">Pomoc</button>
+<input data-i18n-placeholder="notePlaceholder">
+<button data-i18n-title="theme" title="Motyw">🌙</button>
+\`\`\`
+
+**Use in JS:**
+\`\`\`javascript
+element.textContent = t('newKey');
+element.textContent = t('greeting', { name: userName }); // with params
+\`\`\`
 
 ### RULE 5: NO PERSONAL DATA IN GIT
 
@@ -267,15 +435,17 @@ Use global scope via `window.*` (see Architecture #1).
 - OT records
 - Actual work notes
 - Google Drive tokens
-- Real user emails (beyond documented admin)
+- Real user emails (beyond documented \`ADMIN_EMAILS\`)
+
+**Repository is PUBLIC.** Everything committed is world-visible.
 
 ### RULE 6: CONSOLE LOG PREFIX
 
-```javascript
+\`\`\`javascript
 console.log('[calendar]', 'Rendering month', month);
 console.warn('[sync]', 'Drive token expired');
 console.error('[actions]', 'Export failed', err);
-```
+\`\`\`
 
 Prefix helps filter logs during debugging.
 
@@ -283,159 +453,289 @@ Prefix helps filter logs during debugging.
 
 Always check function existence before calling:
 
-```javascript
+\`\`\`javascript
 if (typeof updateLastModified === 'function') {
-  updateLastModified();
+updateLastModified();
 }
-```
+
+if (typeof renderReliefTimeline === 'function') {
+const html = renderReliefTimeline(info, y, m, d, shift, brig, otData);
+}
+\`\`\`
+
+**Why:** Script load order matters, race conditions possible.
 
 ### RULE 8: COMMENTS IN ENGLISH OR POLISH
 
-Not Ukrainian in code (owner's convention).
+Not Ukrainian in code (owner's convention). Ukrainian only in chat responses.
 
 ### RULE 9: PRESERVE .nojekyll
 
-Never delete `.nojekyll` (even if empty). It's required for GitHub Pages to serve files starting with `_` (like `js/schedules/_core.js`).
+**Never delete \`.nojekyll\`** (even if empty). It's required for GitHub Pages to serve files starting with \`\_\` (like \`js/schedules/\_core.js\`).
+
+### RULE 10: NO DUPLICATE FUNCTION DECLARATIONS
+
+Check before adding new functions:
+
+\`\`\`powershell
+Select-String -Path "js/\*_/_.js" -Pattern "^function myNewFunc"
+\`\`\`
+
+**Duplicates cause silent overrides** — last declaration wins, earlier logic is lost.
+
+### RULE 11: MOCKUP FILES NAMING
+
+Design experiments live in \`mockup-\*.html\` at project root.
+
+**Rules:**
+
+- ✅ Kept in git (for reference)
+- ✅ NOT loaded by app
+- ✅ Not deployed via Service Worker cache
+- ❌ Don't reference from index.html
+- ❌ Don't require them for production
 
 ---
 
 ## 🐛 KNOWN GOTCHAS (Real problems, real fixes)
 
-### GOTCHA 1: PowerShell $matches
+### GOTCHA 1: PowerShell \$matches Autovariable
 
-`$matches` is an autovariable (regex). **NEVER use as regular variable name** — it conflicts.
+\`\$matches\` is a PowerShell autovariable (used by \`-match\` operator). **NEVER use as regular variable name** — it conflicts.
 
 **❌ WRONG:**
+\`\`\`powershell
+\$matches = @() # BREAKS all subsequent regex operations
+\`\`\`
 
-```powershell
-$matches = @()  # BREAKS regex operations
-```
+### GOTCHA 2: PowerShell Console Encoding
 
-### GOTCHA 2: PowerShell console encoding
+Emoji in \`Write-Host\` get corrupted in console output. Use ASCII markers instead.
 
-Emoji in `Write-Host` get corrupted in console output. Use ASCII markers instead.
+**✅ USE:** \`[OK]\`, \`[WARN]\`, \`[ERROR]\`
+**❌ AVOID:** \`✅\`, \`⚠️\`, \`❌\` in Write-Host
 
-**✅ USE:** `[OK]`, `[WARN]`, `[ERROR]`  
-**❌ AVOID:** `✅`, `⚠️`, `❌` in Write-Host
+**File contents are fine** — this is only about console output.
 
-### GOTCHA 3: Combined CSS Selectors
+### GOTCHA 3: Combined CSS Selectors + DELETE
 
 AI has difficulty processing DELETE operations on combined selectors:
 
-```css
-.a, .b, .c { ... }  /* Hard to safely delete just .b */
-```
+\`\`\`css
+.a, .b, .c { ... } /_ Hard to safely delete just .b _/
+\`\`\`
 
 **When refactoring:** split into separate rules first, then delete.
 
 ### GOTCHA 4: Duplicate Declarations
 
-When refactoring, always check for duplicates:
+**Real example (v3.9.0):** \`sync-tracking.js\` had \`hasUnsyncedChanges\` declared twice.
 
-```powershell
-Select-String -Path "js/**/*.js" -Pattern "^const X"
-Select-String -Path "js/**/*.js" -Pattern "^function X"
-```
+\`\`\`javascript
+// Line 90:
+function hasUnsyncedChanges() {
+const { lastModified, lastSync } = getSyncMeta();
+return lastModified > lastSync;
+}
+
+// Line 130 (DUPLICATE — overrides!):
+function hasUnsyncedChanges() {
+const meta = getSyncMeta();
+return meta.lastModified > meta.lastSync;
+}
+\`\`\`
+
+**Always check before adding:**
+\`\`\`powershell
+Select-String -Path "js/\*_/_.js" -Pattern "^function functionName"
+\`\`\`
 
 ### GOTCHA 5: Cline Auto-Push
 
-Cline may auto-push after commit. Monitor and configure to prevent unintended pushes.
+Cline may auto-push after commit. Configure to prevent unintended pushes. Monitor \`git log\` after every Cline session.
 
 ### GOTCHA 6: Large Files (3000+ lines)
 
 Cline reads in chunks, wastes tokens. **Solution used:** CSS split (v3.8.0) — no single file > 1000 lines.
 
+**When file grows > 800 lines:** consider splitting.
+
 ### GOTCHA 7: Broken UTF-8 Detection
 
 Check for corrupted encoding:
 
-```powershell
-Select-String -Path "js/*.js" -Pattern "â€|â¬|đź|Ĺ‚|Ń"
-```
+\`\`\`powershell
+Select-String -Path "js/\*.js" -Pattern "â€|â¬|đź|Ĺ‚|Ń"
+\`\`\`
 
-If matches found → encoding is broken, needs restoration.
+If matches found → encoding is broken, needs restoration from git or backup.
+
+**Symptoms:** Console shows \`â€"\`, \`đź"", \`Ĺ‚\` instead of proper characters.
 
 ### GOTCHA 8: Service Worker Cache
 
-After deploy, users may see old version. Hard reload (Ctrl+Shift+R) or wait for SW auto-update (v3.6.0+ handles this).
+After deploy, users may see old version. Solutions:
+
+- **Hard reload** (Ctrl+Shift+R)
+- **Auto-update toast** (v3.6.0+ handles this automatically)
+- **Manual unregister** in DevTools → Application → Service Workers
 
 ### GOTCHA 9: Multi-file Refactor Conflicts
 
-When touching multiple files, do them in separate commits for easy rollback.
+When touching multiple files, do them in **separate commits** for easy rollback:
+
+\`\`\`bash
+git add js/file1.js && git commit -m "feat: change A"
+git add js/file2.js && git commit -m "feat: change B"
+\`\`\`
+
+### GOTCHA 10: ES Module Syntax in No-Modules Project
+
+**Real example (v3.9.0):** \`sync-tracking.js\` had \`export\` statement at end:
+
+\`\`\`javascript
+export { getSyncMeta, setSyncMeta, hasUnsyncedChanges, resetSyncMeta };
+\`\`\`
+
+**Result:** Silent SyntaxError in browser. Functions still work IF loaded via \`<script>\` (not \`type="module"\`), but \`export\` is invalid at top-level of classic script.
+
+**Fix:** Remove \`export\` statement. Use \`window.MyModule = {...}\` pattern instead.
+
+### GOTCHA 11: Chrome Extensions in Service Worker
+
+Service Worker can receive requests from browser extensions (\`chrome-extension://\`). Ignore them:
+
+\`\`\`javascript
+if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+\`\`\`
+
+Otherwise: \`Failed to execute 'put' on 'Cache': Request scheme unsupported\`.
+
+### GOTCHA 12: \`t\` Variable Collision with i18n
+
+\`\`\`javascript
+// ❌ WRONG (shadows global t() function):
+const t = new Date();
+element.textContent = t('someKey'); // TypeError: t is not a function
+
+// ✅ CORRECT:
+const now = new Date();
+element.textContent = t('someKey');
+\`\`\`
+
+### GOTCHA 13: Cell Skin Backward Compat
+
+Technical class name \`skin-quiet\` refers to what UI calls "Kolorowe obramowanie".
+
+**Do NOT rename** the class — it's persisted in localStorage. Users with old prefs would break.
+
+**When updating UI labels** — only change i18n keys, not CSS class names.
 
 ---
 
 ## ❌ ANTI-PATTERNS (NEVER DO THIS)
 
-### ANTI-PATTERN 1: "Figure it out" instructions
+### ANTI-PATTERN 1: "Figure it out" Instructions
 
 **❌ BAD Cline task:**
 
-```
+\`\`\`
 "Find the entire section and remove it"
 "Paste CSS above"
 "Refactor as you see fit"
-```
+\`\`\`
 
 **✅ GOOD Cline task:**
 
-```
+\`\`\`
 "LOCATE this exact block: [full code]"
 "REPLACE with: [full new code]"
-```
+\`\`\`
 
-### ANTI-PATTERN 2: Vague DELETE operations
+### ANTI-PATTERN 2: Vague DELETE Operations
 
 **❌ BAD:**
 
-```
+\`\`\`
 "Remove the relief-popup CSS section (may span 20-30 lines)"
-```
+\`\`\`
 
 **✅ GOOD:**
 
-```
+\`\`\`
 "LOCATE lines X-Y containing exactly these selectors: [list]"
 "ACTION: DELETE"
-```
+\`\`\`
 
-### ANTI-PATTERN 3: Running commands via AI
+### ANTI-PATTERN 3: Running Commands via AI
 
 **❌ BAD (in Cline task):**
 
-```
+\`\`\`
 "Run: git add . && git commit -m 'refactor'"
 "Run: Select-String -Pattern..."
-```
+\`\`\`
 
 **✅ GOOD:**
 
-```
+\`\`\`
 "DO NOT run commands. USER will verify manually."
-```
+\`\`\`
 
-### ANTI-PATTERN 4: Combined refactors (6+ steps)
+### ANTI-PATTERN 4: Combined Refactors (6+ steps)
 
-**❌ BAD:** One task with 8 STEPS across 5 files.  
+**❌ BAD:** One task with 8 STEPS across 5 files.
 **✅ GOOD:** Split into 3-4 separate tasks, each with 1-3 STEPS.
 
-### ANTI-PATTERN 5: Modifying files outside scope
+### ANTI-PATTERN 5: Modifying Files Outside Scope
 
-**❌ BAD:** Task says "modify calendar.js" but AI also touches ui.js "to be safe".  
+**❌ BAD:** Task says "modify calendar.js" but AI also touches ui.js "to be safe".
 **✅ GOOD:** Modify ONLY listed files. If related files need changes, STOP and ask.
 
-### ANTI-PATTERN 6: Assuming without verification
+### ANTI-PATTERN 6: Assuming Without Verification
 
-**❌ BAD:** "The function is probably in main.js somewhere..."  
-**✅ GOOD:** Verify with `Select-String` output before proposing changes.
+**❌ BAD:** "The function is probably in main.js somewhere..."
+**✅ GOOD:** Verify with \`Select-String\` output before proposing changes.
 
-### ANTI-PATTERN 7: Deleting `.nojekyll`
+### ANTI-PATTERN 7: Deleting \`.nojekyll\`
 
-It's empty by design. Never delete.
+It's empty by design. **Never delete.**
 
-### ANTI-PATTERN 8: Adding npm dependencies
+### ANTI-PATTERN 8: Adding NPM Dependencies
 
 This project has NO build system. Adding npm packages breaks the deployment model.
+
+### ANTI-PATTERN 9: Using ES Module Syntax
+
+\`\`\`javascript
+// ❌ NEVER:
+import { helper } from './helper.js';
+export function myFunc() {}
+export default MyClass;
+export { A, B, C };
+
+// ✅ ALWAYS:
+function myFunc() {}
+window.myFunc = myFunc;
+\`\`\`
+
+### ANTI-PATTERN 10: Adding Files Without Registering
+
+Creating \`new-module.js\` without adding \`<script src="js/new-module.js">\` to \`index.html\` = code never runs.
+
+**Same for CSS** — new files must be registered in \`index.html\` AND \`sw.js\` ASSETS list.
+
+### ANTI-PATTERN 11: Renaming CSS Skin Classes
+
+Class names (\`skin-full\`, \`skin-strip\`, \`skin-quiet\`) are persisted in localStorage. Renaming breaks existing users' prefs.
+
+**Only change display labels** via i18n.
+
+### ANTI-PATTERN 12: Modifying HTML in index.html for Dynamic Content
+
+Info-panel, dashboard, calendar cells — all rendered dynamically in JS.
+
+**Modifying \`<div id="infoPanel">...</div>\` in HTML does nothing** — it's a placeholder.
 
 ---
 
@@ -450,8 +750,31 @@ Rate your task before starting:
 | Lines in LOCATE block | <50           | 50-150              | 200+           |
 | Total task tokens     | <3000         | 3000-6000           | 6000+          |
 | DELETE operations     | 0-1 simple    | 2-3 careful         | Any complex    |
+| Cross-file changes    | 0             | 1-2                 | 3+             |
 
 **🔴 Red → Split into multiple tasks. Do NOT run as single task.**
+
+### Complexity Examples
+
+**🟢 Green — safe to do in one task:**
+
+- Add new i18n key to 3 files
+- Create new CSS module file
+- Add new function to existing JS file
+- Update single localStorage key format
+
+**🟡 Yellow — proceed with caution:**
+
+- Refactor function used in 3 files
+- Add new modal (JS + CSS + HTML + i18n)
+- Migrate localStorage key from v1 to v2
+
+**🔴 Red — MUST split:**
+
+- Refactor entire module across 5+ files
+- Remove old feature with cleanup in JS/CSS/HTML/i18n
+- Change data model with backward compat
+- Multi-language + multi-file UI changes
 
 ---
 
@@ -468,20 +791,32 @@ When user provides a task, first:
 
 ### Phase 2: DISCOVERY (before writing code)
 
-**Always run search commands first (mentally, not as actions if you're Cline):**
+**Always search first (mentally, or request user to run):**
 
-```powershell
+\`\`\`powershell
+
 # Find relevant file(s)
-Select-String -Path "js/*.js" -Pattern "functionName"
 
-# Verify current state
+Select-String -Path "js/\*.js" -Pattern "functionName"
+
+# Verify current state (show N lines starting from line X)
+
 Get-Content "js/target.js" | Select-Object -Skip N -First M
 
 # Check for duplicates
-Select-String -Path "js/**/*.js" -Pattern "^function myNewFunc"
-```
 
-**Request user to run these if you can't execute commands.**
+Select-String -Path "js/\*_/_.js" -Pattern "^function myNewFunc"
+
+# Check for UTF-8 issues
+
+Select-String -Path "js/\*.js" -Pattern "â€|â¬|đź"
+
+# Check for ES module syntax (should be empty!)
+
+Select-String -Path "js/\*.js" -Pattern "^import |^export "
+\`\`\`
+
+**If AI can't execute:** ask user to run and share output.
 
 ### Phase 3: PLAN
 
@@ -492,10 +827,11 @@ Before writing:
 - What replacement (with full new code)?
 - What verification (manual, not commands)?
 - Rollback strategy?
+- Documentation updates needed?
 
 ### Phase 4: EXECUTE
 
-Follow the template (see COMMAND TEMPLATE below).
+Follow the COMMAND TEMPLATE below.
 
 ### Phase 5: RESPONSE
 
@@ -505,19 +841,20 @@ Structured response — see RESPONSE FORMAT below.
 
 ## 📝 COMMAND TEMPLATE (for tasks user gives to Cline)
 
-Every Cline task should follow this structure:
+Every Cline task should follow this exact structure:
 
-````markdown
+\`\`\`markdown
+
 # TASK [ID]: [ONE-LINE GOAL]
 
-**PROJECT:** Grafik Gillette (PWA at C:\Users\tantsiura.s\OneDrive - Procter and Gamble\Documents\AI HTML\Graffik)
+**PROJECT:** Grafik Gillette (PWA at C:\\Users\\tantsiura.s\\OneDrive - Procter and Gamble\\Documents\\AI HTML\\Graffik)
 
 **GOAL:** [1-2 sentence description]
 
 **FILES TO MODIFY (exactly N files):**
 
-1. `path/to/file1` — [what changes]
-2. `path/to/file2` — [what changes]
+1. \`path/to/file1\` — [what changes]
+2. \`path/to/file2\` — [what changes]
 
 **ESTIMATED CHANGES:**
 
@@ -540,24 +877,29 @@ Every Cline task should follow this structure:
 7. Use LITERAL characters — never hex/unicode escapes
 8. UTF-8 must be preserved (Polish + Ukrainian + emoji)
 
+## 🚫 NO ES MODULES
+
+9. NEVER use import/export statements
+10. Use window.\* for global scope
+
 ---
 
 ## 📦 STEP N: [Descriptive title]
 
-**FILE:** `exact/path/to/file.js`
+**FILE:** \`exact/path/to/file.js\`
 **ACTION:** REPLACE | INSERT AFTER | INSERT BEFORE | CREATE | DELETE
 
 **LOCATE this exact block:**
 
-\```javascript
+\\\`\\\`\\\`javascript
 [EXACT source code — copy-paste from actual file]
-\```
+\\\`\\\`\\\`
 
 **REPLACE with:**
 
-\```javascript
+\\\`\\\`\\\`javascript
 [EXACT new code — full content, no placeholders]
-\```
+\\\`\\\`\\\`
 
 **CONTEXT NOTES:**
 
@@ -578,38 +920,40 @@ Every Cline task should follow this structure:
 - [ ] No hex/unicode escapes used
 - [ ] No other files modified
 - [ ] No commands executed
+- [ ] No ES module syntax added
 
 ## 📝 COMMIT MESSAGE (for USER later — AI does NOT commit)
 
-\```
+\\\`\\\`\\\`
 type(scope): brief message
 
 Detailed body.
-\```
+\\\`\\\`\\\`
 
 ## 🆘 IF SOMETHING GOES WRONG
 
 **Rollback:**
-\```powershell
+\\\`\\\`\\\`powershell
 git checkout HEAD -- path/to/file.js
-\```
-````
+\\\`\\\`\\\`
+\`\`\`
 
 ---
 
 ## 📤 RESPONSE FORMAT (What AI must return after task)
 
-### Response Structure:
+### Response Structure
 
 Every task completion must include these sections:
 
-````markdown
+\`\`\`markdown
+
 ## ✅ Task Completed
 
 ### 📁 Files Modified
 
-- `path/to/file1.js` — [brief description]
-- `path/to/file2.css` — [brief description]
+- \`path/to/file1.js\` — [brief description]
+- \`path/to/file2.css\` — [brief description]
 
 ### 📊 Statistics
 
@@ -621,7 +965,8 @@ Every task completion must include these sections:
 ### 🔍 Verification Steps for USER
 
 Run these commands to verify:
-\```powershell
+
+\\\`\\\`\\\`powershell
 
 # 1. Check file exists (if created)
 
@@ -633,7 +978,7 @@ Select-String -Path "path/to/file.js" -Pattern "myNewFunction"
 
 # 3. Check no encoding issues
 
-Select-String -Path "path/to/file.js" -Pattern "\\x|\\u00"
+Select-String -Path "path/to/file.js" -Pattern "\\\\x|\\\\u00"
 
 # Expected: EMPTY output
 
@@ -643,7 +988,13 @@ Select-String -Path "path/to/file.js" -Pattern "â€|â¬|đź"
 
 # Expected: EMPTY output
 
-\```
+# 5. Check no ES modules
+
+Select-String -Path "path/to/file.js" -Pattern "^import |^export "
+
+# Expected: EMPTY output
+
+\\\`\\\`\\\`
 
 ### 🧪 Testing Instructions
 
@@ -658,60 +1009,86 @@ Select-String -Path "path/to/file.js" -Pattern "â€|â¬|đź"
 - [ ] [Specific test 1]
 - [ ] [Specific test 2]
 
+**Cross-cutting:**
+
+- [ ] Works in dark theme
+- [ ] Works in light theme
+- [ ] Works with pl / en / uk language
+- [ ] Works with all 3 cell skins (full / strip / quiet)
+- [ ] Works when logged out (privacy)
+- [ ] Works when logged in
+
 **Mobile:**
 
-- [ ] Test on real device via `python -m http.server 8000`
+- [ ] Test on real device via \`python -m http.server 8000\`
 - [ ] Verify responsive at 480px, 380px
+- [ ] Verify touch gestures work
 
 ### 📝 Documentation Updates Needed
 
 **REQUIRED before commit:**
 
-- [ ] **CHANGELOG.md** — add entry under `[Unreleased]` or new version
+- [ ] **CHANGELOG.md** — add entry under \`## [Unreleased]\`
 - [ ] **i18n keys** — added to all 3 files (pl/en/uk)? (if applicable)
+- [ ] **sw.js ASSETS list** — updated if new CSS/JS file added? (if applicable)
+- [ ] **index.html \`<script>\` / \`<link>\`** — registered? (if new file)
 
 **RECOMMENDED:**
 
-- [ ] **README.md** — update if user-facing feature
+- [ ] **README.md** — update if user-facing feature added/removed
 - [ ] **PROJECT_DOCS.md** — update if architecture changed
 - [ ] **AGENT.md** — update if new pattern or gotcha discovered
 
 ### 💾 Suggested Commit Message
 
-\```
+\\\`\\\`\\\`
 type(scope): brief description
 
 - Detail 1
 - Detail 2
 
-Related to #issue or v3.X.0
-\```
+Related to v3.X.0
+\\\`\\\`\\\`
 
-**Commit types:** `feat`, `fix`, `refactor`, `docs`, `style`, `test`, `chore`, `perf`
+**Commit types:** \`feat\`, \`fix\`, \`refactor\`, \`docs\`, \`style\`, \`test\`, \`chore\`, \`perf\`
 
 ### 🆘 Rollback Plan
 
 If issues arise:
-\```powershell
+
+\\\`\\\`\\\`powershell
+
+# Single file
+
 git checkout HEAD -- path/to/file
 
-# OR
+# All changes since last commit
+
+git reset --hard HEAD
+
+# Undo last commit (local only)
 
 git reset --hard HEAD~1
-git push --force # ⚠️ Only if not pushed to shared branch
-\```
+
+# Undo last pushed commit (⚠️ dangerous)
+
+git reset --hard HEAD~1
+git push --force
+\\\`\\\`\\\`
 
 ### ⚠️ Known Risks / Warnings
 
 - [Any concerns AI has about the change]
 - [Edge cases user should test]
 - [Performance implications]
+- [Backward compat issues]
 
 ### 🎯 Next Steps (Optional Suggestions)
 
 - [What could be done next]
 - [Related improvements]
-````
+- [Follow-up tasks]
+  \`\`\`
 
 ---
 
@@ -721,66 +1098,71 @@ git push --force # ⚠️ Only if not pushed to shared branch
 
 **ALWAYS update for:**
 
-- ✅ New features (`feat`)
-- ✅ Bug fixes (`fix`)
+- ✅ New features (\`feat\`)
+- ✅ Bug fixes (\`fix\`)
 - ✅ Breaking changes
-- ✅ Performance improvements (`perf`)
-- ✅ Refactoring visible to users (`refactor`)
+- ✅ Performance improvements (\`perf\`)
+- ✅ Refactoring visible to users (\`refactor\`)
 
-**Format:**
+**Format (Keep a Changelog style):**
 
-```markdown
-## [3.9.0] - 2026-08-19
+\`\`\`markdown
+
+## [Unreleased]
 
 ### Added
 
-- Timeline widget for relief handoff visualization (smart-popup.js)
-- CSS module smart-popup.css with shift colors
+- New Timeline widget for relief handoff visualization
+- Personalization module with 3 cell skin styles
 
 ### Changed
 
 - Info-panel now uses Timeline widget instead of classic prev/next badges
-- Compact size optimized for mobile screens
+- Sync menu unified into single primary action button
 
 ### Fixed
 
-- (bug fixes here)
+- Duplicate function declarations in sync-tracking.js
+- ES module syntax breaking silent SyntaxError
 
 ### Removed
 
-- (deleted features here)
+- Old cell relief popups (replaced by timeline)
+- ot-detail-popup on cells (details in info-panel)
 
 ### Technical
 
 - New global function: window.renderReliefTimeline()
 - Fallback to classic display if smart-popup.js fails
-```
+  \`\`\`
 
-**Categories (in order):**
+**Categories (in this order):**
 
-- `Added` — new features
-- `Changed` — modifications to existing features
-- `Deprecated` — soon-to-be-removed
-- `Removed` — deleted features
-- `Fixed` — bug fixes
-- `Security` — vulnerability fixes
-- `Technical` — internal changes not user-visible
+- \`Added\` — new features
+- \`Changed\` — modifications to existing features
+- \`Deprecated\` — soon-to-be-removed
+- \`Removed\` — deleted features
+- \`Fixed\` — bug fixes
+- \`Security\` — vulnerability fixes
+- \`Technical\` — internal changes not user-visible
 
 ### When to Update README.md
 
 **Update if:**
 
-- User-facing feature added
+- User-facing feature added/removed
 - Installation/setup steps changed
 - Screenshots need updating
 - New keyboard shortcuts
 - New browser requirements
+- File structure changed (affects "Struktura projektu" section)
 
 **Don't update for:**
 
 - Internal refactoring
 - Bug fixes (unless workaround needed)
 - Code style changes
+- AGENT.md changes
 
 ### When to Update PROJECT_DOCS.md
 
@@ -791,22 +1173,36 @@ git push --force # ⚠️ Only if not pushed to shared branch
 - New localStorage keys
 - New API integrations
 - Data model changes
+- New patterns in JS/CSS
 
 ### When to Update AGENT.md (THIS FILE)
 
 **Update if:**
 
 - New anti-pattern discovered (from failed AI task)
-- New gotcha found
+- New gotcha found (real bug, real fix)
 - New coding convention adopted
 - New file/folder in canonical structure
 - New rule needed to prevent recurring issue
 
 **Location for updates:**
 
-- New gotcha → `KNOWN GOTCHAS` section
-- New anti-pattern → `ANTI-PATTERNS` section
-- New rule → `CRITICAL RULES` section
+- New gotcha → \`KNOWN GOTCHAS\` section
+- New anti-pattern → \`ANTI-PATTERNS\` section
+- New rule → \`CRITICAL RULES\` section
+- New architecture → \`ARCHITECTURE PRINCIPLES\` section
+
+### When to Update sw.js
+
+**Update if:**
+
+- New CSS file added → add to \`ASSETS\` array
+- New JS file added → add to \`ASSETS\` array
+- New icons added → add to \`ASSETS\` array
+
+**Don't update for:**
+
+- Content changes in existing files (cache-busting via \`**BUILD_ID**\`)
 
 ### When to Update HANDOFF.md
 
@@ -824,8 +1220,9 @@ Follow **Semantic Versioning** (SemVer):
 
 **Where to update version:**
 
-- `CHANGELOG.md` — new entry heading
-- `manifest.json` — `"version": "X.Y.Z"` (if exists)
+- \`CHANGELOG.md\` — new entry heading (move \`[Unreleased]\` to versioned)
+- \`AGENT.md\` — \`Current version\` in table
+- \`manifest.json\` — \`"version"\` field (if exists)
 - Commit message often references version
 
 ---
@@ -834,22 +1231,36 @@ Follow **Semantic Versioning** (SemVer):
 
 ### Level 1: Syntax
 
-```powershell
+\`\`\`powershell
+
 # No syntax errors (Node.js quick check if available)
-# Or open in browser and check Console for errors
-```
+
+node -c js/target.js # or open in browser and check Console
+\`\`\`
 
 ### Level 2: File Integrity
 
-```powershell
+\`\`\`powershell
+
 # UTF-8 preserved
+
 Select-String -Path "path/file.js" -Pattern "â€|â¬|đź|Ĺ‚"
+
 # Expected: EMPTY
 
 # No hex escapes
-Select-String -Path "path/file.js" -Pattern "\\x[0-9a-f]|\\u00"
+
+Select-String -Path "path/file.js" -Pattern "\\\\x[0-9a-f]|\\\\u00"
+
 # Expected: EMPTY
-```
+
+# No ES module syntax
+
+Select-String -Path "path/file.js" -Pattern "^import |^export "
+
+# Expected: EMPTY
+
+\`\`\`
 
 ### Level 3: Functionality
 
@@ -871,8 +1282,22 @@ Select-String -Path "path/file.js" -Pattern "\\x[0-9a-f]|\\u00"
 - [ ] Service Worker cache invalidation works
 - [ ] Offline mode still functional
 - [ ] localStorage data preserved
+- [ ] New files in \`sw.js\` ASSETS?
 
-### Level 6: Cross-browser (if UI change)
+### Level 6: Cell Skins (v3.9.0+)
+
+- [ ] Works with \`skin-full\`
+- [ ] Works with \`skin-strip\`
+- [ ] Works with \`skin-quiet\`
+
+### Level 7: Privacy States
+
+- [ ] Works when logged out
+- [ ] Works when logged in
+- [ ] Works with Privacy Mode ON
+- [ ] Works with Privacy Mode OFF
+
+### Level 8: Cross-browser (if UI change)
 
 - [ ] Chrome/Edge (Chromium)
 - [ ] Firefox
@@ -884,39 +1309,48 @@ Select-String -Path "path/file.js" -Pattern "\\x[0-9a-f]|\\u00"
 
 ### Broken UTF-8 Detected
 
-**Symptoms:** Console shows `â€"`, `đź"", `Ĺ‚` instead of proper characters.
+**Symptoms:** Console shows \`â€"\`, \`đź"", \`Ĺ‚\` instead of proper characters.
 
 **Fix:**
 
-```powershell
+\`\`\`powershell
+
 # Restore from git
+
 git checkout HEAD -- js/broken-file.js
 
 # If not in git yet, check if backup exists
+
 Test-Path "js/broken-file.js.backup"
-```
+\`\`\`
 
 ### Site Broken on Prod
 
-```powershell
+\`\`\`powershell
+
 # Immediate rollback (last commit)
+
 git revert HEAD
 git push
 
-# Or force rollback (last commit)
+# Or force rollback (last commit) — ⚠️ dangerous if shared branch
+
 git reset --hard HEAD~1
-git push --force  # ⚠️ Dangerous if others cloned
-```
+git push --force
+\`\`\`
 
 ### Cline Modified Wrong File
 
-```powershell
+\`\`\`powershell
+
 # Restore specific file
+
 git checkout HEAD -- js/wrongly-modified.js
 
 # See what changed
+
 git diff HEAD js/wrongly-modified.js
-```
+\`\`\`
 
 ### Service Worker Stuck
 
@@ -926,15 +1360,34 @@ Owner's fix:
 2. Click "Unregister"
 3. Hard reload (Ctrl+Shift+R)
 
+### Duplicate Function Declaration
+
+Symptoms: Function behavior wrong, silent overrides.
+
+\`\`\`powershell
+
+# Find duplicates
+
+Select-String -Path "js/\*_/_.js" -Pattern "^function myFunc"
+\`\`\`
+
+**Fix:** Delete older declaration, keep newest logic.
+
+### ES Module Syntax Error
+
+Symptoms: Silent \`Uncaught SyntaxError: Unexpected token 'export'\` in console.
+
+**Fix:** Remove all \`import\`/\`export\` statements. Use \`window.MyModule = {...}\` instead.
+
 ---
 
 ## 📖 COMMON PATTERNS (with real examples)
 
 ### Pattern 1: Add New i18n Key
 
-**Files to modify:** 3 (`pl.js`, `en.js`, `uk.js`)
+**Files to modify:** 3 (\`pl.js\`, \`en.js\`, \`uk.js\`)
 
-```javascript
+\`\`\`javascript
 // pl.js
 newKey: 'Polski tekst',
 
@@ -943,117 +1396,212 @@ newKey: 'English text',
 
 // uk.js
 newKey: 'Український текст',
-```
+\`\`\`
 
 Then use:
 
-```javascript
+\`\`\`javascript
 element.textContent = t('newKey');
-```
+element.textContent = t('greeting', { name: 'John' }); // with params
+\`\`\`
+
+**HTML usage:**
+
+\`\`\`html
+<button data-i18n="newKey">Fallback</button>
+<input data-i18n-placeholder="notePlaceholder">
+<button data-i18n-title="themeSwitch" title="Switch theme">🌙</button>
+\`\`\`
 
 ### Pattern 2: Add New CSS Module
 
-**Files to modify:** 2 (create CSS, update index.html)
+**Files to modify:** 3 (create CSS, update index.html, update sw.js)
 
-**Step 1:** Create `css/new-module.css` with header:
+**Step 1:** Create \`css/new-module.css\` with header:
 
-```css
-/* ================================================================
-   GRAFIK GILLETTE - NEW-MODULE.CSS
-   Description of purpose
-   Part of modular CSS split (v3.X.0)
-   ================================================================ */
-```
+\`\`\`css
+/_ ================================================================
+GRAFIK GILLETTE - NEW-MODULE.CSS
+Description of purpose
+Part of modular CSS split (v3.X.0)
+================================================================ _/
+\`\`\`
 
-**Step 2:** Add to `index.html` in correct cascade position:
+**Step 2:** Add to \`index.html\` in correct cascade position:
 
-```html
+\`\`\`html
+
 <link rel="stylesheet" href="css/new-module.css" />
-```
+\`\`\`
+
+**Step 3:** Add to \`sw.js\` ASSETS array:
+
+\`\`\`javascript
+const ASSETS = [
+// ...
+'./css/new-module.css',
+// ...
+];
+\`\`\`
 
 ### Pattern 3: Add New JS Module (No ES Modules!)
 
-**Step 1:** Create `js/new-module.js`:
+**Files to modify:** 3 (create JS, update index.html, update sw.js)
 
-```javascript
-/* ================================================================
-   GRAFIK GILLETTE - NEW-MODULE.JS
-   Description
-   Part of v3.X.0
-   ================================================================ */
+**Step 1:** Create \`js/new-module.js\`:
+
+\`\`\`javascript
+/_ ================================================================
+GRAFIK GILLETTE - NEW-MODULE.JS
+Description
+Part of v3.X.0
+================================================================ _/
 
 function myFunction(param) {
-  // ...
+// ...
 }
 
 // Export to global scope
 window.myFunction = myFunction;
-```
+\`\`\`
 
-**Step 2:** Add to `index.html`:
+**Step 2:** Add to \`index.html\` (correct load order):
 
-```html
+\`\`\`html
+
 <script src="js/new-module.js"></script>
-```
 
-**Step 3:** Use defensively elsewhere:
+\`\`\`
 
-```javascript
+**Step 3:** Add to \`sw.js\` ASSETS array.
+
+**Step 4:** Use defensively elsewhere:
+
+\`\`\`javascript
 if (typeof myFunction === 'function') {
-  myFunction(data);
+myFunction(data);
 }
-```
+\`\`\`
 
 ### Pattern 4: Add New localStorage Key
 
-**Naming convention:** `gillette_<purpose>_v<N>`
+**Naming convention:** \`gillette\_<purpose>\_v<N>\`
 
-```javascript
+\`\`\`javascript
 const NEW_STORAGE_KEY = 'gillette_newfeature_v1';
 
 // Save
+function saveNewFeature(data) {
+try {
 localStorage.setItem(NEW_STORAGE_KEY, JSON.stringify(data));
 if (typeof updateLastModified === 'function') updateLastModified();
+} catch (e) {
+console.warn('[newfeature]', 'Save failed:', e);
+}
+}
 
 // Load
 function loadNewFeature() {
-  try {
-    const raw = localStorage.getItem(NEW_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch (e) {
-    console.warn('[newfeature]', 'Load failed:', e);
-    return {};
-  }
+try {
+const raw = localStorage.getItem(NEW_STORAGE_KEY);
+return raw ? JSON.parse(raw) : {};
+} catch (e) {
+console.warn('[newfeature]', 'Load failed:', e);
+return {};
 }
-```
+}
+\`\`\`
 
 ### Pattern 5: Update Info-Panel Section
 
-Info-panel is rendered in `js/calendar.js` (around line 640-840).
+Info-panel is rendered in \`js/calendar.js\` (around line 640-840).
 
 **Never modify HTML directly in index.html** — info-panel content is dynamic.
 
 **Locate the render block:**
 
-```javascript
-panel.innerHTML = `<h3>...</h3>
-  ${cardOne}
-  ${cardTwo}
-  ...`;
-```
+\`\`\`javascript
+panel.innerHTML = \`<h3>...</h3>
+\${cardOne}
+\${cardTwo}
+...\`;
+\`\`\`
 
 Add new card:
 
-```javascript
-const newCard = `
+\`\`\`javascript
+const newCard = \`
+
   <div class="info-card" style="grid-column:1/-1;">
-    <div class="label">${t('newLabel')}</div>
-    <div class="value">${dataHere}</div>
+    <div class="label">\${t('newLabel')}</div>
+    <div class="value">\${dataHere}</div>
   </div>
-`;
-```
+\`;
+\`\`\`
 
 Insert in template.
+
+### Pattern 6: Add Cell Skin Support
+
+If your feature adds visual elements to \`.day-cell\`, respect all 3 skins:
+
+\`\`\`css
+/_ Default (skin-full) _/
+.day-cell.my-feature {
+background: var(--color-R);
+color: #fff;
+}
+
+/_ skin-strip: neutral body + color strip _/
+body.skin-strip .day-cell.my-feature {
+background: var(--bg-cell);
+color: var(--text-main);
+}
+body.skin-strip .day-cell.my-feature::before {
+content: '';
+position: absolute;
+left: 0;
+top: 0;
+bottom: 0;
+width: 4px;
+background: var(--color-R);
+}
+
+/_ skin-quiet: neutral body + colored border _/
+body.skin-quiet .day-cell.my-feature {
+background: var(--bg-cell);
+color: var(--text-main);
+border-color: var(--color-R);
+}
+\`\`\`
+
+### Pattern 7: Add Timeline Node
+
+Timeline widget in \`js/smart-popup.js\` supports custom nodes.
+
+**Extend \`renderReliefTimeline\`:**
+
+\`\`\`javascript
+// New node type
+if (info.customField) {
+parts.push(tlRenderNode({
+type: 'custom',
+brig: info.customField,
+shift: 'R',
+label: 'my-label'
+}));
+parts.push(tlRenderArrow());
+}
+\`\`\`
+
+**Add CSS:**
+
+\`\`\`css
+.tl-node.tl-custom {
+background: linear-gradient(135deg, #color1, #color2);
+border: 1px solid #border;
+}
+\`\`\`
 
 ---
 
@@ -1061,14 +1609,15 @@ Insert in template.
 
 ### ❌ BAD Task (will fail)
 
-```markdown
+\`\`\`markdown
+
 # TASK: Refactor overtime code
 
 Please refactor the overtime handling to be cleaner.
 Look at calendar.js and overtime-logic.js and make them better.
 Split into smaller functions if needed.
 Also update the CSS to look nicer.
-```
+\`\`\`
 
 **Problems:**
 
@@ -1080,7 +1629,8 @@ Also update the CSS to look nicer.
 
 ### ✅ GOOD Task (will succeed)
 
-````markdown
+\`\`\`markdown
+
 # TASK 1/2: Extract categorizeOvertime call into helper
 
 **PROJECT:** Grafik Gillette (workspace path)
@@ -1089,7 +1639,7 @@ Also update the CSS to look nicer.
 
 **FILES TO MODIFY (exactly 1 file):**
 
-1. `js/calendar.js` — replace 3 duplicated calls with helper
+1. \`js/calendar.js\` — replace 3 duplicated calls with helper
 
 **ESTIMATED CHANGES:**
 
@@ -1104,12 +1654,12 @@ Also update the CSS to look nicer.
 
 ## 📦 STEP 1: Locate and REPLACE first duplication
 
-**FILE:** `js/calendar.js`
+**FILE:** \`js/calendar.js\`
 **ACTION:** REPLACE
 
 **LOCATE this exact block (lines 183-190):**
 
-\```javascript
+\\\`\\\`\\\`javascript
 const cat = categorizeOvertime(
 currentYear,
 currentMonth,
@@ -1118,20 +1668,20 @@ shift,
 'przed',
 otToday.przed.hours
 );
-\```
+\\\`\\\`\\\`
 
 **REPLACE with:**
 
-\```javascript
+\\\`\\\`\\\`javascript
 const cat = getOvertimeCategoryForDay(d, shift, 'przed', otToday.przed.hours);
-\```
+\\\`\\\`\\\`
 
 [Steps 2 and 3 for other duplications...]
 
 ## ✅ VERIFICATION CHECKLIST
 
 [standard checklist]
-````
+\`\`\`
 
 **Why it works:**
 
@@ -1148,12 +1698,15 @@ const cat = getOvertimeCategoryForDay(d, shift, 'przed', otToday.przed.hours);
 ### Polish Language (Primary UI)
 
 - Use proper diacritics: **ą, ć, ę, ł, ń, ó, ś, ź, ż**
-- Never romanize (`łańcuch`, NOT `lancuch`)
+- Never romanize (\`łańcuch\`, NOT \`lancuch\`)
 - Common patterns:
   - "Zmiana" (shift) — not "Zmiany" (multiple)
   - "Dziś" (today) — not "Dzisiaj" (formal)
   - "Nadgodziny" (overtime)
   - "Urlop" (vacation)
+- Genitive months for dates:
+  - \`monthNames\` — nominative ("Sierpień")
+  - \`monthNamesGenitive\` — genitive ("15 sierpnia")
 
 ### Ukrainian Language (Owner)
 
@@ -1165,7 +1718,7 @@ const cat = getOvertimeCategoryForDay(d, shift, 'przed', otToday.przed.hours);
 
 - Use for code comments (if not Polish)
 - Function names, variable names
-- Console logs (with `[module]` prefix)
+- Console logs (with \`[module]\` prefix)
 - Commit messages
 
 ---
@@ -1186,19 +1739,36 @@ const cat = getOvertimeCategoryForDay(d, shift, 'przed', otToday.przed.hours);
 
 ### Deployment
 
-- **Automatic** on push to `main` branch
-- GitHub Actions workflow: `.github/workflows/deploy.yml`
-- Cache invalidation via `__BUILD_ID__` in sw.js
+- **Automatic** on push to \`main\` branch
+- GitHub Actions workflow: \`.github/workflows/deploy.yml\`
+- Cache invalidation via \`**BUILD_ID**\` in sw.js
 - Prod URL: https://servitantgit.github.io/Graffik/
 
 ### File Naming Conventions
 
-- **JS files:** kebab-case (`smart-popup.js`, `sync-tracking.js`)
-- **CSS files:** kebab-case (`smart-popup.css`, `overtime.css`)
-- **Constants:** UPPER_SNAKE_CASE (`STORAGE_KEY`, `ADMIN_EMAILS`)
-- **Functions:** camelCase (`renderCalendar`, `getShiftAt`)
-- **CSS classes:** kebab-case (`.day-cell`, `.timeline-widget`)
-- **i18n keys:** camelCase (`infoPrevShift`, `todayLabel`)
+- **JS files:** kebab-case (\`smart-popup.js\`, \`sync-tracking.js\`)
+- **CSS files:** kebab-case (\`smart-popup.css\`, \`overtime.css\`)
+- **Constants:** UPPER_SNAKE_CASE (\`STORAGE_KEY\`, \`ADMIN_EMAILS\`)
+- **Functions:** camelCase (\`renderCalendar\`, \`getShiftAt\`)
+- **CSS classes:** kebab-case (\`.day-cell\`, \`.timeline-widget\`)
+- **i18n keys:** camelCase (\`infoPrevShift\`, \`todayLabel\`)
+- **Mockup files:** \`mockup-\*.html\` (kept in git, not deployed)
+
+### Common File Locations
+
+| Feature              | File                                       |
+| -------------------- | ------------------------------------------ |
+| Business logic       | \`js/core.js\`                             |
+| Overtime calculation | \`js/overtime-logic.js\`                   |
+| Month view rendering | \`js/calendar.js\`                         |
+| Info-panel content   | \`js/calendar.js\` (line ~640-840)         |
+| Dashboard rendering  | \`js/dashboard.js\`                        |
+| Google Drive sync    | \`js/sync.js\`                             |
+| Cell skins           | \`js/personalization.js\` + \`css/\*.css\` |
+| Timeline widget      | \`js/smart-popup.js\`                      |
+| Admin identification | \`js/admin.js\`                            |
+| i18n translations    | \`js/i18n/pl.js\` (primary)                |
+| Modal system         | \`js/ui.js\` (showModal, showToast)        |
 
 ---
 
@@ -1212,7 +1782,7 @@ const cat = getOvertimeCategoryForDay(d, shift, 'przed', otToday.przed.hours);
 
 ### Console Logs Policy
 
-```javascript
+\`\`\`javascript
 // ✅ OK to log
 console.log('[sync]', 'Upload started');
 console.log('[calendar]', 'Rendering month', month);
@@ -1221,16 +1791,17 @@ console.log('[calendar]', 'Rendering month', month);
 console.log('User:', userEmail); // PII
 console.log('Token:', driveToken); // Secret
 console.log('Vacations:', urlopsData); // Personal
-```
+\`\`\`
 
 ### GitHub Repository
 
 Repository is **public**. Ensure:
 
-- No emails in code (beyond documented `ADMIN_EMAILS`)
+- No emails in code (beyond documented \`ADMIN_EMAILS\`)
 - No tokens in code
 - No personal data in commits
 - No real employee names
+- No corporate document references
 
 ---
 
@@ -1238,7 +1809,7 @@ Repository is **public**. Ensure:
 
 **Owner:**
 
-- GitHub: `servitantgit`
+- GitHub: \`servitantgit\`
 - Language: Ukrainian (chat), Polish (UI dev)
 - Timezone: CEST (Poland)
 
@@ -1250,6 +1821,7 @@ Repository is **public**. Ensure:
 - Show alternatives when appropriate
 - Ukrainian responses to owner
 - English for code artifacts
+- Polish for i18n content
 
 ---
 
@@ -1263,6 +1835,8 @@ If a task fails or introduces bugs:
    - Missing verification?
    - Wrong file scope?
    - Encoding issue?
+   - ES module syntax?
+   - Duplicate declarations?
 3. **Update this AGENT.md** — add new gotcha or anti-pattern
 4. **Retry with better plan** — smaller scope, more explicit
 
@@ -1278,14 +1852,17 @@ Before returning your response to user, verify:
 - [ ] Identified complexity (Green/Yellow/Red)
 - [ ] Listed only files that will be modified
 - [ ] Provided exact LOCATE blocks (not paraphrased)
-- [ ] Provided full REPLACE blocks (not `...`)
+- [ ] Provided full REPLACE blocks (not \`...\`)
 - [ ] Used literal UTF-8 characters
+- [ ] No ES module syntax
 - [ ] No commands to execute (user does verification)
 - [ ] Included VERIFICATION CHECKLIST
 - [ ] Suggested COMMIT MESSAGE
 - [ ] Provided ROLLBACK plan
 - [ ] Listed DOCUMENTATION UPDATES needed
 - [ ] Warned about RISKS
+- [ ] Considered ALL 3 cell skins (if visual change)
+- [ ] Considered PRIVACY states (logged in/out)
 
 If Red complexity → Split into multiple tasks BEFORE responding.
 
@@ -1293,13 +1870,23 @@ If Red complexity → Split into multiple tasks BEFORE responding.
 
 ## 📊 VERSION HISTORY OF AGENT.md
 
-- **v1.0** (2026-08-19) — Initial version. Based on real experience from v3.6.0 → v3.9.0 development.
+- **v2.0** (2026-08-22) — Updated with actual project state:
+  - 10 CSS modules (added smart-popup.css)
+  - Timeline widget documented
+  - Cell skin system (skin-full/strip/quiet)
+  - Personalization module
+  - New gotchas: ES module syntax, duplicate declarations
+  - Actual script load order from index.html
+  - Mockup files convention
+  - Testing checklist for cell skins + privacy states
+
+- **v1.0** (2026-08-19) — Initial version. Based on experience v3.6.0 → v3.9.0.
 
 ---
 
 # 🎯 END OF AGENT.md
 
-**Remember:** You are helping a real person build a real app used by real coworkers.  
+**Remember:** You are helping a real person build a real app used by real coworkers.
 Precision > Speed. Safety > Cleverness. Ask > Guess.
 
 **Good luck, agent! 🤖**
