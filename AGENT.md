@@ -187,14 +187,14 @@ Graffik/
 ├── HANDOFF.md ← Chat session context (owner keeps LOCAL only, NOT in git)
 ├── CHANGELOG.md ← Version history (Keep a Changelog format)
 ├── README.md ← User-facing docs (Polish)
-├── PROJECT_DOCS.md ← Extended technical docs
+├── PROJECT*DOCS.md ← Extended technical docs
 │
-├── mockup-_.html ← Design mockups (NOT deployed, kept for reference)
+├── mockup-*.html ← Design mockups (NOT deployed, kept for reference)
 │ ├── mockup-dashboard-mobile.html
 │ ├── mockup-month-cells.html
 │ ├── mockup-ui-ideas.html
 │ ├── mockup-year-table.html
-│ └── (other mockup-_.html files)
+│ └── (other mockup-\_.html files)
 │
 ├── css/ ← Modular CSS (10 files)
 │ ├── variables.css ← :root, themes (~85 lines)
@@ -631,6 +631,94 @@ Technical class name \`skin-quiet\` refers to what UI calls "Kolorowe obramowani
 
 **When updating UI labels** — only change i18n keys, not CSS class names.
 
+### GOTCHA 14: AI Model Quality Depends on Task Structure (v2.1 update)
+
+**Real evidence (2026-08-22):**
+
+Cline + DeepSeek (free tier) successfully:
+
+- Detected discrepancy between LOCATE block and named file
+- Cross-referenced usage in 16 code locations
+- Read AGENT.md canonical structure and applied rules
+- STOPPED before making changes (per RULE 6)
+- Presented 4 clear options with detailed justification
+
+**Key insight:** Model quality gap between free and paid narrows dramatically
+when tasks include:
+
+- Explicit LOCATE + REPLACE blocks (not "find the section")
+- STOP-if-ambiguous rule
+- VERIFY checklist
+- Small scope (1-3 STEPS, 1-2 files)
+
+**Practical recommendation:**
+
+| Task type             | Recommended model                     |
+| --------------------- | ------------------------------------- |
+| Simple 1-file edit    | Any (DeepSeek free, Kilo, Cline+paid) |
+| Multi-file refactor   | Kilo Code preferred, or Cline+paid    |
+| Ambiguous exploration | ChatPG/Claude direct chat             |
+| Emergency debugging   | Cline + Claude Sonnet (paid)          |
+
+**AGENT.md ROI:** Well-written task + AGENT.md rules = free models perform
+like paid models. This project's ~1.5h investment in AGENT.md v2.0 already
+paid back multiple times.
+
+### GOTCHA 15: Orphaned Files with Same Name
+
+**Real case (v3.9.0 cleanup, 2026-08-22):**
+
+Two files with identical basename existed:
+
+- `sync-tracking.js` (root, 148 lines, buggy, git-tracked but orphaned)
+- `js/personal/sync-tracking.js` (real module, 116 lines, active, clean)
+
+**How it happened:** During v3.9.0 refactor, the module was MOVED from root
+to `js/personal/`, but git preserved the old copy at root instead of deleting.
+The old file has no `.gitignore` protection and no auto-cleanup.
+
+**How AI got confused:**
+
+1. ChatPG read raw workspace dump that included root file
+2. Generated Cline task using root file's content as LOCATE
+3. Task named `js/personal/sync-tracking.js` as target — mismatch!
+4. Cline correctly refused to apply wrong content to wrong file
+
+**Prevention:**
+
+- After moving files during refactor, always `git rm` the old location
+- Regular check: `Get-ChildItem -Recurse -Filter "*.js" | Group-Object Name | Where { $_.Count -gt 1 }`
+- Include cleanup step in refactor CHANGELOG entries
+- Update AGENT.md's FILE STRUCTURE to explicitly note deleted paths
+
+**Detection command:**
+
+\`\`\`powershell
+
+# Find any duplicate JS/CSS files by basename
+
+Get-ChildItem -Recurse -Filter "\*.js" | Group-Object Name |
+Where-Object { $\_.Count -gt 1 } |
+Select-Object Name, Count
+\`\`\`
+
+**Fix:**
+
+\`\`\`powershell
+
+# Verify which file is loaded
+
+Select-String -Path "index.html","sw.js" -Pattern "filename\.js"
+
+# Delete orphan (if git-tracked)
+
+git rm path/to/orphan.js
+
+# OR delete if not tracked
+
+Remove-Item path/to/orphan.js
+\`\`\`
+
 ---
 
 ## ❌ ANTI-PATTERNS (NEVER DO THIS)
@@ -736,6 +824,30 @@ Class names (\`skin-full\`, \`skin-strip\`, \`skin-quiet\`) are persisted in loc
 Info-panel, dashboard, calendar cells — all rendered dynamically in JS.
 
 **Modifying \`<div id="infoPanel">...</div>\` in HTML does nothing** — it's a placeholder.
+
+### ANTI-PATTERN 13: Trusting Raw File Listings
+
+**❌ BAD:** Assuming a file exists at path X because it appeared in a workspace
+dump, code.txt export, or `ls` output.
+
+**✅ GOOD:** Verify the file is:
+
+1. Referenced in `index.html` (as `<script>` or `<link>`)
+2. Referenced in `sw.js` (in ASSETS array)
+3. Not listed as deprecated/orphan in CHANGELOG or AGENT.md
+
+**Real case (v3.9.0):**
+
+ChatPG saw root `sync-tracking.js` in a workspace code dump and assumed
+it was the active module. Generated Cline task using its content as LOCATE.
+Cline+DeepSeek correctly refused to apply changes because:
+
+- The task named `js/personal/sync-tracking.js` as target
+- But the LOCATE block matched a different file (root orphan)
+- Applying anyway would break `js/core.js` (5 calls) and `js/sync.js` (6 calls)
+
+**Lesson:** Always cross-check file paths against `index.html` script tags
+before generating LOCATE blocks. Workspace listings can include orphaned files.
 
 ---
 
