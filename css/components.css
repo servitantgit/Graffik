@@ -917,115 +917,205 @@ a.menu-item {
    5. PRINT: hide all popups
    ============================================================ */
 
-/* Sync status row in side menu */
-.menu-sync-status {
+/* === DRIVE CARD in side menu === */
+#menuDriveSection .menu-section-title.drive-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.drive-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 4px 8px 8px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border-cell);
+  background: var(--bg-info-card);
+}
+
+/* a) Connection status row */
+button.drive-status-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 14px;
-  margin: 4px 8px 8px;
-  border-radius: 10px;
-  font-size: 13px;
-  color: var(--text-muted);
-  background: var(--bg-controls, rgba(127,140,141,0.12));
-}
-.menu-sync-status.unsynced {
-  color: #f39c12;
-  background: rgba(243, 156, 18, 0.12);
-  border: 1px solid rgba(243, 156, 18, 0.35);
-}
-.menu-sync-status .mi-icon {
-  font-size: 16px;
-}
-
-.menu-sync-status.remote-newer {
-  color: #38bdf8;
-  background: rgba(56, 189, 248, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-}
-
-/* Drive status row = primary action (variant C) */
-button.menu-item.menu-sync-status {
-  width: calc(100% - 16px);
-  margin: 4px 8px 8px;
-  text-align: left;
+  width: 100%;
+  padding: 4px 2px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  border: 1px solid transparent;
   font: inherit;
-  color: inherit;
-}
-button.menu-item.menu-sync-status:hover {
-  filter: brightness(1.08);
-}
-button.menu-item.menu-sync-status.unsynced {
-  color: #f39c12;
-  background: rgba(243, 156, 18, 0.12);
-  border-color: rgba(243, 156, 18, 0.35);
-}
-button.menu-item.menu-sync-status.remote-newer {
-  color: #38bdf8;
-  background: rgba(56, 189, 248, 0.12);
-  border-color: rgba(56, 189, 248, 0.35);
-}
-button.menu-item.menu-sync-status.logged-out {
+  text-align: left;
   color: var(--text-main);
-  background: var(--bg-controls, rgba(127,140,141,0.12));
+  transition: all 0.15s;
+}
+button.drive-status-row:hover {
+  background: var(--bg-controls, rgba(127, 140, 141, 0.12));
+}
+.drive-status-row .mi-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.drive-status-row .ds-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
 }
 
-/* Compact count badge in the sync status row */
-.mi-sync-badge {
-  display: none;
+/* Status badge — green dot + label */
+.ds-badge {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  margin-left: auto;
-  min-width: 24px;
-  padding: 2px 8px;
+  gap: 5px;
+  padding: 3px 9px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   line-height: 1.5;
-  color: #fff;
-  background: #f39c12;
+  color: #27ae60;
+  background: rgba(39, 174, 96, 0.14);
   white-space: nowrap;
   flex-shrink: 0;
 }
-.menu-sync-status.remote-newer .mi-sync-badge {
-  background: #38bdf8;
+.ds-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #27ae60;
+}
+.ds-badge.inactive {
+  color: var(--text-muted);
+  background: var(--bg-controls, rgba(127, 140, 141, 0.14));
+}
+.ds-badge.inactive .ds-badge-dot {
+  background: #95a5a6;
 }
 
-/* Logged-in Google account line in the Drive menu section */
-.menu-drive-account {
+/* b) Divider */
+.drive-divider {
+  height: 1px;
+  background: var(--border-cell);
+}
+
+/* c) Account block */
+.drive-account {
   display: none;
   align-items: center;
   gap: 10px;
-  padding: 8px 14px;
-  margin: 0 8px 6px;
-  font-size: 12px;
-  color: var(--text-muted);
+  padding: 2px 0;
 }
-.menu-drive-account .mda-avatar {
+.drive-account .da-avatar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: #4285f4;
   color: #fff;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   flex-shrink: 0;
   text-transform: uppercase;
 }
-.menu-drive-account .mda-email {
+.drive-account .da-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+.drive-account .da-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+.drive-account .da-email {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.menu-drive-account .mda-role {
+.drive-account .da-role {
   margin-left: auto;
   font-size: 13px;
   flex-shrink: 0;
+}
+
+/* d) Warnings block */
+.drive-warn {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #f39c12;
+  background: rgba(243, 156, 18, 0.12);
+  border: 1px solid rgba(243, 156, 18, 0.35);
+}
+.drive-warn .dw-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.drive-warn .dw-text {
+  flex: 1;
+  min-width: 0;
+}
+.drive-warn .dw-more {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.drive-warn .dw-more:hover {
+  text-decoration: underline;
+}
+
+/* e) Logout button — secondary/outline */
+button.drive-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid var(--border-cell);
+  border-radius: 8px;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+button.drive-logout:hover {
+  background: var(--bg-controls);
+  border-color: rgba(192, 57, 43, 0.4);
+  color: #c0392b;
+}
+button.drive-logout .mi-icon {
+  width: auto;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mi-icon.mi-icon-svg {

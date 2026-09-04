@@ -636,67 +636,62 @@ function updateMenuSyncStatus() {
   const text = document.getElementById('menuSyncStatusText');
   const icon = document.getElementById('menuSyncStatusIcon');
   const badge = document.getElementById('menuSyncStatusBadge');
+  const badgeLabel = document.getElementById('menuSyncStatusBadgeLabel');
+  const warnBlock = document.getElementById('menuDriveWarn');
+  const warnText = document.getElementById('menuDriveWarnText');
   if (!el || !text) return;
+
   const logged = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : isDriveTokenValid();
   const unsynced = typeof hasUnsyncedChanges === 'function' && hasUnsyncedChanges();
   const remoteNewer = !!gDriveRemoteNewer;
 
-  el.classList.toggle('unsynced', !!logged && !!unsynced && !remoteNewer);
-  el.classList.toggle('remote-newer', !!logged && !!remoteNewer);
+  const tr = (key, params, fallback) => (typeof t === 'function' ? t(key, params) : fallback);
+
   el.classList.toggle('logged-out', !logged);
 
-  const setBadge = (label) => {
-    if (!badge) return;
-    if (label) {
-      badge.textContent = label;
-      badge.style.display = 'inline-flex';
-    } else {
-      badge.textContent = '';
-      badge.style.display = 'none';
-    }
-  };
-
-  const tr = (key, fallback, params) => (typeof t === 'function' ? t(key, params) : fallback);
-
+  // Not connected — prompt to sign in
   if (!logged) {
     if (icon) {
       icon.classList.add('mi-icon-svg');
       icon.innerHTML = ICON_GOOGLE_G;
     }
-    text.textContent = tr('syncStatusLogin', 'Sign in to Google Drive');
+    text.textContent = tr('syncStatusLogin', null, 'Sign in to Google Drive');
+    if (badgeLabel) badgeLabel.textContent = tr('driveCardInactive', null, 'Inactive');
+    if (badge) badge.classList.add('inactive');
+    if (warnBlock) warnBlock.style.display = 'none';
     el.title = '';
-    setBadge('');
     return;
   }
-  // Logged in — compact status row (details in modal / hover tooltip)
+
+  // Connected
   if (icon) {
     icon.classList.add('mi-icon-svg');
     icon.innerHTML = ICON_DRIVE;
   }
+  text.textContent = tr('driveCardConnected', null, 'Connected to Google Drive');
+  if (badgeLabel) badgeLabel.textContent = tr('driveCardActive', null, 'Active');
+  if (badge) badge.classList.remove('inactive');
+
   const when = typeof timeSinceLastSync === 'function' ? timeSinceLastSync() : '';
   const count = typeof getUnsyncedChangeCount === 'function'
     ? getUnsyncedChangeCount()
     : (unsynced ? 1 : 0);
+  const showWarn = unsynced || remoteNewer;
 
-  if (remoteNewer && unsynced) {
-    setBadge(`⚠ ${count}`);
-    text.textContent = '';
-    el.title = tr('syncStatusConflict', 'Local and Drive both changed — sync needed');
-  } else if (remoteNewer) {
-    setBadge('');
-    text.textContent = tr('syncStatusRemoteNewerShort', '☁ Newer');
-    el.title = tr('syncStatusRemoteNewer', 'Newer version on Google Drive — download');
-  } else if (unsynced) {
-    setBadge(`⚠ ${count}`);
-    text.textContent = '';
-    el.title = tr('syncStatusUnsynced', `Unsynced changes (${count}) · last sync: ${when}`, {
-      count: count,
-      time: when,
-    });
+  if (warnBlock) {
+    warnBlock.style.display = showWarn ? 'flex' : 'none';
+    if (showWarn && warnText) {
+      const n = Math.max(1, count);
+      warnText.textContent = n === 1
+        ? tr('driveCardWarningOne', null, '1 warning')
+        : tr('driveCardWarnings', { count: n }, `${n} warnings`);
+    }
+  }
+
+  if (showWarn) {
+    el.title = tr('syncStatusConflict', null, 'Local and Drive both changed — sync needed');
   } else {
-    setBadge('');
-    text.textContent = tr('syncStatusOkShort', '✓ Synced');
-    el.title = tr('syncStatusOk', `All changes synced · ${when}`, { time: when });
+    el.title = tr('syncStatusOk', { time: when }, `All changes synced · ${when}`);
   }
 }
 
@@ -1202,6 +1197,15 @@ function initSync() {
     logoutBtn.onclick = () => {
       closeSideMenu();
       logoutDrive();
+    };
+  }
+
+  // "Details" button inside the Drive card — opens the sync modal
+  const warnMoreBtn = document.getElementById('menuDriveWarnMore');
+  if (warnMoreBtn) {
+    warnMoreBtn.onclick = () => {
+      closeSideMenu();
+      syncWithDrive();
     };
   }
 

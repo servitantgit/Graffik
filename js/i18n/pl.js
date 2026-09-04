@@ -736,5 +736,12 @@ window.translations.pl = {
   syncStatusRemoteNewerShort: '☁ Nowa wersja',
   syncStatusRemoteNewer: '☁ Na Google Drive jest nowsza wersja — pobierz',
   syncStatusConflict: '⚠ Zmiany lokalne i na Drive — zsynchronizuj',
-  syncStatusLogin: 'Zaloguj do Google Drive'
+  syncStatusLogin: 'Zaloguj do Google Drive',
+  driveCardConnected: 'Połączono z Google Drive',
+  driveCardActive: 'Aktywnie',
+  driveCardInactive: 'Nieaktywne',
+  driveCardAccountLabel: 'Konto',
+  driveCardWarnings: '{count} ostrzeżeń',
+  driveCardWarningOne: '1 ostrzeżenie',
+  driveCardDetails: 'Szczegóły'
 };

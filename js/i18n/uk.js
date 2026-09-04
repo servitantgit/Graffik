@@ -738,4 +738,11 @@ window.translations.uk = {
   syncStatusRemoteNewer: '☁ На Google Drive є новіша версія — завантажте',
   syncStatusConflict: '⚠ Локально і на Drive є зміни — синхронізуйте',
   syncStatusLogin: 'Увійти в Google Drive',
+  driveCardConnected: 'Підключено до Google Drive',
+  driveCardActive: 'Активно',
+  driveCardInactive: 'Неактивно',
+  driveCardAccountLabel: 'Акаунт',
+  driveCardWarnings: '{count} попереджень',
+  driveCardWarningOne: '1 попередження',
+  driveCardDetails: 'Детальніше'
 };
