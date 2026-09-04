@@ -633,6 +633,7 @@ window.translations.pl = {
   driveSyncDownload: 'Pobierz',
   driveSyncUpload: 'Wyślij',
   driveDiffTitle: 'Krótki log zmian',
+  driveDiffSignedInAs: 'Zalogowano jako',
   driveDiffLastSync: 'Ostatnia synchronizacja',
   driveDiffUrlops: 'Urlopy',
   driveDiffOvertimes: 'Nadgodziny',
@@ -648,7 +649,8 @@ window.translations.pl = {
   // === LOGOUT UNSYNCED WARNING (v3.7.0) ===
   logoutUnsyncedTitle: '⚠️ Niezapisane zmiany',
   logoutUnsyncedBody: `<p>Masz lokalne zmiany, których jeszcze nie zsynchronizowano z Google Drive.</p>
-     <p><b>Ostatnia synchronizacja:</b> {time}</p>
+     <p><b>Niezsynchronizowanych zmian:</b> {count}</p>
+     <p><b>Ostatnia synchronizacja:</b> {datetime}</p>
      <p style="margin-top:12px;">Jeśli wylogujesz się teraz:</p>
      <ul style="margin:8px 0; padding-left:22px;">
        <li>✅ Dane pozostaną w tej przeglądarce</li>
@@ -728,8 +730,10 @@ window.translations.pl = {
   privacyOnToast: '🔒 Widoczny tylko grafikk fabryczny',
   privacyOffToast: '👤 Widoczne dane osobiste',
   editNeedPrivacyOff: '🔒 Wyłącz tryb prywatności w menu, aby edytować',
+  syncStatusOkShort: '✓ Zsynchronizowano',
   syncStatusOk: 'Wszystkie zmiany zapisane · {time}',
-  syncStatusUnsynced: '⚠ Niezsynchronizowane zmiany · ostatni sync: {time}',
+  syncStatusUnsynced: '⚠ {count} niezsynchronizowanych zmian · ostatnia synchronizacja: {time}',
+  syncStatusRemoteNewerShort: '☁ Nowa wersja',
   syncStatusRemoteNewer: '☁ Na Google Drive jest nowsza wersja — pobierz',
   syncStatusConflict: '⚠ Zmiany lokalne i na Drive — zsynchronizuj',
   syncStatusLogin: 'Zaloguj do Google Drive'

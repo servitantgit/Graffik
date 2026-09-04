@@ -3,6 +3,9 @@
 - **Sync modal** — short change log (vacations, overtime, notes, custom shifts, vacation limits) comparing local counts vs Google Drive; shows last-sync time when there are unsynced changes.
 - **Sync modal buttons** — short mobile-friendly labels + clear ↑/↓ SVG icons on one row; removed duplicate body text (title already covers Drive sync).
 - i18n (pl/en/uk): `driveDiff*`, `driveSyncCancel` / `driveSyncDownload` / `driveSyncUpload`.
+- **Menu Drive status** — compact row with warning ⚠ icon + change-count badge (`changeCount` in `gillette_sync_meta`, tracked offline since last sync); long status texts moved to hover tooltips.
+- **Google account display** — logged-in account (avatar letter + email + 👑 admin badge) shown in the side-menu Drive section; email added to the top-bar logout tooltip and to the sync-modal header.
+- **Detailed last-sync time** — sync modal and logout warning show absolute date-time (`formatLastSyncDateTime()`, localized) plus relative time; sidebar keeps only the compact indicator.
 - Zmieniono nazwę stylu komórek `quiet` na **Kolorowe obramowanie** w interfejsie i lokalizacjach.
 - Styl `quiet` pokazuje teraz kolorowe obramowanie całej komórki oraz kolorowe obramowanie daty; kolory zmian R/P/N pozostają bez zmian.
 - Zaktualizowano FAQ i dokumentację techniczną, aby opisywały aktualne style komórek i nie używały określenia „kropki”.

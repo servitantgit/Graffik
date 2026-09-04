@@ -16,20 +16,21 @@ const SYNC_META_KEY = 'gillette_sync_meta';
 
 /**
  * Reads sync metadata from localStorage.
- * @returns {object} - { lastModified: number, lastSync: number }
+ * @returns {object} - { lastModified: number, lastSync: number, changeCount: number }
  */
 function getSyncMeta() {
   try {
     const raw = localStorage.getItem(SYNC_META_KEY);
-    if (!raw) return { lastModified: 0, lastSync: 0 };
+    if (!raw) return { lastModified: 0, lastSync: 0, changeCount: 0 };
     const parsed = JSON.parse(raw);
     return {
       lastModified: parsed.lastModified || 0,
       lastSync: parsed.lastSync || 0,
+      changeCount: typeof parsed.changeCount === 'number' ? parsed.changeCount : 0,
     };
   } catch (e) {
     console.warn('[sync-tracking] Failed to parse sync meta:', e);
-    return { lastModified: 0, lastSync: 0 };
+    return { lastModified: 0, lastSync: 0, changeCount: 0 };
   }
 }
 
@@ -52,6 +53,7 @@ function setSyncMeta(meta) {
 function updateLastModified() {
   const meta = getSyncMeta();
   meta.lastModified = Date.now();
+  meta.changeCount = (meta.changeCount || 0) + 1;
   setSyncMeta(meta);
 }
 
@@ -62,6 +64,7 @@ function updateLastModified() {
 function updateLastSync() {
   const meta = getSyncMeta();
   meta.lastSync = Date.now();
+  meta.changeCount = 0;
   setSyncMeta(meta);
 }
 
@@ -108,9 +111,48 @@ function timeSinceLastSync() {
   return translate(key, { n: diffDays }, diffDays === 1 ? '1 dzień temu' : diffDays + ' dni temu');
 }
 
+/**
+ * Number of saved changes since the last successful sync.
+ * @returns {number} - 0 when everything is synced; at least 1 when unsynced
+ */
+function getUnsyncedChangeCount() {
+  const meta = getSyncMeta();
+  if (meta.lastModified <= meta.lastSync) return 0;
+  return Math.max(1, Number(meta.changeCount) || 0);
+}
+
+/**
+ * Absolute date-time of the last successful sync in the active UI language.
+ * @returns {string} - e.g. "04.09.2026, 14:23" or '' when never synced
+ */
+function formatLastSyncDateTime() {
+  const meta = getSyncMeta();
+  if (!meta.lastSync) return '';
+  let locale = 'pl-PL';
+  try {
+    if (typeof currentLang === 'string' && currentLang === 'uk') locale = 'uk-UA';
+    else if (typeof currentLang === 'string' && currentLang === 'en') locale = 'en-US';
+  } catch (e) {
+    // i18n not loaded yet — fall back to pl-PL
+  }
+  try {
+    return new Date(meta.lastSync).toLocaleString(locale, {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch (e) {
+    return new Date(meta.lastSync).toLocaleString();
+  }
+}
+
 /* === EXPOSE TO GLOBAL SCOPE === */
 window.updateLastModified = updateLastModified;
 window.updateLastSync = updateLastSync;
 window.hasUnsyncedChanges = hasUnsyncedChanges;
 window.timeSinceLastSync = timeSinceLastSync;
 window.getSyncMeta = getSyncMeta;
+window.getUnsyncedChangeCount = getUnsyncedChangeCount;
+window.formatLastSyncDateTime = formatLastSyncDateTime;

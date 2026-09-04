@@ -632,6 +632,7 @@ window.translations.en = {
   driveSyncDownload: 'Get',
   driveSyncUpload: 'Send',
   driveDiffTitle: 'Short change log',
+  driveDiffSignedInAs: 'Signed in as',
   driveDiffLastSync: 'Last sync',
   driveDiffUrlops: 'Vacations',
   driveDiffOvertimes: 'Overtime',
@@ -647,7 +648,8 @@ window.translations.en = {
   // === LOGOUT UNSYNCED WARNING (v3.7.0) ===
   logoutUnsyncedTitle: '⚠️ Unsaved changes',
   logoutUnsyncedBody: `<p>You have local changes that have not been synced to Google Drive yet.</p>
-     <p><b>Last sync:</b> {time}</p>
+     <p><b>Unsynced changes:</b> {count}</p>
+     <p><b>Last sync:</b> {datetime}</p>
      <p style="margin-top:12px;">If you log out now:</p>
      <ul style="margin:8px 0; padding-left:22px;">
        <li>✅ Data will remain in this browser</li>
@@ -727,8 +729,10 @@ window.translations.en = {
   privacyOnToast: '🔒 Factory schedule only',
   privacyOffToast: '👤 Personal data visible',
   editNeedPrivacyOff: '🔒 Turn off privacy mode in the menu to edit',
+  syncStatusOkShort: '✓ Synced',
   syncStatusOk: 'All changes saved · {time}',
-  syncStatusUnsynced: '⚠ Unsynced changes · last sync: {time}',
+  syncStatusUnsynced: '⚠ {count} unsynced changes · last sync: {time}',
+  syncStatusRemoteNewerShort: '☁ Newer',
   syncStatusRemoteNewer: '☁ Newer version on Google Drive — download',
   syncStatusConflict: '⚠ Local and Drive both changed — sync needed',
   syncStatusLogin: 'Sign in to Google Drive'

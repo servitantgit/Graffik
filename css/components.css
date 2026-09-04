@@ -972,6 +972,62 @@ button.menu-item.menu-sync-status.logged-out {
   background: var(--bg-controls, rgba(127,140,141,0.12));
 }
 
+/* Compact count badge in the sync status row */
+.mi-sync-badge {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  min-width: 24px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #fff;
+  background: #f39c12;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.menu-sync-status.remote-newer .mi-sync-badge {
+  background: #38bdf8;
+}
+
+/* Logged-in Google account line in the Drive menu section */
+.menu-drive-account {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  margin: 0 8px 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.menu-drive-account .mda-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #4285f4;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+.menu-drive-account .mda-email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.menu-drive-account .mda-role {
+  margin-left: auto;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
 .mi-icon.mi-icon-svg {
   display: inline-flex;
   align-items: center;

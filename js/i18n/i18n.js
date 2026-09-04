@@ -24,6 +24,9 @@ function setLanguage(lang) {
   savePrefs(prefs);
   if (typeof updateLocalizedNames === 'function') updateLocalizedNames();
   applyTranslations();
+  // Dynamic Drive UI is not data-i18n driven — refresh after language change
+  if (typeof updateMenuSyncStatus === 'function') updateMenuSyncStatus();
+  if (typeof updateDriveUI === 'function') updateDriveUI();
 }
 
 /* === GET TRANSLATION === */
