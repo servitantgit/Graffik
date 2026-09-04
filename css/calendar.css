@@ -672,15 +672,12 @@ small {
 
 .day-cell .day-note {
   position: absolute;
-  top: 4px;
-  right: 22px; /* left of ot-marker when both present */
+  bottom: 4px;
+  left: 4px;
   z-index: 3;
   font-size: 12px;
   line-height: 1;
   pointer-events: none;
-}
-.day-cell.has-ot .day-note {
-  right: 22px;
 }
 
 
