@@ -673,10 +673,19 @@ small {
 .day-cell .day-note {
   position: absolute;
   bottom: 4px;
-  left: 4px;
-  z-index: 3;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 12px;
   line-height: 1;
+  background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  z-index: 4;
   pointer-events: none;
 }
 
