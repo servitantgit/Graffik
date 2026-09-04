@@ -884,7 +884,7 @@ registerYearData(
         '',
         'N',
         'N',
-        'N',
+        '',
         '',
         '',
         'P',
