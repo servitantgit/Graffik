@@ -343,10 +343,12 @@ window.translations.pl = {
   faqFeaturesNote:
     'W praktyce aplikacja łączy funkcje grafiku, planera, kalendarza i prostego narzędzia do analizy zmian.',
   faqSkinTitle: '🎨 Jakie style komórek są dostępne?',
-  faqSkinDesc: 'W ustawieniach można wybrać jeden z trzech stylów: pełne wypełnienie, spokojny pasek lub kolorowe obramowanie.',
+  faqSkinDesc:
+    'W ustawieniach można wybrać jeden z trzech stylów: pełne wypełnienie, spokojny pasek lub kolorowe obramowanie.',
   faqSkinFull: 'Pełne wypełnienie — cała komórka używa koloru odpowiedniej zmiany.',
   faqSkinStrip: 'Spokojny pasek — neutralna komórka z kolorowym paskiem po lewej stronie.',
-  faqSkinQuiet: 'Kolorowe obramowanie — neutralna komórka z kolorowym obramowaniem zarówno komórki, jak i daty. Kolory R/P/N pozostają bez zmian.',
+  faqSkinQuiet:
+    'Kolorowe obramowanie — neutralna komórka z kolorowym obramowaniem zarówno komórki, jak i daty. Kolory R/P/N pozostają bez zmian.',
   faqSkinVacation: 'Urlop używa tej samej zasady kolorowego obramowania, ale z kolorem urlopu.',
   faqOvertimeTitle: '⏱ Jak dodawać nadgodziny?',
   faqOvertime1: 'Włącz ✏️ tryb edycji',
@@ -386,7 +388,8 @@ window.translations.pl = {
   faqKeyboardNav2: 'Esc — zamknij popup lub wyjdź z edycji',
   faqKeyboardNav3: 'E — włącz/wyłącz edycję',
   faqSaveTitle: '💾 Jak zapisują się dane?',
-  faqSaveDesc: 'Wszystkie zmiany (grafik, urlopy, nadgodziny, notatki) zapisują się od razu w przeglądarce.',
+  faqSaveDesc:
+    'Wszystkie zmiany (grafik, urlopy, nadgodziny, notatki) zapisują się od razu w przeglądarce.',
   faqSaveNote:
     'Po zalogowaniu do Google Drive dane synchronizują się w jeden plik w chmurze. Bez logowania dane są tylko w localStorage przeglądarki.',
   faqSyncTitle: '☁️ Jak działa synchronizacja z Google Drive?',
@@ -737,11 +740,11 @@ window.translations.pl = {
   syncStatusRemoteNewer: '☁ Na Google Drive jest nowsza wersja — pobierz',
   syncStatusConflict: '⚠ Zmiany lokalne i na Drive — zsynchronizuj',
   syncStatusLogin: 'Zaloguj do Google Drive',
-  driveCardConnected: 'Połączono z Google Drive',
+  driveCardConnected: 'Google Drive',
   driveCardActive: 'Aktywnie',
   driveCardInactive: 'Nieaktywne',
   driveCardAccountLabel: 'Konto',
-  driveCardWarnings: '{count} ostrzeżeń',
-  driveCardWarningOne: '1 ostrzeżenie',
-  driveCardDetails: 'Szczegóły'
+  driveCardWarnings: '{count} ',
+  driveCardWarningOne: '1 ',
+  driveCardDetails: 'Szczegóły',
 };

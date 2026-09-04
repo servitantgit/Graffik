@@ -343,10 +343,12 @@ window.translations.en = {
   faqFeaturesNote:
     'In practice, the application combines the functions of a schedule, planner, calendar and a simple analysis tool for shifts.',
   faqSkinTitle: '🎨 What cell styles are available?',
-  faqSkinDesc: 'In settings you can choose one of three styles: full fill, calm strip, or colored outline.',
+  faqSkinDesc:
+    'In settings you can choose one of three styles: full fill, calm strip, or colored outline.',
   faqSkinFull: 'Full fill — the entire cell uses the color of the corresponding shift.',
   faqSkinStrip: 'Calm strip — a neutral cell with a colored strip on the left.',
-  faqSkinQuiet: 'Colored outline — a neutral cell with both the cell border and date outlined in the shift color. R/P/N colors remain unchanged.',
+  faqSkinQuiet:
+    'Colored outline — a neutral cell with both the cell border and date outlined in the shift color. R/P/N colors remain unchanged.',
   faqSkinVacation: 'Vacation uses the same colored-outline principle with the vacation color.',
   faqOvertimeTitle: '⏱ How to add overtime?',
   faqOvertime1: 'Enable ✏️ edit mode',
@@ -736,11 +738,11 @@ window.translations.en = {
   syncStatusRemoteNewer: '☁ Newer version on Google Drive — download',
   syncStatusConflict: '⚠ Local and Drive both changed — sync needed',
   syncStatusLogin: 'Sign in to Google Drive',
-  driveCardConnected: 'Connected to Google Drive',
+  driveCardConnected: 'Google Drive',
   driveCardActive: 'Active',
   driveCardInactive: 'Inactive',
   driveCardAccountLabel: 'Account',
-  driveCardWarnings: '{count} warnings',
-  driveCardWarningOne: '1 warning',
-  driveCardDetails: 'Details'
+  driveCardWarnings: '{count} ',
+  driveCardWarningOne: '1 ',
+  driveCardDetails: 'Details',
 };
