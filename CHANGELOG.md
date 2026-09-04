@@ -6,6 +6,7 @@
 - **Menu Drive status** — compact row with warning ⚠ icon + change-count badge (`changeCount` in `gillette_sync_meta`, tracked offline since last sync); long status texts moved to hover tooltips.
 - **Google account display** — logged-in account (avatar letter + email + 👑 admin badge) shown in the side-menu Drive section; email added to the top-bar logout tooltip and to the sync-modal header.
 - **Detailed last-sync time** — sync modal and logout warning show absolute date-time (`formatLastSyncDateTime()`, localized) plus relative time; sidebar keeps only the compact indicator.
+- **Drive card in the side menu** — replaced the Drive section with a settings-style card: connection status (Drive icon + "Connected to Google Drive" + green-dot "Active" badge), divider, account block (avatar + "Account" label + email), warning block (⚠ + count + "Details →" opening the sync modal), and an outline logout button.
 - Zmieniono nazwę stylu komórek `quiet` na **Kolorowe obramowanie** w interfejsie i lokalizacjach.
 - Styl `quiet` pokazuje teraz kolorowe obramowanie całej komórki oraz kolorowe obramowanie daty; kolory zmian R/P/N pozostają bez zmian.
 - Zaktualizowano FAQ i dokumentację techniczną, aby opisywały aktualne style komórek i nie używały określenia „kropki”.
