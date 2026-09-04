@@ -315,7 +315,7 @@ Graffik/
 'gillette_overtimes_v1' // flat key otKey() = 'year-month-day-brigade'
 'grafik_drive_token' // Google OAuth token
 'grafik_drive_user_email' // logged-in user email
-'gillette_sync_meta' // {lastModified, lastSync}
+'gillette_sync_meta' // {lastModified, lastSync, changeCount}
 \`\`\`
 
 **Brigades:** \`A\`, \`B\`, \`C\`, \`D\`

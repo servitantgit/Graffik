@@ -634,6 +634,7 @@ window.translations.uk = {
   driveSyncDownload: 'З диска',
   driveSyncUpload: 'На диск',
   driveDiffTitle: 'Короткий лог змін',
+  driveDiffSignedInAs: 'Увійшли як',
   driveDiffLastSync: 'Остання синхронізація',
   driveDiffUrlops: 'Відпустки',
   driveDiffOvertimes: 'Надурочні',
@@ -649,7 +650,8 @@ window.translations.uk = {
   // === LOGOUT UNSYNCED WARNING (v3.7.0) ===
   logoutUnsyncedTitle: '⚠️ Незбережені зміни',
   logoutUnsyncedBody: `<p>У вас є локальні зміни, які ще не синхронізовані з Google Drive.</p>
-     <p><b>Остання синхронізація:</b> {time}</p>
+     <p><b>Несинхронізовано змін:</b> {count}</p>
+     <p><b>Остання синхронізація:</b> {datetime}</p>
      <p style="margin-top:12px;">Якщо вийдете зараз:</p>
      <ul style="margin:8px 0; padding-left:22px;">
        <li>✅ Дані залишаться у цьому браузері</li>
@@ -729,8 +731,10 @@ window.translations.uk = {
   privacyOnToast: '🔒 Показано лише заводський графік',
   privacyOffToast: '👤 Показано персональні дані',
   editNeedPrivacyOff: '🔒 Вимкніть режим приватності в меню, щоб редагувати',
+  syncStatusOkShort: '✓ Синхронізовано',
   syncStatusOk: 'Усі зміни збережено · {time}',
-  syncStatusUnsynced: '⚠ Незбережені зміни · останній sync: {time}',
+  syncStatusUnsynced: '⚠ {count} несинхроніз. змін · остання синхронізація: {time}',
+  syncStatusRemoteNewerShort: '☁ Новіша',
   syncStatusRemoteNewer: '☁ На Google Drive є новіша версія — завантажте',
   syncStatusConflict: '⚠ Локально і на Drive є зміни — синхронізуйте',
   syncStatusLogin: 'Увійти в Google Drive',

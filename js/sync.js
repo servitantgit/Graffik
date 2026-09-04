@@ -635,6 +635,7 @@ function updateMenuSyncStatus() {
   const el = document.getElementById('menuSyncStatus');
   const text = document.getElementById('menuSyncStatusText');
   const icon = document.getElementById('menuSyncStatusIcon');
+  const badge = document.getElementById('menuSyncStatusBadge');
   if (!el || !text) return;
   const logged = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : isDriveTokenValid();
   const unsynced = typeof hasUnsyncedChanges === 'function' && hasUnsyncedChanges();
@@ -644,37 +645,58 @@ function updateMenuSyncStatus() {
   el.classList.toggle('remote-newer', !!logged && !!remoteNewer);
   el.classList.toggle('logged-out', !logged);
 
+  const setBadge = (label) => {
+    if (!badge) return;
+    if (label) {
+      badge.textContent = label;
+      badge.style.display = 'inline-flex';
+    } else {
+      badge.textContent = '';
+      badge.style.display = 'none';
+    }
+  };
+
+  const tr = (key, fallback, params) => (typeof t === 'function' ? t(key, params) : fallback);
+
   if (!logged) {
     if (icon) {
       icon.classList.add('mi-icon-svg');
       icon.innerHTML = ICON_GOOGLE_G;
     }
-    text.textContent = typeof t === 'function' ? t('syncStatusLogin') : 'Sign in to Google Drive';
+    text.textContent = tr('syncStatusLogin', 'Sign in to Google Drive');
+    el.title = '';
+    setBadge('');
     return;
   }
-  // Logged in — Drive mark + status text (semantic color on row)
+  // Logged in — compact status row (details in modal / hover tooltip)
   if (icon) {
     icon.classList.add('mi-icon-svg');
     icon.innerHTML = ICON_DRIVE;
   }
+  const when = typeof timeSinceLastSync === 'function' ? timeSinceLastSync() : '';
+  const count = typeof getUnsyncedChangeCount === 'function'
+    ? getUnsyncedChangeCount()
+    : (unsynced ? 1 : 0);
+
   if (remoteNewer && unsynced) {
-    text.textContent =
-      typeof t === 'function' ? t('syncStatusConflict') : 'Local and Drive both changed — sync needed';
+    setBadge(`⚠ ${count}`);
+    text.textContent = '';
+    el.title = tr('syncStatusConflict', 'Local and Drive both changed — sync needed');
   } else if (remoteNewer) {
-    text.textContent =
-      typeof t === 'function' ? t('syncStatusRemoteNewer') : 'Newer version on Google Drive — download';
+    setBadge('');
+    text.textContent = tr('syncStatusRemoteNewerShort', '☁ Newer');
+    el.title = tr('syncStatusRemoteNewer', 'Newer version on Google Drive — download');
   } else if (unsynced) {
-    const when = typeof timeSinceLastSync === 'function' ? timeSinceLastSync() : '';
-    text.textContent =
-      typeof t === 'function'
-        ? t('syncStatusUnsynced', { time: when })
-        : 'Unsaved changes' + (when ? ' · ' + when : '');
+    setBadge(`⚠ ${count}`);
+    text.textContent = '';
+    el.title = tr('syncStatusUnsynced', `Unsynced changes (${count}) · last sync: ${when}`, {
+      count: count,
+      time: when,
+    });
   } else {
-    const when = typeof timeSinceLastSync === 'function' ? timeSinceLastSync() : '';
-    text.textContent =
-      typeof t === 'function'
-        ? t('syncStatusOk', { time: when })
-        : 'All changes synced' + (when ? ' · ' + when : '');
+    setBadge('');
+    text.textContent = tr('syncStatusOkShort', '✓ Synced');
+    el.title = tr('syncStatusOk', `All changes synced · ${when}`, { time: when });
   }
 }
 
@@ -698,10 +720,33 @@ function updateDriveUI() {
   const logoutBtn = document.getElementById('menuDriveLogout');
   const authBtn = document.getElementById('userAuthBtn');
   if (logoutBtn) logoutBtn.style.display = logged ? 'flex' : 'none';
+
+  // Logged-in account line in the Drive menu section
+  const acct = document.getElementById('menuDriveAccount');
+  const acctEmail = document.getElementById('menuDriveAccountEmail');
+  const acctAvatar = document.getElementById('menuDriveAccountAvatar');
+  const acctAdmin = document.getElementById('menuDriveAccountAdmin');
+  if (acct && acctEmail) {
+    if (logged && driveUserEmail) {
+      const emailSafe = typeof escapeHtml === 'function' ? escapeHtml(driveUserEmail) : driveUserEmail;
+      acct.style.display = 'flex';
+      acctEmail.textContent = emailSafe;
+      if (acctAvatar) acctAvatar.textContent = (driveUserEmail[0] || '?').toUpperCase();
+      if (acctAdmin) {
+        const isAdmin = typeof isCurrentUserAdmin === 'function' && isCurrentUserAdmin();
+        acctAdmin.style.display = isAdmin ? 'inline-block' : 'none';
+      }
+    } else {
+      acct.style.display = 'none';
+    }
+  }
+
   if (authBtn) {
     if (logged) {
       authBtn.innerHTML = ICON_DRIVE;
-      authBtn.title = t('logoutFromDrive');
+      authBtn.title = driveUserEmail
+        ? `${t('logoutFromDrive')} · ${driveUserEmail}`
+        : t('logoutFromDrive');
       authBtn.classList.add('auth-logged-in');
     } else {
       authBtn.innerHTML = ICON_GOOGLE_G;
@@ -859,12 +904,22 @@ function formatSyncDiffLog(localStats, remoteStats, hasUnsynced, lastSyncText, r
 
   const tr = (key, fb) => (typeof t === 'function' ? t(key) : fb);
 
-  // No driveSyncBody — title already says "Sync with Google Drive"
+  // Header: signed-in account + detailed last-sync time (absolute + relative)
   let html = '';
-
-  if (hasUnsynced) {
-    html += `<p style="margin:0 0 6px; font-size:13px; color:var(--text-muted);">${tr('driveDiffLastSync', 'Last sync')}: <b>${lastSyncText || '—'}</b></p>`;
+  const signedEmail = typeof driveUserEmail === 'string' && driveUserEmail ? driveUserEmail : '';
+  if (signedEmail) {
+    const emailSafe = typeof escapeHtml === 'function' ? escapeHtml(signedEmail) : signedEmail;
+    html += `<p style="margin:0 0 6px; font-size:13px; color:var(--text-muted);">${tr('driveDiffSignedInAs', 'Signed in as')}: <b>${emailSafe}</b></p>`;
   }
+
+  const lastSyncDetail = typeof formatLastSyncDateTime === 'function' ? formatLastSyncDateTime() : '';
+  let syncTimeHtml = lastSyncText || '—';
+  if (lastSyncDetail) {
+    const neverText = tr('syncNever', 'nigdy');
+    const relative = lastSyncText && lastSyncText !== neverText ? ` (${lastSyncText})` : '';
+    syncTimeHtml = `${lastSyncDetail}${relative}`;
+  }
+  html += `<p style="margin:0 0 6px; font-size:13px; color:var(--text-muted);">${tr('driveDiffLastSync', 'Last sync')}: <b>${syncTimeHtml}</b></p>`;
 
   html += `<div class="sync-diff-log" style="font-size:13px; line-height:1.45; padding:10px 12px; background:var(--bg-controls); border-radius:8px; border:1px solid var(--border-cell); margin:0;">`;
   html += `<div style="font-weight:600; margin-bottom:6px;">${tr('driveDiffTitle', 'Short change log')}</div>`;
@@ -1019,12 +1074,17 @@ function logoutDrive() {
 
   // Has unsynced changes — show warning modal
   const lastSyncText = typeof timeSinceLastSync === 'function' ? timeSinceLastSync() : (typeof t === 'function' ? t('syncUnknown') : 'nieznany');
+  const lastSyncDateTime = typeof formatLastSyncDateTime === 'function' ? formatLastSyncDateTime() : '';
+  const unsyncedCount = typeof getUnsyncedChangeCount === 'function' ? getUnsyncedChangeCount() : 0;
+  const syncWhen = lastSyncDateTime ? `${lastSyncDateTime} (${lastSyncText})` : lastSyncText;
+  const bodyParams = { count: unsyncedCount, datetime: syncWhen };
 
   const title = (typeof t === 'function' && t('logoutUnsyncedTitle')) || '⚠️ Unsaved changes';
   const body =
-    (typeof t === 'function' && t('logoutUnsyncedBody', { time: lastSyncText })) ||
+    (typeof t === 'function' && t('logoutUnsyncedBody', bodyParams)) ||
     `<p>Masz lokalne zmiany, których jeszcze nie zsynchronizowano z Google Drive.</p>
-     <p><b>Ostatnia synchronizacja:</b> ${lastSyncText}</p>
+     <p><b>Niezsynchronizowanych zmian:</b> ${unsyncedCount}</p>
+     <p><b>Ostatnia synchronizacja:</b> ${syncWhen}</p>
      <p style="margin-top:12px;">Jeśli wylogujesz się teraz:</p>
      <ul style="margin:8px 0; padding-left:22px;">
        <li>✅ Dane pozostaną w tej przeglądarce</li>
