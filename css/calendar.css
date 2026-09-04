@@ -610,18 +610,10 @@ small {
   filter: brightness(1.1);
 }
 
-
-
-
-
 /* Pozwól kalendarzowi miesięcznemu przewijać się na małych/mobilnych ekranach (naprawia miesiące potrzebujące 6 wierszy, np. sierpień) */
-
 
 /* Poprawka dla niskich wysokości viewportu (telefony w poziomie, małe okna): pozwól kalendarzowi przewijać się
    w pionie, aby miesiące potrzebujące 6 wierszy (np. sierpień) nie ucinały ostatniego tygodnia. */
-
-
-
 
 /* === INFO PANEL SECTIONS === */
 .info-section {
@@ -682,13 +674,12 @@ small {
   justify-content: center;
   font-size: 12px;
   line-height: 1;
-  background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+  background: linear-gradient(135deg, #212222, #212222);
   color: #fff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
   z-index: 4;
   pointer-events: none;
 }
-
 
 /* ===== CELL SKINS (body.skin-*) ===== */
 
@@ -714,14 +705,31 @@ body.skin-strip .day-cell.urlop::before {
   border-radius: 10px 0 0 10px;
   z-index: 1;
 }
-body.skin-strip .day-cell.cell-R::before { background: var(--color-R); }
-body.skin-strip .day-cell.cell-P::before { background: var(--color-P); }
-body.skin-strip .day-cell.cell-N::before { background: var(--color-N); }
-body.skin-strip .day-cell.urlop::before { background: var(--color-U); }
+body.skin-strip .day-cell.cell-R::before {
+  background: var(--color-R);
+}
+body.skin-strip .day-cell.cell-P::before {
+  background: var(--color-P);
+}
+body.skin-strip .day-cell.cell-N::before {
+  background: var(--color-N);
+}
+body.skin-strip .day-cell.urlop::before {
+  background: var(--color-U);
+}
 
-body.skin-strip .day-cell.cell-R .day-shift { color: var(--color-R); text-shadow: none; }
-body.skin-strip .day-cell.cell-P .day-shift { color: var(--color-P); text-shadow: none; }
-body.skin-strip .day-cell.cell-N .day-shift { color: var(--color-N); text-shadow: none; }
+body.skin-strip .day-cell.cell-R .day-shift {
+  color: var(--color-R);
+  text-shadow: none;
+}
+body.skin-strip .day-cell.cell-P .day-shift {
+  color: var(--color-P);
+  text-shadow: none;
+}
+body.skin-strip .day-cell.cell-N .day-shift {
+  color: var(--color-N);
+  text-shadow: none;
+}
 body.skin-strip .day-cell.cell-R .day-num,
 body.skin-strip .day-cell.cell-P .day-num,
 body.skin-strip .day-cell.cell-N .day-num {
@@ -751,9 +759,15 @@ body.skin-quiet .day-cell.cell-N {
   color: var(--text-main);
   box-shadow: none;
 }
-body.skin-quiet .day-cell.cell-R { border-color: var(--color-R); }
-body.skin-quiet .day-cell.cell-P { border-color: var(--color-P); }
-body.skin-quiet .day-cell.cell-N { border-color: var(--color-N); }
+body.skin-quiet .day-cell.cell-R {
+  border-color: var(--color-R);
+}
+body.skin-quiet .day-cell.cell-P {
+  border-color: var(--color-P);
+}
+body.skin-quiet .day-cell.cell-N {
+  border-color: var(--color-N);
+}
 body.skin-quiet .day-cell.cell-R::after,
 body.skin-quiet .day-cell.cell-P::after,
 body.skin-quiet .day-cell.cell-N::after {
@@ -782,9 +796,15 @@ body.skin-quiet .day-cell.cell-N .day-num {
   line-height: 1;
   padding: 1px;
 }
-body.skin-quiet .day-cell.cell-R .day-num { border-color: var(--color-R); }
-body.skin-quiet .day-cell.cell-P .day-num { border-color: var(--color-P); }
-body.skin-quiet .day-cell.cell-N .day-num { border-color: var(--color-N); }
+body.skin-quiet .day-cell.cell-R .day-num {
+  border-color: var(--color-R);
+}
+body.skin-quiet .day-cell.cell-P .day-num {
+  border-color: var(--color-P);
+}
+body.skin-quiet .day-cell.cell-N .day-num {
+  border-color: var(--color-N);
+}
 
 body.skin-quiet .day-cell.urlop {
   background: var(--bg-cell) !important;
