@@ -160,6 +160,7 @@ if (!prefs.urlopLimits) prefs.urlopLimits = {};
  
  function resetFactoryDrafts() {
    factoryDrafts = {};
+   if (typeof window !== 'undefined') window.factoryDrafts = factoryDrafts;
    saveFactoryDrafts(factoryDrafts);
  }
  
@@ -762,3 +763,5 @@ function countPersonalCustomShifts() {
     window.resetFactoryDrafts = resetFactoryDrafts;
     window.copyPersonalYearToFactoryDraft = copyPersonalYearToFactoryDraft;
     window.countFactoryDraftChanges = countFactoryDraftChanges;
+    window.clearLocalPersonalData = clearLocalPersonalData;
+    window.factoryDrafts = factoryDrafts;
