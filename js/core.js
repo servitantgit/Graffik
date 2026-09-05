@@ -60,21 +60,134 @@ function loadOvertimes() {
   }
 }
 function saveOvertimes(o) {
-  localStorage.setItem(OVERTIMES_KEY, JSON.stringify(o));
-  if (typeof updateLastModified === 'function') updateLastModified();
-}
-
-/* === Persistent state === */
-const prefs = loadPrefs();
-const notes = loadNotes();
-const urlops = loadUrlops();
-let customSchedule = loadCustomSchedule();
-let overtimes = loadOvertimes();
+   localStorage.setItem(OVERTIMES_KEY, JSON.stringify(o));
+   if (typeof updateLastModified === 'function') updateLastModified();
+ }
+ 
+ function loadFactoryDrafts() {
+   try {
+     return JSON.parse(localStorage.getItem(FACTORY_DRAFTS_KEY)) || {};
+   } catch (e) {
+     return {};
+   }
+ }
+ 
+ function saveFactoryDrafts(drafts) {
+   localStorage.setItem(FACTORY_DRAFTS_KEY, JSON.stringify(drafts));
+   if (typeof updateLastModified === 'function') updateLastModified();
+ }
+ 
+ /* === Persistent state === */
+ const prefs = loadPrefs();
+ const notes = loadNotes();
+ const urlops = loadUrlops();
+ let customSchedule = loadCustomSchedule();
+ let overtimes = loadOvertimes();
+ let factoryDrafts = loadFactoryDrafts();
 
 if (!prefs.urlopLimits) prefs.urlopLimits = {};
-['A', 'B', 'C', 'D'].forEach((brigade) => {
-  if (prefs.urlopLimits[brigade] === undefined) prefs.urlopLimits[brigade] = URLOP_LIMIT;
-});
+ ['A', 'B', 'C', 'D'].forEach((brigade) => {
+   if (prefs.urlopLimits[brigade] === undefined) prefs.urlopLimits[brigade] = URLOP_LIMIT;
+ });
+
+ /* === Factory drafts === */
+ function getFactoryShift(year, month, day, brigade) {
+   if (factoryDrafts[year] && factoryDrafts[year][month] && factoryDrafts[year][month][brigade]) {
+     const arr = factoryDrafts[year][month][brigade];
+     if (day >= 1 && day <= arr.length) {
+       return arr[day - 1];
+     }
+   }
+   return null;
+ }
+ 
+ function getFactoryDraftShiftAt(year, month, day, brigade) {
+   const draft = getFactoryShift(year, month, day, brigade);
+   if (draft !== null) {
+     return draft;
+   }
+   // fallback to public factory schedule
+   if (factorySchedule[year] && factorySchedule[year][month] && factorySchedule[year][month][brigade]) {
+     const arr = factorySchedule[year][month][brigade];
+     if (day >= 1 && day <= arr.length) {
+       return arr[day - 1];
+     }
+   }
+   return null;
+ }
+ 
+ function ensureFactoryDraftYear(year) {
+   if (!factoryDrafts[year]) {
+     factoryDrafts[year] = {};
+     for (let m = 1; m <= 12; m++) {
+       factoryDrafts[year][m] = { A: [], B: [], C: [], D: [] };
+     }
+   }
+   for (let m = 1; m <= 12; m++) {
+     if (!factoryDrafts[year][m]) {
+       factoryDrafts[year][m] = { A: [], B: [], C: [], D: [] };
+     }
+     const dim = new Date(year, m, 0).getDate();
+     ['A', 'B', 'C', 'D'].forEach((b) => {
+       if (!Array.isArray(factoryDrafts[year][m][b])) {
+         factoryDrafts[year][m][b] = new Array(dim).fill('');
+       }
+       while (factoryDrafts[year][m][b].length < dim) {
+         factoryDrafts[year][m][b].push('');
+       }
+       if (factoryDrafts[year][m][b].length > dim) {
+         factoryDrafts[year][m][b].length = dim;
+       }
+     });
+   }
+ }
+ 
+ function setFactoryDraftShift(year, month, day, brigade, value) {
+   ensureFactoryDraftYear(year);
+   factoryDrafts[year][month][brigade][day - 1] = value;
+   saveFactoryDrafts(factoryDrafts);
+ }
+ 
+ function hasFactoryDraftData(year) {
+   return !!factoryDrafts[year];
+ }
+ 
+ function clearFactoryDraftYear(year) {
+   if (factoryDrafts[year]) {
+     delete factoryDrafts[year];
+     saveFactoryDrafts(factoryDrafts);
+   }
+ }
+ 
+ function resetFactoryDrafts() {
+   factoryDrafts = {};
+   saveFactoryDrafts(factoryDrafts);
+ }
+ 
+ function copyPersonalYearToFactoryDraft(year) {
+   if (customSchedule[year]) {
+     factoryDrafts[year] = JSON.parse(JSON.stringify(customSchedule[year]));
+     saveFactoryDrafts(factoryDrafts);
+   }
+ }
+ 
+ function countFactoryDraftChanges() {
+   let count = 0;
+   const walk = (obj) => {
+     if (!obj || typeof obj !== 'object') return;
+     if (Array.isArray(obj)) {
+       obj.forEach((v) => {
+         if (v != null && v !== '' && v !== 0) count++;
+       });
+       return;
+     }
+     Object.keys(obj).forEach((k) => walk(obj[k]));
+   };
+   walk(factoryDrafts);
+   return count;
+ }
+ 
+ /* === Limity urlopu === */
 
 /* === Accessibility preferences === */
 if (typeof prefs.reduceMotion === 'undefined') prefs.reduceMotion = false;
@@ -660,9 +773,23 @@ function countPersonalCustomShifts() {
        }
      }
 
-     // Update sync tracking (the save functions above should have called updateLastModified)
-     // Show localized success toast
-     if (typeof showToast === 'function' && typeof t === 'function') {
-       showToast('success', t('settingsPrivacyClearSuccess'));
-     }
+// Update sync tracking (the save functions above should have called updateLastModified)
+      // Show localized success toast
+      if (typeof showToast === 'function' && typeof t === 'function') {
+        showToast('success', t('settingsPrivacyClearSuccess'));
+      }
+    }
+
+    /* === Expose factory draft functions to window === */
+    window.loadFactoryDrafts = loadFactoryDrafts;
+    window.saveFactoryDrafts = saveFactoryDrafts;
+    window.getFactoryShift = getFactoryShift;
+    window.getFactoryDraftShiftAt = getFactoryDraftShiftAt;
+    window.ensureFactoryDraftYear = ensureFactoryDraftYear;
+    window.setFactoryDraftShift = setFactoryDraftShift;
+    window.hasFactoryDraftData = hasFactoryDraftData;
+    window.clearFactoryDraftYear = clearFactoryDraftYear;
+    window.resetFactoryDrafts = resetFactoryDrafts;
+    window.copyPersonalYearToFactoryDraft = copyPersonalYearToFactoryDraft;
+    window.countFactoryDraftChanges = countFactoryDraftChanges;
    }

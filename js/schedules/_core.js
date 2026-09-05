@@ -151,6 +151,7 @@ const NOTES_KEY = 'gillette_notes_v1';
 const URLOPS_KEY = 'gillette_urlops_v1';
 const CUSTOM_SCHEDULE_KEY = 'gillette_custom_schedule_v2';
 const OVERTIMES_KEY = 'gillette_overtimes_v1';
+const FACTORY_DRAFTS_KEY = 'gillette_factory_drafts_v1';
 
 /* === HELPER FUNCTIONS === */
 
