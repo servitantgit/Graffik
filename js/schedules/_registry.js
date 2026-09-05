@@ -149,6 +149,8 @@ function setPrivacyMode(on) {
 /* === EXPOSE TO GLOBAL SCOPE === */
 window.scheduleRegistry = scheduleRegistry;
 window.AVAILABLE_YEARS = AVAILABLE_YEARS;
+window.factorySchedule = factorySchedule;
+window.factoryMonthHours = factoryMonthHours;
 window.registerSchedule = registerSchedule;
 window.registerYearData = registerYearData;
 window.shouldShowPersonalData = shouldShowPersonalData;

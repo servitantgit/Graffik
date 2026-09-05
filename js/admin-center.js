@@ -10,6 +10,36 @@ let factoryPaintYear = null;
 let factoryPaintMonth = null;
 let factoryPaintActive = false;
 
+/* Resolve schedule globals: top-level `const`/`let` are NOT on window. */
+function getFactoryScheduleObj() {
+  try {
+    if (typeof factorySchedule !== 'undefined' && factorySchedule) return factorySchedule;
+  } catch (_) {}
+  return (typeof window !== 'undefined' && window.factorySchedule) || {};
+}
+function getCustomScheduleObj() {
+  try {
+    if (typeof customSchedule !== 'undefined' && customSchedule) return customSchedule;
+  } catch (_) {}
+  return (typeof window !== 'undefined' && window.customSchedule) || {};
+}
+function getAvailableScheduleYears() {
+  const years = new Set();
+  try {
+    if (typeof AVAILABLE_YEARS !== 'undefined' && Array.isArray(AVAILABLE_YEARS)) {
+      AVAILABLE_YEARS.forEach((y) => years.add(Number(y)));
+    }
+  } catch (_) {}
+  try {
+    if (typeof window !== 'undefined' && Array.isArray(window.AVAILABLE_YEARS)) {
+      window.AVAILABLE_YEARS.forEach((y) => years.add(Number(y)));
+    }
+  } catch (_) {}
+  Object.keys(getFactoryScheduleObj()).forEach((y) => years.add(Number(y)));
+  Object.keys(getCustomScheduleObj()).forEach((y) => years.add(Number(y)));
+  return [...years].filter((y) => y > 2000 && y < 2100).sort((a, b) => a - b);
+}
+
 /* === FACTORY PAINTING MODE CONTROLS === */
 
 /**
@@ -147,8 +177,8 @@ function getFactoryScheduleForYear(year) {
   if (!window.requireAdmin()) return null;
   
   // Get merged schedule (factory + custom) - same as what actions.js uses for export
-  const factory = window.factorySchedule && window.factorySchedule[year] || {};
-  const custom = window.customSchedule && window.customSchedule[year] || {};
+  const factory = getFactoryScheduleObj()[year] || {};
+  const custom = getCustomScheduleObj()[year] || {};
   
   // For admin view, we want to show factory schedule as base, with custom overlay
   // But in factory painting mode, we work directly with factoryDrafts
@@ -177,8 +207,8 @@ function getFactoryDraftForYear(year) {
  */
 function mergeFactoryWithCustom(year) {
   const merged = {};
-  const factory = window.factorySchedule && window.factorySchedule[year] || {};
-  const custom = window.customSchedule && window.customSchedule[year] || {};
+  const factory = getFactoryScheduleObj()[year] || {};
+  const custom = getCustomScheduleObj()[year] || {};
   const brigades = ['A', 'B', 'C', 'D'];
 
   for (let m = 1; m <= 12; m++) {
@@ -275,10 +305,12 @@ function exportFactorySchedule() {
     return;
   }
   
-  // Get list of available years (from factorySchedule and customSchedule combined)
-  const factoryYears = window.factorySchedule && Object.keys(window.factorySchedule || {}).map(Number) || [];
-  const customYears = window.customSchedule && Object.keys(window.customSchedule || {}).map(Number) || [];
-  const allYears = [...new Set([...factoryYears, ...customYears])].sort();
+  // Get list of available years (factory + custom + registry)
+  const fs = getFactoryScheduleObj();
+  const cs = getCustomScheduleObj();
+  const factoryYears = Object.keys(fs).map(Number);
+  const customYears = Object.keys(cs).map(Number);
+  const allYears = getAvailableScheduleYears();
 
   if (allYears.length === 0) {
     showToast('error', t('adminExportNoData') || 'No data to export');
@@ -701,9 +733,13 @@ function renderAdminCenterTab(tabId, bodyElement) {
   switch (tabId) {
     case 'factory':
       contentEl.innerHTML = renderFactoryEditorTab();
+      populateFactoryYearPicker(contentEl);
+      bindFactoryEditorTab(contentEl);
       break;
     case 'export':
       contentEl.innerHTML = renderExportTab();
+      populateExportYearList(contentEl);
+      bindExportTab(contentEl);
       break;
     case 'guide':
       contentEl.innerHTML = renderGuideContent();
@@ -713,6 +749,46 @@ function renderAdminCenterTab(tabId, bodyElement) {
       break;
     default:
       contentEl.innerHTML = `<p>${t('adminCenterTabNotFound') || 'Tab not found'}</p>`;
+  }
+}
+
+function bindFactoryEditorTab(root) {
+  const startBtn = root.querySelector('#factoryStartEditBtn');
+  if (startBtn) {
+    startBtn.onclick = () => {
+      const picker = root.querySelector('#factoryYearPicker');
+      const year = picker ? parseInt(picker.value, 10) : new Date().getFullYear();
+      if (!year || isNaN(year)) {
+        showToast('error', t('adminInvalidYear') || 'Invalid year');
+        return;
+      }
+      activateFactoryPaintMode(year);
+      const status = root.querySelector('#factoryEditorStatusText');
+      if (status) status.textContent = t('factoryEditorActive') || 'Active';
+      // Close admin panel so calendar is usable
+      if (typeof closeAppPanel === 'function') closeAppPanel();
+      else if (typeof window.closeAppPanel === 'function') window.closeAppPanel();
+    };
+  }
+  const exportBtn = root.querySelector('#factoryExportBtn');
+  if (exportBtn) {
+    exportBtn.onclick = () => {
+      if (typeof exportFactorySchedule === 'function') exportFactorySchedule();
+    };
+  }
+}
+
+function bindExportTab(root) {
+  const exportBtn = root.querySelector('#exportActionBtn');
+  if (exportBtn) {
+    exportBtn.onclick = () => {
+      const year = window.selectedExportYear;
+      if (year === undefined || year === null) {
+        showToast('error', t('adminExportNoData') || 'No year selected');
+        return;
+      }
+      generateAndDownloadDataJs(Number(year));
+    };
   }
 }
 
@@ -882,21 +958,19 @@ if (document.readyState === 'loading') {
 /**
  * Populates the factory year picker dropdown
  */
-function populateFactoryYearPicker() {
-  const picker = document.getElementById('factoryYearPicker');
+function populateFactoryYearPicker(root) {
+  const scope = root || document;
+  const picker = scope.querySelector ? scope.querySelector('#factoryYearPicker') : document.getElementById('factoryYearPicker');
   if (!picker) return;
   
-  // Get available years from factory schedule and custom schedule
-  const factoryYears = window.factorySchedule && Object.keys(window.factorySchedule || {}).map(Number) || [];
-  const customYears = window.customSchedule && Object.keys(window.customSchedule || {}).map(Number) || [];
-  const allYears = [...new Set([...factoryYears, ...customYears])].sort();
-  
-  // Add some future years for planning
+  const allYears = getAvailableScheduleYears();
   const currentYear = new Date().getFullYear();
   const futureYears = [];
-  for (let y = currentYear + 1; y <= currentYear + 5; y++) {
+  for (let y = currentYear; y <= currentYear + 5; y++) {
     futureYears.push(y);
   }
+  // Always include recent past year for editing continuity
+  futureYears.push(currentYear - 1);
   
   const yearsToShow = [...new Set([...allYears, ...futureYears])].sort((a, b) => a - b);
   
@@ -904,25 +978,28 @@ function populateFactoryYearPicker() {
   yearsToShow.forEach(year => {
     const option = document.createElement('option');
     option.value = year;
-    option.textContent = year;
+    option.textContent = String(year);
     picker.appendChild(option);
   });
   
-  // Set to current year by default
-  picker.value = currentYear;
+  // Prefer current year, else first available
+  if (yearsToShow.includes(currentYear)) picker.value = String(currentYear);
+  else if (yearsToShow.length) picker.value = String(yearsToShow[0]);
 }
 
 /**
  * Populates the export year list
  */
-function populateExportYearList() {
-  const listEl = document.getElementById('exportYearList');
+function populateExportYearList(root) {
+  const scope = root || document;
+  const listEl = scope.querySelector ? scope.querySelector('#exportYearList') : document.getElementById('exportYearList');
   if (!listEl) return;
   
-  // Get available years from factory schedule and custom schedule
-  const factoryYears = window.factorySchedule && Object.keys(window.factorySchedule || {}).map(Number) || [];
-  const customYears = window.customSchedule && Object.keys(window.customSchedule || {}).map(Number) || [];
-  const allYears = [...new Set([...factoryYears, ...customYears])].sort();
+  const fs = getFactoryScheduleObj();
+  const cs = getCustomScheduleObj();
+  const factoryYears = Object.keys(fs).map(Number);
+  const customYears = Object.keys(cs).map(Number);
+  const allYears = getAvailableScheduleYears();
   
   if (allYears.length === 0) {
     listEl.innerHTML = `<p style="color:var(--text-muted);">${t('adminExportNoData') || 'No data to export'}</p>`;
@@ -941,29 +1018,30 @@ function populateExportYearList() {
     const yearEl = document.createElement('div');
     yearEl.className = 'export-year-item';
     yearEl.innerHTML = `
-      <button class="export-year-btn" data-year="${year}" title="${title}" style="width:100%; text-align:left; padding:10px; margin:4px 0; border:1px solid var(--border-cell); background:var(--bg-cell); color:var(--text-main); border-radius:4px; cursor:pointer;">
+      <button type="button" class="export-year-btn" data-year="${year}" title="${title}" style="width:100%; text-align:left; padding:10px; margin:4px 0; border:1px solid var(--border-cell); background:var(--bg-cell); color:var(--text-main); border-radius:4px; cursor:pointer;">
         <span>${label}</span>
       </button>
     `;
     
-    yearEl.querySelector('.export-year-btn').onclick = () => {
-      // Select this year
-      document.querySelectorAll('.export-year-btn').forEach(btn => {
-        btn.classList.toggle('active', btn === yearEl.querySelector('.export-year-btn'));
+    yearEl.querySelector('.export-year-btn').onclick = (ev) => {
+      const btn = ev.currentTarget;
+      listEl.querySelectorAll('.export-year-btn').forEach(b => {
+        b.classList.toggle('active', b === btn);
+        b.style.borderColor = b === btn ? 'var(--text-header)' : 'var(--border-cell)';
+        b.style.background = b === btn ? 'var(--bg-controls)' : 'var(--bg-cell)';
       });
-      
-      // Store selected year for export
       window.selectedExportYear = year;
     };
     
     listEl.appendChild(yearEl);
   });
   
-  // Select first year by default
   if (allYears.length > 0) {
     const firstBtn = listEl.querySelector('.export-year-btn');
     if (firstBtn) {
       firstBtn.classList.add('active');
+      firstBtn.style.borderColor = 'var(--text-header)';
+      firstBtn.style.background = 'var(--bg-controls)';
       window.selectedExportYear = allYears[0];
     }
   }
