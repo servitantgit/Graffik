@@ -352,7 +352,7 @@ function notifyCurrentShift() {
     localStorage.setItem('grafik_last_notified', key);
 
     const [sh, eh] = hours;
-    const timeRange = `${String(sh).padStart(2, '0')}:00 – ${String(eh % 24).padStart(2, '0')}:00}`;
+    const timeRange = `${String(sh).padStart(2, '0')}:00 – ${String(eh % 24).padStart(2, '0')}:00`;
     // Use the existing shift names (shiftLongNames / shiftEmoji from data.js) instead of duplicating translations
     const shiftLabel = `${shiftEmoji[s] || ''} ${shiftLongNames[s] || s}`;
 
@@ -372,6 +372,19 @@ function notifyCurrentShift() {
       notification.close();
     };
   }
+}
+
+/* === INIT === */
+function initPwa() {
+  registerServiceWorker();
+  setupInstallPrompt();
+
+  // Restore the last notification state.
+  lastNotified = localStorage.getItem('grafik_last_notified');
+
+  // Check every minute for the selected shift.
+  window._notifyTimer = setInterval(notifyCurrentShift, 60000);
+  notifyCurrentShift();
 }
 
 /* FAQ and About moved to full-screen panels (see app-shell.js and ui.js) */

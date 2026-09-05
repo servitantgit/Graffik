@@ -509,7 +509,7 @@ function renderDangerZoneContent() {
       
       <div style="margin-top:12px;">
         <h4>${t('adminResetAllData') || 'Reset all personal data'}</h4>
-        <p>${t('adminDangerZoneResetPersonalDesc') || 'Clear all personal data (schedule, notes, urlops, etc.) for the current user.'</p>
+        <p>${t('adminDangerZoneResetPersonalDesc') || 'Clear all personal data (schedule, notes, urlops, etc.) for the current user.'}</p>
         <button class="admin-danger-btn" onclick="handleResetPersonalData()">
           ${t('adminResetAllData') || 'Reset all personal data'}
         </button>

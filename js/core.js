@@ -275,34 +275,10 @@ function setShift(year, month, day, brigade, value) {
 }
 
 /* === Utility === */
-function escapeHtml(value) {
-  const A = String.fromCharCode(38),
-    L = String.fromCharCode(60),
-    G = String.fromCharCode(62),
-    Q = String.fromCharCode(34),
-    P = String.fromCharCode(39);
-  return String(value != null ? value : '')
-    .split(A)
-    .join(A + 'amp;')
-    .split(L)
-    .join(A + 'lt;')
-    .split(G)
-    .join(A + 'gt;')
-    .split(Q)
-    .join(A + 'quot;')
-    .split(P)
-    .join(A + '#39;');
-}
 function getElementByIdSafe(id) {
   const el = document.getElementById(id);
   if (!el) console.warn(`Missing element: ${id}`);
   return el;
-}
-function daysInMonthCal(year, month) {
-  return new Date(year, month, 0).getDate();
-}
-function isWolne(s) {
-  return s === '' || s === null || s === undefined;
 }
 function getShiftAt(year, month, day, brigade) {
   if (month < 1 || month > 12) return null;
@@ -588,11 +564,6 @@ function removeOvertime(year, month, day, brigade, position) {
   setOvertime(year, month, day, brigade, position, null);
 }
 
-function formatTimeRange(from, to) {
-  const fmt = (h) => String(Math.floor(h)).padStart(2, '0') + ':00';
-  return `${fmt(from)} – ${fmt(to)}`;
-}
-
 function getActualWorkTime(year, month, day, brigade, shift) {
   if (isWolne(shift)) return null;
   const ot = getOvertimes(year, month, day, brigade);
@@ -791,4 +762,3 @@ function countPersonalCustomShifts() {
     window.resetFactoryDrafts = resetFactoryDrafts;
     window.copyPersonalYearToFactoryDraft = copyPersonalYearToFactoryDraft;
     window.countFactoryDraftChanges = countFactoryDraftChanges;
-   }

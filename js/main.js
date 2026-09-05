@@ -284,8 +284,9 @@ if (
       hideModal();
       return;
     }
-    if (document.getElementById('faqOverlay').classList.contains('show')) {
-      document.getElementById('faqOverlay').classList.remove('show');
+    const faqOverlay = document.getElementById('faqOverlay');
+    if (faqOverlay && faqOverlay.classList.contains('show')) {
+      faqOverlay.classList.remove('show');
       return;
     }
     if (typeof isSideMenuOpen === 'function' && isSideMenuOpen()) {
