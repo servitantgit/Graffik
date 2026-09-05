@@ -200,6 +200,11 @@ function goToMonth(delta) {
     return;
   }
   selectedDay = null;
+  if (typeof syncFactoryPaintPeriodFromCalendar === 'function') {
+    syncFactoryPaintPeriodFromCalendar();
+  } else if (typeof window.syncFactoryPaintPeriodFromCalendar === 'function') {
+    window.syncFactoryPaintPeriodFromCalendar();
+  }
   refreshViews();
 }
 window.goToMonth = goToMonth;
@@ -210,6 +215,11 @@ function goToYear(delta, keepMonth) {
   if (!keepMonth) selectedDay = null;
   prefs.year = currentYear;
   savePrefs(prefs);
+  if (typeof syncFactoryPaintPeriodFromCalendar === 'function') {
+    syncFactoryPaintPeriodFromCalendar();
+  } else if (typeof window.syncFactoryPaintPeriodFromCalendar === 'function') {
+    window.syncFactoryPaintPeriodFromCalendar();
+  }
   refreshViews();
 }
 window.goToYear = goToYear;
@@ -231,38 +241,31 @@ if (
     return;
   
   // Handle factory painting mode keyboard shortcuts
-  if (factoryPaintActive) {
+  const paintOn =
+    (typeof factoryPaintActive !== 'undefined' && factoryPaintActive) ||
+    window.factoryPaintActive === true;
+  if (paintOn) {
     switch (e.key.toUpperCase()) {
       case 'R':
       case 'P':
       case 'N':
       case 'W':
         e.preventDefault();
-        window.activateFactoryPaintTool(e.key.toUpperCase());
+        if (typeof window.activateFactoryPaintTool === 'function') {
+          window.activateFactoryPaintTool(e.key.toUpperCase());
+        }
         break;
       case 'ArrowLeft':
         e.preventDefault();
-        if (factoryPaintActive) {
-          factoryPaintMonth = factoryPaintMonth === 1 ? 12 : factoryPaintMonth - 1;
-          window.updateFactoryEditorContext();
-          if (typeof refreshViews === 'function') {
-            refreshViews();
-          }
-        }
+        goToPeriod(-1);
         break;
       case 'ArrowRight':
         e.preventDefault();
-        if (factoryPaintActive) {
-          factoryPaintMonth = factoryPaintMonth === 12 ? 1 : factoryPaintMonth + 1;
-          window.updateFactoryEditorContext();
-          if (typeof refreshViews === 'function') {
-            refreshViews();
-          }
-        }
+        goToPeriod(1);
         break;
       case 'Escape':
         e.preventDefault();
-        if (factoryPaintActive) {
+        if (typeof window.deactivateFactoryPaintMode === 'function') {
           window.deactivateFactoryPaintMode();
         }
         break;

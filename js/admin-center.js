@@ -53,22 +53,41 @@ function activateFactoryPaintMode(year) {
   }
   
   factoryPaintYear = year;
-  factoryPaintMonth = new Date().getMonth() + 1; // Start with current month
-  factoryPaintMode = null;
+  // Sync with the calendar period so day clicks match
+  try {
+    if (typeof currentYear !== 'undefined') currentYear = year;
+    if (typeof currentMonth !== 'undefined' && currentMonth >= 1 && currentMonth <= 12) {
+      factoryPaintMonth = currentMonth;
+    } else {
+      factoryPaintMonth = new Date().getMonth() + 1;
+      if (typeof currentMonth !== 'undefined') currentMonth = factoryPaintMonth;
+    }
+  } catch (_) {
+    factoryPaintMonth = new Date().getMonth() + 1;
+  }
+  factoryPaintMode = 'R';
   factoryPaintActive = true;
+  // Expose state for other modules (calendar.js, main.js)
+  window.factoryPaintActive = true;
+  window.factoryPaintYear = factoryPaintYear;
+  window.factoryPaintMonth = factoryPaintMonth;
+  window.factoryPaintMode = factoryPaintMode;
   
-  // Show factory editor bar
+  // Switch to month view for painting
+  if (typeof switchView === 'function') switchView('month');
+  else if (typeof window.switchView === 'function') window.switchView('month');
+  
+  // Show factory editor bar and bind tools
   const factoryEditorBar = document.getElementById('factoryEditorBar');
   if (factoryEditorBar) {
     factoryEditorBar.style.display = 'flex';
-    updateFactoryEditorContext();
-    activateFactoryPaintTool('R'); // Default to R shift
   }
+  bindFactoryEditorBar();
+  activateFactoryPaintTool('R');
+  updateFactoryEditorContext();
   
-  // Refresh views to show factory painting mode
-  if (typeof refreshViews === 'function') {
-    refreshViews();
-  }
+  if (typeof refreshViews === 'function') refreshViews();
+  else if (typeof updateAppShellUI === 'function') updateAppShellUI();
   
   showToast('info', t('factoryEditorActive') || 'Factory editor active - use R/P/N/W keys to paint');
 }
@@ -81,17 +100,15 @@ function deactivateFactoryPaintMode() {
   factoryPaintMode = null;
   factoryPaintYear = null;
   factoryPaintMonth = null;
+  window.factoryPaintActive = false;
+  window.factoryPaintYear = null;
+  window.factoryPaintMonth = null;
+  window.factoryPaintMode = null;
   
-  // Hide factory editor bar
   const factoryEditorBar = document.getElementById('factoryEditorBar');
-  if (factoryEditorBar) {
-    factoryEditorBar.style.display = 'none';
-  }
+  if (factoryEditorBar) factoryEditorBar.style.display = 'none';
   
-  // Refresh views to exit factory painting mode
-  if (typeof refreshViews === 'function') {
-    refreshViews();
-  }
+  if (typeof refreshViews === 'function') refreshViews();
   
   showToast('info', t('factoryEditorExit') || 'Factory editor exited');
 }
@@ -108,10 +125,30 @@ function updateFactoryEditorContext() {
     return;
   }
   
-  const monthName = t('monthNames')[factoryPaintMonth - 1] || '';
-  const shiftLabel = factoryPaintMode ? 
-    t(`label${factoryPaintMode}`) || factoryPaintMode : 
-    t('factoryEditorSelectTool') || 'Select tool';
+  // Keep paint month in sync with the visible calendar month
+  try {
+    if (typeof currentMonth === 'number' && currentMonth >= 1 && currentMonth <= 12) {
+      factoryPaintMonth = currentMonth;
+      window.factoryPaintMonth = factoryPaintMonth;
+    }
+    if (typeof currentYear === 'number') {
+      // Stay on paint year while editing; if user navigates year via UI, follow it
+      factoryPaintYear = currentYear;
+      window.factoryPaintYear = factoryPaintYear;
+    }
+  } catch (_) {}
+  
+  let monthName = '';
+  try {
+    if (typeof monthNames !== 'undefined' && monthNames && monthNames[factoryPaintMonth - 1]) {
+      monthName = monthNames[factoryPaintMonth - 1];
+    }
+  } catch (_) {}
+  if (!monthName) monthName = String(factoryPaintMonth || '');
+  
+  const shiftLabel = factoryPaintMode
+    ? (t('label' + factoryPaintMode) || factoryPaintMode)
+    : (t('factoryEditorSelectTool') || 'Select tool');
   
   contextEl.innerHTML = `
     <span>${t('factoryEditorYear') || 'Year'}: <strong>${factoryPaintYear}</strong></span>
@@ -126,14 +163,49 @@ function updateFactoryEditorContext() {
  */
 function activateFactoryPaintTool(tool) {
   if (!['R', 'P', 'N', 'W'].includes(tool)) return;
+  if (!factoryPaintActive) return;
   
   factoryPaintMode = tool;
+  window.factoryPaintMode = tool;
   
-  // Update UI
   document.querySelectorAll('.factory-tool-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.factoryShift === tool);
+    const isActive = btn.getAttribute('data-factory-shift') === tool;
+    btn.classList.toggle('active', isActive);
   });
   
+  updateFactoryEditorContext();
+}
+
+function bindFactoryEditorBar() {
+  document.querySelectorAll('.factory-tool-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      e.preventDefault();
+      const tool = btn.getAttribute('data-factory-shift');
+      activateFactoryPaintTool(tool);
+    };
+  });
+  const exitBtn = document.getElementById('factoryEditorExitBtn');
+  if (exitBtn) {
+    exitBtn.onclick = (e) => {
+      e.preventDefault();
+      deactivateFactoryPaintMode();
+    };
+  }
+}
+
+/** Call after calendar period changes while painting so day clicks keep working. */
+function syncFactoryPaintPeriodFromCalendar() {
+  if (!factoryPaintActive) return;
+  try {
+    if (typeof currentMonth === 'number') {
+      factoryPaintMonth = currentMonth;
+      window.factoryPaintMonth = currentMonth;
+    }
+    if (typeof currentYear === 'number') {
+      factoryPaintYear = currentYear;
+      window.factoryPaintYear = currentYear;
+    }
+  } catch (_) {}
   updateFactoryEditorContext();
 }
 
@@ -901,23 +973,15 @@ document.addEventListener('keydown', (e) => {
         break;
       case 'ArrowLeft':
         e.preventDefault();
-        if (factoryPaintActive) {
-          factoryPaintMonth = factoryPaintMonth === 1 ? 12 : factoryPaintMonth - 1;
-          updateFactoryEditorContext();
-          if (typeof refreshViews === 'function') {
-            refreshViews();
-          }
-        }
+        if (typeof goToPeriod === 'function') goToPeriod(-1);
+        else if (typeof goToMonth === 'function') goToMonth(-1);
+        syncFactoryPaintPeriodFromCalendar();
         break;
       case 'ArrowRight':
         e.preventDefault();
-        if (factoryPaintActive) {
-          factoryPaintMonth = factoryPaintMonth === 12 ? 1 : factoryPaintMonth + 1;
-          updateFactoryEditorContext();
-          if (typeof refreshViews === 'function') {
-            refreshViews();
-          }
-        }
+        if (typeof goToPeriod === 'function') goToPeriod(1);
+        else if (typeof goToMonth === 'function') goToMonth(1);
+        syncFactoryPaintPeriodFromCalendar();
         break;
       case 'Escape':
         e.preventDefault();
@@ -932,7 +996,15 @@ document.addEventListener('keydown', (e) => {
 // Expose functions to global scope
 window.activateFactoryPaintMode = activateFactoryPaintMode;
 window.deactivateFactoryPaintMode = deactivateFactoryPaintMode;
+window.activateFactoryPaintTool = activateFactoryPaintTool;
+window.updateFactoryEditorContext = updateFactoryEditorContext;
+window.syncFactoryPaintPeriodFromCalendar = syncFactoryPaintPeriodFromCalendar;
+window.bindFactoryEditorBar = bindFactoryEditorBar;
 window.handleFactoryPaintDayClick = handleFactoryPaintDayClick;
+window.factoryPaintActive = factoryPaintActive;
+window.factoryPaintMode = factoryPaintMode;
+window.factoryPaintYear = factoryPaintYear;
+window.factoryPaintMonth = factoryPaintMonth;
 window.getFactoryScheduleForYear = getFactoryScheduleForYear;
 window.getFactoryDraftForYear = getFactoryDraftForYear;
 window.exportFactorySchedule = exportFactorySchedule;
