@@ -277,12 +277,10 @@
       b.classList.toggle('active', (b.dataset.range === 'year') === isYear);
     });
 
-    // 6) Brigade label (Table view uses the "highlight brigade" wording)
+    // 6) Brigade label (same wording on all views)
     const brigLabel = el('brigadeContextLabel');
     if (brigLabel) {
-      brigLabel.textContent = localized
-        ? t(view === 'table' ? 'contextHighlightBrigade' : 'contextBrigade')
-        : '';
+      brigLabel.textContent = localized ? t('contextBrigade') : '';
     }
   }
   window.updateAppShellUI = updateAppShellUI;
