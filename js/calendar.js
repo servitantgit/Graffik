@@ -542,127 +542,264 @@ function renderProgress() {
 
 /* === INFO PANEL === */
 function renderInfo() {
-  const panel = document.getElementById('infoPanel');
-  if (!selectedDay) {
-    panel.innerHTML = `<h3>${t('infoPanelTitle')}</h3><p>${t('infoPanelHint')}</p>`;
-    return;
-  }
-  const hidePrivate = !shouldShowPersonalData();
-  let shiftCode = getShiftAtWithPending(currentYear, currentMonth, selectedDay, selectedShift);
-  if (hidePrivate) {
-    shiftCode =
-      factorySchedule[currentYear] &&
-      factorySchedule[currentYear][currentMonth] &&
-      factorySchedule[currentYear][currentMonth][selectedShift]
-        ? factorySchedule[currentYear][currentMonth][selectedShift][selectedDay - 1]
-        : '';
-  }
-  const dateStr = `${selectedDay} ${monthNamesGenitive[currentMonth - 1]} ${currentYear}`;
-  const dowIdx = new Date(currentYear, currentMonth - 1, selectedDay).getDay();
-  const dow = dayNamesFull[dowIdx];
-  const yHolidays = buildHolidays(currentYear);
-  const holidayName = yHolidays[currentMonth + '-' + selectedDay];
-  const holidayInfo = holidayName ? ` <span style="color:#c0392b;">🎉 ${holidayName}</span>` : '';
-  const noteKey = `${currentYear}-${currentMonth}-${selectedDay}-${selectedShift}`;
-  const onUrlop = hidePrivate
-    ? false
-    : isUrlop(currentYear, currentMonth, selectedDay, selectedShift);
+   const panel = document.getElementById('infoPanel');
+   if (!selectedDay) {
+     panel.innerHTML = `<h3>${t('infoPanelTitle')}</h3><p>${t('infoPanelHint')}</p>`;
+     return;
+   }
+   const hidePrivate = !shouldShowPersonalData();
+   let shiftCode = getShiftAtWithPending(currentYear, currentMonth, selectedDay, selectedShift);
+   if (hidePrivate) {
+     shiftCode =
+       factorySchedule[currentYear] &&
+       factorySchedule[currentYear][currentMonth] &&
+       factorySchedule[currentYear][currentMonth][selectedShift]
+         ? factorySchedule[currentYear][currentMonth][selectedShift][selectedDay - 1]
+         : '';
+   }
+   const dateStr = `${selectedDay} ${monthNamesGenitive[currentMonth - 1]} ${currentYear}`;
+   const dowIdx = new Date(currentYear, currentMonth - 1, selectedDay).getDay();
+   const dow = dayNamesFull[dowIdx];
+   const yHolidays = buildHolidays(currentYear);
+   const holidayName = yHolidays[currentMonth + '-' + selectedDay];
+   const holidayInfo = holidayName ? ` <span style="color:#c0392b;">🎉 ${holidayName}</span>` : '';
+   const noteKey = `${currentYear}-${currentMonth}-${selectedDay}-${selectedShift}`;
+   const onUrlop = hidePrivate
+     ? false
+     : isUrlop(currentYear, currentMonth, selectedDay, selectedShift);
 
-  const usedUrlop = countWorkingUrlops(currentYear, selectedShift);
-  const limit = getVacationLimit(selectedShift);
-  const remainingUrlop = Math.max(0, limit - usedUrlop);
-  // Simple display-only vacation counter (moved to end of panel)
-  const urlopStats = hidePrivate
-    ? ''
-    : `<div class="info-card info-section-vacation" style="grid-column:1/-1;">
-    <div class="label">🌴 ${t('vacation')} ${currentYear}</div>
-    <div class="value">${usedUrlop} / ${limit} <small style="opacity:.85;">(${t('urlopRemaining', { n: remainingUrlop })})</small></div>
-  </div>`;
+   // Factory shift for determining if extra shift is enabled
+   let factoryShift = '';
+   if (factorySchedule[currentYear] && factorySchedule[currentYear][currentMonth] && factorySchedule[currentYear][currentMonth][selectedShift]) {
+     factoryShift = factorySchedule[currentYear][currentMonth][selectedShift][selectedDay - 1];
+   }
+   const isFactoryFree = isWolne(factoryShift) || factoryShift === '';
 
-  if (onUrlop) {
-    panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span> · 🌴 ${t('infoUrlop')}</h3>
-      <div class="info-grid">
-        ${hidePrivate ? '' : `<div class="info-card info-section-note" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
-        ${urlopStats}
-      </div>`;
-  } else if (isWolne(shiftCode)) {
-    panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
-      <div class="info-grid">
-        ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
-        ${urlopStats}
-      </div>`;
-  } else {
-    const info = getRelief(currentYear, currentMonth, selectedDay, selectedShift, shiftCode);
-    function formatWhen(y, m, d) {
-      if (y === currentYear && m === currentMonth && d === selectedDay) return '';
-      if (y === currentYear && m === currentMonth && d === selectedDay - 1)
-        return ', ' + t('dayBefore');
-      if (y === currentYear && m === currentMonth && d === selectedDay + 1)
-        return ', ' + t('dayAfter');
-      return `, ${d} ${monthNamesGenitive[m - 1]}${y !== currentYear ? ' ' + y : ''}`;
-    }
+   // Existing OT for edit/delete
+   const otRaw = !hidePrivate ? getOvertimes(currentYear, currentMonth, selectedDay, selectedShift) : null;
+   const existingOtAntes = otRaw ? otRaw.przed : null;
+   const existingOtDespu = otRaw ? otRaw.po : null;
 
-    // Timeline OT: przed before self, po after self
-    let timelineOt = null;
-    if (!hidePrivate) {
-      const otRaw = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
-      const mk = (pos) => {
-        if (!otRaw[pos]) return null;
-        const cat = categorizeOvertime(
-          currentYear,
-          currentMonth,
-          selectedDay,
-          shiftCode,
-          pos,
-          otRaw[pos].hours
-        );
-        const percent = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
-        return { hours: otRaw[pos].hours, percent };
-      };
-      const before = mk('przed');
-      const after = mk('po');
-      if (before || after) timelineOt = { before, after };
-    }
+   if (hidePrivate) {
+     // Privacy mode: show factory data only, hide personal data
+     panel.innerHTML = `
+       <h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
+       <div class="info-grid">
+         <div class="info-card" style="grid-column:1/-1;">
+           <div class="label">${t('privacyDayDetailsHidden')}</div>
+           <div class="value">
+             <button class="privacy-disable-btn" id="privacyDisableBtn">${t('privacyDisableAction')}</button>
+           </div>
+         </div>
+       </div>`;
+     // Bind privacy disable button
+     setTimeout(() => {
+       const btn = document.getElementById('privacyDisableBtn');
+       if (btn) {
+         btn.addEventListener('click', () => {
+           setPrivacyMode(false);
+           renderInfo(); // Re-render to show personal data
+         });
+       }
+     }, 0);
+   } else {
+     // Non-privacy mode: show full details
+     // Status card
+     let statusCard = '';
+     if (onUrlop) {
+       statusCard = `<div class="info-card" style="grid-column:1/-1;"><div class="label">🌴 ${t('vacation')}</div><div class="value">${t('infoUrlop')}</div></div>`;
+     } else if (isWolne(shiftCode)) {
+       statusCard = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoFree') || 'Wolne'}</div><div class="value">—</div></div>`;
+     } else {
+       const [sh, eh] = shiftHours[shiftCode];
+       const shiftTimeStr = `${String(sh).padStart(2, '0')}:00-${String(eh % 24).padStart(2, '0')}:00`;
+       statusCard = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoWorking') || 'Zmiana'}</div><div class="value">${shiftEmoji[shiftCode]} ${shiftCode} (${shiftTimeStr})</div></div>`;
+     }
 
-    // Handoff flow only (no mode tabs — cycle lives on dashboard)
-    let reliefCard = '';
-    if (typeof renderReliefTimeline === 'function') {
-      const timelineHtml = renderReliefTimeline(
-        info,
-        currentYear,
-        currentMonth,
-        selectedDay,
-        shiftCode,
-        selectedShift,
-        timelineOt
-      );
-      reliefCard = `
-      <div class="info-card" style="grid-column:1/-1;">
-        <div class="label">🔄 ${t('reliefFlowTitle')}</div>
-        <div class="value">${timelineHtml}</div>
-      </div>`;
-    }
+     // Timeline (only for working non-vacation day)
+     let timelineCard = '';
+     if (!onUrlop && !isWolne(shiftCode)) {
+       // Relief handoff flow
+       let reliefCard = '';
+       const info = getRelief(currentYear, currentMonth, selectedDay, selectedShift, shiftCode);
+       function formatWhen(y, m, d) {
+         if (y === currentYear && m === currentMonth && d === selectedDay) return '';
+         if (y === currentYear && m === currentMonth && d === selectedDay - 1)
+           return ', ' + t('dayBefore');
+         if (y === currentYear && m === currentMonth && d === selectedDay + 1)
+           return ', ' + t('dayAfter');
+         return `, ${d} ${monthNamesGenitive[m - 1]}${y !== currentYear ? ' ' + y : ''}`;
+       }
 
-    // Order: flow → note → vacation
-    panel.innerHTML = `<h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
-      <div class="info-grid">
-                ${reliefCard}
-                                        ${hidePrivate ? '' : `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoNote')}</div><div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div></div>`}
-        ${urlopStats}
-      </div>`;
-  }
+       // Timeline OT: przed before self, po after self
+       let timelineOt = null;
+       const otRaw = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
+       const mk = (pos) => {
+         if (!otRaw[pos]) return null;
+         const cat = categorizeOvertime(
+           currentYear,
+           currentMonth,
+           selectedDay,
+           shiftCode,
+           pos,
+           otRaw[pos].hours
+         );
+         const percent = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
+         return { hours: otRaw[pos].hours, percent };
+       };
+       const before = mk('przed');
+       const after = mk('po');
+       if (before || after) timelineOt = { before, after };
 
-  const ni = document.getElementById('noteInput');
-  if (ni) {
-    ni.addEventListener('change', () => {
-      const key = `${currentYear}-${currentMonth}-${selectedDay}-${selectedShift}`;
-      const noteValue = ni.value.trim();
-      if (noteValue) notes[key] = noteValue;
-      else delete notes[key];
-      saveNotes(notes);
-      renderCalendar();
-      showToast('success', t('infoNoteSaved'));
-    });
-  }
-}
+       if (typeof renderReliefTimeline === 'function') {
+         const timelineHtml = renderReliefTimeline(
+           info,
+           currentYear,
+           currentMonth,
+           selectedDay,
+           shiftCode,
+           selectedShift,
+           timelineOt
+         );
+         reliefCard = `
+         <div class="info-card" style="grid-column:1/-1;">
+           <div class="label">🔄 ${t('reliefFlowTitle')}</div>
+           <div class="value">${timelineHtml}</div>
+         </div>`;
+       }
+
+       timelineCard = reliefCard;
+     }
+
+     // Day action grid
+     let actionCard = '';
+     const actions = [
+       {
+         label: t('vacation'),
+         icon: '🌴',
+         enabled: !onUrlop, // Vacation toggle works on any day
+         action: () => {
+           toggleUrlop(currentYear, currentMonth, selectedDay, selectedShift);
+           showToast('success', isUrlop(currentYear, currentMonth, selectedDay, selectedShift) ? t('urlopAdded') : t('urlopRemoved'));
+           renderCalendar();
+           renderInfo();
+         },
+         disabledReason: !onUrlop ? '' : t('urlopAlreadyOnDay') // We need to check if this key exists
+       },
+       {
+         label: t('addShiftBtn'),
+         icon: '➕',
+         enabled: isFactoryFree,
+         action: () => {
+           openAddShiftModal(selectedDay);
+         },
+         disabledReason: !isFactoryFree ? t('addShiftFactoryHasShift') : ''
+       },
+       {
+         label: t('otBeforeBtn'),
+         icon: '⏱⬅',
+         enabled: !onUrlop && !isWolne(shiftCode) && (shiftCode === 'R' || shiftCode === 'P' || shiftCode === 'N'),
+         action: () => {
+           openOvertimeModal(selectedDay, shiftCode, 'przed', existingOtAntes);
+         },
+         disabledReason: !(!onUrlop && !isWolne(shiftCode) && (shiftCode === 'R' || shiftCode === 'P' || shiftCode === 'N')) ? t('otOnlyOnShift') : ''
+       },
+       {
+         label: t('otAfterBtn'),
+         icon: '⏱➡',
+         enabled: !onUrlop && !isWolne(shiftCode) && (shiftCode === 'R' || shiftCode === 'P' || shiftCode === 'N'),
+         action: () => {
+           openOvertimeModal(selectedDay, shiftCode, 'po', existingOtDespu);
+         },
+         disabledReason: !(!onUrlop && !isWolne(shiftCode) && (shiftCode === 'R' || shiftCode === 'P' || shiftCode === 'N')) ? t('otOnlyOnShift') : ''
+       },
+       {
+         label: t('infoNote'),
+         icon: '📝',
+         enabled: true,
+         action: () => {
+           const noteInput = document.getElementById('noteInput');
+           if (noteInput) noteInput.focus();
+         },
+         disabledReason: ''
+       }
+     ];
+
+     // Build action buttons HTML
+     let actionsHtml = '';
+     actions.forEach((action, index) => {
+       const disabled = !action.enabled;
+       const title = disabled ? action.disabledReason : '';
+       actionsHtml += `
+         <button class="day-action-btn" ${disabled ? 'disabled' : ''} title="${title}" aria-label="${action.label}" onclick="try { (${action.action.toString()})(); } catch(e) {}">
+           <span class="day-action-icon">${action.icon}</span>
+           <span class="day-action-label">${action.label}</span>
+         </button>
+       `;
+     });
+
+     actionCard = `
+       <div class="info-card" style="grid-column:1/-1;">
+         <div class="label">${t('dayActions') || 'Dzienna akcja'}</div>
+         <div class="day-action-grid">
+           ${actionsHtml}
+         </div>
+       </div>`;
+
+     // Note card
+     const noteCard = `
+       <div class="info-card" style="grid-column:1/-1;">
+         <div class="label">${t('infoNote')}</div>
+         <div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div>
+       </div>`;
+
+     // Vacation summary
+     const usedUrlop = countWorkingUrlops(currentYear, selectedShift);
+     const limit = getVacationLimit(selectedShift);
+     const remainingUrlop = Math.max(0, limit - usedUrlop);
+     const vacationCard = `
+       <div class="info-card" style="grid-column:1/-1;">
+         <div class="label">🌴 ${t('vacation')} ${currentYear}</div>
+         <div class="value">${usedUrlop} / ${limit} <small style="opacity:.85;">(${t('urlopRemaining', { n: remainingUrlop })})</small></div>
+       </div>`;
+
+     // Build the info-grid
+     panel.innerHTML = `
+       <h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
+       <div class="info-grid">
+         ${statusCard}
+         ${timelineCard}
+         ${actionCard}
+         ${noteCard}
+         ${vacationCard}
+       </div>`;
+
+     // Bind note input events
+     setTimeout(() => {
+       const noteInput = document.getElementById('noteInput');
+       if (noteInput) {
+         const saveNote = () => {
+           const key = `${currentYear}-${currentMonth}-${selectedDay}-${selectedShift}`;
+           const noteValue = noteInput.value.trim();
+           if (noteValue) {
+             notes[key] = noteValue;
+           } else {
+             delete notes[key];
+           }
+           saveNotes(notes);
+           renderCalendar();
+           showToast('success', t('infoNoteSaved'));
+         };
+         noteInput.addEventListener('change', saveNote);
+         noteInput.addEventListener('blur', () => {
+           // Debounce to avoid saving on every keystroke, but we save on change already.
+           // We'll save on blur if the value changed since last change? 
+           // For simplicity, we'll save on blur as well, but we'll check if modified.
+           // We'll just save on blur and let the change event handle most cases.
+           saveNote();
+         });
+       }
+     }, 0);
+   }
+ }
 

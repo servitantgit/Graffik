@@ -958,3 +958,60 @@ body.compact-cells .info-section {
    gap: 6px;
 }
 /* FAQ and About panels use the existing app-panel styles */
+
+/* Day Editor styles */
+.info-grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+.day-action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  gap: 8px;
+}
+.day-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid var(--border-cell);
+  border-radius: 8px;
+  background: var(--bg-controls);
+  color: var(--text-main);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.day-action-btn:hover {
+  background: var(--bg-info);
+}
+.day-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.day-action-btn:disabled:hover {
+  background: var(--bg-controls);
+}
+.day-action-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+.day-action-label {
+  font-size: 12px;
+  text-align: center;
+}
+.privacy-disable-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--border-cell);
+  border-radius: 8px;
+  background: var(--bg-controls);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.privacy-disable-btn:hover {
+  background: var(--bg-info);
+}
