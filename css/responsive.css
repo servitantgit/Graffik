@@ -167,16 +167,12 @@
   .container {
     padding: 12px;
   }
-  .top-bar h1 {
+  .top-bar h1,
+  #appContextTitle {
     font-size: 17px;
     white-space: nowrap;
     overflow: hidden;
-    /* Приховуємо оригінальний текст */
-    font-size: 0;
-  }
-  .top-bar h1::before {
-    content: '🏭 Grafik';
-    font-size: 17px;
+    text-overflow: ellipsis;
   }
   .icon-btn {
     width: 36px;

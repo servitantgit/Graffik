@@ -314,18 +314,9 @@ body.action-sheet-open {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  gap: 1px;
-}
-#appContextKicker {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  line-height: 1.2;
 }
 #appContextTitle {
   flex: 0 1 auto;
@@ -417,33 +408,42 @@ body.action-sheet-open {
   background: var(--text-header);
   color: #fff;
 }
-.range-btn {
-  min-height: 40px;
-  padding: 8px 18px;
+/* Month/Year segmented toggle (sits after brigade buttons) */
+.range-toggle {
+  display: inline-flex;
+  align-items: stretch;
+  border-radius: 12px;
+  overflow: hidden;
   border: 1px solid var(--border-cell);
   background: var(--bg-controls);
+  flex-shrink: 0;
+}
+.range-btn {
+  min-height: 36px;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
   color: var(--text-main);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
+  line-height: 1.2;
 }
-.range-btn:first-child {
-  border-radius: 12px 0 0 12px;
-}
-.range-btn:last-child {
-  border-radius: 0 12px 12px 0;
+.range-btn + .range-btn {
+  border-left: 1px solid var(--border-cell);
 }
 .range-btn.active {
   background: var(--text-header);
-  border-color: var(--text-header);
   color: #fff;
 }
 
-/* Per-view row visibility:
-   Dashboard  → brigade only; Calendar/Table → all rows */
+/* Per-view visibility:
+   Dashboard → brigade only (no period, no range toggle);
+   Calendar/Table → brigade + range toggle + period */
 .context-toolbar[data-view='dashboard'] .context-row-date,
-.context-toolbar[data-view='dashboard'] .context-row-range {
+.context-toolbar[data-view='dashboard'] .range-toggle {
   display: none;
 }
 
@@ -486,16 +486,21 @@ body.action-sheet-open {
   #appContextTitle {
     font-size: 17px;
   }
-  #appContextKicker {
-    font-size: 10px;
-  }
   .context-period {
-    min-width: 120px;
+    min-width: 110px;
     font-size: 14px;
   }
   .context-today-btn {
     min-height: 40px;
     padding: 7px 12px;
+  }
+  .range-btn {
+    min-height: 34px;
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+  .context-row-brigade {
+    gap: 8px;
   }
 }
 

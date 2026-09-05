@@ -237,14 +237,8 @@
 
   /* ================= APP SHELL UI SYNC (v4.0.0) ================= */
 
-  const VIEW_KICKER_KEYS = {
-    dashboard: 'viewDashboardShort',
-    month: 'viewMonthShort',
-    table: 'viewTableShort',
-  };
-
   /* Single place that mirrors app state (main.js globals) into the shell:
-     active nav (desktop + mobile), top kicker/title, context toolbar row
+     active nav (desktop + mobile), top title, context toolbar row
      visibility, period label, Month/Year active state, brigade label. */
   function updateAppShellUI() {
     const view = typeof currentView === 'string' ? currentView : 'dashboard';
@@ -267,10 +261,7 @@
       b.classList.toggle('active', b.dataset.view === view);
     });
 
-    // 3) Top bar: view kicker + stable app name.
-    // The active period is shown once in the context toolbar between the arrows.
-    const kicker = el('appContextKicker');
-    if (kicker) kicker.textContent = localized ? t(VIEW_KICKER_KEYS[view] || '') : view;
+    // 3) Top bar: stable app name only (period lives between the arrows).
     const title = el('appContextTitle');
     if (title) title.textContent = localized ? t('appName') : 'Grafik Gillette';
 
