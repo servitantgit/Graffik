@@ -3,65 +3,6 @@
    Part of modular CSS split (v3.8.0)
    ================================================================ */
 
-/* === MONTH NAV === */
-.month-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  margin: 10px 0 5px;
-}
-.month-nav button {
-  background: var(--bg-controls);
-  border: none;
-  font-size: 24px;
-  color: var(--text-header);
-  cursor: pointer;
-  padding: 4px 14px;
-  user-select: none;
-  border-radius: 10px;
-  transition: all 0.15s;
-}
-.month-nav button:hover {
-  background: var(--text-header);
-  color: #fff;
-  transform: scale(1.05);
-}
-.month-title {
-  font-size: 22px;
-  color: var(--text-header);
-  font-weight: 700;
-  min-width: 0;
-  flex: 1 1 auto;
-  text-align: center;
-}
-.month-hours {
-  text-align: center;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-  font-size: 13px;
-}
-
-.progress-bar {
-  height: 6px;
-  background: var(--border-cell);
-  border-radius: 3px;
-  margin: 8px 0;
-  overflow: hidden;
-}
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #27ae60, #f1c40f, #e74c3c);
-  border-radius: 3px;
-  transition: width 0.5s;
-}
-.progress-label {
-  text-align: center;
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
-
 /* === CALENDAR === */
 .calendar-wrap {
   overflow: visible;

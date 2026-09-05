@@ -22,7 +22,6 @@
   .edit-banner,
   .app-footer,
   .icon-btn,
-  .month-nav button,
   .relief-popup,
   .ot-popup {
     display: none !important;
@@ -104,14 +103,10 @@
   .side-menu-overlay,
   .side-menu,
   .dashboard,
-  .month-nav button,
   .progress-bar,
   .progress-label,
   .info-panel {
     display: none !important;
-  }
-  .month-nav {
-    justify-content: space-between;
   }
   .day-cell {
     break-inside: avoid;

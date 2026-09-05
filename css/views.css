@@ -145,13 +145,6 @@
   background: var(--bg-cell);
   padding: 4px 0;
 }
-.table-view-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-header);
-  margin-bottom: 12px;
-  text-align: center;
-}
 .brigade-table {
   /* B: compact rounded cells + separate spacing */
   border-collapse: separate;
@@ -331,7 +324,6 @@ body.edit-active .brigade-table td.tc:hover {
   flex-direction: column;
   gap: 18px;
 }
-/* title styles: see .table-month-title above */
 .table-legend {
   display: flex;
   gap: 10px;

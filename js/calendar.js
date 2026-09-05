@@ -220,8 +220,6 @@ cell.addEventListener('click', () => {
     cal.appendChild(cell);
   }
 
-  const monthTitle = getElementByIdSafe('monthTitle');
-  if (monthTitle) monthTitle.textContent = `${monthNames[currentMonth - 1]} ${currentYear}`;
 
   renderMonthOvertimeSummary();
 }
