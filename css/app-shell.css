@@ -558,6 +558,14 @@ body.action-sheet-open {
   transform: translateX(18px);
 }
 
+/* Settings panel switches (role="switch" + .st-switch) */
+.st-switch[aria-checked='true'] .ui-switch {
+  background: var(--text-header);
+}
+.st-switch[aria-checked='true'] .ui-switch-knob {
+  transform: translateX(18px);
+}
+
 /* Drawer keyboard focus */
 .side-menu:focus-visible {
   outline: 2px solid var(--text-header);
@@ -778,9 +786,142 @@ button.st-row {
   outline-offset: 2px;
 }
 
+/* === SETTINGS: STATUS INDICATORS === */
+.st-perm {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.st-perm-ok {
+  background: #dcfce7;
+  color: #166534;
+}
+.st-perm-info {
+  background: #e0f2fe;
+  color: #075985;
+}
+.st-perm-warn {
+  background: #fef9c3;
+  color: #854d0e;
+}
+.st-perm-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* === SETTINGS: NUMBER INPUT === */
+.st-number {
+  width: 80px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-cell);
+  border-radius: 8px;
+  background: var(--bg-controls);
+  color: var(--text-main);
+  font: inherit;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* === SETTINGS: MONOSPACE VALUE === */
+.st-mono {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-header);
+}
+
+/* === SETTINGS: HINT TEXT === */
+.st-hint {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .settings-card,
   .seg-btn {
     transition: none !important;
   }
+}
+
+/* ================================================================
+   ACCESSIBILITY BODY CLASSES (v4.0.0)
+   Applied via js/core.js applyAccessibilityPreferences().
+   ================================================================ */
+
+/* --- Reduce motion: disable nonessential transitions and animations --- */
+body.reduce-motion,
+body.reduce-motion *,
+body.reduce-motion *::before,
+body.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* --- Large text: increase primary UI text without breaking calendar --- */
+body.large-text {
+  font-size: 112.5%;
+}
+body.large-text .app-panel-title {
+  font-size: 22px;
+}
+body.large-text #appContextTitle {
+  font-size: 24px;
+}
+body.large-text .settings-card .sc-title {
+  font-size: 16px;
+}
+body.large-text .st-row-label {
+  font-size: 15px;
+}
+body.large-text .primary-nav-btn {
+  font-size: 15px;
+}
+body.large-text .seg-btn {
+  font-size: 15px;
+}
+body.large-text .mobile-nav-btn {
+  font-size: 12px;
+}
+body.large-text .mnb-icon {
+  font-size: 22px;
+}
+body.large-text .context-label {
+  font-size: 14px;
+}
+body.large-text .context-period {
+  font-size: 17px;
+}
+
+/* --- Compact cells: reduce cell height and spacing --- */
+body.compact-cells .day-cell {
+  min-height: 52px;
+  padding: 3px;
+}
+body.compact-cells .calendar {
+  gap: 2px;
+}
+body.compact-cells .st-preview .st-cell {
+  width: 40px;
+  height: 32px;
+  font-size: 11px;
+}
+body.compact-cells .st-cell {
+  width: 36px;
+  height: 28px;
+  font-size: 11px;
+}
+body.compact-cells .dash-stat-card {
+  gap: 8px;
+}
+body.compact-cells .dash-stat-card .dsc-value {
+  font-size: 13px;
+}
+body.compact-cells .info-section {
+  gap: 6px;
 }

@@ -181,73 +181,100 @@ function areNotificationsEnabled() {
   );
 }
 
-function updateNotificationUI() {
-  const item = document.getElementById('menuNotifications');
-  if (!item) return;
-  const check = item.querySelector('.mi-check');
-  const label = item.querySelector('span:nth-child(2)');
+function getNotificationStatus() {
+  const supported = 'Notification' in window;
+  const permission = supported ? Notification.permission : 'unsupported';
+  const enabled = prefs.notifications === true && permission === 'granted';
+  const lead = typeof prefs.notificationsLead === 'number' ? prefs.notificationsLead : 1;
+  return { supported, permission, enabled, lead };
+}
+window.getNotificationStatus = getNotificationStatus;
 
-  if (!('Notification' in window)) {
-    item.classList.add('disabled');
-    item.style.opacity = '0.4';
-    if (label) label.textContent = t('notificationsNotSupported');
+window.setNotificationsEnabled = function (enabled) {
+  return new Promise(function (resolve) {
+    if (!('Notification' in window)) {
+      showToast('warn', t('browserNoNotificationSupport'));
+      resolve(false);
+      return;
+    }
+    if (enabled) {
+      if (Notification.permission === 'granted') {
+        prefs.notifications = true;
+        savePrefs(prefs);
+        showToast('success', '🔔 ' + t('notificationsEnabled'));
+        resolve(true);
+        return;
+      }
+      if (Notification.permission === 'denied') {
+        showToast('error', t('notificationsBlockedInBrowser'));
+        resolve(false);
+        return;
+      }
+      Notification.requestPermission().then(function (permission) {
+        if (permission === 'granted') {
+          prefs.notifications = true;
+          savePrefs(prefs);
+          showToast('success', '🔔 ' + t('notificationsEnabled'));
+          try {
+            new Notification('🔔 ' + t('appName'), {
+              body: t('notificationsTestBody'),
+              icon: './icons/icon-192.png',
+            });
+          } catch (e) {
+            /* ignoruj */
+          }
+          resolve(true);
+        } else {
+          prefs.notifications = false;
+          savePrefs(prefs);
+          showToast('warn', t('notificationsDisabled'));
+          resolve(false);
+        }
+      });
+    } else {
+      prefs.notifications = false;
+      savePrefs(prefs);
+      showToast('info', '🔕 ' + t('notificationsDisabled'));
+      resolve(true);
+    }
+  });
+};
+
+window.setNotificationLead = function (lead) {
+  const val = parseInt(lead, 10) || 1;
+  prefs.notificationsLead = Math.max(1, Math.min(3, val));
+  savePrefs(prefs);
+  return prefs.notificationsLead;
+};
+
+window.sendTestNotification = function () {
+  if (!('Notification' in window) || Notification.permission !== 'granted') {
+    showToast('warn', t('browserNoNotificationSupport'));
+    return false;
+  }
+  try {
+    new Notification('🔔 ' + t('appName'), {
+      body: t('notificationsTestBody'),
+      icon: './icons/icon-192.png',
+    });
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+window.checkForAppUpdate = function () {
+  if (!('serviceWorker' in navigator)) {
+    showToast('info', t('aboutUpdateChecking'));
     return;
   }
-
-  const enabled = areNotificationsEnabled();
-  if (check) check.style.display = enabled ? 'inline' : 'none';
-  if (label) label.textContent = t('notificationsAboutShifts');
-  item.title = enabled ? t('notificationsEnabledHint') : t('notificationsDisabledHint');
-
-  // Make sure prefs.notificationsLead exists
-  if (typeof prefs.notificationsLead === 'undefined') prefs.notificationsLead = 1;
-
-  // Button container — only shown when notifications are ON
-  let leadContainer = document.getElementById('notifLeadContainer');
-
-  if (enabled) {
-    if (!leadContainer) {
-      leadContainer = document.createElement('div');
-      leadContainer.id = 'notifLeadContainer';
-      leadContainer.className = 'notif-lead-buttons';
-      leadContainer.innerHTML = `
-        <div class="notif-lead-label">⏰ ${t('remindMeIn')}:</div>
-        <div class="notif-lead-btns">
-          <button type="button" class="notif-lead-btn" data-lead="1">1h</button>
-          <button type="button" class="notif-lead-btn" data-lead="2">2h</button>
-          <button type="button" class="notif-lead-btn" data-lead="3">3h</button>
-        </div>
-      `;
-      // Wstawiamy PO menu-item (na dole, jako osobny blok)
-      item.parentNode.insertBefore(leadContainer, item.nextSibling);
-
-      // Podpinamy click
-      leadContainer.querySelectorAll('.notif-lead-btn').forEach((btn) => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const val = parseInt(btn.dataset.lead, 10) || 1;
-          prefs.notificationsLead = val;
-          savePrefs(prefs);
-          updateLeadButtonsActive();
-          const timeText = val === 1 ? t('hourSingular') : `${val} ${t('hoursPlural')}`;
-          showToast('info', `⏰ ${t('notificationLeadToast')} ${timeText} ${t('beforeShift')}`);
-        });
-      });
-    }
-    updateLeadButtonsActive();
-  } else {
-    // Chowamy kontener gdy notifications OFF
-    if (leadContainer) leadContainer.remove();
-  }
-}
-
-// Helper — updates the active button
-function updateLeadButtonsActive() {
-  const lead = prefs.notificationsLead || 1;
-  document.querySelectorAll('.notif-lead-btn').forEach((btn) => {
-    btn.classList.toggle('active', parseInt(btn.dataset.lead, 10) === lead);
+  showToast('info', t('aboutUpdateChecking'));
+  navigator.serviceWorker.getRegistrations().then(function (regs) {
+    regs.forEach(function (reg) {
+      reg.update();
+    });
   });
-}
+};
 
 function requestNotificationPermission() {
   if (!('Notification' in window)) {
@@ -261,8 +288,7 @@ function requestNotificationPermission() {
   if (Notification.permission === 'granted') {
     prefs.notifications = true;
     savePrefs(prefs);
-    showToast('success', `🔔 ${t('notificationsEnabled')}`);
-    updateNotificationUI();
+    showToast('success', '🔔 ' + t('notificationsEnabled'));
     return;
   }
   // Prosimy o pozwolenie
@@ -270,7 +296,7 @@ function requestNotificationPermission() {
     if (permission === 'granted') {
       prefs.notifications = true;
       savePrefs(prefs);
-      showToast('success', `🔔 ${t('notificationsEnabled')}`);
+      showToast('success', '🔔 ' + t('notificationsEnabled'));
       // testowe powiadomienie
       try {
         new Notification(`🔔 ${t('appName')}`, {
@@ -285,7 +311,6 @@ function requestNotificationPermission() {
       savePrefs(prefs);
       showToast('warn', t('notificationsDisabled'));
     }
-    updateNotificationUI();
   });
 }
 
@@ -293,8 +318,7 @@ function toggleNotifications() {
   if (areNotificationsEnabled()) {
     prefs.notifications = false;
     savePrefs(prefs);
-    showToast('info', `🔕 ${t('notificationsEnabled')}`);
-    updateNotificationUI();
+    showToast('info', '🔕 ' + t('notificationsDisabled'));
   } else {
     requestNotificationPermission();
   }
@@ -317,15 +341,18 @@ function notifyCurrentShift() {
   if (!hours) return;
   const startHour = hours[0];
 
-  // Show the notification when the hour = shift start (0 minutes)
-  if (now.getHours() === startHour && now.getMinutes() === 0) {
+  const lead = prefs.notificationsLead || 1;
+  const notifyAt = startHour - lead;
+
+  // Show the notification when the time matches (same hour, minute 0)
+  if (now.getHours() === notifyAt && now.getMinutes() === 0) {
     const key = `${y}-${m}-${d}:${s}`;
     if (lastNotified === key) return; // already shown today
     lastNotified = key;
     localStorage.setItem('grafik_last_notified', key);
 
     const [sh, eh] = hours;
-    const timeRange = `${String(sh).padStart(2, '0')}:00 – ${String(eh % 24).padStart(2, '0')}:00`;
+    const timeRange = `${String(sh).padStart(2, '0')}:00 – ${String(eh % 24).padStart(2, '0')}:00}`;
     // Use the existing shift names (shiftLongNames / shiftEmoji from data.js) instead of duplicating translations
     const shiftLabel = `${shiftEmoji[s] || ''} ${shiftLongNames[s] || s}`;
 
@@ -355,22 +382,19 @@ function initPwa() {
   // Restore the last notification
   lastNotified = localStorage.getItem('grafik_last_notified');
 
-  // Menu: notifications
-  const notifItem = document.getElementById('menuNotifications');
-  if (notifItem) notifItem.onclick = toggleNotifications;
+  // Ensure notification lead default
+  if (typeof prefs.notificationsLead === 'undefined') prefs.notificationsLead = 1;
 
   // Hide the install menu item by default (not on iOS — we show instructions there)
   const installItem = document.getElementById('menuInstallApp');
   if (installItem && !isIOS()) installItem.style.display = 'none';
-
-  updateNotificationUI();
 
   // Check every minute
   window._notifyTimer = setInterval(notifyCurrentShift, 60000);
   notifyCurrentShift();
 }
 
-// Run once the DOM has loaded
+// Run once that DOM has loaded
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initPwa);
 } else {

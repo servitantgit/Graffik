@@ -76,6 +76,26 @@ if (!prefs.urlopLimits) prefs.urlopLimits = {};
   if (prefs.urlopLimits[brigade] === undefined) prefs.urlopLimits[brigade] = URLOP_LIMIT;
 });
 
+/* === Accessibility preferences === */
+if (typeof prefs.reduceMotion === 'undefined') prefs.reduceMotion = false;
+if (typeof prefs.largeText === 'undefined') prefs.largeText = false;
+if (typeof prefs.compactCells === 'undefined') prefs.compactCells = false;
+
+function applyAccessibilityPreferences() {
+  const systemReduceMotion =
+    typeof window !== 'undefined' &&
+    window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduceMotion = prefs.reduceMotion === true || systemReduceMotion;
+  const largeText = prefs.largeText === true;
+  const compactCells = prefs.compactCells === true;
+
+  document.body.classList.toggle('reduce-motion', reduceMotion);
+  document.body.classList.toggle('large-text', largeText);
+  document.body.classList.toggle('compact-cells', compactCells);
+}
+window.applyAccessibilityPreferences = applyAccessibilityPreferences;
+
 /* === Limity urlopu === */
 function getVacationLimit(brigade) {
   const raw = prefs.urlopLimits && prefs.urlopLimits[brigade];
