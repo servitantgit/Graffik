@@ -509,9 +509,13 @@
       });
     });
     onBtn('menuAdminCenter', () => {
-      // Temporary Admin Center panel — admins only
-      if (typeof isCurrentUserAdmin === 'function' && !isCurrentUserAdmin()) return;
-      openMenuPanel('admin-center', 'adminCenterTitle', tempNote('adminCenterDesc'));
+      // Open the real Admin Center (admin-center.js)
+      closeSideMenu();
+      if (typeof openAdminCenter === 'function') {
+        openAdminCenter();
+      } else if (typeof isCurrentUserAdmin === 'function' && isCurrentUserAdmin()) {
+        openMenuPanel('admin-center', 'adminCenterTitle', tempNote('adminCenterDesc'));
+      }
     });
   }
 
