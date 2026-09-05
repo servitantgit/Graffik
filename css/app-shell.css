@@ -1,0 +1,786 @@
+/* ================================================================
+   GRAFIK GILLETTE - APP-SHELL.CSS
+   Full-screen App Panel + Action Sheet (shell infrastructure).
+   Part of the menu/navigation refactor (v4.0.0).
+   Layer order: side menu 90-91 < modals 150 < panel 160/161
+                < action sheet 165/166 < toasts 200.
+   ================================================================ */
+
+/* === APP PANEL: OVERLAY === */
+.app-panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 160;
+  display: none;
+}
+.app-panel-overlay.show {
+  display: block;
+  animation: appShellFadeIn 0.2s ease-out;
+}
+
+/* === APP PANEL (fills the viewport) === */
+.app-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 161;
+  display: none;
+  flex-direction: column;
+  background: var(--bg-container);
+  color: var(--text-main);
+}
+.app-panel.show {
+  display: flex;
+  animation: appShellPanelIn 0.25s ease-out;
+}
+
+.app-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  min-height: 56px;
+  padding: 6px 10px;
+  padding-top: calc(6px + env(safe-area-inset-top, 0px));
+  border-bottom: 1px solid var(--border-cell);
+  background: var(--bg-container);
+}
+
+.app-panel-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-header);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+/* Icon buttons: at least 44px touch targets */
+.app-panel-nav,
+.app-panel-close,
+.action-sheet-close {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 10px;
+  background: var(--bg-controls);
+  color: var(--text-main);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+.app-panel-nav:hover,
+.app-panel-close:hover,
+.action-sheet-close:hover {
+  background: var(--text-header);
+  color: #fff;
+}
+.app-panel-nav:active,
+.app-panel-close:active,
+.action-sheet-close:active {
+  transform: scale(0.94);
+}
+
+/* Back button: visible only when the screen stack is deeper than 1 */
+.app-panel-nav {
+  display: none;
+}
+.app-panel.has-back .app-panel-nav {
+  display: inline-flex;
+}
+
+/* Panel body: full height, content centered with a sensible max width */
+.app-panel-body {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* === ACTION SHEET: OVERLAY === */
+.action-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 165;
+  display: none;
+}
+.action-sheet-overlay.show {
+  display: block;
+  animation: appShellFadeIn 0.2s ease-out;
+}
+
+/* === ACTION SHEET (desktop: centered dialog, max-width ~560px) === */
+.action-sheet {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(calc(100vw - 32px), 560px);
+  max-height: min(85vh, 720px);
+  z-index: 166;
+  display: none;
+  flex-direction: column;
+  background: var(--bg-container);
+  color: var(--text-main);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px var(--shadow-heavy);
+  overflow: hidden;
+}
+.action-sheet.show {
+  display: flex;
+  animation: appShellSheetIn 0.22s ease-out;
+}
+
+.action-sheet-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  min-height: 52px;
+  padding: 6px 10px 6px 16px;
+  border-bottom: 1px solid var(--border-cell);
+  background: var(--bg-container);
+}
+
+.action-sheet-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-header);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.action-sheet-body {
+  flex: 1 1 auto;
+  padding: 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* === MOBILE: sheet slides from the bottom, safe-area aware === */
+@media (max-width: 600px) {
+  .action-sheet.show {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: none;
+    width: 100%;
+    max-width: none;
+    max-height: 88vh;
+    max-height: 88dvh;
+    border-radius: 16px 16px 0 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    animation: appShellSheetUp 0.25s ease-out;
+  }
+}
+
+/* === BODY SCROLL LOCK while shell surfaces are open === */
+body.app-panel-open,
+body.action-sheet-open {
+  overflow: hidden;
+}
+
+/* === KEYBOARD FOCUS (focus-visible) === */
+.app-panel:focus-visible,
+.action-sheet:focus-visible,
+.app-panel :focus-visible,
+.action-sheet :focus-visible {
+  outline: 2px solid var(--text-header);
+  outline-offset: 2px;
+}
+
+/* === ANIMATIONS === */
+@keyframes appShellFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes appShellPanelIn {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes appShellSheetIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+@keyframes appShellSheetUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* === REDUCED MOTION === */
+@media (prefers-reduced-motion: reduce) {
+  .app-panel-overlay.show,
+  .app-panel.show,
+  .action-sheet-overlay.show,
+  .action-sheet.show {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* === PRINT: shell surfaces never print === */
+@media print {
+  .app-panel-overlay,
+  .app-panel,
+  .action-sheet-overlay,
+  .action-sheet {
+    display: none !important;
+  }
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+}
+
+/* ================================================================
+   TOP BAR + PRIMARY NAV + CONTEXT TOOLBAR + MOBILE BOTTOM NAV
+   (v4.0.0 menu/navigation refactor)
+   ================================================================ */
+
+/* === TOP BAR: menu (left) · title (center) · account (right) === */
+.top-bar-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1px;
+}
+#appContextKicker {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  line-height: 1.2;
+}
+#appContextTitle {
+  flex: 0 1 auto;
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.2;
+  color: var(--text-header);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+#userAuthBtn {
+  margin-left: auto;
+}
+
+/* === PRIMARY NAVIGATION (desktop) === */
+.primary-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 12px;
+}
+.primary-nav-btn {
+  min-height: 44px;
+  padding: 8px 18px;
+  border: 1px solid var(--border-cell);
+  border-radius: 12px;
+  background: var(--bg-controls);
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.primary-nav-btn:hover {
+  background: var(--bg-info);
+}
+.primary-nav-btn.active {
+  background: var(--text-header);
+  border-color: var(--text-header);
+  color: #fff;
+}
+
+/* === CONTEXT TOOLBAR === */
+.context-toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+.context-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.context-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.context-period {
+  min-width: 140px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-header);
+}
+.period-btn {
+  min-width: 44px;
+  min-height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: var(--bg-controls);
+  color: var(--text-main);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.period-btn:hover {
+  background: var(--text-header);
+  color: #fff;
+}
+.range-btn {
+  min-height: 40px;
+  padding: 8px 18px;
+  border: 1px solid var(--border-cell);
+  background: var(--bg-controls);
+  color: var(--text-main);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.range-btn:first-child {
+  border-radius: 12px 0 0 12px;
+}
+.range-btn:last-child {
+  border-radius: 0 12px 12px 0;
+}
+.range-btn.active {
+  background: var(--text-header);
+  border-color: var(--text-header);
+  color: #fff;
+}
+
+/* Per-view row visibility:
+   Dashboard  → brigade only; Calendar/Table → all rows */
+.context-toolbar[data-view='dashboard'] .context-row-date,
+.context-toolbar[data-view='dashboard'] .context-row-range {
+  display: none;
+}
+
+/* === MOBILE BOTTOM NAV (visible ≤700px only) === */
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .primary-nav {
+    display: none;
+  }
+  .mobile-bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 80;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    gap: 4px;
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+    background: var(--bg-container);
+    border-top: 1px solid var(--border-cell);
+    box-shadow: 0 -6px 18px var(--shadow-color);
+  }
+  /* Keep application content clear of the bottom nav */
+  body {
+    padding-bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+  }
+  /* Keep toasts above the bottom nav */
+  .toast-container {
+    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  }
+  /* Edit palette owns the bottom edge in edit mode */
+  body.edit-active .mobile-bottom-nav {
+    display: none;
+  }
+  #appContextTitle {
+    font-size: 17px;
+  }
+  #appContextKicker {
+    font-size: 10px;
+  }
+}
+
+.mobile-nav-btn {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 48px;
+  padding: 4px 6px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.mnb-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+.mobile-nav-btn.active {
+  color: var(--text-header);
+  background: var(--bg-controls);
+}
+
+/* === FOCUS VISIBILITY (new navigation controls) === */
+.primary-nav-btn:focus-visible,
+.mobile-nav-btn:focus-visible,
+.period-btn:focus-visible,
+.range-btn:focus-visible,
+.top-bar .icon-btn:focus-visible {
+  outline: 2px solid var(--text-header);
+  outline-offset: 2px;
+}
+
+/* === REDUCED MOTION (new controls) === */
+@media (prefers-reduced-motion: reduce) {
+  .primary-nav-btn,
+  .period-btn,
+  .range-btn,
+  .mobile-nav-btn {
+    transition: none !important;
+  }
+}
+
+/* ================================================================
+   SIDE DRAWER (v4.0.0): menu items with title+description,
+   privacy role=switch with .ui-switch, temporary panel notes
+   ================================================================ */
+
+/* Menu item text block (title + optional description) */
+.mi-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+.mi-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.mi-desc {
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--text-muted);
+  white-space: normal;
+}
+
+/* Privacy quick switch */
+.menu-item-switch {
+  cursor: pointer;
+}
+.ui-switch {
+  flex: 0 0 auto;
+  position: relative;
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  background: var(--border-cell);
+  transition: background 0.2s;
+}
+.ui-switch-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s;
+}
+.menu-item-switch[aria-checked='true'] .ui-switch {
+  background: var(--text-header);
+}
+.menu-item-switch[aria-checked='true'] .ui-switch-knob {
+  transform: translateX(18px);
+}
+
+/* Drawer keyboard focus */
+.side-menu:focus-visible {
+  outline: 2px solid var(--text-header);
+  outline-offset: -2px;
+}
+.side-menu :focus-visible {
+  outline: 2px solid var(--text-header);
+  outline-offset: 2px;
+}
+
+/* Temporary note content for future panels/sheets */
+.menu-temp-note {
+  margin: 0 0 10px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-main);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-switch,
+  .ui-switch-knob {
+    transition: none !important;
+  }
+}
+
+/* ================================================================
+   SETTINGS PANEL (v4.0.0): cards, segmented controls, switch and
+   color rows, live appearance preview
+   ================================================================ */
+
+.settings-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.settings-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 16px;
+  text-align: left;
+  font: inherit;
+  color: var(--text-main);
+  background: var(--bg-controls);
+  border: 1px solid var(--border-cell);
+  border-radius: 12px;
+  transition: border-color 0.15s;
+}
+button.settings-card {
+  cursor: pointer;
+}
+button.settings-card:hover {
+  border-color: var(--text-header);
+}
+.settings-card .sc-icon {
+  width: 30px;
+  font-size: 1.3rem;
+  line-height: 1;
+  text-align: center;
+}
+.settings-card .sc-body {
+  flex: 1;
+  min-width: 0;
+}
+.settings-card .sc-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+.settings-card .sc-arrow {
+  color: var(--text-muted);
+  font-size: 1.2rem;
+}
+.settings-card.is-disabled {
+  opacity: 0.55;
+}
+
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.st-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.st-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.seg {
+  display: flex;
+  overflow: hidden;
+  background: var(--bg-controls);
+  border: 1px solid var(--border-cell);
+  border-radius: 10px;
+}
+.seg-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 6px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text-main);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.15s;
+}
+.seg-btn + .seg-btn {
+  border-left: 1px solid var(--border-cell);
+}
+.seg-btn.active {
+  font-weight: 600;
+  color: #fff;
+  background: var(--text-header);
+}
+.st-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 10px 14px;
+  font: inherit;
+  color: var(--text-main);
+  background: var(--bg-controls);
+  border: 1px solid var(--border-cell);
+  border-radius: 12px;
+}
+button.st-row {
+  cursor: pointer;
+}
+.st-row-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+}
+.st-switch {
+  text-align: left;
+}
+.st-hex {
+  font-size: 12px;
+  font-family: monospace;
+  color: var(--text-muted);
+}
+.st-color {
+  width: 44px;
+  height: 36px;
+  padding: 2px;
+  background: var(--bg-controls);
+  border: 1px solid var(--border-cell);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.st-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px dashed var(--border-cell);
+  border-radius: 12px;
+}
+.st-cell {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 40px;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--pc, #cccccc);
+  color: var(--pc-text, #ffffff);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+}
+.st-preview.skin-strip .st-cell {
+  background: var(--bg-controls);
+  color: var(--text-main);
+  border-left: 6px solid var(--pc, #cccccc);
+}
+.st-preview.skin-quiet .st-cell {
+  background: var(--bg-controls);
+  color: var(--text-main);
+  border: 2px solid var(--pc, #cccccc);
+}
+
+@media (max-width: 600px) {
+  .settings-card,
+  .st-row {
+    padding: 10px 12px;
+  }
+  .st-cell {
+    width: 46px;
+    height: 36px;
+  }
+}
+
+.settings-cards :focus-visible,
+.settings-section :focus-visible {
+  outline: 2px solid var(--text-header);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settings-card,
+  .seg-btn {
+    transition: none !important;
+  }
+}

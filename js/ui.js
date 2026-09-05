@@ -2,24 +2,73 @@
    GRAFIK GILLETTE — Module 3: UI (TOAST, MODAL, MENU, THEMES)
    ================================================================ */
 
-/* === THEMES === */
-const THEMES = ['light', 'dark'];
-function applyTheme(themeName) {
-  THEMES.forEach((t) => document.body.classList.remove('theme-' + t));
-  if (themeName !== 'light') document.body.classList.add('theme-' + themeName);
-  const toggleBtn = document.getElementById('themeToggleBtn');
-  if (toggleBtn) {
-    toggleBtn.textContent = themeName === 'dark' ? '☀️' : '🌙';
+/* === THEMES (v4.0.0: 'system' | 'light' | 'dark') ===
+   prefs.theme stores the user PREFERENCE; the body class always reflects
+   the EFFECTIVE theme. While the preference is 'system' we follow
+   prefers-color-scheme and listen for OS changes; the listener is
+   removed as soon as an explicit theme is chosen. */
+const THEME_VALUES = ['system', 'light', 'dark'];
+let _systemThemeQuery = null;
+let _systemThemeListener = null;
+
+function _getSystemTheme() {
+  if (typeof window.matchMedia !== 'function') return 'light';
+  if (!_systemThemeQuery) {
+    _systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
   }
+  return _systemThemeQuery.matches ? 'dark' : 'light';
+}
+
+function _getEffectiveTheme() {
+  if (prefs.theme === 'dark') return 'dark';
+  if (prefs.theme === 'light') return 'light';
+  return _getSystemTheme();
+}
+
+function _applyThemeClass(effective) {
+  document.body.classList.remove('theme-light', 'theme-dark');
+  if (effective !== 'light') document.body.classList.add('theme-' + effective);
+}
+
+function _watchSystemTheme() {
+  if (typeof window.matchMedia !== 'function') return;
+  if (!_systemThemeQuery) {
+    _systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  }
+  if (prefs.theme === 'system') {
+    if (!_systemThemeListener) {
+      _systemThemeListener = function () {
+        _applyThemeClass(_getEffectiveTheme());
+      };
+      if (typeof _systemThemeQuery.addEventListener === 'function') {
+        _systemThemeQuery.addEventListener('change', _systemThemeListener);
+      } else if (typeof _systemThemeQuery.addListener === 'function') {
+        _systemThemeQuery.addListener(_systemThemeListener); // older Safari
+      }
+    }
+  } else if (_systemThemeListener) {
+    if (typeof _systemThemeQuery.removeEventListener === 'function') {
+      _systemThemeQuery.removeEventListener('change', _systemThemeListener);
+    } else if (typeof _systemThemeQuery.removeListener === 'function') {
+      _systemThemeQuery.removeListener(_systemThemeListener);
+    }
+    _systemThemeListener = null;
+  }
+}
+
+function applyTheme(themeName) {
+  if (!THEME_VALUES.includes(themeName)) themeName = 'light';
   prefs.theme = themeName;
   savePrefs(prefs);
+  _applyThemeClass(_getEffectiveTheme());
+  _watchSystemTheme();
 }
+
 if (prefs.dark && !prefs.theme) prefs.theme = 'dark';
-applyTheme(prefs.theme || 'light');
+applyTheme(THEME_VALUES.includes(prefs.theme) ? prefs.theme : 'light');
 
 function toggleTheme() {
-  const current = document.body.classList.contains('theme-dark') ? 'dark' : 'light';
-  applyTheme(current === 'dark' ? 'light' : 'dark');
+  applyTheme(_getEffectiveTheme() === 'dark' ? 'light' : 'dark');
 }
 
 /* === TOAST === */
@@ -89,40 +138,16 @@ function showConfirm(title, body, onConfirm, opts) {
   });
 }
 
-/* === SIDE MENU === */
-const sideMenu = document.getElementById('sideMenu');
-const sideMenuOverlay = document.getElementById('sideMenuOverlay');
-function openSideMenu() {
-  sideMenu.classList.add('show');
-  sideMenuOverlay.classList.add('show');
-  if (typeof updateMenuSyncStatus === 'function') updateMenuSyncStatus();
-  if (typeof updatePrivacyMenuUI === 'function') updatePrivacyMenuUI();
-  if (typeof updateDriveUI === 'function') updateDriveUI();
-  if (typeof checkDriveRemoteStatus === 'function' && typeof isDriveLoggedIn === 'function' && isDriveLoggedIn()) {
-    checkDriveRemoteStatus(false).catch(() => {});
-  }
-}
-function closeSideMenu() {
-  sideMenu.classList.remove('show');
-  sideMenuOverlay.classList.remove('show');
-}
-document.getElementById('menuBtn').onclick = openSideMenu;
-document.getElementById('sideMenuClose').onclick = closeSideMenu;
-sideMenuOverlay.onclick = closeSideMenu;
+/* === SIDE MENU ===
+   Drawer open/close moved to js/app-shell.js (v4.0.0) — it owns focus
+   restoration, Escape, overlay click, body.side-menu-open and the
+   defensive Drive/privacy state refresh. window.openSideMenu /
+   window.closeSideMenu remain the public API. */
 
-/* === THEME TOGGLE === */
-const themeToggleBtn = document.getElementById('themeToggleBtn');
-if (themeToggleBtn) {
-  themeToggleBtn.onclick = toggleTheme;
-}
-
-/* === THEMES — clicks (backward compatibility) === */
-document.querySelectorAll('.theme-swatch').forEach((el) => {
-  el.onclick = () => {
-    applyTheme(el.dataset.theme);
-    showToast('info', 'Motyw: ' + el.dataset.name, 1500);
-  };
-});
+/* === THEME BUTTONS (v4.0.0) ===
+   The top-bar theme toggle and the settings-hub theme swatches are gone
+   with the old top bar and the settings hub; the theme is now chosen in
+   Settings → Appearance (js/settings.js). */
 
 document.getElementById('menuHelp').onclick = () => {
   closeSideMenu();
@@ -142,11 +167,5 @@ document.getElementById('modalOverlay').onclick = (e) => {
 };
 
 
-/* Settings hub */
-const menuSettingsBtn = document.getElementById('menuSettings') || document.getElementById('menuPersonalization');
-if (menuSettingsBtn) {
-  menuSettingsBtn.onclick = () => {
-    if (typeof openSettingsHub === 'function') openSettingsHub();
-    else if (typeof openPersonalizationModal === 'function') openPersonalizationModal();
-  };
-}
+/* Settings hub binding removed (v4.0.0) — #menuSettings is bound by
+   js/settings.js and opens the full-screen settings panel. */
