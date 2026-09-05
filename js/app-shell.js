@@ -457,12 +457,14 @@
     onBtn('menuSettings', () =>
       openMenuPanel('settings', 'menuSettings', tempNote('menuSettingsDesc'))
     );
-    onBtn('menuShareCenter', () =>
-      openMenuSheet('share-center', 'shareCenterTitle', tempNote('menuShareCenterDesc'))
-    );
-    onBtn('menuExportCenter', () =>
-      openMenuSheet('export-center', 'exportCenterTitle', tempNote('menuExportCenterDesc'))
-    );
+    onBtn('menuShareCenter', () => {
+      closeSideMenu();
+      openShareCenter();
+    });
+    onBtn('menuExportCenter', () => {
+      closeSideMenu();
+      openExportCenter();
+    });
     onBtn('menuAbout', () =>
       openMenuPanel(
         'about',
