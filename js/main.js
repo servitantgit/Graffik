@@ -3,12 +3,22 @@
    ================================================================ */
 
 /* === STAN === */
+
+/* === SETTINGS DEFAULTS (v4.0.0 — General) === */
+prefs.startView = prefs.startView || 'dashboard';
+prefs.restoreLastView =
+  typeof prefs.restoreLastView === 'boolean' ? prefs.restoreLastView : true;
+
 let currentYear = prefs.year || 2026;
 let currentMonth = new Date().getMonth() + 1;
 let selectedShift = prefs.shift || 'A';
 let compareShift = null;
 let selectedDay = null;
-let currentView = prefs.view || 'dashboard';
+/* Startup view: URL parameters override everything (applyUrlParams below);
+   otherwise honor restoreLastView, falling back to the start view. */
+let currentView = prefs.restoreLastView
+  ? prefs.view || prefs.startView
+  : prefs.startView;
 let yearMode = prefs.yearMode || false;
 let editMode = false;
 
@@ -86,38 +96,12 @@ function switchView(view) {
   currentView = view;
   prefs.view = view;
   savePrefs(prefs);
-  document
-    .querySelectorAll('.view-btn')
-    .forEach((b) => b.classList.toggle('active', b.dataset.view === view));
-  updateYearToggleState();
+  if (typeof updateAppShellUI === 'function') updateAppShellUI();
   refreshViews();
 }
 
-function updateYearToggleState() {
-  const lbl = document.getElementById('yearToggleLabel');
-  const cb = document.getElementById('yearToggle');
-  const isSupported = currentView === 'month' || currentView === 'table';
-  if (!isSupported) {
-    lbl.classList.add('disabled');
-    lbl.classList.remove('active');
-    cb.checked = false;
-  } else {
-    lbl.classList.remove('disabled');
-    cb.checked = yearMode;
-    lbl.classList.toggle('active', yearMode);
-  }
-}
-document.querySelectorAll('#viewSwitcher .view-btn').forEach((b) => {
-  b.onclick = () => switchView(b.dataset.view);
-});
-bindEvent('yearToggle', 'change', (e) => {
-  yearMode = e.target.checked;
-  prefs.yearMode = yearMode;
-  savePrefs(prefs);
-  const label = document.getElementById('yearToggleLabel');
-  if (label) label.classList.toggle('active', yearMode);
-  refreshViews();
-});
+/* View switching and Month/Year range are bound in js/app-shell.js (v4.0.0);
+   updateAppShellUI() mirrors the state into the top bar, nav and toolbar. */
 
 window.addEventListener('driveAuthChanged', () => {
   try {
@@ -131,9 +115,8 @@ function refreshViews() {
   const views = ['dashboardView', 'monthView', 'yearView', 'tableView'];
   views.forEach((v) => (document.getElementById(v).style.display = 'none'));
 
-  updateYearPicker();
   updateEditModeUI();
-  updateYearToggleState();
+  if (typeof updateAppShellUI === 'function') updateAppShellUI();
 
   const empty =
     !hasFactoryData(currentYear) &&
@@ -187,26 +170,13 @@ function updateShiftButtons() {
     if (b.dataset.shift === selectedShift) b.classList.add('active');
   });
 }
-function updateYearPicker() {
-  document.getElementById('yearCurrent').textContent = currentYear;
-  const yp = document.getElementById('yearPicker');
-  if (hasFactoryData(currentYear) || hasCustomData(currentYear)) {
-    yp.classList.remove('no-data');
-    yp.title = hasCustomData(currentYear)
-      ? t('yearWithChanges', { year: currentYear })
-      : t('yearFactoryData', { year: currentYear });
-  } else {
-    yp.classList.add('no-data');
-    yp.title = t('yearNoData', { year: currentYear });
-  }
-}
+/* Year picker removed (v4.0.0) — year lives in the context toolbar + top bar. */
 function updatePrivacyMenuUI() {
-  const check = document.getElementById('menuPrivacyCheck');
-  const label = document.getElementById('menuPrivacyLabel');
+  const toggle = document.getElementById('menuPrivacyToggle');
   const on = !!(prefs && prefs.privacyMode);
-  if (check) check.style.display = on ? 'inline' : 'none';
-  if (label && typeof t === 'function') {
-    label.textContent = on ? t('menuPrivacyOn') : t('menuPrivacyOff');
+  if (toggle) {
+    toggle.setAttribute('aria-checked', on ? 'true' : 'false');
+    toggle.classList.toggle('checked', on);
   }
 }
 
@@ -226,15 +196,17 @@ bindClick('menuPrivacyToggle', () => {
 function updateEditModeUI() {
   document.body.classList.toggle('edit-active', editMode);
   const btn = document.getElementById('editModeToggle');
-  btn.classList.toggle('edit-active', editMode);
-  btn.title = editMode ? t('editModeOn') : t('editModeOff');
+  if (btn) {
+    btn.classList.toggle('edit-active', editMode);
+    btn.title = editMode ? t('editModeOn') : t('editModeOff');
+  }
   document.getElementById('editBanner').classList.toggle('show', editMode);
   document.getElementById('editPalette').classList.toggle('show', editMode);
   updateDirtyIndicator();
 }
 
 /* === EDIT MODE === */
-bindClick('editModeToggle', () => {
+function requestEditModeToggle() {
   if (!editMode) {
     // Personal edits need privacy mode off (local data always available otherwise)
     if (typeof shouldShowPersonalData === 'function' && !shouldShowPersonalData()) {
@@ -262,7 +234,10 @@ bindClick('editModeToggle', () => {
     editMode = false;
     refreshViews();
   }
-});
+}
+/* Bound to the hidden transitional #editModeToggle stub so legacy inline
+   handlers (views.js empty state) keep working. */
+bindClick('editModeToggle', requestEditModeToggle);
 
 document.querySelectorAll('.palette-btn').forEach((btn) => {
   btn.onclick = () => {
@@ -318,10 +293,14 @@ function goToYear(delta, keepMonth) {
   savePrefs(prefs);
   refreshViews();
 }
-bindClick('prevMonthBtn', () => goToMonth(-1));
-bindClick('nextMonthBtn', () => goToMonth(1));
-bindClick('prevYearBtn', () => goToYear(-1));
-bindClick('nextYearBtn', () => goToYear(1));
+window.goToYear = goToYear;
+/* Period step: month in Month range, year in Year range. Used by the
+   context toolbar arrows (js/app-shell.js) and the keyboard arrows. */
+function goToPeriod(delta) {
+  if (yearMode) goToYear(delta);
+  else goToMonth(delta);
+}
+window.goToPeriod = goToPeriod;
 
 /* === KEYBOARD === */
 document.addEventListener('keydown', (e) => {
@@ -333,6 +312,9 @@ document.addEventListener('keydown', (e) => {
     return;
 
   if (e.key === 'Escape') {
+    // App panel / action sheet handle their own Escape (app-shell.js)
+    if (typeof isActionSheetOpen === 'function' && isActionSheetOpen()) return;
+    if (typeof isAppPanelOpen === 'function' && isAppPanelOpen()) return;
     if (document.getElementById('otOverlay').classList.contains('show')) {
       document.getElementById('otOverlay').classList.remove('show');
       return;
@@ -345,12 +327,12 @@ document.addEventListener('keydown', (e) => {
       document.getElementById('faqOverlay').classList.remove('show');
       return;
     }
-    if (sideMenu.classList.contains('show')) {
+    if (typeof isSideMenuOpen === 'function' && isSideMenuOpen()) {
       closeSideMenu();
       return;
     }
     if (editMode) {
-      document.getElementById('editModeToggle').click();
+      requestEditModeToggle();
       return;
     }
     if (selectedDay) {
@@ -401,13 +383,13 @@ document.addEventListener('keydown', (e) => {
   }
 
   if (e.key.toLowerCase() === 'e' && !e.ctrlKey && !e.altKey) {
-    document.getElementById('editModeToggle').click();
+    requestEditModeToggle();
     return;
   }
 
   if (currentView === 'month' || currentView === 'table') {
-    if (e.key === 'ArrowLeft') goToMonth(-1);
-    else if (e.key === 'ArrowRight') goToMonth(1);
+    if (e.key === 'ArrowLeft') goToPeriod(-1);
+    else if (e.key === 'ArrowRight') goToPeriod(1);
   }
 });
 
@@ -470,14 +452,15 @@ document.querySelectorAll('.shift-btn').forEach((btn) => {
 
 /* === TODAY === */
 bindClick('todayBtn', () => {
-  const today = new Date(); // ← przejrenął `t` (bo kolíży z i18n t()!)
-  currentYear = today.getFullYear();
-  currentMonth = today.getMonth() + 1;
-  selectedDay = today.getDate();
+  const now = new Date();
+  currentYear = now.getFullYear();
+  currentMonth = now.getMonth() + 1;
+  selectedDay = now.getDate(); // select today
+  yearMode = false;
   prefs.year = currentYear;
+  prefs.yearMode = false;
   savePrefs(prefs);
-  if (currentView === 'dashboard') refreshViews();
-  else switchView('month');
+  switchView('month'); // always open Month view on today's date
 });
 
 /* beforeunload removed — all edits auto-save to localStorage */
@@ -501,11 +484,7 @@ if (!window._gilletteTimer) {
 
 /* === START === */
 updateShiftButtons();
-updateYearPicker();
-document
-  .querySelectorAll('.view-btn')
-  .forEach((b) => b.classList.toggle('active', b.dataset.view === currentView));
-document.getElementById('yearToggle').checked = yearMode;
+if (typeof updateAppShellUI === 'function') updateAppShellUI();
 refreshViews();
 
 if (!prefs.welcomed) {
@@ -516,28 +495,9 @@ if (!prefs.welcomed) {
   }, 500);
 }
 
-/* === LANGUAGE TOGGLE === */
-const langToggleBtn = document.getElementById('langToggleBtn');
-const langDropdown = document.getElementById('langDropdown');
-if (langToggleBtn && langDropdown) {
-  langToggleBtn.onclick = () => {
-    langDropdown.classList.toggle('show');
-  };
-  // Close the dropdown when clicking outside it
-  document.addEventListener('click', (e) => {
-    if (!langToggleBtn.contains(e.target) && !langDropdown.contains(e.target)) {
-      langDropdown.classList.remove('show');
-    }
-  });
-  // Handlers for language options
-  document.querySelectorAll('.lang-option').forEach((opt) => {
-    opt.onclick = () => {
-      const lang = opt.dataset.lang;
-      setLanguage(lang);
-      langDropdown.classList.remove('show');
-    };
-  });
-}
+/* === LANGUAGE (v4.0.0) ===
+   Top-bar language switcher removed — the language picker moves into the
+   Settings panel in a later task. setLanguage() stays available globally. */
 
 /* === APPLY LOCALIZATION === */
 applyTranslations();

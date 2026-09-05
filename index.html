@@ -26,51 +26,60 @@
   <link rel="stylesheet" href="css/responsive.css">
   <link rel="stylesheet" href="css/print.css">
   <link rel="stylesheet" href="css/smart-popup.css">
+  <link rel="stylesheet" href="css/app-shell.css">
 </head>
 
 <body>
 
   <div class="container">
-    <!-- TOP BAR -->
+    <!-- TOP BAR — menu (left) · context title (center) · account (right) -->
     <div class="top-bar">
-      <button class="icon-btn" id="editModeToggle" data-i18n-title="editMode" title="Tryb edycji (E)">✏️</button>
-      <button class="icon-btn admin-only" id="adminFaqBtn" title="Admin FAQ" style="display:none;">❓</button>
-      <h1 data-i18n="appName">🏭 Grafik Gillette</h1>
-      <button class="icon-btn" id="userAuthBtn" title="Zaloguj do Google Drive">👤</button>
-      <button class="icon-btn" id="themeToggleBtn" data-i18n-title="theme"
-        title="Przełącz motyw (jasny/ciemny)">🌙</button>
-      <div class="lang-wrapper" style="position: relative;">
-        <button class="icon-btn" id="langToggleBtn" data-i18n-title="language" title="Język">🌐</button>
-        <div class="lang-dropdown" id="langDropdown">
-          <button class="lang-option" data-lang="pl" title="Polski">🇵🇱 Polski</button>
-          <button class="lang-option" data-lang="en" title="English">🇺🇸 English</button>
-          <button class="lang-option" data-lang="uk" title="Українська">🇺🇦 Українська</button>
+      <button class="icon-btn" id="menuBtn" data-i18n-title="menu" title="Menu">☰</button>
+      <div class="top-bar-title">
+        <span class="context-kicker" id="appContextKicker"></span>
+        <h1 class="context-title" id="appContextTitle"></h1>
+      </div>
+      <button class="icon-btn" id="userAuthBtn" data-i18n-title="profile" title="Zaloguj do Google Drive">👤</button>
+    </div>
+
+    <!-- Transitional hidden stubs (v4.0.0): edit-mode + admin FAQ controls move
+         to the Settings panel / Admin Center in later tasks. Kept invisible so
+         legacy handlers (views.js empty-state edit button, admin FAQ binding)
+         and updateEditModeUI() keep working without errors. -->
+    <button type="button" id="editModeToggle" style="display: none" tabindex="-1" aria-hidden="true"></button>
+    <button type="button" id="adminFaqBtn" style="display: none" tabindex="-1" aria-hidden="true"></button>
+
+    <!-- PRIMARY NAVIGATION (desktop; hidden ≤700px — mobile bottom nav takes over) -->
+    <nav class="primary-nav" id="primaryNav" aria-label="Views">
+      <button type="button" class="primary-nav-btn" data-view="dashboard" data-i18n="viewDashboard">🏠 Dashboard</button>
+      <button type="button" class="primary-nav-btn" data-view="month" data-i18n="viewMonth">📅 Miesiąc</button>
+      <button type="button" class="primary-nav-btn" data-view="table" data-i18n="viewTable">📋 Tabela</button>
+    </nav>
+
+    <!-- CONTEXT TOOLBAR (brigade / period / range rows; per-view row visibility) -->
+    <div class="context-toolbar" id="contextToolbar" data-view="dashboard">
+      <div class="context-row context-row-brigade" id="contextRowBrigade">
+        <span class="context-label" id="brigadeContextLabel"></span>
+        <div class="shift-buttons" id="shiftBtns">
+          <button class="shift-btn A active" data-shift="A" data-i18n-title="compareHint"
+            title="Ctrl+klik = porównaj">A</button>
+          <button class="shift-btn B" data-shift="B" data-i18n-title="compareHint" title="Ctrl+klik = porównaj">B</button>
+          <button class="shift-btn C" data-shift="C" data-i18n-title="compareHint" title="Ctrl+klik = porównaj">C</button>
+          <button class="shift-btn D" data-shift="D" data-i18n-title="compareHint" title="Ctrl+klik = porównaj">D</button>
         </div>
       </div>
-      <button class="icon-btn" id="menuBtn" data-i18n-title="menu" title="Menu">☰</button>
-    </div>
-
-    <!-- MAIN CONTROLS -->
-    <div class="controls-main">
-      <div class="shift-buttons" id="shiftBtns">
-        <button class="shift-btn A active" data-shift="A" data-i18n-title="compareHint"
-          title="Ctrl+klik = porównaj">A</button>
-        <button class="shift-btn B" data-shift="B" data-i18n-title="compareHint" title="Ctrl+klik = porównaj">B</button>
-        <button class="shift-btn C" data-shift="C" data-i18n-title="compareHint" title="Ctrl+klik = porównaj">C</button>
-        <button class="shift-btn D" data-shift="D" data-i18n-title="compareHint" title="Ctrl+klik = porównaj">D</button>
+      <div class="context-row context-row-date" id="contextRowDate">
+        <button type="button" class="icon-btn period-btn" id="prevPeriodBtn" data-i18n-title="prevMonth"
+          title="Poprzedni miesiąc (←)">‹</button>
+        <span class="context-period" id="contextPeriodLabel"></span>
+        <button type="button" class="icon-btn period-btn" id="nextPeriodBtn" data-i18n-title="nextMonth"
+          title="Następny miesiąc (→)">›</button>
+        <button type="button" class="btn-primary" id="todayBtn" data-i18n="today">📅 Dziś</button>
       </div>
-      <button class="btn-primary" id="todayBtn" data-i18n="today">📅 Dziś</button>
-    </div>
-
-    <!-- VIEW SWITCHER -->
-    <div class="view-switcher" id="viewSwitcher">
-      <button class="view-btn" data-view="dashboard" data-i18n="viewDashboard">🏠 Dashboard</button>
-      <button class="view-btn" data-view="month" data-i18n="viewMonth">📅 Miesiąc</button>
-      <button class="view-btn" data-view="table" data-i18n="viewTable">📋 Tabela</button>
-      <label class="year-toggle" id="yearToggleLabel" data-i18n-title="yearToggle" title="Rok">
-        <input type="checkbox" id="yearToggle">
-        <span data-i18n="yearToggle">📊 Rok</span>
-      </label>
+      <div class="context-row context-row-range" id="contextRowRange">
+        <button type="button" class="range-btn active" data-range="month" data-i18n="rangeMonth">Miesiąc</button>
+        <button type="button" class="range-btn" data-range="year" data-i18n="rangeYear">Rok</button>
+      </div>
     </div>
 
     <!-- EDIT BANNER — auto-save; only year nav + status -->
@@ -87,11 +96,6 @@
       <div class="edit-banner-actions">
         <button type="button" id="editVacationLimitBtn" class="edit-banner-limit" data-i18n-title="menuVacationLimit"
           title="Limit urlopu">🌴</button>
-        <div class="year-picker" id="yearPicker" data-i18n-title="changeYear" title="Zmień rok">
-          <button id="prevYearBtn">‹</button>
-          <span class="year-current" id="yearCurrent">2026</span>
-          <button id="nextYearBtn">›</button>
-        </div>
       </div>
     </div>
     <!-- DASHBOARD -->
@@ -100,9 +104,7 @@
     <!-- MONTH VIEW -->
     <div id="monthView" style="display:none;">
       <div class="month-nav">
-        <button id="prevMonthBtn" data-i18n-title="prevMonth" title="Poprzedni miesiąc (←)">‹</button>
         <div class="month-title" id="monthTitle"></div>
-        <button id="nextMonthBtn" data-i18n-title="nextMonth" title="Następny miesiąc (→)">›</button>
       </div>
       <div class="calendar-wrap">
         <div class="calendar" id="calendar"></div>
@@ -154,7 +156,7 @@
 
   <!-- SIDE MENU -->
   <div class="side-menu-overlay" id="sideMenuOverlay"></div>
-  <div class="side-menu" id="sideMenu">
+  <div class="side-menu" id="sideMenu" tabindex="-1">
     <h3>
       <span data-i18n="menu">☰ Menu</span>
       <button class="side-menu-close" id="sideMenuClose">×</button>
@@ -201,89 +203,133 @@
         </button>
       </div>
 
-      <!-- legacy ids kept hidden for any leftover handlers -->
-      <button class="menu-item" id="menuDriveSync" style="display:none;" aria-hidden="true"></button>
-      <button class="menu-item" id="menuSyncNow" style="display:none;" aria-hidden="true"></button>
     </div>
 
+    <!-- 1) PRIVACY QUICK SWITCH (role=switch; state via aria-checked) -->
     <div class="menu-section">
-      <div class="menu-section-title" data-i18n="menuSectionExport">Eksport</div>
-      <button class="menu-item" id="menuIcs">
-        <span class="mi-icon">📥</span>
-        <span data-i18n="menuIcs">Eksport do kalendarza (.ics)</span>
-      </button>
-      <button class="menu-item" id="menuPrint">
-        <span class="mi-icon">🖨️</span>
-        <span data-i18n="menuPrint">Drukuj</span>
-      </button>
-      <button class="menu-item" id="menuShare">
-        <span class="mi-icon">🔗</span>
-        <span data-i18n="menuShare">Udostępnij widok</span>
-      </button>
-      <button class="menu-item" id="menuShareApp">
-        <span class="mi-icon">📱</span>
-        <span data-i18n="menuShareApp">Udostępnij aplikację</span>
+      <div class="menu-section-title" data-i18n="menuSectionPrivacy">Prywatność</div>
+      <button type="button" class="menu-item menu-item-switch" id="menuPrivacyToggle" role="switch"
+        aria-checked="false" data-i18n-title="settingsPrivacy" title="Tryb prywatności">
+        <span class="mi-icon">🔒</span>
+        <span class="mi-text">
+          <span class="mi-title" data-i18n="settingsPrivacy">Tryb prywatności</span>
+          <span class="mi-desc" data-i18n="settingsPrivacyDesc">Ukryj dane osobiste na ekranie</span>
+        </span>
+        <span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>
       </button>
     </div>
 
-    <!-- Notifications: only via Settings hub; hidden trigger for existing handler -->
-    <button class="menu-item" id="menuNotifications" type="button" style="display:none;" aria-hidden="true"></button>
-
-    <div class="menu-section" id="menuInstallSection" style="display:none;">
-      <button class="menu-item" id="menuInstallApp" style="display:none;">
-        <span class="mi-icon">📲</span>
-        <span data-i18n="menuInstallApp">Zainstaluj aplikację</span>
-      </button>
-    </div>
-
-
-    <div class="menu-section admin-only">
-      <div class="menu-section-title" data-i18n="menuSectionAdmin">👑 Admin Panel</div>
-      <button class="menu-item" id="menuAdminExport">
-        <span class="mi-icon">📤</span>
-        <span data-i18n="menuAdminExport">Export factory year (.js)</span>
-      </button>
-      <button class="menu-item menu-item-danger" id="clearYearBtn">
-        <span class="mi-icon">🗑</span>
-        <span data-i18n="menuClearYear">Wyczyść rok</span>
-      </button>
-      <button class="menu-item menu-item-danger" id="resetCustomBtn">
-        <span class="mi-icon">↺</span>
-        <span data-i18n="menuResetAll">Reset wszystkiego</span>
-      </button>
-    </div>
-
+    <!-- 2) SETTINGS (temporary panel until the Settings task) -->
     <div class="menu-section">
       <div class="menu-section-title" data-i18n="menuSectionSettings">Ustawienia</div>
-      <button class="menu-item" id="menuSettings" type="button">
+      <button type="button" class="menu-item" id="menuSettings">
         <span class="mi-icon">⚙️</span>
-        <span data-i18n="menuSettings">Ustawienia</span>
+        <span class="mi-text">
+          <span class="mi-title" data-i18n="menuSettings">Ustawienia</span>
+          <span class="mi-desc" data-i18n="menuSettingsDesc">Motyw, język, liczniki i dane</span>
+        </span>
       </button>
     </div>
 
+
+    <!-- 3) TOOLS -->
     <div class="menu-section">
-      <div class="menu-section-title" data-i18n="menuSectionPrivacy">Privacy</div>
-      <button class="menu-item" id="menuPrivacyToggle" type="button">
-        <span class="mi-icon">🔒</span>
-        <span id="menuPrivacyLabel" data-i18n="menuPrivacyOff">Privacy mode: off</span>
-        <span class="mi-check" id="menuPrivacyCheck" style="display:none;">✓</span>
+      <div class="menu-section-title" data-i18n="menuSectionTools">Narzędzia</div>
+      <button type="button" class="menu-item" id="menuShareCenter">
+        <span class="mi-icon">🔗</span>
+        <span class="mi-text">
+          <span class="mi-title" data-i18n="menuShareCenter">Udostępnij</span>
+          <span class="mi-desc" data-i18n="menuShareCenterDesc">Link i kod QR do grafiku</span>
+        </span>
+      </button>
+      <button type="button" class="menu-item" id="menuExportCenter">
+        <span class="mi-icon">📤</span>
+        <span class="mi-text">
+          <span class="mi-title" data-i18n="menuExportCenter">Eksport</span>
+          <span class="mi-desc" data-i18n="menuExportCenterDesc">Kalendarz ICS i dane roku</span>
+        </span>
+      </button>
+      <button type="button" class="menu-item" id="menuInstallApp" style="display:none;">
+        <span class="mi-icon">📲</span>
+        <span class="mi-text">
+          <span class="mi-title" data-i18n="menuInstallApp">Zainstaluj aplikację</span>
+        </span>
       </button>
     </div>
 
+    <!-- 4) HELP -->
     <div class="menu-section">
       <div class="menu-section-title" data-i18n="menuSectionInfo">Info</div>
-      <button class="menu-item" id="menuHelp">
+      <button type="button" class="menu-item" id="menuHelp">
         <span class="mi-icon">❓</span>
-        <span data-i18n="menuHelp">Pomoc / FAQ</span>
+        <span class="mi-text">
+          <span class="mi-title" data-i18n="menuHelp">Pomoc / FAQ</span>
+        </span>
       </button>
-      <a class="menu-item" id="menuGitHub" href="https://github.com/servitantgit/Graffik" target="_blank"
-        rel="noopener noreferrer">
-        <span class="mi-icon">🔗</span>
-        <span data-i18n="menuGitHub">GitHub</span>
-      </a>
+      <button type="button" class="menu-item" id="menuAbout">
+        <span class="mi-icon">ℹ️</span>
+        <span class="mi-text">
+          <span class="mi-title" data-i18n="menuAbout">O aplikacji</span>
+          <span class="mi-desc" data-i18n="menuAboutDesc">Wersja, aktualizacje i pomoc</span>
+        </span>
+      </button>
     </div>
+
+    <!-- 5) ADMIN (admin-only) -->
+    <div class="menu-section admin-only">
+      <div class="menu-section-title" data-i18n="menuSectionAdmin">👑 Admin Panel</div>
+      <button type="button" class="menu-item" id="menuAdminCenter">
+        <span class="mi-icon">🛠️</span>
+        <span class="mi-text">
+          <span class="mi-title" data-i18n="adminCenterTitle">Panel administratora</span>
+          <span class="mi-desc" data-i18n="adminCenterDesc">Zarządzaj grafikami fabrycznymi i danymi rocznymi</span>
+        </span>
+      </button>
+    </div>
+
+    <!-- Notifications: hidden trigger for the existing pwa.js handler -->
+    <button class="menu-item" id="menuNotifications" type="button" style="display:none;" aria-hidden="true"></button>
   </div>
 
+
+  <!-- APP PANEL (full-screen shell panel, v4.0.0) -->
+  <div class="app-panel-overlay" id="appPanelOverlay"></div>
+  <section class="app-panel" id="appPanel" role="dialog" aria-modal="true"
+    aria-labelledby="appPanelTitle" tabindex="-1">
+    <header class="app-panel-header">
+      <button type="button" class="app-panel-nav" id="appPanelBackBtn" aria-label="Back">←</button>
+      <h2 class="app-panel-title" id="appPanelTitle"></h2>
+      <button type="button" class="app-panel-close" id="appPanelCloseBtn" aria-label="Close">×</button>
+    </header>
+    <div class="app-panel-body" id="appPanelBody"></div>
+  </section>
+
+  <!-- ACTION SHEET (v4.0.0) -->
+  <div class="action-sheet-overlay" id="actionSheetOverlay"></div>
+  <section class="action-sheet" id="actionSheet" role="dialog" aria-modal="true"
+    aria-labelledby="actionSheetTitle" tabindex="-1">
+    <header class="action-sheet-header">
+      <h2 class="action-sheet-title" id="actionSheetTitle"></h2>
+      <button type="button" class="action-sheet-close" id="actionSheetCloseBtn" aria-label="Close">×</button>
+    </header>
+    <div class="action-sheet-body" id="actionSheetBody"></div>
+  </section>
+
+  <!-- MOBILE BOTTOM NAV (≤700px; synced with desktop primary nav) -->
+  <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Views">
+    <button type="button" class="mobile-nav-btn" data-view="dashboard">
+      <span class="mnb-icon">🏠</span>
+      <span class="mnb-label" data-i18n="viewDashboardShort">Pulpit</span>
+    </button>
+    <button type="button" class="mobile-nav-btn" data-view="month">
+      <span class="mnb-icon">📅</span>
+      <span class="mnb-label" data-i18n="viewMonthShort">Miesiąc</span>
+    </button>
+    <button type="button" class="mobile-nav-btn" data-view="table">
+      <span class="mnb-icon">📋</span>
+      <span class="mnb-label" data-i18n="viewTableShort">Tabela</span>
+    </button>
+  </nav>
 
   <!-- TOAST CONTAINER -->
   <div class="toast-container" id="toastContainer"></div>
@@ -389,6 +435,8 @@
   <script src="js/i18n/uk.js"></script>
   <script src="js/i18n/i18n.js"></script>
   <script src="js/personalization.js"></script>
+  <script src="js/app-shell.js"></script>
+  <script src="js/settings.js"></script>
   <script src="js/main.js"></script>
 
 </body>
