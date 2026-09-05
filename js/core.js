@@ -91,22 +91,21 @@ if (!prefs.urlopLimits) prefs.urlopLimits = {};
  });
 
  /* === Factory drafts === */
- function getFactoryShift(year, month, day, brigade) {
-   if (factoryDrafts[year] && factoryDrafts[year][month] && factoryDrafts[year][month][brigade]) {
-     const arr = factoryDrafts[year][month][brigade];
-     if (day >= 1 && day <= arr.length) {
-       return arr[day - 1];
-     }
-   }
-   return null;
- }
- 
- function getFactoryDraftShiftAt(year, month, day, brigade) {
-   const draft = getFactoryShift(year, month, day, brigade);
-   if (draft !== null) {
-     return draft;
-   }
-   // fallback to public factory schedule
+  function getFactoryShift(year, month, day, brigade) {
+    if (factoryDrafts[year] && factoryDrafts[year][month] && factoryDrafts[year][month][brigade]) {
+      const arr = factoryDrafts[year][month][brigade];
+      if (day >= 1 && day <= arr.length) {
+        return arr[day - 1];
+      }
+    }
+    return null;
+  }
+  
+  function getFactoryDraftShiftAt(year, month, day, brigade) {
+    const draft = getFactoryShift(year, month, day, brigade);
+    if (draft !== null) {
+      return draft;
+    }
    if (factorySchedule[year] && factorySchedule[year][month] && factorySchedule[year][month][brigade]) {
      const arr = factorySchedule[year][month][brigade];
      if (day >= 1 && day <= arr.length) {
@@ -116,31 +115,31 @@ if (!prefs.urlopLimits) prefs.urlopLimits = {};
    return null;
  }
  
- function ensureFactoryDraftYear(year) {
-   if (!factoryDrafts[year]) {
-     factoryDrafts[year] = {};
-     for (let m = 1; m <= 12; m++) {
-       factoryDrafts[year][m] = { A: [], B: [], C: [], D: [] };
-     }
-   }
-   for (let m = 1; m <= 12; m++) {
-     if (!factoryDrafts[year][m]) {
-       factoryDrafts[year][m] = { A: [], B: [], C: [], D: [] };
-     }
-     const dim = new Date(year, m, 0).getDate();
-     ['A', 'B', 'C', 'D'].forEach((b) => {
-       if (!Array.isArray(factoryDrafts[year][m][b])) {
-         factoryDrafts[year][m][b] = new Array(dim).fill('');
-       }
-       while (factoryDrafts[year][m][b].length < dim) {
-         factoryDrafts[year][m][b].push('');
-       }
-       if (factoryDrafts[year][m][b].length > dim) {
-         factoryDrafts[year][m][b].length = dim;
-       }
-     });
-   }
- }
+  function ensureFactoryDraftYear(year) {
+    if (!factoryDrafts[year]) {
+      factoryDrafts[year] = {};
+      for (let m = 1; m <= 12; m++) {
+        factoryDrafts[year][m] = { A: [], B: [], C: [], D: [] };
+      }
+    }
+    for (let m = 1; m <= 12; m++) {
+      if (!factoryDrafts[year][m]) {
+        factoryDrafts[year][m] = { A: [], B: [], C: [], D: [] };
+      }
+      const dim = new Date(year, m, 0).getDate();
+      ['A', 'B', 'C', 'D'].forEach((b) => {
+        if (!Array.isArray(factoryDrafts[year][m][b])) {
+          factoryDrafts[year][m][b] = new Array(dim).fill(null);
+        }
+        while (factoryDrafts[year][m][b].length < dim) {
+          factoryDrafts[year][m][b].push(null);
+        }
+        if (factoryDrafts[year][m][b].length > dim) {
+          factoryDrafts[year][m][b].length = dim;
+        }
+      });
+    }
+  }
  
  function setFactoryDraftShift(year, month, day, brigade, value) {
    ensureFactoryDraftYear(year);
@@ -171,21 +170,21 @@ if (!prefs.urlopLimits) prefs.urlopLimits = {};
    }
  }
  
- function countFactoryDraftChanges() {
-   let count = 0;
-   const walk = (obj) => {
-     if (!obj || typeof obj !== 'object') return;
-     if (Array.isArray(obj)) {
-       obj.forEach((v) => {
-         if (v != null && v !== '' && v !== 0) count++;
-       });
-       return;
-     }
-     Object.keys(obj).forEach((k) => walk(obj[k]));
-   };
-   walk(factoryDrafts);
-   return count;
- }
+  function countFactoryDraftChanges() {
+    let count = 0;
+    const walk = (obj) => {
+      if (!obj || typeof obj !== 'object') return;
+      if (Array.isArray(obj)) {
+        obj.forEach((v) => {
+          if (v !== null && v !== undefined && v !== '') count++;
+        });
+        return;
+      }
+      Object.keys(obj).forEach((k) => walk(obj[k]));
+    };
+    walk(factoryDrafts);
+    return count;
+  }
  
  /* === Limity urlopu === */
 

@@ -50,7 +50,16 @@ function renderCalendar(direction) {
     let shiftCode = getShiftAtWithPending(currentYear, currentMonth, d, selectedShift);
     let onUrlop = isUrlop(currentYear, currentMonth, d, selectedShift);
     // REMOVED: const dirtyCell = isDirty(currentYear, currentMonth, d, selectedShift);
-    if (hidePrivate) {
+    
+    // Factory painting mode override - show factory drafts when active
+    const isFactoryPaintingMode = factoryPaintActive && 
+                                  factoryPaintYear === currentYear && 
+                                  factoryPaintMonth === currentMonth;
+    if (isFactoryPaintingMode) {
+      // Show factory drafts for the selected shift
+      shiftCode = window.getFactoryDraftShiftAt(currentYear, currentMonth, d, selectedShift) || '';
+      onUrlop = false; // URLop logic doesn't apply in factory painting mode
+    } else if (hidePrivate) {
       shiftCode =
         factorySchedule[currentYear] &&
         factorySchedule[currentYear][currentMonth] &&
@@ -190,76 +199,19 @@ function renderCalendar(direction) {
 
     // Relief handoff popups removed — functionality lives in info-panel timeline widget
 
-    cell.addEventListener('click', () => {
-      // REMOVED: if (editMode) {
-      // REMOVED:   const currentShift = getShiftAtWithPending(currentYear, currentMonth, d, selectedShift);
-      // REMOVED:   const factoryShift =
-      // REMOVED:     factorySchedule[currentYear] &&
-      // REMOVED:     factorySchedule[currentYear][currentMonth] &&
-      // REMOVED:     factorySchedule[currentYear][currentMonth][selectedShift]
-      // REMOVED:       ? factorySchedule[currentYear][currentMonth][selectedShift][d - 1]
-      // REMOVED:       : '';
-      // REMOVED:   const isFactoryFree = isWolne(factoryShift);
-      // REMOVED:   const dayIsUrlop = isUrlop(currentYear, currentMonth, d, selectedShift);
-
-      // REMOVED:   // Palette URLOP: toggle vacation (works on any day)
-      // REMOVED:   if (editPaletteMode === 'URLOP') {
-      // REMOVED:     toggleUrlop(currentYear, currentMonth, d, selectedShift);
-      // REMOVED:     showToast(
-      // REMOVED:       'success',
-      // REMOVED:       isUrlop(currentYear, currentMonth, d, selectedShift)
-      // REMOVED:         ? t('urlopAdded')
-      // REMOVED:         : t('urlopRemoved')
-      // REMOVED:     );
-      // REMOVED:     selectedDay = d;
-      // REMOVED:     refreshViews();
-      // REMOVED:     return;
-      // REMOVED:   }
-
-      // REMOVED:   // Palette ADDSHIFT: add/edit/erase shift on factory-free day
-      // REMOVED:   // Also allow reopening modal for days where user already added custom shift
-      // REMOVED:   // (so they can change it or erase it via the "Empty" button)
-      // REMOVED:   if (editPaletteMode === 'ADDSHIFT') {
-      // REMOVED:     const dayIsCustomEdited = isFactoryFree && !isWolne(currentShift);
-      // REMOVED:     if (!isFactoryFree && !dayIsCustomEdited) {
-      // REMOVED:     showToast('warn', t('addShiftFactoryHasShift'));
-      // REMOVED:     return;
-      // REMOVED:     }
-      // REMOVED:     if (dayIsUrlop) {
-      // REMOVED:     showToast('warn', t('addShiftDayIsUrlop'));
-      // REMOVED:     return;
-      // REMOVED:     }
-      // REMOVED:     selectedDay = d;
-      // REMOVED:     openAddShiftModal(d);
-      // REMOVED:     return;
-      // REMOVED:   }
-
-      // REMOVED:   // Palette OTBEFORE / OTAFTER: open overtime modal with pre-selected position
-      // REMOVED:   if (editPaletteMode === 'OTBEFORE' || editPaletteMode === 'OTAFTER') {
-      // REMOVED:     if (isWolne(currentShift)) {
-      // REMOVED:     showToast('warn', t('otOnlyOnShift'));
-      // REMOVED:     return;
-      // REMOVED:     }
-      // REMOVED:     if (dayIsUrlop) {
-      // REMOVED:     showToast('warn', t('otOnlyOnShift'));
-      // REMOVED:     return;
-      // REMOVED:     }
-      // REMOVED:     const position = editPaletteMode === 'OTBEFORE' ? 'przed' : 'po';
-      // REMOVED:     selectedDay = d;
-      // REMOVED:     openOvertimeModal(d, currentShift, position, null);
-      // REMOVED:     renderCalendar();
-      // REMOVED:     renderInfo();
-      // REMOVED:     return;
-      // REMOVED:   }
-
-      // REMOVED:   // Palette R/P/N/W: apply direct shift replacement (admin factory editing)
-      // REMOVED:   // Free day is stored as '' internally ('W' is only its display/CSS representation).
-      // REMOVED:   const val = editPaletteMode === 'W' ? '' : editPaletteMode;
-      // REMOVED:   applyEdit(currentYear, currentMonth, d, selectedShift, val);
-      // REMOVED:   selectedDay = d;
-      // REMOVED:     refreshViews();
-      // REMOVED:     return;
-      // REMOVED: }
+cell.addEventListener('click', () => {
+      // Factory painting mode: apply direct shift replacement (admin factory editing)
+      // Free day is stored as '' internally ('W' is only its display/CSS representation).
+      if (factoryPaintActive && 
+          factoryPaintYear === currentYear && 
+          factoryPaintMonth === currentMonth) {
+        const val = factoryPaintMode === 'W' ? '' : factoryPaintMode;
+        window.handleFactoryPaintDayClick(currentYear, currentMonth, d, selectedShift, val);
+        selectedDay = d;
+        refreshViews();
+        return;
+      }
+      
       selectedDay = selectedDay === d ? null : d;
       renderCalendar();
       renderInfo();

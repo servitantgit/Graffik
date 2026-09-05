@@ -248,6 +248,18 @@
   </div>
 
 
+   <!-- FACTORY EDITOR BAR (shown during factory painting mode) -->
+  <div id="factoryEditorBar" style="display:none;">
+    <div id="factoryEditorContext"></div>
+    <div id="factoryEditorTools">
+      <button class="factory-tool-btn active" data-factory-shift="R" title="Rano (R)">R</button>
+      <button class="factory-tool-btn" data-factory-shift="P" title="Popołudnie (P)">P</button>
+      <button class="factory-tool-btn" data-factory-shift="N" title="Noc (N)">N</button>
+      <button class="factory-tool-btn" data-factory-shift="W" title="Wolne (W)">W</button>
+    </div>
+    <button id="factoryEditorExitBtn" title="Zakończ edycję">✕</button>
+  </div>
+
   <!-- APP PANEL (full-screen shell panel, v4.0.0) -->
   <div class="app-panel-overlay" id="appPanelOverlay"></div>
   <section class="app-panel" id="appPanel" role="dialog" aria-modal="true"
@@ -376,6 +388,7 @@
   <script src="js/app-shell.js"></script>
   <script src="js/day-editor.js"></script>
   <script src="js/settings.js"></script>
+  <script src="js/admin-center.js"></script>
   <script src="js/main.js"></script>
 
 </body>
