@@ -64,15 +64,18 @@
   const SECTIONS = [
     { id: 'general', titleKey: 'settingsGeneral', icon: '🧭', active: true },
     { id: 'appearance', titleKey: 'settingsAppearance', icon: '🎨', active: true },
-    { id: 'notifications', titleKey: 'settingsNotifications', icon: '🔔', active: false },
-    { id: 'vacation', titleKey: 'settingsVacation', icon: '🌴', active: false },
+    { id: 'notifications', titleKey: 'settingsNotifications', icon: '🔔', active: true },
+    { id: 'vacation', titleKey: 'settingsVacation', icon: '🌴', active: true },
     { id: 'privacy', titleKey: 'settingsDataPrivacy', icon: '🔒', active: false },
-    { id: 'accessibility', titleKey: 'settingsAccessibility', icon: '♿', active: false },
+    { id: 'accessibility', titleKey: 'settingsAccessibility', icon: '♿', active: true },
   ];
 
   const SECTION_TITLES = {
     general: 'settingsGeneral',
     appearance: 'settingsAppearance',
+    notifications: 'settingsNotifications',
+    vacation: 'settingsVacation',
+    accessibility: 'settingsAccessibility',
   };
 
   let currentScreen = 'main'; // 'main' | 'general' | 'appearance'
@@ -346,6 +349,205 @@
     }
   }
 
+  /* ---------- NOTIFICATIONS section ---------- */
+
+  function notificationsHtml() {
+    const raw = typeof getNotificationStatus === 'function' ? getNotificationStatus() : null;
+    const supported = raw ? raw.supported : 'Notification' in window;
+    const permission = raw ? raw.permission : 'Notification' in window ? Notification.permission : 'unsupported';
+    const enabled = raw ? raw.enabled : false;
+    const lead = raw ? raw.lead : prefs.notificationsLead || 1;
+
+    let permLabel = '';
+    let permClass = '';
+    if (!supported) {
+      permLabel = tr('settingsNotificationsUnsupported');
+      permClass = 'error';
+    } else if (permission === 'denied') {
+      permLabel = tr('settingsNotificationsBlocked');
+      permClass = 'error';
+    } else if (permission === 'granted') {
+      permLabel = tr('settingsNotificationsSupported');
+      permClass = 'ok';
+    } else {
+      permLabel = tr('settingsNotificationsSupported');
+      permClass = 'info';
+    }
+
+    const leadRows = ['1', '2', '3'].map(function (v) {
+      return segBtn(v + 'h', v, String(lead), 'data-lead');
+    }).join('');
+
+    return (
+      '<div class="settings-section">' +
+      '<div class="st-group"><div class="st-label">' + tr('settingsNotificationsDesc') + '</div>' +
+      '<div class="st-perm st-perm-' + permClass + '">' + permLabel + '</div>' +
+      '</div>' +
+      '<button type="button" class="st-row st-switch" id="stNotifEnable" role="switch" aria-checked="' +
+      (enabled ? 'true' : 'false') + '">' +
+      '<span class="st-row-label">' + tr('settingsNotifications') + '</span>' +
+      '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
+      '</button>' +
+      '<div class="st-group"><div class="st-label">' + tr('settingsNotificationLead') + '</div>' +
+      '<div class="seg" role="group" aria-label="' + tr('settingsNotificationLead') + '">' +
+      leadRows +
+      '</div></div>' +
+      '<button type="button" class="st-row" id="stNotifTest">' +
+      '<span class="st-row-label">' + tr('settingsNotificationTest') + '</span>' +
+      '</button>' +
+      (permission === 'denied' ? '<p class="st-hint">' + tr('notificationsBlockedInBrowser') + '</p>' : '') +
+      '</div>'
+    );
+  }
+
+  function bindNotifications(body) {
+    if (!body) return;
+
+    const enableBtn = body.querySelector('#stNotifEnable');
+    if (enableBtn) {
+      enableBtn.addEventListener('click', function () {
+        const next = enableBtn.getAttribute('aria-checked') !== 'true';
+        if (typeof setNotificationsEnabled === 'function') {
+          setNotificationsEnabled(next).then(function () {
+            renderSettingsSection('notifications', body);
+          }).catch(function () {
+            renderSettingsSection('notifications', body);
+          });
+        }
+      });
+    }
+
+    body.querySelectorAll('.seg-btn[data-lead]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const val = btn.getAttribute('data-lead');
+        if (typeof setNotificationLead === 'function') {
+          setNotificationLead(val);
+          setActive(body, 'lead', val);
+        }
+      });
+    });
+
+    const testBtn = body.querySelector('#stNotifTest');
+    if (testBtn) {
+      testBtn.addEventListener('click', function () {
+        if (typeof sendTestNotification === 'function') sendTestNotification();
+      });
+    }
+  }
+
+  /* ---------- VACATION section ---------- */
+
+  function vacationHtml() {
+    const brigade = prefs.shift || 'A';
+    const limit = typeof getVacationLimit === 'function' ? getVacationLimit(brigade) : 26;
+    const used = typeof countWorkingUrlops === 'function' ? countWorkingUrlops(currentYear, brigade) : 0;
+    const remaining = Math.max(0, limit - used);
+
+    const brigades = ['A', 'B', 'C', 'D'];
+
+    const brigButtons = brigades.map(function (b) {
+      return segBtn(b, b, brigade, 'data-vac-brig');
+    }).join('');
+
+    return (
+      '<div class="settings-section">' +
+      '<div class="st-group"><div class="st-label">' + tr('settingsVacationDesc') + '</div>' +
+      '<div class="seg" role="group" aria-label="' + tr('settingsVacationDesc') + '">' +
+      brigButtons +
+      '</div></div>' +
+      '<div class="st-group">' +
+      '<div class="st-row"><span class="st-row-label">' + tr('settingsVacationDesc') + '</span>' +
+      '<input type="number" class="st-number" id="stVacLimit" value="' + limit + '" min="0" max="365" aria-label="' + tr('settingsVacationDesc') + '">' +
+      '</div>' +
+      '<div class="st-row"><span class="st-row-label">' + tr('settingsVacationUsed') + '</span>' +
+      '<span class="st-mono">' + used + '</span>' +
+      '</div>' +
+      '<div class="st-row"><span class="st-row-label">' + tr('settingsVacationRemaining') + '</span>' +
+      '<span class="st-mono">' + remaining + '</span>' +
+      '</div>' +
+      '<p class="st-hint">' + tr('infoUrlopWorking') + ': ' + used + ' / ' + limit + '</p>' +
+      '</div>' +
+      '</div>'
+    );
+  }
+
+  function bindVacation(body) {
+    if (!body) return;
+
+    body.querySelectorAll('.seg-btn[data-vac-brig]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const b = btn.getAttribute('data-vac-brig');
+        prefs.shift = b;
+        savePrefsSafe();
+        setActive(body, 'vac-brig', b);
+        renderSettingsSection('vacation', body);
+      });
+    });
+
+    const limitInput = body.querySelector('#stVacLimit');
+    if (limitInput) {
+      limitInput.addEventListener('change', function () {
+        const val = parseInt(limitInput.value, 10);
+        if (Number.isFinite(val) && val >= 0) {
+          const brigade = prefs.shift || 'A';
+          if (typeof setVacationLimit === 'function') {
+            setVacationLimit(brigade, val);
+            toast('success', 'persSaved');
+            renderSettingsSection('vacation', body);
+          }
+        }
+      });
+    }
+  }
+
+  /* ---------- ACCESSIBILITY section ---------- */
+
+  function accessibilityHtml() {
+    const reduceMotion = prefs.reduceMotion === true;
+    const largeText = prefs.largeText === true;
+    const compactCells = prefs.compactCells === true;
+
+    return (
+      '<div class="settings-section">' +
+      '<button type="button" class="st-row st-switch" id="stReduceMotion" role="switch" aria-checked="' +
+      (reduceMotion ? 'true' : 'false') + '">' +
+      '<span class="st-row-label">' + tr('settingsReduceMotion') + '</span>' +
+      '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
+      '</button>' +
+      '<button type="button" class="st-row st-switch" id="stLargeText" role="switch" aria-checked="' +
+      (largeText ? 'true' : 'false') + '">' +
+      '<span class="st-row-label">' + tr('settingsLargeText') + '</span>' +
+      '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
+      '</button>' +
+      '<button type="button" class="st-row st-switch" id="stCompactCells" role="switch" aria-checked="' +
+      (compactCells ? 'true' : 'false') + '">' +
+      '<span class="st-row-label">' + tr('settingsCompactCells') + '</span>' +
+      '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
+      '</button>' +
+      '</div>'
+    );
+  }
+
+  function bindAccessibility(body) {
+    if (!body) return;
+
+    function togglePref(key, btnId) {
+      const btn = body.querySelector('#' + btnId);
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        const next = btn.getAttribute('aria-checked') !== 'true';
+        prefs[key] = next;
+        savePrefsSafe();
+        btn.setAttribute('aria-checked', next ? 'true' : 'false');
+        if (typeof applyAccessibilityPreferences === 'function') applyAccessibilityPreferences();
+      });
+    }
+
+    togglePref('reduceMotion', 'stReduceMotion');
+    togglePref('largeText', 'stLargeText');
+    togglePref('compactCells', 'stCompactCells');
+  }
+
   /* ---------- public API ---------- */
 
   function renderSettingsSection(section, container) {
@@ -357,6 +559,15 @@
     } else if (section === 'appearance') {
       body.innerHTML = appearanceHtml();
       bindAppearance(body);
+    } else if (section === 'notifications') {
+      body.innerHTML = notificationsHtml();
+      bindNotifications(body);
+    } else if (section === 'vacation') {
+      body.innerHTML = vacationHtml();
+      bindVacation(body);
+    } else if (section === 'accessibility') {
+      body.innerHTML = accessibilityHtml();
+      bindAccessibility(body);
     }
   }
   window.renderSettingsSection = renderSettingsSection;

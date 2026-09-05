@@ -505,3 +505,6 @@ applyTranslations();
 /* === PERSONALIZATION (cell colors) === */
 if (typeof applyPersonalization === 'function') applyPersonalization();
 else if (typeof applyCellColors === 'function') applyCellColors();
+
+/* === ACCESSIBILITY PREFERENCES === */
+if (typeof applyAccessibilityPreferences === 'function') applyAccessibilityPreferences();
