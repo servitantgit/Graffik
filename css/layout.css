@@ -4,6 +4,26 @@
    ================================================================ */
 
 /* === TOP BAR === */
+
+/* === LANGUAGE DROPDOWN === */
+.lang-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--bg-container);
+  border: 2px solid var(--border-cell);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 8px 30px var(--shadow-heavy);
+  z-index: 100;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+}
+.lang-dropdown.show {
+  display: flex;
+}
 .top-bar {
   display: flex;
   justify-content: space-between;
