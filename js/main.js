@@ -111,7 +111,7 @@ function refreshViews() {
   const views = ['dashboardView', 'monthView', 'yearView', 'tableView'];
   views.forEach((v) => (document.getElementById(v).style.display = 'none'));
 
-  // REMOVED: updateEditModeUI();
+  
   if (typeof updateAppShellUI === 'function') updateAppShellUI();
 
   const empty =

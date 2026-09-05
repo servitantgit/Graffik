@@ -169,17 +169,11 @@ a.menu-item {
 
 /* ── 1. Z-index hierarchy (desktop) ── */
 .day-cell .ot-marker {
-  z-index: 5;
-}
-.day-cell .shift-rate-badge {
-  z-index: 5;
-}
-.day-cell .relief-popup {
-  z-index: 28;
-}
-.day-cell .ot-detail-popup {
-  z-index: 30;
-}
+   z-index: 5;
+ }
+ .day-cell .shift-rate-badge {
+   z-index: 5;
+ }
 .day-cell:hover {
   z-index: 35;
 }

@@ -49,7 +49,7 @@ function renderCalendar(direction) {
     const cell = document.createElement('div');
     let shiftCode = getShiftAtWithPending(currentYear, currentMonth, d, selectedShift);
     let onUrlop = isUrlop(currentYear, currentMonth, d, selectedShift);
-    // REMOVED: const dirtyCell = isDirty(currentYear, currentMonth, d, selectedShift);
+    
     
     // Factory painting mode override - show factory drafts when active
     const isFactoryPaintingMode = factoryPaintActive && 
@@ -89,7 +89,7 @@ function renderCalendar(direction) {
     )
       cell.classList.add('today');
     if (selectedDay === d) cell.classList.add('selected');
-    // REMOVED: if (!hidePrivate && dirtyCell) cell.classList.add('dirty-edit');
+    
 
     if (cycleRange && cycleRange.length > 1 && d >= cycleRange.start && d <= cycleRange.end) {
       if (d === cycleRange.start) cell.classList.add('cycle-start');
