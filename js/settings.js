@@ -551,78 +551,107 @@ function bindAccessibility(body) {
 
    /* ---------- PRIVACY section ---------- */
 
-   function privacyHtml() {
-     const localFirstExplanation = tr('settingsPrivacyLocalFirstExplanation');
-     const privacyModeLabel = tr('settingsPrivacyMode');
-     const driveStateLabel = tr('settingsPrivacyDriveState');
-     const customShiftsLabel = tr('settingsPrivacyCustomShifts');
-     const vacationsLabel = tr('settingsPrivacyVacations');
-     const overtimeLabel = tr('settingsPrivacyOvertime');
-     const notesLabel = tr('settingsPrivacyNotes');
+function privacyHtml() {
+      const localFirstExplanation = tr('settingsPrivacyLocalFirstExplanation');
+      const privacyModeLabel = tr('settingsPrivacyMode');
+      const driveStateLabel = tr('settingsPrivacyDriveState');
+      const customShiftsLabel = tr('settingsPrivacyCustomShifts');
+      const vacationsLabel = tr('settingsPrivacyVacations');
+      const overtimeLabel = tr('settingsPrivacyOvertime');
+      const notesLabel = tr('settingsPrivacyNotes');
+      const clearLabel = tr('settingsPrivacyClear');
 
-     const privacyModeEnabled = !!prefs.privacyMode;
-     const driveLoggedIn = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : false;
-     const driveEmail = driveLoggedIn && driveUserEmail ? driveUserEmail : null;
+      const privacyModeEnabled = !!prefs.privacyMode;
+      const driveLoggedIn = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : false;
+      const driveEmail = driveLoggedIn && driveUserEmail ? driveUserEmail : null;
 
-     // Counts
-     const customShiftsCount = typeof countPersonalCustomShifts === 'function' ? countPersonalCustomShifts() : 0;
-     const vacationsCount = typeof countVacations === 'function' ? countVacations() : 0;
-     const overtimeCount = typeof countOvertimeRecords === 'function' ? countOvertimeRecords() : 0;
-     const notesCount = typeof countNonEmptyNotes === 'function' ? countNonEmptyNotes() : 0;
+      // Counts
+      const customShiftsCount = typeof countPersonalCustomShifts === 'function' ? countPersonalCustomShifts() : 0;
+      const vacationsCount = typeof countVacations === 'function' ? countVacations() : 0;
+      const overtimeCount = typeof countOvertimeRecords === 'function' ? countOvertimeRecords() : 0;
+      const notesCount = typeof countNonEmptyNotes === 'function' ? countNonEmptyNotes() : 0;
 
-     return (
-       '<div class="settings-section">' +
-       '<div class="st-group"><div class="st-label">' + localFirstExplanation + '</div></div>' +
-       '<div class="st-group"><div class="st-label">' + privacyModeLabel + '</div>' +
-       '<button type="button" class="st-row st-switch" id="stPrivacyMode" role="switch" aria-checked="' +
-       (privacyModeEnabled ? 'true' : 'false') + '">' +
-       '<span class="st-row-label">' + privacyModeLabel + '</span>' +
-       '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
-       '</button></div>' +
-       '<div class="st-group"><div class="st-label">' + driveStateLabel + '</div>' +
-       '<div class="st-row"><span class="st-row-label">' + tr('driveCardConnected') + '</span>' +
-       '<span class="st-mono">' + (driveLoggedIn ? (driveEmail ? driveEmail : tr('driveLoggedIn')) : tr('driveNotLoggedIn')) + '</span>' +
-       '</div></div>' +
-       '<div class="st-group">' +
-       '<div class="st-row"><span class="st-row-label">' + customShiftsLabel + '</span>' +
-       '<span class="st-mono">' + customShiftsCount + '</span>' +
-       '</div>' +
-       '<div class="st-row"><span class="st-row-label">' + vacationsLabel + '</span>' +
-       '<span class="st-mono">' + vacationsCount + '</span>' +
-       '</div>' +
-       '<div class="st-row"><span class="st-row-label">' + overtimeLabel + '</span>' +
-       '<span class="st-mono">' + overtimeCount + '</span>' +
-       '</div>' +
-       '<div class="st-row"><span class="st-row-label">' + notesLabel + '</span>' +
-       '<span class="st-mono">' + notesCount + '</span>' +
-       '</div>' +
-       '</div>'
-     );
-   }
+      return (
+        '<div class="settings-section">' +
+        '<div class="st-group"><div class="st-label">' + localFirstExplanation + '</div></div>' +
+        '<div class="st-group"><div class="st-label">' + privacyModeLabel + '</div>' +
+        '<button type="button" class="st-row st-switch" id="stPrivacyMode" role="switch" aria-checked="' +
+        (privacyModeEnabled ? 'true' : 'false') + '">' +
+        '<span class="st-row-label">' + privacyModeLabel + '</span>' +
+        '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
+        '</button></div>' +
+        '<div class="st-group"><div class="st-label">' + driveStateLabel + '</div>' +
+        '<div class="st-row"><span class="st-row-label">' + tr('driveCardConnected') + '</span>' +
+        '<span class="st-mono">' + (driveLoggedIn ? (driveEmail ? driveEmail : tr('driveLoggedIn')) : tr('driveNotLoggedIn')) + '</span>' +
+        '</div></div>' +
+        '<div class="st-group">' +
+        '<div class="st-row"><span class="st-row-label">' + customShiftsLabel + '</span>' +
+        '<span class="st-mono">' + customShiftsCount + '</span>' +
+        '</div>' +
+        '<div class="st-row"><span class="st-row-label">' + vacationsLabel + '</span>' +
+        '<span class="st-mono">' + vacationsCount + '</span>' +
+        '</div>' +
+        '<div class="st-row"><span class="st-row-label">' + overtimeLabel + '</span>' +
+        '<span class="st-mono">' + overtimeCount + '</span>' +
+        '</div>' +
+        '<div class="st-row"><span class="st-row-label">' + notesLabel + '</span>' +
+        '<span class="st-mono">' + notesCount + '</span>' +
+        '</div>' +
+        '<button type="button" class="st-row" id="stClearPersonalData">' +
+        '<span class="st-row-label">' + clearLabel + ' 🗑️</span>' +
+        '</button>' +
+        '</div>' +
+        '</div>'
+      );
+    }
 
-   function bindPrivacy(body) {
-     if (!body) return;
+function bindPrivacy(body) {
+      if (!body) return;
 
-     const privacyModeBtn = body.querySelector('#stPrivacyMode');
-     if (privacyModeBtn) {
-       privacyModeBtn.addEventListener('click', function () {
-         const next = privacyModeBtn.getAttribute('aria-checked') !== 'true';
-         prefs.privacyMode = next;
-         savePrefsSafe();
-         privacyModeBtn.setAttribute('aria-checked', next ? 'true' : 'false');
-         // Refresh views to reflect any changes in data visibility
-         refreshViewsSafe();
-         // Update the drawer switch if possible
-         if (typeof updateDrawerPrivacySwitch === 'function') {
-           try {
-             updateDrawerPrivacySwitch(next);
-           } catch (e) {
-             /* ignore */
-           }
-         }
-       });
-     }
-   }
+      const privacyModeBtn = body.querySelector('#stPrivacyMode');
+      if (privacyModeBtn) {
+        privacyModeBtn.addEventListener('click', function () {
+          const next = privacyModeBtn.getAttribute('aria-checked') !== 'true';
+          prefs.privacyMode = next;
+          savePrefsSafe();
+          privacyModeBtn.setAttribute('aria-checked', next ? 'true' : 'false');
+          // Refresh views to reflect any changes in data visibility
+          refreshViewsSafe();
+          // Update the drawer switch if possible
+          if (typeof updateDrawerPrivacySwitch === 'function') {
+            try {
+              updateDrawerPrivacySwitch(next);
+            } catch (e) {
+              /* ignore */
+            }
+          }
+        });
+      }
+
+      // Add handler for clear personal data button
+      const clearBtn = body.querySelector('#stClearPersonalData');
+      if (clearBtn) {
+        clearBtn.addEventListener('click', function () {
+          // Show confirmation modal
+          showConfirm(
+            tr('settingsPrivacyClearConfirmTitle'),
+            tr('settingsPrivacyClearConfirmMessage'),
+            function () {
+              // User confirmed, clear the data
+              if (typeof clearLocalPersonalData === 'function') {
+                clearLocalPersonalData();
+              }
+              // Refresh the privacy section to show updated counts
+              renderSettingsSection('privacy', body);
+            },
+            {
+              primaryText: tr('clear'),
+              primaryClass: 'danger', // Using danger class for destructive action
+            }
+          );
+        });
+      }
+    }
 
   /* ---------- public API ---------- */
 
