@@ -225,12 +225,52 @@ window.goToPeriod = goToPeriod;
 
 /* === KEYBOARD === */
 document.addEventListener('keydown', (e) => {
-  if (
-    e.target.tagName === 'INPUT' ||
-    e.target.tagName === 'SELECT' ||
-    e.target.tagName === 'TEXTAREA'
-  )
+if (
+      e.target.tagName === 'INPUT' ||
+      e.target.tagName === 'SELECT' ||
+      e.target.tagName === 'TEXTAREA'
+    )
     return;
+  
+  // Handle factory painting mode keyboard shortcuts
+  if (factoryPaintActive) {
+    switch (e.key.toUpperCase()) {
+      case 'R':
+      case 'P':
+      case 'N':
+      case 'W':
+        e.preventDefault();
+        window.activateFactoryPaintTool(e.key.toUpperCase());
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        if (factoryPaintActive) {
+          factoryPaintMonth = factoryPaintMonth === 1 ? 12 : factoryPaintMonth - 1;
+          window.updateFactoryEditorContext();
+          if (typeof refreshViews === 'function') {
+            refreshViews();
+          }
+        }
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        if (factoryPaintActive) {
+          factoryPaintMonth = factoryPaintMonth === 12 ? 1 : factoryPaintMonth + 1;
+          window.updateFactoryEditorContext();
+          if (typeof refreshViews === 'function') {
+            refreshViews();
+          }
+        }
+        break;
+      case 'Escape':
+        e.preventDefault();
+        if (factoryPaintActive) {
+          window.deactivateFactoryPaintMode();
+        }
+        break;
+    }
+    return; // Prevent other keyboard handling when in factory painting mode
+  }
 
   if (e.key === 'Escape') {
     // App panel / action sheet handle their own Escape (app-shell.js)
@@ -296,44 +336,61 @@ document.addEventListener('touchend', (e) => {
 
 /* === BRIGADE SELECTION === */
 document.querySelectorAll('.shift-btn').forEach((btn) => {
-  btn.onclick = (e) => {
-    if (e.ctrlKey || e.metaKey) {
-      if (btn.dataset.shift === selectedShift) return;
-      if (compareShift === btn.dataset.shift) {
-        compareShift = null;
-        btn.classList.remove('compare');
-      } else {
-        document.querySelectorAll('.shift-btn').forEach((b) => b.classList.remove('compare'));
-        compareShift = btn.dataset.shift;
-        btn.classList.add('compare');
-      }
-    } else {
-      document.querySelectorAll('.shift-btn').forEach((b) => {
-        b.classList.remove('active');
-        b.classList.remove('compare');
-      });
-      btn.classList.add('active');
-      selectedShift = btn.dataset.shift;
-      compareShift = null;
-      prefs.shift = selectedShift;
-      savePrefs(prefs);
-    }
-    refreshViews();
-  };
-});
+      btn.onclick = (e) => {
+        // Prevent brigade selection when in factory painting mode
+        if (factoryPaintActive) return;
+        
+        if (e.ctrlKey || e.metaKey) {
+          if (btn.dataset.shift === selectedShift) return;
+          if (compareShift === btn.dataset.shift) {
+            compareShift = null;
+            btn.classList.remove('compare');
+          } else {
+            document.querySelectorAll('.shift-btn').forEach((b) => b.classList.remove('compare'));
+            compareShift = btn.dataset.shift;
+            btn.classList.add('compare');
+          }
+        } else {
+          document.querySelectorAll('.shift-btn').forEach((b) => {
+            b.classList.remove('active');
+            b.classList.remove('compare');
+          });
+          btn.classList.add('active');
+          selectedShift = btn.dataset.shift;
+          compareShift = null;
+          prefs.shift = selectedShift;
+          savePrefs(prefs);
+        }
+        refreshViews();
+      };
+    });
 
 /* === TODAY === */
 bindClick('todayBtn', () => {
-  const now = new Date();
-  currentYear = now.getFullYear();
-  currentMonth = now.getMonth() + 1;
-  selectedDay = now.getDate(); // select today
-  yearMode = false;
-  prefs.year = currentYear;
-  prefs.yearMode = false;
-  savePrefs(prefs);
-  switchView('month'); // always open Month view on today's date
-});
+      // Prevent today button when in factory painting mode
+      if (factoryPaintActive) return;
+      
+      const now = new Date();
+      currentYear = now.getFullYear();
+      currentMonth = now.getMonth() + 1;
+      selectedDay = now.getDate(); // select today
+      yearMode = false;
+      prefs.year = currentYear;
+      prefs.yearMode = false;
+      savePrefs(prefs);
+      switchView('month'); // always open Month view on today's date
+    });
+ 
+/* === AUTH LOSS HANDLING === */
+// Handle loss of admin authentication while in factory painting mode
+if (typeof window !== 'undefined') {
+  window.addEventListener('driveAuthChanged', () => {
+    if (factoryPaintActive && !window.requireAdmin()) {
+      window.deactivateFactoryPaintMode();
+      showToast('warning', t('adminAuthLost') || 'Admin access lost - factory editor exited');
+    }
+  });
+}
 
 /* beforeunload removed — all edits auto-save to localStorage */
 

@@ -64,6 +64,15 @@ function initAdminMode() {
 window.isCurrentUserAdmin = isCurrentUserAdmin;
 window.updateAdminUI = updateAdminUI;
 
+/* === ADMIN GATE === */
+function requireAdmin() {
+  if (typeof isCurrentUserAdmin !== 'function' || !isCurrentUserAdmin()) {
+    return false;
+  }
+  return true;
+}
+window.requireAdmin = requireAdmin;
+
 /* === AUTO-INIT === */
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initAdminMode);

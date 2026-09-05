@@ -1013,5 +1013,178 @@ body.compact-cells .info-section {
   transition: background 0.15s, color 0.15s;
 }
 .privacy-disable-btn:hover {
-  background: var(--bg-info);
+   background: var(--bg-info);
+ }
+
+/* === FACTORY EDITOR BAR === */
+#factoryEditorBar {
+   position: fixed;
+   bottom: 0;
+   left: 0;
+   right: 0;
+   height: 48px;
+   display: flex;
+   align-items: center;
+   background: var(--bg-container);
+   border-top: 1px solid var(--border-cell);
+   z-index: 200;
+   padding: 0 16px;
+   box-sizing: border-box;
+}
+
+#factoryEditorContext {
+   flex: 1;
+   min-width: 200px;
+   font-size: 14px;
+   color: var(--text-main);
+   display: flex;
+   gap: 16px;
+}
+
+#factoryEditorTools {
+   display: flex;
+   gap: 8px;
+}
+
+.factory-tool-btn {
+   width: 36px;
+   height: 36px;
+   border: 2px solid var(--border-cell);
+   border-radius: 4px;
+   background: var(--bg-controls);
+   color: var(--text-main);
+   font-size: 16px;
+   font-weight: 600;
+   cursor: pointer;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   transition: all 0.15s ease;
+}
+
+.factory-tool-btn.active {
+   border-color: var(--text-header);
+   background: var(--bg-info);
+   color: var(--text-header);
+}
+
+.factory-tool-btn:hover:not(.active) {
+   background: var(--bg-hover);
+   border-color: var(--text-main);
+}
+
+#factoryEditorExitBtn {
+   width: 36px;
+   height: 36px;
+   border: none;
+   background: var(--bg-controls);
+   color: var(--text-main);
+   font-size: 18px;
+   border-radius: 4px;
+   cursor: pointer;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   transition: background 0.15s ease;
+}
+
+#factoryEditorExitBtn:hover {
+   background: var(--bg-danger);
+   color: var(--text-danger);
+}
+
+/* === ADMIN CENTER TABS === */
+.admin-tab-btn {
+   flex: 1;
+   padding: 12px 8px;
+   border: none;
+   background: var(--bg-controls);
+   color: var(--text-main);
+   font-size: 14px;
+   font-weight: 600;
+   cursor: pointer;
+   border-bottom: 2px solid transparent;
+   transition: all 0.15s ease;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 6px;
+}
+
+.admin-tab-btn.active {
+   color: var(--text-header);
+   border-bottom-color: var(--text-header);
+   background: var(--bg-container);
+}
+
+.admin-tab-btn:hover:not(.active) {
+   background: var(--bg-hover);
+   color: var(--text-header);
+}
+
+/* === ADMIN CENTER CONTENT === */
+#adminCenterContent {
+   padding: 16px;
+   overflow-y: auto;
+}
+
+/* === DANGER BUTTONS === */
+.admin-danger-btn {
+   width: 100%;
+   padding: 12px 16px;
+   border: none;
+   border-radius: 6px;
+   font-size: 14px;
+   font-weight: 600;
+   cursor: pointer;
+   transition: all 0.15s ease;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 8px;
+   margin: 8px 0;
+}
+
+.admin-danger-btn {
+   background: var(--bg-danger);
+   color: var(--text-danger);
+   border: 1px solid var(--text-danger);
+}
+
+.admin-danger-btn:hover {
+   background: var(--text-danger);
+   color: var(--bg-container);
+   border-color: var(--text-danger);
+}
+
+/* === EXPORT YEAR LIST === */
+.export-year-item {
+   margin: 4px 0;
+}
+
+.export-year-btn {
+   width: 100%;
+   text-align: left;
+   padding: 10px 12px;
+   border: 1px solid var(--border-cell);
+   border-radius: 6px;
+   background: var(--bg-controls);
+   color: var(--text-main);
+   font-size: 14px;
+   cursor: pointer;
+   transition: all 0.15s ease;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+
+.export-year-btn.active,
+.export-year-btn:hover {
+   background: var(--bg-info);
+   border-color: var(--text-header);
+   color: var(--text-header);
+}
+
+.export-year-btn:hover {
+   background: var(--bg-hover);
 }

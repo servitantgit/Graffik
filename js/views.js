@@ -70,7 +70,7 @@ function renderYearView() {
         // REMOVED:       isUrlop(currentYear, m, d, selectedShift) ? t('urlopAdded') : t('urlopRemoved')
         // REMOVED:     );
         // REMOVED:     refreshViews();
-        // REMOVED:     return;
+// REMOVED:     return;
         // REMOVED:   }
         // REMOVED:   // Palette ADDSHIFT / OTBEFORE / OTAFTER: only available in month view
         // REMOVED:   if (
@@ -83,20 +83,36 @@ function renderYearView() {
         // REMOVED:   }
         // REMOVED:   // Palette: 'R','P','N','W' — map free day 'W' to '' for storage
         // REMOVED:   const val = editPaletteMode === 'W' ? '' : editPaletteMode;
-        // REMOVED:   applyEdit(currentYear, m, d, selectedShift, val);
+        // REMOVED:   applyEdit(currentYear, month, d, brig, val);
         // REMOVED:   refreshViews();
         // REMOVED:   return;
         // REMOVED: }
-        currentMonth = m;
-        selectedDay = d;
-        yearMode = false;
-        prefs.yearMode = false;
-        savePrefs(prefs);
-        const yt = document.getElementById('yearToggle');
-        if (yt) yt.checked = false;
-        const ytl = document.getElementById('yearToggleLabel');
-        if (ytl) ytl.classList.remove('active');
-        switchView('month');
+        
+      // Factory painting mode: apply direct shift replacement (admin factory editing)
+      // Free day is stored as '' internally ('W' is only its display/CSS representation).
+      if (factoryPaintActive && 
+          factoryPaintYear === currentYear && 
+          factoryPaintMonth === month) {
+        const val = factoryPaintMode === 'W' ? '' : factoryPaintMode;
+        window.handleFactoryPaintDayClick(currentYear, month, d, brig, val);
+        refreshViews();
+        return;
+      }
+      
+      selectedShift = brig;
+      currentMonth = month;
+      selectedDay = d;
+      compareShift = null;
+      yearMode = false;
+      prefs.shift = selectedShift;
+      prefs.yearMode = false;
+      savePrefs(prefs);
+      updateShiftButtons();
+      const yt = document.getElementById('yearToggle');
+      if (yt) yt.checked = false;
+      const ytl = document.getElementById('yearToggleLabel');
+      if (ytl) ytl.classList.remove('active');
+      switchView('month');
       };
       mini.appendChild(el);
     }
@@ -206,19 +222,28 @@ function buildMonthTable(month) {
     tr.appendChild(brigTh);
     for (let d = 1; d <= dim; d++) {
       const td = document.createElement('td');
-      let s = getShiftAtWithPending(currentYear, month, d, brig);
-      let onU = isUrlop(currentYear, month, d, brig);
-      // REMOVED: let dirty = isDirty(currentYear, month, d, brig);
-      if (hidePrivate) {
-        s =
-          factorySchedule[currentYear] &&
-          factorySchedule[currentYear][month] &&
-          factorySchedule[currentYear][month][brig]
-            ? factorySchedule[currentYear][month][brig][d - 1]
-            : '';
-        onU = false;
-        // REMOVED: dirty = false;
-      }
+let s = getShiftAtWithPending(currentYear, month, d, brig);
+    let onU = isUrlop(currentYear, month, d, brig);
+    // REMOVED: let dirty = isDirty(currentYear, month, d, brig);
+    
+    // Factory painting mode override - show factory drafts when active
+    const isFactoryPaintingMode = factoryPaintActive && 
+                                  factoryPaintYear === currentYear && 
+                                  factoryPaintMonth === month;
+    if (isFactoryPaintingMode) {
+      // Show factory drafts for this brigade
+      s = window.getFactoryDraftShiftAt(currentYear, month, d, brig) || '';
+      onU = false; // URLop logic doesn't apply in factory painting mode
+    } else if (hidePrivate) {
+      s =
+        factorySchedule[currentYear] &&
+        factorySchedule[currentYear][month] &&
+        factorySchedule[currentYear][month][brig]
+          ? factorySchedule[currentYear][currentMonth][brig][d - 1]
+          : '';
+      onU = false;
+      // REMOVED: dirty = false;
+    }
       // REMOVED: if (dirty) td.classList.add('dirty-edit');
       const cls = onU ? 'U' : isWolne(s) ? 'W' : s;
       td.className = 'tc tc-' + cls;
