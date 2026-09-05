@@ -36,7 +36,6 @@
     <div class="top-bar">
       <button class="icon-btn" id="userAuthBtn" data-i18n-title="profile" title="Zaloguj do Google Drive">👤</button>
       <div class="top-bar-title">
-        <span class="context-kicker" id="appContextKicker"></span>
         <h1 class="context-title" id="appContextTitle"></h1>
       </div>
       <button class="icon-btn" id="menuBtn" data-i18n-title="menu" title="Menu">☰</button>
@@ -55,7 +54,7 @@
       <button type="button" class="primary-nav-btn" data-view="table" data-i18n="viewTable">📋 Tabela</button>
     </nav>
 
-    <!-- CONTEXT TOOLBAR (brigade / period / range rows; per-view row visibility) -->
+    <!-- CONTEXT TOOLBAR (brigade + range toggle / period; per-view row visibility) -->
     <div class="context-toolbar" id="contextToolbar" data-view="dashboard">
       <div class="context-row context-row-brigade" id="contextRowBrigade">
         <span class="context-label" id="brigadeContextLabel"></span>
@@ -66,6 +65,10 @@
           <button class="shift-btn C" data-shift="C" data-i18n-title="compareHint" title="Ctrl+klik = porównaj">C</button>
           <button class="shift-btn D" data-shift="D" data-i18n-title="compareHint" title="Ctrl+klik = porównaj">D</button>
         </div>
+        <div class="range-toggle" id="contextRowRange" role="group" aria-label="Month / Year">
+          <button type="button" class="range-btn active" data-range="month" data-i18n="rangeMonth">Miesiąc</button>
+          <button type="button" class="range-btn" data-range="year" data-i18n="rangeYear">Rok</button>
+        </div>
       </div>
       <div class="context-row context-row-date" id="contextRowDate">
         <button type="button" class="icon-btn period-btn" id="prevPeriodBtn" data-i18n-title="prevMonth"
@@ -74,10 +77,6 @@
         <button type="button" class="icon-btn period-btn" id="nextPeriodBtn" data-i18n-title="nextMonth"
           title="Następny miesiąc (→)">›</button>
         <button type="button" class="btn-secondary context-today-btn" id="todayBtn" data-i18n="today">📅 Сьогодні</button>
-      </div>
-      <div class="context-row context-row-range" id="contextRowRange">
-        <button type="button" class="range-btn active" data-range="month" data-i18n="rangeMonth">Miesiąc</button>
-        <button type="button" class="range-btn" data-range="year" data-i18n="rangeYear">Rok</button>
       </div>
     </div>
 
