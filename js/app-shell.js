@@ -465,17 +465,64 @@
       closeSideMenu();
       openExportCenter();
     });
-    onBtn('menuAbout', () =>
-      openMenuPanel(
-        'about',
-        'aboutTitle',
-        '<p class="menu-temp-note">' +
-          tt('aboutDescription') +
-          '</p><p class="menu-temp-note">' +
-          tt('aboutOffline') +
-          '</p>'
-      )
-    );
+    onBtn('menuAbout', () => {
+      closeSideMenu();
+      openAppPanel({
+        id: 'about-panel',
+        title: t('aboutTitle'),
+        html: `
+          <div class="about-content">
+            <p><strong>${t('appName')}</strong></p>
+            <p>${t('aboutDescription')}</p>
+            <p><strong>${t('aboutVersion')}</strong>: <span id="about-version">1.0.0</span></p>
+            <p><strong>${t('aboutPrivacy')}</strong>: ${t('aboutOffline')}</p>
+            <p><strong>${t('menuGitHub')}</strong>: <a href="https://github.com/tantsiura/grafik-gillette" target="_blank" rel="noopener">github.com/tantsiura/grafik-gillette</a></p>
+            <p><strong>${t('aboutDeveloper')}</strong>: ${t('faqBugEmail')}</p>
+            <p><strong>${t('menuShareCenter')}</strong>: ${t('shareCenterTitle')} (${t('shareCurrentView')})</p>
+            <p><strong>Online/Offline</strong>: <span id="about-online-status">Checking...</span></p>
+            <p><strong>PWA Status</strong>: <span id="about-pwa-status">Checking...</span></p>
+            <button id="about-check-update" class="btn-primary">${t('aboutCheckUpdates')}</button>
+          </div>
+        `,
+        onMount: (body) => {
+          // Set version from pkg info or meta tag
+          const versionEl = body.querySelector('#about-version');
+          if (versionEl) {
+            // Try to get version from manifest or meta tag
+            const manifestLink = document.querySelector('link[rel="manifest"]');
+            if (manifestLink) {
+              fetch(manifestLink.href)
+                .then(resp => resp.json())
+                .then(data => {
+                  if (data.version) versionEl.textContent = data.version;
+                })
+                .catch(() => {/* ignore */});
+            }
+          }
+          // Online status
+          const onlineEl = body.querySelector('#about-online-status');
+          if (onlineEl) {
+            onlineEl.textContent = navigator.onLine ? t('driveLoggedInHint') : t('driveLoginRequired');
+            onlineEl.style.color = navigator.onLine ? 'var(--text-header)' : 'var(--text-muted)';
+          }
+          // PWA status
+          const pwaEl = body.querySelector('#about-pwa-status');
+          if (pwaEl) {
+            const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            pwaEl.textContent = standalone ? t('installApp') : 'Browser';
+            pwaEl.style.color = standalone ? 'var(--text-header)' : 'var(--text-muted)';
+          }
+          // Check for updates button
+          const checkUpdateBtn = body.querySelector('#about-check-update');
+          if (checkUpdateBtn) {
+            checkUpdateBtn.onclick = () => {
+              window.checkForAppUpdate();
+              showToast('info', t('aboutUpdateChecking'));
+            };
+          }
+        }
+      });
+    });
     onBtn('menuAdminCenter', () => {
       // Temporary Admin Center panel — admins only
       if (typeof isCurrentUserAdmin === 'function' && !isCurrentUserAdmin()) return;

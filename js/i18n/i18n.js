@@ -45,156 +45,160 @@ function t(key, params) {
 }
 
 /* === RENDER FAQ === */
-function renderFAQ() {
-  const container = document.querySelector('.faq-list');
+function renderFAQ(container) {
   if (!container) return;
 
   const faqItems = [
     {
       title: t('faqStartTitle'),
       content: `
-                <ol>
-                    <li>${t('faqStart1')}</li>
-                    <li>${t('faqStart2')}</li>
-                    <li>${t('faqStart3')}</li>
-                    <li>${t('faqStart4')}</li>
-                </ol>
-                <p>${t('faqStartNote')}</p>
-            `,
+                 <ol>
+                     <li>${t('faqStart1')}</li>
+                     <li>${t('faqStart2')}</li>
+                     <li>${t('faqStart3')}</li>
+                     <li>${t('menuSettings')} — ${t('menuSettingsDesc')}</li>
+                     <li>${t('menuPrivacyOn')} / ${t('menuPrivacyOff')} — ${t('settingsPrivacyDesc')}</li>
+                     <li>${t('menuShareCenter')} — ${t('menuShareCenterDesc')}</li>
+                 </ol>
+                 <p>${t('faqStartNote')}</p>
+                 <p><strong>${t('aboutOffline')}</strong>: ${t('aboutDescription')}</p>
+                 <p><strong>${t('menuShareCenter')}</strong>: ${t('shareCenterTitle')} — ${t('shareCurrentView')}</p>
+                 <p><strong>Drive</strong>: ${t('driveLoggedInHint')} (${t('driveLoginRequired')} — ${t('aboutOffline')})</p>
+             `,
     },
     {
       title: t('faqLangTitle'),
       content: `
-                <p>${t('faqLangDesc')}</p>
-                <ul>
-                    <li>${t('faqLangPl')}</li>
-                    <li>${t('faqLangEn')}</li>
-                    <li>${t('faqLangUk')}</li>
-                </ul>
-                <p>${t('faqLangNote')}</p>
-            `,
+                 <p>${t('faqLangDesc')}</p>
+                 <ul>
+                     <li>${t('faqLangPl')}</li>
+                     <li>${t('faqLangEn')}</li>
+                     <li>${t('faqLangUk')}</li>
+                 </ul>
+                 <p>${t('faqLangNote')}</p>
+             `,
     },
     {
       title: t('faqViewsTitle'),
       content: `
-                <p>${t('faqViewsDesc')}</p>
-                <ul>
-                    <li>${t('faqViewsDashboard')}</li>
-                    <li>${t('faqViewsMonth')}</li>
-                    <li>${t('faqViewsTable')}</li>
-                    <li>${t('faqViewsYear')}</li>
-                </ul>
-                <p>${t('faqViewsNote')}</p>
-            `,
+                 <p>${t('faqViewsDesc')}</p>
+                 <ul>
+                     <li>${t('faqViewsDashboard')}</li>
+                     <li>${t('faqViewsMonth')}</li>
+                     <li>${t('faqViewsTable')}</li>
+                     <li>${t('faqViewsYear')}</li>
+                 </ul>
+                 <p>${t('faqViewsNote')}</p>
+             `,
     },
     {
       title: t('faqFeaturesTitle'),
       content: `
-                <p>${t('faqFeaturesDesc')}</p>
-                <ul>
-                    <li>${t('faqFeaturesShift')}</li>
-                    <li>${t('faqFeaturesLive')}</li>
-                    <li>${t('faqFeaturesVacation')}</li>
-                    <li>${t('faqFeaturesOvertime')}</li>
-                    <li>${t('faqFeaturesNotes')}</li>
-                    <li>${t('faqFeaturesCompare')}</li>
-                    <li>${t('faqFeaturesExport')}</li>
-                    <li>${t('faqFeaturesPrint')}</li>
-                </ul>
-                <p>${t('faqFeaturesNote')}</p>
-            `,
+                 <p>${t('faqFeaturesDesc')}</p>
+                 <ul>
+                     <li>${t('faqFeaturesShift')}</li>
+                     <li>${t('faqFeaturesLive')}</li>
+                     <li>${t('faqFeaturesVacation')}</li>
+                     <li>${t('faqFeaturesOvertime')}</li>
+                     <li>${t('faqFeaturesNotes')}</li>
+                     <li>${t('faqFeaturesCompare')}</li>
+                     <li>${t('faqFeaturesExport')}</li>
+                     <li>${t('faqFeaturesPrint')}</li>
+                 </ul>
+                 <p>${t('faqFeaturesNote')}</p>
+             `,
     },
     {
       title: t('faqSkinTitle'),
       content: `
-                <p>${t('faqSkinDesc')}</p>
-                <ul>
-                    <li>${t('faqSkinFull')}</li>
-                    <li>${t('faqSkinStrip')}</li>
-                    <li>${t('faqSkinQuiet')}</li>
-                    <li>${t('faqSkinVacation')}</li>
-                </ul>
-            `,
+                 <p>${t('faqSkinDesc')}</p>
+                 <ul>
+                     <li>${t('faqSkinFull')}</li>
+                     <li>${t('faqSkinStrip')}</li>
+                     <li>${t('faqSkinQuiet')}</li>
+                     <li>${t('faqSkinVacation')}</li>
+                 </ul>
+             `,
     },
     {
       title: t('faqOvertimeTitle'),
       content: `
-                <ol>
-                    <li>${t('faqOvertime1')}</li>
-                    <li>${t('faqOvertime2')}</li>
-                    <li>${t('faqOvertime3')}
-                        <ul>
-                            <li>${t('faqOvertime3a')}</li>
-                            <li>${t('faqOvertime3b')}</li>
-                        </ul>
-                    </li>
-                    <li>${t('faqOvertime4')}</li>
-                </ol>
-                <p>${t('faqOvertimeCategory')}</p>
-                <ul>
-                    <li>${t('faqOvertimeCat200')}</li>
-                    <li>${t('faqOvertimeCat100')}</li>
-                    <li>${t('faqOvertimeCat50')}</li>
-                </ul>
-                <p><strong>${t('faqOvertimeWeekend')}</strong></p>
-                <p>${t('faqOvertimeWeekendDesc')}</p>
-                <p>${t('faqOvertimeNote')}</p>
-            `,
+                 <ol>
+                     <li>${t('faqOvertime1')}</li>
+                     <li>${t('faqOvertime2')}</li>
+                     <li>${t('faqOvertime3')}
+                         <ul>
+                             <li>${t('faqOvertime3a')}</li>
+                             <li>${t('faqOvertime3b')}</li>
+                         </ul>
+                     </li>
+                     <li>${t('faqOvertime4')}</li>
+                 </ol>
+                 <p>${t('faqOvertimeCategory')}</p>
+                 <ul>
+                     <li>${t('faqOvertimeCat200')}</li>
+                     <li>${t('faqOvertimeCat100')}</li>
+                     <li>${t('faqOvertimeCat50')}</li>
+                 </ul>
+                 <p><strong>${t('faqOvertimeWeekend')}</strong></p>
+                 <p>${t('faqOvertimeWeekendDesc')}</p>
+                 <p>${t('faqOvertimeNote')}</p>
+             `,
     },
     {
       title: t('faqVacationTitle'),
       content: `
-                <p>${t('faqVacationDesc')}</p>
-                <p>${t('faqVacationRemove')}</p>
-                <p>${t('faqVacationStats')}</p>
-            `,
+                 <p>${t('faqVacationDesc')}</p>
+                 <p>${t('faqVacationRemove')}</p>
+                 <p>${t('faqVacationStats')}</p>
+             `,
     },
     {
       title: t('faqNotesTitle'),
       content: `
-                <p>${t('faqNotesDesc')}</p>
-                <p>${t('faqNotesIcon')}</p>
-            `,
+                 <p>${t('faqNotesDesc')}</p>
+                 <p>${t('faqNotesIcon')}</p>
+             `,
     },
     {
       title: t('faqKeyboardTitle'),
       content: `
-                <b>${t('faqKeyboardEdit')}</b>
-                <ul>
-                    <li>${t('faqKeyboardEdit1')}</li>
-                    <li>${t('faqKeyboardEdit2')}</li>
-                    <li>${t('faqKeyboardEdit3')}</li>
-                    <li>${t('faqKeyboardEdit4')}</li>
-                    <li>${t('faqKeyboardEdit5')}</li>
-                </ul>
-                <b>${t('faqKeyboardNav')}</b>
-                <ul>
-                    <li>${t('faqKeyboardNav1')}</li>
-                    <li>${t('faqKeyboardNav2')}</li>
-                    <li>${t('faqKeyboardNav3')}</li>
-                </ul>
-            `,
+                 <b>${t('faqKeyboardEdit')}</b>
+                 <ul>
+                     <li>${t('faqKeyboardEdit1')}</li>
+                     <li>${t('faqKeyboardEdit2')}</li>
+                     <li>${t('faqKeyboardEdit3')}</li>
+                     <li>${t('faqKeyboardEdit4')}</li>
+                     <li>${t('faqKeyboardEdit5')}</li>
+                 </ul>
+                 <b>${t('faqKeyboardNav')}</b>
+                 <ul>
+                     <li>${t('faqKeyboardNav1')}</li>
+                     <li>${t('faqKeyboardNav2')}</li>
+                     <li>${t('faqKeyboardNav3')}</li>
+                 </ul>
+             `,
     },
     {
       title: t('faqSaveTitle'),
       content: `
-                <p>${t('faqSaveDesc')}</p>
-                <p>${t('faqSaveNote')}</p>
-            `,
+                 <p>${t('faqSaveDesc')}</p>
+                 <p>${t('faqSaveNote')}</p>
+             `,
     },
     {
       title: t('faqSyncTitle'),
       content: `
-                <p>${t('faqSyncDesc')}</p>
-                <ol>
-                    <li>${t('faqSync1')}</li>
-                    <li>${t('faqSync2')}</li>
-                    <li>${t('faqSync3')}</li>
-                    <li>${t('faqSync4')}</li>
-                    <li>${t('faqSync5')}</li>
-                </ol>
-                <p>${t('faqSyncNote')}</p>
-            `,
+                 <p>${t('faqSyncDesc')}</p>
+                 <ol>
+                     <li>${t('faqSync1')}</li>
+                     <li>${t('faqSync2')}</li>
+                     <li>${t('faqSync3')}</li>
+                     <li>${t('faqSync4')}</li>
+                     <li>${t('faqSync5')}</li>
+                 </ol>
+                 <p>${t('faqSyncNote')}</p>
+             `,
     },
     {
       title: t('faqExportTitle'),
@@ -203,47 +207,47 @@ function renderFAQ() {
     {
       title: t('faqShareAppTitle'),
       content: `
-                <p>${t('faqShareAppDesc')}</p>
-                <ol>
-                    <li>${t('faqShareApp1')}</li>
-                    <li>${t('faqShareApp2')}</li>
-                    <li>${t('faqShareApp3')}</li>
-                    <li>${t('faqShareApp4')}</li>
-                </ol>
-                <p>${t('faqShareAppNote')}</p>
-            `,
+                 <p>${t('faqShareAppDesc')}</p>
+                 <ol>
+                     <li>${t('faqShareApp1')}</li>
+                     <li>${t('faqShareApp2')}</li>
+                     <li>${t('faqShareApp3')}</li>
+                     <li>${t('faqShareApp4')}</li>
+                 </ol>
+                 <p>${t('faqShareAppNote')}</p>
+             `,
     },
     {
       title: t('faqUpdateTitle'),
       content: `
-                <p>${t('faqUpdateDesc')}</p>
-                <p>${t('faqUpdateHow')}</p>
-                <p>${t('faqUpdateNote')}</p>
-            `,
+                 <p>${t('faqUpdateDesc')}</p>
+                 <p>${t('faqUpdateHow')}</p>
+                 <p>${t('faqUpdateNote')}</p>
+             `,
     },
     {
       title: t('faqInstallTitle'),
       content: `
-                <p>${t('faqInstallDesc')}</p>
-                <ol>
-                    <li>${t('faqInstall1')}</li>
-                    <li>${t('faqInstall2')}</li>
-                    <li>${t('faqInstall3')}</li>
-                    <li>${t('faqInstall4')}</li>
-                </ol>
-                <p>${t('faqInstallNote')}</p>
-                <p>${t('faqInstallMenuNote')}</p>
-            `,
+                 <p>${t('faqInstallDesc')}</p>
+                 <ol>
+                     <li>${t('faqInstall1')}</li>
+                     <li>${t('faqInstall2')}</li>
+                     <li>${t('faqInstall3')}</li>
+                     <li>${t('faqInstall4')}</li>
+                 </ol>
+                 <p>${t('faqInstallNote')}</p>
+                 <p>${t('faqInstallMenuNote')}</p>
+             `,
     },
     {
       title: t('faqBugTitle'),
       content: `
-                <div style="background:linear-gradient(135deg, #667eea, #764ba2); color:#fff; padding:15px; border-radius:10px; text-align:center;">
-                    <b>${t('faqBugDesc')}</b><br>
-                    <a href="mailto:${t('faqBugEmail')}?subject=Grafik Gillette" style="color:#fff; font-weight:bold; text-decoration:none;">${t('faqBugEmail')}</a>
-                </div>
-                <p>${t('faqBugNote')}</p>
-            `,
+                 <div style="background:linear-gradient(135deg, #667eea, #764ba2); color:#fff; padding:15px; border-radius:10px; text-align:center;">
+                     <b>${t('faqBugDesc')}</b><br>
+                     <a href="mailto:${t('faqBugEmail')}?subject=Grafik Gillette" style="color:#fff; font-weight:bold; text-decoration:none;">${t('faqBugEmail')}</a>
+                 </div>
+                 <p>${t('faqBugNote')}</p>
+             `,
     },
   ];
 
