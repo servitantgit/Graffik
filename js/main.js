@@ -141,8 +141,6 @@ function refreshViews() {
         document.getElementById('calendar').innerHTML = '';
         renderEmptyState(document.getElementById('calendar'));
         document.getElementById('infoPanel').innerHTML = '';
-        document.getElementById('monthTitle').textContent =
-          `${monthNames[currentMonth - 1]} ${currentYear}`;
         return;
       }
       renderCalendar();

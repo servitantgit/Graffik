@@ -281,16 +281,12 @@
     const toolbar = el('contextToolbar');
     if (toolbar) toolbar.dataset.view = view;
 
-    // 5) Period label (date row)
-    const period = el('contextPeriodLabel');
-    if (period) period.textContent = isYear ? String(year) : `${monthLabel} ${year}`;
-
-    // 6) Active Month/Year state
+    // 5) Active Month/Year state
     document.querySelectorAll('#contextToolbar .range-btn').forEach((b) => {
       b.classList.toggle('active', (b.dataset.range === 'year') === isYear);
     });
 
-    // 7) Brigade label (Table view uses the "highlight brigade" wording)
+    // 6) Brigade label (Table view uses the "highlight brigade" wording)
     const brigLabel = el('brigadeContextLabel');
     if (brigLabel) {
       brigLabel.textContent = localized

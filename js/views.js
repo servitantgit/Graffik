@@ -111,13 +111,6 @@ el.className = 'mini-day m' + cls;
 function renderTableView(showAllYear) {
   const tv = document.getElementById('tableView');
   tv.innerHTML = '';
-  const title = document.createElement('div');
-  title.className = 'table-view-title';
-  title.textContent = showAllYear
-    ? `📋 ${t('wholeYear')} ${currentYear} — ${t('allBrigades')}`
-    : `📋 ${monthNames[currentMonth - 1]} ${currentYear} — ${t('allBrigades')}`;
-  tv.appendChild(title);
-
   if (showAllYear) {
     const wrap = document.createElement('div');
     wrap.className = 'table-year-wrap';
@@ -136,10 +129,6 @@ function renderTableView(showAllYear) {
     }
     tv.appendChild(wrap);
   } else {
-    const monthNav = document.createElement('div');
-    monthNav.className = 'month-nav';
-    monthNav.innerHTML = `<button onclick="goToMonth(-1)">‹</button><div class="month-title">${monthNames[currentMonth - 1]} ${currentYear}</div><button onclick="goToMonth(1)">›</button>`;
-    tv.appendChild(monthNav);
     const scroll = document.createElement('div');
     scroll.className = 'table-scroll';
     scroll.appendChild(buildMonthTable(currentMonth));

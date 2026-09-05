@@ -70,10 +70,9 @@
       <div class="context-row context-row-date" id="contextRowDate">
         <button type="button" class="icon-btn period-btn" id="prevPeriodBtn" data-i18n-title="prevMonth"
           title="Poprzedni miesiąc (←)">‹</button>
-        <span class="context-period" id="contextPeriodLabel"></span>
+        <button type="button" class="btn-primary" id="todayBtn" data-i18n="today">📅 Dziś</button>
         <button type="button" class="icon-btn period-btn" id="nextPeriodBtn" data-i18n-title="nextMonth"
           title="Następny miesiąc (→)">›</button>
-        <button type="button" class="btn-primary" id="todayBtn" data-i18n="today">📅 Dziś</button>
       </div>
       <div class="context-row context-row-range" id="contextRowRange">
         <button type="button" class="range-btn active" data-range="month" data-i18n="rangeMonth">Miesiąc</button>
@@ -86,9 +85,6 @@
 
     <!-- MONTH VIEW -->
     <div id="monthView" style="display:none;">
-      <div class="month-nav">
-        <div class="month-title" id="monthTitle"></div>
-      </div>
       <div class="calendar-wrap">
         <div class="calendar" id="calendar"></div>
       </div>
