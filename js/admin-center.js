@@ -23,6 +23,12 @@ function getCustomScheduleObj() {
   } catch (_) {}
   return (typeof window !== 'undefined' && window.customSchedule) || {};
 }
+function getFactoryDraftsObj() {
+  try {
+    if (typeof factoryDrafts !== 'undefined' && factoryDrafts) return factoryDrafts;
+  } catch (_) {}
+  return (typeof window !== 'undefined' && window.factoryDrafts) || {};
+}
 function getAvailableScheduleYears() {
   const years = new Set();
   try {
@@ -217,25 +223,26 @@ function syncFactoryPaintPeriodFromCalendar() {
  * @param {string} shift - The brigade/shift ('A', 'B', 'C', 'D')
  */
 function handleFactoryPaintDayClick(year, month, day, shift) {
-  if (!factoryPaintActive || year !== factoryPaintYear || month !== factoryPaintMonth) {
+  if (!factoryPaintActive) return;
+  // Keep paint period aligned with the visible calendar
+  try {
+    if (typeof currentYear === 'number') factoryPaintYear = currentYear;
+    if (typeof currentMonth === 'number') factoryPaintMonth = currentMonth;
+    window.factoryPaintYear = factoryPaintYear;
+    window.factoryPaintMonth = factoryPaintMonth;
+  } catch (_) {}
+  if (year !== factoryPaintYear || month !== factoryPaintMonth) return;
+  if (!factoryPaintMode) {
+    showToast('info', t('factoryEditorSelectTool') || 'Select tool R/P/N/W');
     return;
   }
   
-  // Map W (free) to '' for storage, otherwise use the shift letter
   const val = factoryPaintMode === 'W' ? '' : factoryPaintMode;
-  
-  // Apply the change to factory drafts
-  window.setFactoryDraftShift(year, month, day, shift, val);
-  
-  // Show feedback
-  showToast('success', t('factoryEditorLocalDraftToast') || 'Draft saved locally');
-  
-  // Update the display
-  if (typeof refreshViews === 'function') {
-    refreshViews();
+  if (typeof window.setFactoryDraftShift === 'function') {
+    window.setFactoryDraftShift(year, month, day, shift, val);
   }
-  
-  // Auto-save is handled by setFactoryDraftShift
+  // Quiet feedback — avoid toast spam on every cell
+  if (typeof refreshViews === 'function') refreshViews();
 }
 
 /* === FACTORY SCHEDULE APIS === */
@@ -265,9 +272,8 @@ function getFactoryScheduleForYear(year) {
 function getFactoryDraftForYear(year) {
   if (!window.requireAdmin()) return null;
   
-  // Ensure the year exists in factoryDrafts
-  window.ensureFactoryDraftYear(year);
-  return window.factoryDrafts[year] || null;
+  if (typeof window.ensureFactoryDraftYear === 'function') window.ensureFactoryDraftYear(year);
+  return getFactoryDraftsObj()[year] || null;
 }
 
 /* === EXPORT FUNCTIONS (moved from actions.js) === */
@@ -280,26 +286,25 @@ function getFactoryDraftForYear(year) {
 function mergeFactoryWithCustom(year) {
   const merged = {};
   const factory = getFactoryScheduleObj()[year] || {};
-  const custom = getCustomScheduleObj()[year] || {};
+  const drafts = getFactoryDraftsObj()[year] || {};
   const brigades = ['A', 'B', 'C', 'D'];
 
   for (let m = 1; m <= 12; m++) {
     const daysInMonth = new Date(year, m, 0).getDate();
     merged[m] = {};
     brigades.forEach((b) => {
-      // Start with factory data (or empty array)
+      // Base: public factory schedule
       const factoryArr =
         factory[m] && factory[m][b] ? [...factory[m][b]] : new Array(daysInMonth).fill('');
-      // Overlay custom edits (day by day)
-      if (custom[m] && custom[m][b]) {
+      // Overlay admin factory drafts (painted in Admin Center)
+      if (drafts[m] && drafts[m][b]) {
         for (let d = 0; d < daysInMonth; d++) {
-          const customVal = custom[m][b][d];
-          if (customVal !== undefined && customVal !== null) {
-            factoryArr[d] = customVal;
+          const draftVal = drafts[m][b][d];
+          if (draftVal !== undefined && draftVal !== null) {
+            factoryArr[d] = draftVal;
           }
         }
       }
-      // Ensure exactly daysInMonth length
       while (factoryArr.length < daysInMonth) factoryArr.push('');
       if (factoryArr.length > daysInMonth) factoryArr.length = daysInMonth;
       merged[m][b] = factoryArr;
@@ -1009,6 +1014,11 @@ window.getFactoryScheduleForYear = getFactoryScheduleForYear;
 window.getFactoryDraftForYear = getFactoryDraftForYear;
 window.exportFactorySchedule = exportFactorySchedule;
 window.openAdminCenter = openAdminCenter;
+window.handleResetAllDrafts = handleResetAllDrafts;
+window.handleClearYearDraft = handleClearYearDraft;
+window.handleResetPersonalData = handleResetPersonalData;
+window.generateAndDownloadDataJs = generateAndDownloadDataJs;
+window.mergeFactoryWithCustom = mergeFactoryWithCustom;
 
 // Initialize factory paint mode state on load
 if (document.readyState === 'loading') {
