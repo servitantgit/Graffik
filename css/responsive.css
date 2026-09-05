@@ -1,66 +1,157 @@
 /* ================================================================
-    GRAFIK GILLETTE - RESPONSIVE.CSS
-    Part of modular CSS split (v3.8.0)
-    ================================================================ */
+   GRAFIK GILLETTE - RESPONSIVE.CSS
+   Part of modular CSS split (v3.8.0)
+   ================================================================ */
 
-/* REMOVED: @media (max-width: 700px) {
-    .edit-banner {
-      padding: 12px;
-      gap: 10px;
-    }
-    .edit-banner-text {
-      flex: 1 1 100%;
-    }
-    .edit-banner-text .ebt-hint {
-      display: none; /* Ховаємо hint на мобі — місце дороге */
-    }
-    .edit-banner-actions {
-      width: 100%;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
-    .edit-banner button.save {
-      flex: 1 1 auto;
-      justify-content: center;
-      min-width: 120px;
-      order: 1;
-    }
-    .edit-banner-actions .ebg-group {
-      order: 2;
-    }
-    .ebg-row-discard-year {
-      order: 3;
-      flex: 1 1 100%;
-      width: 100%;
-    }
-    .edit-banner button:not(.save):not(.icon-only) {
-      padding: 8px 10px;
-      font-size: 12px;
-}
+@media (max-width: 700px) {
+  .edit-banner {
+    padding: 12px;
+    gap: 10px;
   }
-  */
- @media (max-width: 480px) {
-   .day-cell .ot-marker {
-     width: 18px;
-     height: 18px;
-     font-size: 10px;
-     top: 2px;
-     right: 2px;
-   }
-
-
+  .edit-banner-text {
+    flex: 1 1 100%;
+  }
+  .edit-banner-text .ebt-hint {
+    display: none; /* Ховаємо hint на мобі — місце дороге */
+  }
+  .edit-banner-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .edit-banner button.save {
+    flex: 1 1 auto;
+    justify-content: center;
+    min-width: 120px;
+    order: 1;
+  }
+  .edit-banner-actions .ebg-group {
+    order: 2;
+  }
+  .ebg-row-discard-year {
+    order: 3;
+    flex: 1 1 100%;
+    width: 100%;
+  }
+  .edit-banner button:not(.save):not(.icon-only) {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}
 
 @media (max-width: 480px) {
-   /* OT detail popup: even more height for tiny screens */
-   .day-cell .ot-marker {
-     width: 20px;
-     height: 20px;
-     font-size: 11px;
-     top: 2px;
-     right: 2px;
-   }
+  .relief-popup .rp-label {
+    font-size: 7px;
+    letter-spacing: 0;
+  }
+  .relief-popup .rp-brig {
+    font-size: 18px;
+    padding: 2px 0;
+  }
+  .relief-popup .rp-info {
+    font-size: 8px;
+  }
+  .day-cell .ot-marker {
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    top: 2px;
+    right: 2px;
+  }
+  .day-cell .ot-detail-popup {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    max-width: none;
+    font-size: 9px;
+    padding: 2px;
+  }
+  .day-cell .ot-detail-popup .rp-brig {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  /* OT detail popup: full-cell-height above, so all text is visible */
+  .day-cell .ot-detail-popup {
+    width: 100%;
+    height: 100%;
+    min-height: 80px;
+    padding: 4px 3px;
+    font-size: 10px;
+    bottom: 100%;
+    top: auto;
+  }
+  .day-cell .ot-detail-popup .rp-brig {
+    font-size: 20px;
+    padding: 3px 0;
+  }
+  .day-cell .ot-detail-popup .rp-label {
+    font-size: 9px;
+  }
+  .day-cell .ot-detail-popup .rp-info {
+    font-size: 10px;
+    line-height: 1.3;
+  }
+  .day-cell .ot-detail-popup .otp-time {
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  /* Relief popups on mobile: keep original cell-sized overlay */
+  .relief-popup .rp-label {
+    font-size: 8px;
+    letter-spacing: 0.2px;
+  }
+  .relief-popup .rp-brig {
+    font-size: 20px;
+    padding: 2px 0;
+  }
+  .relief-popup .rp-info {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* OT detail popup: even more height for tiny screens */
+  .day-cell .ot-detail-popup {
+    min-height: 70px;
+    padding: 3px 2px;
+    font-size: 9px;
+  }
+  .day-cell .ot-detail-popup .rp-brig {
+    font-size: 18px;
+  }
+  .day-cell .ot-detail-popup .rp-label {
+    font-size: 8px;
+  }
+  .day-cell .ot-detail-popup .rp-info {
+    font-size: 9px;
+    line-height: 1.25;
+  }
+
+  .relief-popup .rp-label {
+    font-size: 7px;
+    letter-spacing: 0;
+  }
+  .relief-popup .rp-brig {
+    font-size: 18px;
+    padding: 2px 0;
+  }
+  .relief-popup .rp-info {
+    font-size: 8px;
+  }
+
+  .day-cell .ot-marker {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+    top: 2px;
+    right: 2px;
+  }
+}
 
 @media (max-width: 600px) {
   .notif-lead-btn {
@@ -70,7 +161,7 @@
 }
 
 @media (max-width: 600px) {
-  .body {
+  body {
     padding: 8px;
   }
   .container {
@@ -109,8 +200,31 @@
   .day-header {
     font-size: 11px;
     padding: 4px 2px;
-}
-   .brigade-table {
+  }
+  .relief-popup {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    max-width: none;
+    padding: 2px;
+  }
+  .relief-popup.top {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+  .relief-popup .rp-brig {
+    font-size: 16px;
+    padding: 2px 0;
+  }
+  .relief-popup .rp-label {
+    font-size: 7px;
+  }
+  .relief-popup .rp-info {
+    font-size: 8px;
+  }
+  .brigade-table {
     font-size: 11px;
     min-width: 600px;
   }
@@ -136,16 +250,16 @@
   .brigade-table td.tc {
     font-size: 12px;
   }
-  /* REMOVED: .edit-palette {
-      bottom: 15px;
-      padding: 6px;
-      gap: 4px;
-    }
-    .palette-btn {
-      width: 42px;
-      height: 42px;
-      font-size: 17px;
-    } */
+  .edit-palette {
+    bottom: 15px;
+    padding: 6px;
+    gap: 4px;
+  }
+  .palette-btn {
+    width: 42px;
+    height: 42px;
+    font-size: 17px;
+  }
   /* Компактний view switcher на мобільному — тільки іконки */
   .view-btn {
     padding: 10px 8px;
@@ -192,11 +306,22 @@
   .ot-quick-buttons {
     grid-template-columns: repeat(4, 1fr);
   }
-.ot-qbtn {
-     padding: 8px 4px;
-     font-size: 12px;
-   }
-   .ot-summary-grid {
+  .ot-qbtn {
+    padding: 8px 4px;
+    font-size: 12px;
+  }
+  .ot-popup {
+    min-width: 70px;
+    max-width: 90px;
+    padding: 4px 6px;
+  }
+  .ot-popup .otp-content {
+    font-size: 11px;
+  }
+  .ot-popup .otp-time {
+    font-size: 9px;
+  }
+  .ot-summary-grid {
     grid-template-columns: 1fr;
   }
   /* 7-day chips: equal columns, no horizontal scroll */
