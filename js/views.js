@@ -1,6 +1,6 @@
 /* ================================================================
-   GRAFIK GILLETTE — Module 7: VIEWS (YEAR, TABLE)
-   ================================================================ */
+    GRAFIK GILLETTE — Module 7: VIEWS (YEAR, TABLE)
+    ================================================================ */
 
 /* === YEAR VIEW === */
 function renderYearView() {
@@ -33,7 +33,7 @@ function renderYearView() {
     for (let d = 1; d <= dim; d++) {
       let s = getShiftAtWithPending(currentYear, m, d, selectedShift);
       let onU = isUrlop(currentYear, m, d, selectedShift);
-      let dirty = isDirty(currentYear, m, d, selectedShift);
+      // REMOVED: let dirty = isDirty(currentYear, m, d, selectedShift);
       if (hidePrivate) {
         s =
           factorySchedule[currentYear] &&
@@ -42,11 +42,12 @@ function renderYearView() {
             ? factorySchedule[currentYear][m][selectedShift][d - 1]
             : '';
         onU = false;
-        dirty = false;
+        // REMOVED: dirty = false;
       }
       const cls = onU ? 'U' : isWolne(s) ? 'W' : s;
       const el = document.createElement('div');
-      el.className = 'mini-day m' + cls + (dirty ? ' mDirty' : '');
+      // REMOVED: el.className = 'mini-day m' + cls + (dirty ? ' mDirty' : '');
+      el.className = 'mini-day m' + cls;
       el.textContent = d;
       const dowY = new Date(currentYear, m - 1, d).getDay();
       if (dowY === 0 || dowY === 6) el.classList.add('mWeekend');
@@ -60,32 +61,32 @@ function renderYearView() {
       el.title = `${d} ${monthNamesGenitive[m - 1]}: ${onU ? '🌴 ' + t('vacation') : shiftFullName[s] || t('dayOff')}`;
       el.onclick = (ev) => {
         ev.stopPropagation();
-        if (editMode) {
-          // Palette URLOP: toggle vacation
-          if (editPaletteMode === 'URLOP') {
-            toggleUrlop(currentYear, m, d, selectedShift);
-            showToast(
-              'success',
-              isUrlop(currentYear, m, d, selectedShift) ? t('urlopAdded') : t('urlopRemoved')
-            );
-            refreshViews();
-            return;
-          }
-          // Palette ADDSHIFT / OTBEFORE / OTAFTER: only available in month view
-          if (
-            editPaletteMode === 'ADDSHIFT' ||
-            editPaletteMode === 'OTBEFORE' ||
-            editPaletteMode === 'OTAFTER'
-          ) {
-            showToast('warn', t('otAddInMonthView'));
-            return;
-          }
-          // Palette: 'R','P','N','W' — map free day 'W' to '' for storage
-          const val = editPaletteMode === 'W' ? '' : editPaletteMode;
-          applyEdit(currentYear, m, d, selectedShift, val);
-          refreshViews();
-          return;
-        }
+        // REMOVED: if (editMode) {
+        // REMOVED:   // Palette URLOP: toggle vacation
+        // REMOVED:   if (editPaletteMode === 'URLOP') {
+        // REMOVED:     toggleUrlop(currentYear, m, d, selectedShift);
+        // REMOVED:     showToast(
+        // REMOVED:       'success',
+        // REMOVED:       isUrlop(currentYear, m, d, selectedShift) ? t('urlopAdded') : t('urlopRemoved')
+        // REMOVED:     );
+        // REMOVED:     refreshViews();
+        // REMOVED:     return;
+        // REMOVED:   }
+        // REMOVED:   // Palette ADDSHIFT / OTBEFORE / OTAFTER: only available in month view
+        // REMOVED:   if (
+        // REMOVED:     editPaletteMode === 'ADDSHIFT' ||
+        // REMOVED:     editPaletteMode === 'OTBEFORE' ||
+        // REMOVED:     editPaletteMode === 'OTAFTER'
+        // REMOVED:   ) {
+        // REMOVED:     showToast('warn', t('otAddInMonthView'));
+        // REMOVED:     return;
+        // REMOVED:   }
+        // REMOVED:   // Palette: 'R','P','N','W' — map free day 'W' to '' for storage
+        // REMOVED:   const val = editPaletteMode === 'W' ? '' : editPaletteMode;
+        // REMOVED:   applyEdit(currentYear, m, d, selectedShift, val);
+        // REMOVED:   refreshViews();
+        // REMOVED:   return;
+        // REMOVED: }
         currentMonth = m;
         selectedDay = d;
         yearMode = false;
@@ -101,7 +102,7 @@ function renderYearView() {
     }
     wrap.appendChild(mini);
     wrap.onclick = () => {
-      if (editMode) return;
+      // REMOVED: if (editMode) return;
       currentMonth = m;
       yearMode = false;
       prefs.yearMode = false;
@@ -187,7 +188,7 @@ function buildMonthTable(month) {
       today.getMonth() + 1 === month &&
       today.getDate() === d
     )
-      th.classList.add('today');
+    th.classList.add('today');
     const dayLabel = dayNames[(dow + 6) % 7];
     th.innerHTML = `<span class="dh-num">${d}</span><span class="dh-day">${dayLabel[0]}</span>`;
     if (yHolidays[month + '-' + d]) th.title = yHolidays[month + '-' + d];
@@ -207,7 +208,7 @@ function buildMonthTable(month) {
       const td = document.createElement('td');
       let s = getShiftAtWithPending(currentYear, month, d, brig);
       let onU = isUrlop(currentYear, month, d, brig);
-      let dirty = isDirty(currentYear, month, d, brig);
+      // REMOVED: let dirty = isDirty(currentYear, month, d, brig);
       if (hidePrivate) {
         s =
           factorySchedule[currentYear] &&
@@ -216,9 +217,9 @@ function buildMonthTable(month) {
             ? factorySchedule[currentYear][month][brig][d - 1]
             : '';
         onU = false;
-        dirty = false;
+        // REMOVED: dirty = false;
       }
-      if (dirty) td.classList.add('dirty-edit');
+      // REMOVED: if (dirty) td.classList.add('dirty-edit');
       const cls = onU ? 'U' : isWolne(s) ? 'W' : s;
       td.className = 'tc tc-' + cls;
       td.textContent = onU ? '🌴' : isWolne(s) ? '—' : s;
@@ -233,32 +234,32 @@ function buildMonthTable(month) {
       if (brig === selectedShift) td.classList.add('my-brigade');
       td.title = `${brig} • ${d} ${monthNamesGenitive[month - 1]}: ${onU ? '🌴' : shiftFullName[s] || t('dayOff')}`;
       td.onclick = () => {
-        if (editMode) {
-          // Palette URLOP: toggle vacation
-          if (editPaletteMode === 'URLOP') {
-            toggleUrlop(currentYear, month, d, brig);
-            showToast(
-              'success',
-              isUrlop(currentYear, month, d, brig) ? t('urlopAdded') : t('urlopRemoved')
-            );
-            refreshViews();
-            return;
-          }
-          // Palette ADDSHIFT / OTBEFORE / OTAFTER: only available in month view
-          if (
-            editPaletteMode === 'ADDSHIFT' ||
-            editPaletteMode === 'OTBEFORE' ||
-            editPaletteMode === 'OTAFTER'
-          ) {
-            showToast('warn', t('otAddInMonthView'));
-            return;
-          }
-          // Palette: 'R','P','N','W' — map free day 'W' to '' for storage
-          const val = editPaletteMode === 'W' ? '' : editPaletteMode;
-          applyEdit(currentYear, month, d, brig, val);
-          refreshViews();
-          return;
-        }
+        // REMOVED: if (editMode) {
+        // REMOVED:   // Palette URLOP: toggle vacation
+        // REMOVED:   if (editPaletteMode === 'URLOP') {
+        // REMOVED:     toggleUrlop(currentYear, month, d, brig);
+        // REMOVED:     showToast(
+        // REMOVED:       'success',
+        // REMOVED:       isUrlop(currentYear, month, d, brig) ? t('urlopAdded') : t('urlopRemoved')
+        // REMOVED:     );
+        // REMOVED:     refreshViews();
+        // REMOVED:     return;
+        // REMOVED:   }
+        // REMOVED:   // Palette ADDSHIFT / OTBEFORE / OTAFTER: only available in month view
+        // REMOVED:   if (
+        // REMOVED:     editPaletteMode === 'ADDSHIFT' ||
+        // REMOVED:     editPaletteMode === 'OTBEFORE' ||
+        // REMOVED:     editPaletteMode === 'OTAFTER'
+        // REMOVED:   ) {
+        // REMOVED:     showToast('warn', t('otAddInMonthView'));
+        // REMOVED:     return;
+        // REMOVED:   }
+        // REMOVED:   // Palette: 'R','P','N','W' — map free day 'W' to '' for storage
+        // REMOVED:   const val = editPaletteMode === 'W' ? '' : editPaletteMode;
+        // REMOVED:   applyEdit(currentYear, month, d, brig, val);
+        // REMOVED:   refreshViews();
+        // REMOVED:   return;
+        // REMOVED: }
         selectedShift = brig;
         currentMonth = month;
         selectedDay = d;
@@ -289,9 +290,7 @@ function renderEmptyState(container) {
       <div class="es-emoji">📅</div>
       <h3>${t('yearIsEmptyTitle', { year: currentYear })}</h3>
       <p>${t('yearIsEmptyDescription')}</p>
-      <div class="es-actions">
-        <button class="btn-primary" onclick="document.getElementById('editModeToggle').click()">✏️ ${t('enableEdit')}</button>
-      </div>
+      <!-- REMOVED: edit mode button -->
     </div>
   `;
 }
