@@ -375,13 +375,27 @@ body.action-sheet-open {
   flex-wrap: wrap;
   gap: 10px;
 }
+.context-row-date {
+  width: 100%;
+  max-width: 520px;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+.period-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
 .context-label {
   font-size: 13px;
   font-weight: 600;
   color: var(--text-muted);
 }
 .context-period {
-  min-width: 140px;
+  min-width: 120px;
   text-align: center;
   font-size: 15px;
   font-weight: 700;
@@ -389,8 +403,19 @@ body.action-sheet-open {
 }
 .context-today-btn {
   min-height: 40px;
-  margin-left: 4px;
+  margin-left: 0;
   white-space: nowrap;
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+/* Kill leftover mobile title pseudo-elements that duplicated the app name */
+#appContextTitle::before,
+#appContextTitle::after,
+.top-bar h1::before,
+.top-bar h1::after {
+  content: none !important;
+  display: none !important;
 }
 .period-btn {
   min-width: 44px;
@@ -486,13 +511,18 @@ body.action-sheet-open {
   #appContextTitle {
     font-size: 17px;
   }
+  .context-row-date {
+    max-width: 100%;
+    gap: 6px;
+  }
   .context-period {
-    min-width: 110px;
+    min-width: 0;
     font-size: 14px;
   }
   .context-today-btn {
-    min-height: 40px;
-    padding: 7px 12px;
+    min-height: 36px;
+    padding: 6px 10px;
+    font-size: 12px;
   }
   .range-btn {
     min-height: 34px;

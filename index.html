@@ -71,11 +71,13 @@
         </div>
       </div>
       <div class="context-row context-row-date" id="contextRowDate">
-        <button type="button" class="icon-btn period-btn" id="prevPeriodBtn" data-i18n-title="prevMonth"
-          title="Poprzedni miesiąc (←)">‹</button>
-        <span class="context-period" id="contextPeriod" aria-live="polite"></span>
-        <button type="button" class="icon-btn period-btn" id="nextPeriodBtn" data-i18n-title="nextMonth"
-          title="Następny miesiąc (→)">›</button>
+        <div class="period-nav">
+          <button type="button" class="icon-btn period-btn" id="prevPeriodBtn" data-i18n-title="prevMonth"
+            title="Poprzedni miesiąc (←)">‹</button>
+          <span class="context-period" id="contextPeriod" aria-live="polite"></span>
+          <button type="button" class="icon-btn period-btn" id="nextPeriodBtn" data-i18n-title="nextMonth"
+            title="Następny miesiąc (→)">›</button>
+        </div>
         <button type="button" class="btn-secondary context-today-btn" id="todayBtn" data-i18n="today">📅 Сьогодні</button>
       </div>
     </div>
