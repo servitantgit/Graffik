@@ -43,11 +43,10 @@
     </div>
 
     <!-- Transitional hidden stubs (v4.0.0): edit-mode + admin FAQ controls move
-         to the Settings panel / Admin Center in later tasks. Kept invisible so
-         legacy handlers (views.js empty-state edit button, admin FAQ binding)
-         and updateEditModeUI() keep working without errors. -->
-    <button type="button" id="editModeToggle" style="display: none" tabindex="-1" aria-hidden="true"></button>
-    <button type="button" id="adminFaqBtn" style="display: none" tabindex="-1" aria-hidden="true"></button>
+          to the Settings panel / Admin Center in later tasks. Kept invisible so
+          legacy handlers (views.js empty-state edit button, admin FAQ binding)
+          and updateEditModeUI() keep working without errors. -->
+    <!-- REMOVED: #editModeToggle and #adminFaqBtn -->
 
     <!-- PRIMARY NAVIGATION (desktop; hidden ≤700px — mobile bottom nav takes over) -->
     <nav class="primary-nav" id="primaryNav" aria-label="Views">
@@ -82,22 +81,6 @@
       </div>
     </div>
 
-    <!-- EDIT BANNER — auto-save; only year nav + status -->
-    <div class="edit-banner" id="editBanner">
-      <div class="edit-banner-text">
-        <span class="ebt-title">
-          ✏️ <b data-i18n="editBannerTitle">Tryb edycji</b>
-        </span>
-        <span class="ebt-hint" data-i18n="editBannerHint">
-          U = urlop • S = dodatkowa zmiana • 1/2 = nadgodziny • Esc = wyjdź
-        </span>
-      </div>
-
-      <div class="edit-banner-actions">
-        <button type="button" id="editVacationLimitBtn" class="edit-banner-limit" data-i18n-title="menuVacationLimit"
-          title="Limit urlopu">🌴</button>
-      </div>
-    </div>
     <!-- DASHBOARD -->
     <div id="dashboardView" class="dashboard"></div>
 
@@ -121,37 +104,12 @@
       </div>
     </div>
 
-    
-
     <!-- YEAR VIEW -->
     <div id="yearView" class="year-view" style="display:none;"></div>
 
     <!-- TABLE VIEW -->
     <div id="tableView" class="table-view" style="display:none;"></div>
 
-  </div>
-
-  <!-- FLOATING EDIT PALETTE -->
-  <div class="edit-palette" id="editPalette">
-    <!-- Standard user features (visible to all users) -->
-    <button class="palette-btn p-URLOP active" data-shift="URLOP" data-i18n-title="vacation" title="Urlop (U)">🌴<span
-        class="pb-hotkey">U</span></button>
-    <button class="palette-btn p-ADDSHIFT" data-shift="ADDSHIFT" data-i18n-title="addShiftBtn"
-      title="Dodaj zmianę (S)">➕<span class="pb-hotkey">S</span></button>
-    <button class="palette-btn p-OTBEFORE" data-shift="OTBEFORE" data-i18n-title="otBeforeBtn"
-      title="Nadgodziny PRZED (1)">⏱⬅<span class="pb-hotkey">1</span></button>
-    <button class="palette-btn p-OTAFTER" data-shift="OTAFTER" data-i18n-title="otAfterBtn"
-      title="Nadgodziny PO (2)">⏱➡<span class="pb-hotkey">2</span></button>
-
-    <!-- Factory structure edit features (Admin only) -->
-    <button class="palette-btn p-R admin-only" data-shift="R" data-i18n-title="paletteTitleR" title="Rano (R)"
-      style="display: none;">🌅<span class="pb-hotkey">R</span></button>
-    <button class="palette-btn p-P admin-only" data-shift="P" data-i18n-title="paletteTitleP" title="Popołudnie (P)"
-      style="display: none;">🌤️<span class="pb-hotkey">P</span></button>
-    <button class="palette-btn p-N admin-only" data-shift="N" data-i18n-title="paletteTitleN" title="Noc (N)"
-      style="display: none;">🌙<span class="pb-hotkey">N</span></button>
-    <button class="palette-btn p-W admin-only" data-shift="W" data-i18n-title="paletteTitleW" title="Wolne (W)"
-      style="display: none;">🏖️<span class="pb-hotkey">W</span></button>
   </div>
 
   <!-- SIDE MENU -->
@@ -202,7 +160,6 @@
           <span data-i18n="menuDriveLogout">Wyloguj z Google Drive</span>
         </button>
       </div>
-
     </div>
 
     <!-- 1) PRIVACY QUICK SWITCH (role=switch; state via aria-checked) -->
@@ -372,7 +329,7 @@
             <input type="number" id="otCustomHours" min="0.5" max="5" step="0.5"
               data-i18n-placeholder="otNotePlaceholder"
               style="width:90px; padding:6px 10px; border:1px solid var(--border-cell); border-radius:6px; background:var(--bg-container); color:var(--text-main); font-size:14px;">
-            <span style="color:var(--text-muted); font-size:13px;" data-i18n="otHoursUnit">godzin</span>
+              <span style="color:var(--text-muted); font-size:13px;" data-i18n="otHoursUnit">godzin</span>
           </div>
         </div>
 
@@ -389,6 +346,7 @@
       <div class="modal-footer" id="otFooter"></div>
     </div>
   </div>
+
 
 
   <!-- ===== MODUŁY JS (rozbito monolit na 9 plików) ===== -->
@@ -417,7 +375,7 @@
   <script src="js/personalization.js"></script>
   <script src="js/app-shell.js"></script>
   <script src="js/day-editor.js"></script>
-<script src="js/settings.js"></script>
+  <script src="js/settings.js"></script>
   <script src="js/main.js"></script>
 
 </body>

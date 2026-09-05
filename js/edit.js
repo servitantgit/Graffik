@@ -1,6 +1,6 @@
 /* ================================================================
-   GRAFIK GILLETTE — Module 4: EDIT (immediate save)
-   ================================================================ */
+    GRAFIK GILLETTE — Module 4: EDIT (immediate save)
+    ================================================================ */
 
 /**
  * Read shift including any in-memory overlay.
@@ -9,11 +9,6 @@
  */
 function getShiftAtWithPending(year, month, day, brigade) {
   return getShiftAt(year, month, day, brigade);
-}
-
-/** No pending buffer — always clean. Kept so call sites don't break. */
-function isDirty(/* year, month, day, brigade */) {
-  return false;
 }
 
 /**
@@ -37,24 +32,3 @@ function applyEdit(year, month, day, brigade, forcedValue) {
   setShift(year, month, day, brigade, next);
   return next;
 }
-
-/** No-ops kept for any leftover call sites */
-function updateDirtyIndicator() {}
-function saveAllPendingChanges() {
-  return true;
-}
-function discardAllPendingChanges() {
-  return true;
-}
-function undoLastEdit() {
-  return false;
-}
-function redoLastEdit() {
-  return false;
-}
-
-// Compatibility stubs (empty buffer)
-let pendingChanges = {};
-let pendingOriginals = {};
-let undoStack = [];
-let redoStack = [];

@@ -1,6 +1,6 @@
 /* ================================================================
-   GRAFIK GILLETTE — Module 9: STATE + NAVIGATION + EVENTS + STARTUP
-   ================================================================ */
+    GRAFIK GILLETTE — Module 9: STATE + NAVIGATION + EVENTS + STARTUP
+    ================================================================ */
 
 /* === STAN === */
 
@@ -15,15 +15,11 @@ let selectedShift = prefs.shift || 'A';
 let compareShift = null;
 let selectedDay = null;
 /* Startup view: URL parameters override everything (applyUrlParams below);
-   otherwise honor restoreLastView, falling back to the start view. */
+    otherwise honor restoreLastView, falling back to the start view. */
 let currentView = prefs.restoreLastView
   ? prefs.view || prefs.startView
   : prefs.startView;
 let yearMode = prefs.yearMode || false;
-let editMode = false;
-
-let editPaletteMode = 'URLOP';
-let popupFadeTimer = null;
 
 /* === HELPER: Safe event binding === */
 function bindEvent(id, event, handler) {
@@ -101,7 +97,7 @@ function switchView(view) {
 }
 
 /* View switching and Month/Year range are bound in js/app-shell.js (v4.0.0);
-   updateAppShellUI() mirrors the state into the top bar, nav and toolbar. */
+    updateAppShellUI() mirrors the state into the top bar, nav and toolbar. */
 
 window.addEventListener('driveAuthChanged', () => {
   try {
@@ -115,14 +111,13 @@ function refreshViews() {
   const views = ['dashboardView', 'monthView', 'yearView', 'tableView'];
   views.forEach((v) => (document.getElementById(v).style.display = 'none'));
 
-  updateEditModeUI();
+  // REMOVED: updateEditModeUI();
   if (typeof updateAppShellUI === 'function') updateAppShellUI();
 
   const empty =
     !hasFactoryData(currentYear) &&
     !hasCustomData(currentYear) &&
-    currentView !== 'dashboard' &&
-    !editMode;
+    currentView !== 'dashboard';
 
   // Remove the old overtime summary when switching views
   const oldOtSum = document.getElementById('otMonthSummary');
@@ -193,80 +188,6 @@ bindClick('menuPrivacyToggle', () => {
   closeSideMenu();
 });
 
-function updateEditModeUI() {
-  document.body.classList.toggle('edit-active', editMode);
-  const btn = document.getElementById('editModeToggle');
-  if (btn) {
-    btn.classList.toggle('edit-active', editMode);
-    btn.title = editMode ? t('editModeOn') : t('editModeOff');
-  }
-  document.getElementById('editBanner').classList.toggle('show', editMode);
-  document.getElementById('editPalette').classList.toggle('show', editMode);
-  updateDirtyIndicator();
-}
-
-/* === EDIT MODE === */
-function requestEditModeToggle() {
-  if (!editMode) {
-    // Personal edits need privacy mode off (local data always available otherwise)
-    if (typeof shouldShowPersonalData === 'function' && !shouldShowPersonalData()) {
-      showToast('warn', t('editNeedPrivacyOff'), 4000);
-      return;
-    }
-    if (!prefs.skipEditConfirm) {
-      showConfirm(
-        t('enableEditTitle'),
-        t('enableEditBody'),
-        () => {
-          editMode = true;
-          refreshViews();
-          showToast('info', t('editModeOnToast'), 4000);
-        },
-        { primaryText: t('enableEditConfirm'), primaryClass: 'primary' }
-      );
-    } else {
-      editMode = true;
-      refreshViews();
-      showToast('info', t('editModeOnShort'));
-    }
-  } else {
-    // Auto-save model — nothing pending; just leave edit mode
-    editMode = false;
-    refreshViews();
-  }
-}
-/* Bound to the hidden transitional #editModeToggle stub so legacy inline
-   handlers (views.js empty state) keep working. */
-bindClick('editModeToggle', requestEditModeToggle);
-
-document.querySelectorAll('.palette-btn').forEach((btn) => {
-  btn.onclick = () => {
-    // Admin-only buttons (factory shift structure: R/P/N/W) must stay
-    // gated even if triggered directly (e.g. via a hidden element),
-    // not just hidden by CSS — keep this in sync with the keyboard
-    // shortcut check below.
-    if (
-      btn.classList.contains('admin-only') &&
-      !(typeof isCurrentUserAdmin === 'function' && isCurrentUserAdmin())
-    ) {
-      return;
-    }
-    editPaletteMode = btn.dataset.shift;
-    document.querySelectorAll('.palette-btn').forEach((b) => b.classList.remove('active'));
-    btn.classList.add('active');
-    const name = shiftFullName[editPaletteMode] || editPaletteMode;
-    showToast('info', t('paletteSelected', { name }), 1200);
-  };
-});
-function setPaletteMode(mode) {
-  editPaletteMode = mode;
-  document
-    .querySelectorAll('.palette-btn')
-    .forEach((b) => b.classList.toggle('active', b.dataset.shift === mode));
-  const name = shiftFullName[mode] || mode;
-  showToast('info', t('paletteChanged', { name }), 1000);
-}
-
 /* === NAWIGACJA === */
 function goToMonth(delta) {
   currentMonth += delta;
@@ -295,7 +216,7 @@ function goToYear(delta, keepMonth) {
 }
 window.goToYear = goToYear;
 /* Period step: month in Month range, year in Year range. Used by the
-   context toolbar arrows (js/app-shell.js) and the keyboard arrows. */
+    context toolbar arrows (js/app-shell.js) and the keyboard arrows. */
 function goToPeriod(delta) {
   if (yearMode) goToYear(delta);
   else goToMonth(delta);
@@ -331,59 +252,10 @@ document.addEventListener('keydown', (e) => {
       closeSideMenu();
       return;
     }
-    if (editMode) {
-      requestEditModeToggle();
-      return;
-    }
     if (selectedDay) {
       selectedDay = null;
       refreshViews();
     }
-    return;
-  }
-
-  if (editMode) {
-    const k = e.key.toLowerCase();
-    if (k === 'u') {
-      setPaletteMode('URLOP');
-      return;
-    }
-    if (k === 's') {
-      setPaletteMode('ADDSHIFT');
-      return;
-    }
-    if (k === '1') {
-      setPaletteMode('OTBEFORE');
-      return;
-    }
-    if (k === '2') {
-      setPaletteMode('OTAFTER');
-      return;
-    }
-
-    // Admin-only hotkeys for factory schedule editing
-    if (typeof isCurrentUserAdmin === 'function' && isCurrentUserAdmin()) {
-      if (k === 'r') {
-        setPaletteMode('R');
-        return;
-      }
-      if (k === 'p') {
-        setPaletteMode('P');
-        return;
-      }
-      if (k === 'n') {
-        setPaletteMode('N');
-        return;
-      }
-      if (k === 'w') {
-        setPaletteMode('W');
-        return;
-      }
-    }
-  }
-
-  if (e.key.toLowerCase() === 'e' && !e.ctrlKey && !e.altKey) {
-    requestEditModeToggle();
     return;
   }
 
@@ -395,8 +267,8 @@ document.addEventListener('keydown', (e) => {
 
 /* === GESTY (swipe) === */
 /* Month view only: horizontal swipe changes month.
-   Table view: swipe disabled — it fights horizontal scroll (scroll position
-   was reset because goToMonth() re-rendered the whole table). */
+    Table view: swipe disabled — it fights horizontal scroll (scroll position
+    was reset because goToMonth() re-rendered the whole table). */
 let touchStartX = 0;
 let touchStartY = 0;
 let touchStartTarget = null;
@@ -496,8 +368,8 @@ if (!prefs.welcomed) {
 }
 
 /* === LANGUAGE (v4.0.0) ===
-   Top-bar language switcher removed — the language picker moves into the
-   Settings panel in a later task. setLanguage() stays available globally. */
+    Top-bar language switcher removed — the language picker moves into the
+    Settings panel in a later task. setLanguage() stays available globally. */
 
 /* === APPLY LOCALIZATION === */
 applyTranslations();
