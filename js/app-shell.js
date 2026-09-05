@@ -267,15 +267,15 @@
       b.classList.toggle('active', b.dataset.view === view);
     });
 
-    // 3) Top bar: kicker (view) + title (period / app name)
+    // 3) Top bar: view kicker + stable app name.
+    // The active period is shown once in the context toolbar between the arrows.
     const kicker = el('appContextKicker');
     if (kicker) kicker.textContent = localized ? t(VIEW_KICKER_KEYS[view] || '') : view;
     const title = el('appContextTitle');
-    if (title) {
-      if (view === 'dashboard') title.textContent = localized ? t('appName') : 'Grafik Gillette';
-      else if (isYear) title.textContent = String(year);
-      else title.textContent = `${monthLabel} ${year}`;
-    }
+    if (title) title.textContent = localized ? t('appName') : 'Grafik Gillette';
+
+    const period = el('contextPeriod');
+    if (period) period.textContent = isYear ? String(year) : `${monthLabel} ${year}`;
 
     // 4) Context toolbar row visibility (CSS reacts to data-view)
     const toolbar = el('contextToolbar');

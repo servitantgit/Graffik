@@ -308,7 +308,8 @@ body.action-sheet-open {
    (v4.0.0 menu/navigation refactor)
    ================================================================ */
 
-/* === TOP BAR: menu (left) · title (center) · account (right) === */
+/* === TOP BAR: account (left) · title (center) · menu (right) === */
+#userAuthBtn { order: 1; margin-left: 0; }
 .top-bar-title {
   flex: 1 1 auto;
   min-width: 0;
@@ -337,9 +338,7 @@ body.action-sheet-open {
   text-overflow: ellipsis;
   max-width: 100%;
 }
-#userAuthBtn {
-  margin-left: auto;
-}
+#menuBtn { order: 3; margin-left: auto; }
 
 /* === PRIMARY NAVIGATION (desktop) === */
 .primary-nav {
@@ -396,6 +395,11 @@ body.action-sheet-open {
   font-size: 15px;
   font-weight: 700;
   color: var(--text-header);
+}
+.context-today-btn {
+  min-height: 40px;
+  margin-left: 4px;
+  white-space: nowrap;
 }
 .period-btn {
   min-width: 44px;
@@ -484,6 +488,14 @@ body.action-sheet-open {
   }
   #appContextKicker {
     font-size: 10px;
+  }
+  .context-period {
+    min-width: 120px;
+    font-size: 14px;
+  }
+  .context-today-btn {
+    min-height: 40px;
+    padding: 7px 12px;
   }
 }
 

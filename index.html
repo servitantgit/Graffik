@@ -32,14 +32,14 @@
 <body>
 
   <div class="container">
-    <!-- TOP BAR — menu (left) · context title (center) · account (right) -->
+    <!-- TOP BAR — account (left) · context (center) · menu (right) -->
     <div class="top-bar">
-      <button class="icon-btn" id="menuBtn" data-i18n-title="menu" title="Menu">☰</button>
+      <button class="icon-btn" id="userAuthBtn" data-i18n-title="profile" title="Zaloguj do Google Drive">👤</button>
       <div class="top-bar-title">
         <span class="context-kicker" id="appContextKicker"></span>
         <h1 class="context-title" id="appContextTitle"></h1>
       </div>
-      <button class="icon-btn" id="userAuthBtn" data-i18n-title="profile" title="Zaloguj do Google Drive">👤</button>
+      <button class="icon-btn" id="menuBtn" data-i18n-title="menu" title="Menu">☰</button>
     </div>
 
     <!-- Transitional hidden stubs (v4.0.0): edit-mode + admin FAQ controls move
@@ -70,9 +70,10 @@
       <div class="context-row context-row-date" id="contextRowDate">
         <button type="button" class="icon-btn period-btn" id="prevPeriodBtn" data-i18n-title="prevMonth"
           title="Poprzedni miesiąc (←)">‹</button>
-        <button type="button" class="btn-primary" id="todayBtn" data-i18n="today">📅 Dziś</button>
+        <span class="context-period" id="contextPeriod" aria-live="polite"></span>
         <button type="button" class="icon-btn period-btn" id="nextPeriodBtn" data-i18n-title="nextMonth"
           title="Następny miesiąc (→)">›</button>
+        <button type="button" class="btn-secondary context-today-btn" id="todayBtn" data-i18n="today">📅 Сьогодні</button>
       </div>
       <div class="context-row context-row-range" id="contextRowRange">
         <button type="button" class="range-btn active" data-range="month" data-i18n="rangeMonth">Miesiąc</button>
