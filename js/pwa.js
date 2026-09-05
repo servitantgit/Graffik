@@ -374,26 +374,7 @@ function notifyCurrentShift() {
   }
 }
 
-/* === INIT === */
-function initPwa() {
-  registerServiceWorker();
-  setupInstallPrompt();
-
-  // Restore the last notification
-  lastNotified = localStorage.getItem('grafik_last_notified');
-
-  // Ensure notification lead default
-  if (typeof prefs.notificationsLead === 'undefined') prefs.notificationsLead = 1;
-
-  // Hide the install menu item by default (not on iOS — we show instructions there)
-  const installItem = document.getElementById('menuInstallApp');
-  if (installItem && !isIOS()) installItem.style.display = 'none';
-
-  // Check every minute
-  window._notifyTimer = setInterval(notifyCurrentShift, 60000);
-  notifyCurrentShift();
-}
-
+/* FAQ and About moved to full-screen panels (see app-shell.js and ui.js) */
 // Run once that DOM has loaded
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initPwa);

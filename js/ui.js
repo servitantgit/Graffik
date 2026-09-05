@@ -151,13 +151,14 @@ function showConfirm(title, body, onConfirm, opts) {
 
 document.getElementById('menuHelp').onclick = () => {
   closeSideMenu();
-  document.getElementById('faqOverlay').classList.add('show');
-  renderFAQ();
-};
-document.getElementById('faqClose').onclick = () =>
-  document.getElementById('faqOverlay').classList.remove('show');
-document.getElementById('faqOverlay').onclick = (e) => {
-  if (e.target.id === 'faqOverlay') document.getElementById('faqOverlay').classList.remove('show');
+  openAppPanel({
+    id: 'faq-panel',
+    title: t('menuHelp'),
+    html: '<div id="faq-container"></div>',
+    onMount: (body) => {
+      renderFAQ(body.querySelector('#faq-container'));
+    }
+  });
 };
 
 /* === ZAMYKANIE MODALI === */

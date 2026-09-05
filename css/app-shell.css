@@ -952,8 +952,9 @@ body.compact-cells .dash-stat-card {
   gap: 8px;
 }
 body.compact-cells .dash-stat-card .dsc-value {
-  font-size: 13px;
+font-size: 13px;
 }
 body.compact-cells .info-section {
-  gap: 6px;
+   gap: 6px;
 }
+/* FAQ and About panels use the existing app-panel styles */
