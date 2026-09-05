@@ -557,12 +557,112 @@ function getMonthOvertimeSummary(year, month, brigade) {
 
 function getMonthHours(year, month) {
   if (!customSchedule[year] && factoryMonthHours[year] && factoryMonthHours[year][month])
-    return factoryMonthHours[year][month];
-  const ySched = getYearSchedule(year);
-  const h = { A: 0, B: 0, C: 0, D: 0 };
-  ['A', 'B', 'C', 'D'].forEach((b) => {
-    const arr = ySched[month][b];
-    for (let i = 0; i < arr.length; i++) if (!isWolne(arr[i])) h[b] += 8;
-  });
-  return h;
-}
+return factoryMonthHours[year][month];
+   const ySched = getYearSchedule(year);
+   const h = { A: 0, B: 0, C: 0, D: 0 };
+   ['A', 'B', 'C', 'D'].forEach((b) => {
+     const arr = ySched[month][b];
+     for (let i = 0; i < arr.length; i++) if (!isWolne(arr[i])) h[b] += 8;
+   });
+   return h;
+ }
+
+function countPersonalCustomShifts() {
+     if (!customSchedule || typeof customSchedule !== 'object') return 0;
+     let count = 0;
+     const walk = (obj) => {
+       if (!obj || typeof obj !== 'object') return;
+       if (Array.isArray(obj)) {
+         obj.forEach((v) => {
+           if (v != null && v !== '' && v !== 0) count++;
+         });
+         return;
+       }
+       Object.keys(obj).forEach((k) => walk(obj[k]));
+     };
+     walk(customSchedule);
+     return count;
+   }
+
+   function countVacations() {
+     if (!urlops || typeof urlops !== 'object') return 0;
+     let total = 0;
+     Object.keys(urlops).forEach((brigade) => {
+       const list = urlops[brigade];
+       if (Array.isArray(list)) {
+         total += list.length;
+       }
+     });
+     return total;
+   }
+
+   function countOvertimeRecords() {
+     if (!overtimes || typeof overtimes !== 'object') return 0;
+     return Object.keys(overtimes).length;
+   }
+
+   function countNonEmptyNotes() {
+     if (!notes || typeof notes !== 'object') return 0;
+     return Object.keys(notes).filter((k) => {
+       const v = notes[k];
+       return v != null && String(v).trim() !== '';
+     }).length;
+   }
+
+   function clearLocalPersonalData() {
+     // Clear customSchedule
+     if (typeof customSchedule !== 'undefined' && customSchedule !== null) {
+       Object.keys(customSchedule).forEach((key) => {
+         delete customSchedule[key];
+       });
+       if (typeof saveCustomSchedule === 'function') {
+         saveCustomSchedule(customSchedule);
+       }
+     }
+
+     // Clear urlops
+     if (typeof urlops !== 'undefined' && urlops !== null) {
+       Object.keys(urlops).forEach((key) => {
+         delete urlops[key];
+       });
+       if (typeof saveUrlops === 'function') {
+         saveUrlops(urlops);
+       }
+     }
+
+     // Clear overtimes
+     if (typeof overtimes !== 'undefined' && overtimes !== null) {
+       Object.keys(overtimes).forEach((key) => {
+         delete overtimes[key];
+       });
+       if (typeof saveOvertimes === 'function') {
+         saveOvertimes(overtimes);
+       }
+     }
+
+     // Clear notes
+     if (typeof notes !== 'undefined' && notes !== null) {
+       Object.keys(notes).forEach((key) => {
+         delete notes[key];
+       });
+       if (typeof saveNotes === 'function') {
+         saveNotes(notes);
+       }
+     }
+
+     // Persist empty data (already done in the save calls above)
+     // Refresh views
+     if (typeof refreshViews === 'function') {
+       try {
+         refreshViews();
+       } catch (e) {
+         /* ignore */
+       }
+     }
+
+     // Update sync tracking (the save functions above should have called updateLastModified)
+     // Show localized success toast
+     if (typeof showToast === 'function' && typeof t === 'function') {
+       showToast('success', t('settingsPrivacyClearSuccess'));
+     }
+   }

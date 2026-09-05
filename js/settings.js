@@ -66,17 +66,18 @@
     { id: 'appearance', titleKey: 'settingsAppearance', icon: '🎨', active: true },
     { id: 'notifications', titleKey: 'settingsNotifications', icon: '🔔', active: true },
     { id: 'vacation', titleKey: 'settingsVacation', icon: '🌴', active: true },
-    { id: 'privacy', titleKey: 'settingsDataPrivacy', icon: '🔒', active: false },
+    { id: 'privacy', titleKey: 'settingsDataPrivacy', icon: '🔒', active: true },
     { id: 'accessibility', titleKey: 'settingsAccessibility', icon: '♿', active: true },
   ];
 
-  const SECTION_TITLES = {
-    general: 'settingsGeneral',
-    appearance: 'settingsAppearance',
-    notifications: 'settingsNotifications',
-    vacation: 'settingsVacation',
-    accessibility: 'settingsAccessibility',
-  };
+const SECTION_TITLES = {
+     general: 'settingsGeneral',
+     appearance: 'settingsAppearance',
+     notifications: 'settingsNotifications',
+     vacation: 'settingsVacation',
+     accessibility: 'settingsAccessibility',
+     privacy: 'settingsDataPrivacy',
+   };
 
   let currentScreen = 'main'; // 'main' | 'general' | 'appearance'
 
@@ -528,48 +529,126 @@
     );
   }
 
-  function bindAccessibility(body) {
-    if (!body) return;
+function bindAccessibility(body) {
+     if (!body) return;
 
-    function togglePref(key, btnId) {
-      const btn = body.querySelector('#' + btnId);
-      if (!btn) return;
-      btn.addEventListener('click', function () {
-        const next = btn.getAttribute('aria-checked') !== 'true';
-        prefs[key] = next;
-        savePrefsSafe();
-        btn.setAttribute('aria-checked', next ? 'true' : 'false');
-        if (typeof applyAccessibilityPreferences === 'function') applyAccessibilityPreferences();
-      });
-    }
+     function togglePref(key, btnId) {
+       const btn = body.querySelector('#' + btnId);
+       if (!btn) return;
+       btn.addEventListener('click', function () {
+         const next = btn.getAttribute('aria-checked') !== 'true';
+         prefs[key] = next;
+         savePrefsSafe();
+         btn.setAttribute('aria-checked', next ? 'true' : 'false');
+         if (typeof applyAccessibilityPreferences === 'function') applyAccessibilityPreferences();
+       });
+     }
 
-    togglePref('reduceMotion', 'stReduceMotion');
-    togglePref('largeText', 'stLargeText');
-    togglePref('compactCells', 'stCompactCells');
-  }
+     togglePref('reduceMotion', 'stReduceMotion');
+     togglePref('largeText', 'stLargeText');
+     togglePref('compactCells', 'stCompactCells');
+   }
+
+   /* ---------- PRIVACY section ---------- */
+
+   function privacyHtml() {
+     const localFirstExplanation = tr('settingsPrivacyLocalFirstExplanation');
+     const privacyModeLabel = tr('settingsPrivacyMode');
+     const driveStateLabel = tr('settingsPrivacyDriveState');
+     const customShiftsLabel = tr('settingsPrivacyCustomShifts');
+     const vacationsLabel = tr('settingsPrivacyVacations');
+     const overtimeLabel = tr('settingsPrivacyOvertime');
+     const notesLabel = tr('settingsPrivacyNotes');
+
+     const privacyModeEnabled = !!prefs.privacyMode;
+     const driveLoggedIn = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : false;
+     const driveEmail = driveLoggedIn && driveUserEmail ? driveUserEmail : null;
+
+     // Counts
+     const customShiftsCount = typeof countPersonalCustomShifts === 'function' ? countPersonalCustomShifts() : 0;
+     const vacationsCount = typeof countVacations === 'function' ? countVacations() : 0;
+     const overtimeCount = typeof countOvertimeRecords === 'function' ? countOvertimeRecords() : 0;
+     const notesCount = typeof countNonEmptyNotes === 'function' ? countNonEmptyNotes() : 0;
+
+     return (
+       '<div class="settings-section">' +
+       '<div class="st-group"><div class="st-label">' + localFirstExplanation + '</div></div>' +
+       '<div class="st-group"><div class="st-label">' + privacyModeLabel + '</div>' +
+       '<button type="button" class="st-row st-switch" id="stPrivacyMode" role="switch" aria-checked="' +
+       (privacyModeEnabled ? 'true' : 'false') + '">' +
+       '<span class="st-row-label">' + privacyModeLabel + '</span>' +
+       '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
+       '</button></div>' +
+       '<div class="st-group"><div class="st-label">' + driveStateLabel + '</div>' +
+       '<div class="st-row"><span class="st-row-label">' + tr('driveCardConnected') + '</span>' +
+       '<span class="st-mono">' + (driveLoggedIn ? (driveEmail ? driveEmail : tr('driveLoggedIn')) : tr('driveNotLoggedIn')) + '</span>' +
+       '</div></div>' +
+       '<div class="st-group">' +
+       '<div class="st-row"><span class="st-row-label">' + customShiftsLabel + '</span>' +
+       '<span class="st-mono">' + customShiftsCount + '</span>' +
+       '</div>' +
+       '<div class="st-row"><span class="st-row-label">' + vacationsLabel + '</span>' +
+       '<span class="st-mono">' + vacationsCount + '</span>' +
+       '</div>' +
+       '<div class="st-row"><span class="st-row-label">' + overtimeLabel + '</span>' +
+       '<span class="st-mono">' + overtimeCount + '</span>' +
+       '</div>' +
+       '<div class="st-row"><span class="st-row-label">' + notesLabel + '</span>' +
+       '<span class="st-mono">' + notesCount + '</span>' +
+       '</div>' +
+       '</div>'
+     );
+   }
+
+   function bindPrivacy(body) {
+     if (!body) return;
+
+     const privacyModeBtn = body.querySelector('#stPrivacyMode');
+     if (privacyModeBtn) {
+       privacyModeBtn.addEventListener('click', function () {
+         const next = privacyModeBtn.getAttribute('aria-checked') !== 'true';
+         prefs.privacyMode = next;
+         savePrefsSafe();
+         privacyModeBtn.setAttribute('aria-checked', next ? 'true' : 'false');
+         // Refresh views to reflect any changes in data visibility
+         refreshViewsSafe();
+         // Update the drawer switch if possible
+         if (typeof updateDrawerPrivacySwitch === 'function') {
+           try {
+             updateDrawerPrivacySwitch(next);
+           } catch (e) {
+             /* ignore */
+           }
+         }
+       });
+     }
+   }
 
   /* ---------- public API ---------- */
 
-  function renderSettingsSection(section, container) {
-    const body = container || document.getElementById('appPanelBody');
-    if (!body) return;
-    if (section === 'general') {
-      body.innerHTML = generalHtml();
-      bindGeneral(body);
-    } else if (section === 'appearance') {
-      body.innerHTML = appearanceHtml();
-      bindAppearance(body);
-    } else if (section === 'notifications') {
-      body.innerHTML = notificationsHtml();
-      bindNotifications(body);
-    } else if (section === 'vacation') {
-      body.innerHTML = vacationHtml();
-      bindVacation(body);
-    } else if (section === 'accessibility') {
-      body.innerHTML = accessibilityHtml();
-      bindAccessibility(body);
-    }
-  }
+function renderSettingsSection(section, container) {
+     const body = container || document.getElementById('appPanelBody');
+     if (!body) return;
+     if (section === 'general') {
+       body.innerHTML = generalHtml();
+       bindGeneral(body);
+     } else if (section === 'appearance') {
+       body.innerHTML = appearanceHtml();
+       bindAppearance(body);
+     } else if (section === 'notifications') {
+       body.innerHTML = notificationsHtml();
+       bindNotifications(body);
+     } else if (section === 'vacation') {
+       body.innerHTML = vacationHtml();
+       bindVacation(body);
+     } else if (section === 'accessibility') {
+       body.innerHTML = accessibilityHtml();
+       bindAccessibility(body);
+     } else if (section === 'privacy') {
+       body.innerHTML = privacyHtml();
+       bindPrivacy(body);
+     }
+   }
   window.renderSettingsSection = renderSettingsSection;
 
   function openSection(id) {
