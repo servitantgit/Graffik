@@ -3,12 +3,21 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+
+# Prevent overlapping deploys that can leave multiple page artifacts
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  build-and-deploy:
+  # Single job uploads ONE artifact named github-pages
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,12 +26,26 @@ jobs:
       - name: Replace BUILD_ID in sw.js
         run: |
           BUILD_ID=$(git rev-parse --short HEAD)
-          sed -i "s/__BUILD_ID__/${BUILD_ID}/g" sw.js
-          echo "Cache version set to: grafik-gillette-${BUILD_ID}"
+          if [ -f sw.js ]; then
+            sed -i "s/__BUILD_ID__/${BUILD_ID}/g" sw.js
+            echo "Cache version set to: grafik-gillette-${BUILD_ID}"
+          fi
 
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          publish_branch: gh-pages
+          path: .
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
