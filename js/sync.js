@@ -379,18 +379,19 @@ async function uploadToDrive(force = false) {
     return false;
   }
 
-  // Budujemy dane do zapisu
-  const payload = {
-    version: 3,
-    savedAt: new Date().toISOString(),
-    prefs: prefs,
-    factorySchedule: factorySchedule,
-    customSchedule: customSchedule,
-    urlops: urlops,
-    overtimes: overtimes,
-    notes: notes,
-    vacationLimits: prefs.urlopLimits || {},
-  };
+// Budujemy dane do zapisu
+   const payload = {
+     version: 3,
+     savedAt: new Date().toISOString(),
+     prefs: prefs,
+     factorySchedule: factorySchedule,
+     customSchedule: customSchedule,
+     factoryDrafts: factoryDrafts,
+     urlops: urlops,
+     overtimes: overtimes,
+     notes: notes,
+     vacationLimits: prefs.urlopLimits || {},
+   };
   const json = JSON.stringify(payload);
 
   try {
@@ -851,26 +852,41 @@ function countSyncPayloadStats(data) {
     };
     walk(data.customSchedule, 0);
   }
+  let factoryDraftChanges = 0;
+  if (data.factoryDrafts && typeof data.factoryDrafts === 'object') {
+    const walk = (obj, depth) => {
+      if (!obj || typeof obj !== 'object') return;
+      if (Array.isArray(obj)) {
+        obj.forEach((v) => {
+          if (v != null && v !== '' && v !== 0) factoryDraftChanges++;
+        });
+        return;
+      }
+      Object.keys(obj).forEach((k) => walk(obj[k], depth + 1));
+    };
+    walk(data.factoryDrafts, 0);
+  }
   let vacationLimits = 0;
   const limits = data.vacationLimits || (data.prefs && data.prefs.urlopLimits);
   if (limits && typeof limits === 'object') {
     vacationLimits = Object.keys(limits).length;
   }
-  return { urlops, overtimes, notes, customShifts, vacationLimits };
+  return { urlops, overtimes, notes, customShifts, factoryDraftChanges, vacationLimits };
 }
 
 function buildLocalSyncPayload() {
-  return {
-    version: 3,
-    savedAt: new Date().toISOString(),
-    prefs: typeof prefs !== 'undefined' ? prefs : {},
-    customSchedule: typeof customSchedule !== 'undefined' ? customSchedule : {},
-    urlops: typeof urlops !== 'undefined' ? urlops : {},
-    overtimes: typeof overtimes !== 'undefined' ? overtimes : {},
-    notes: typeof notes !== 'undefined' ? notes : {},
-    vacationLimits:
-      typeof prefs !== 'undefined' && prefs.urlopLimits ? prefs.urlopLimits : {},
-  };
+return {
+     version: 3,
+     savedAt: new Date().toISOString(),
+     prefs: typeof prefs !== 'undefined' ? prefs : {},
+     customSchedule: typeof customSchedule !== 'undefined' ? customSchedule : {},
+     urlops: typeof urlops !== 'undefined' ? urlops : {},
+     overtimes: typeof overtimes !== 'undefined' ? overtimes : {},
+     notes: typeof notes !== 'undefined' ? notes : {},
+     factoryDrafts: typeof factoryDrafts !== 'undefined' ? factoryDrafts : {},
+     vacationLimits:
+       typeof prefs !== 'undefined' && prefs.urlopLimits ? prefs.urlopLimits : {},
+   };
 }
 
 /**
@@ -931,12 +947,13 @@ function formatSyncDiffLog(localStats, remoteStats, hasUnsynced, lastSyncText, r
   } else if (remoteState === 'error' || remoteStats == null) {
     html += `<p style="margin:8px 0 0; font-size:12px; color:var(--text-muted);">${tr('driveDiffNoRemote', 'Could not load Drive version for comparison.')}</p>`;
   } else {
-    const same =
-      localStats.urlops === remoteStats.urlops &&
-      localStats.overtimes === remoteStats.overtimes &&
-      localStats.notes === remoteStats.notes &&
-      localStats.customShifts === remoteStats.customShifts &&
-      localStats.vacationLimits === remoteStats.vacationLimits;
+const same =
+       localStats.urlops === remoteStats.urlops &&
+       localStats.overtimes === remoteStats.overtimes &&
+       localStats.notes === remoteStats.notes &&
+       localStats.customShifts === remoteStats.customShifts &&
+       localStats.factoryDraftChanges === remoteStats.factoryDraftChanges &&
+       localStats.vacationLimits === remoteStats.vacationLimits;
     if (same && !hasUnsynced) {
       html += `<p style="margin:8px 0 0; font-size:12px; color:var(--text-muted);">${tr('driveDiffIdentical', 'Counts match Drive (no structural differences detected).')}</p>`;
     } else {
