@@ -38,128 +38,29 @@
     .edit-banner button:not(.save):not(.icon-only) {
       padding: 8px 10px;
       font-size: 12px;
-    }
-  } */
+}
+  }
+  */
+ @media (max-width: 480px) {
+   .day-cell .ot-marker {
+     width: 18px;
+     height: 18px;
+     font-size: 10px;
+     top: 2px;
+     right: 2px;
+   }
+
+
 
 @media (max-width: 480px) {
-  .relief-popup .rp-label {
-    font-size: 7px;
-    letter-spacing: 0;
-  }
-  .relief-popup .rp-brig {
-    font-size: 18px;
-    padding: 2px 0;
-  }
-  .relief-popup .rp-info {
-    font-size: 8px;
-  }
-  .day-cell .ot-marker {
-    width: 18px;
-    height: 18px;
-    font-size: 10px;
-    top: 2px;
-    right: 2px;
-  }
-  .day-cell .ot-detail-popup {
-    width: 100%;
-    height: 100%;
-    min-width: 0;
-    max-width: none;
-    font-size: 9px;
-    padding: 2px;
-  }
-  .day-cell .ot-detail-popup .rp-brig {
-    font-size: 16px;
-  }
-}
-
-/* REMOVED: @media (max-width: 600px) {
-    /* OT detail popup: full-cell-height above, so all text is visible */
-    .day-cell .ot-detail-popup {
-      width: 100%;
-      height: 100%;
-      min-height: 80px;
-      padding: 4px 3px;
-      font-size: 10px;
-      bottom: 100%;
-      top: auto;
-    }
-    .day-cell .ot-detail-popup .rp-brig {
-      font-size: 20px;
-      padding: 3px 0;
-    }
-    .day-cell .ot-detail-popup .rp-label {
-      font-size: 9px;
-    }
-    .day-cell .ot-detail-popup .rp-info {
-      font-size: 10px;
-      line-height: 1.3;
-    }
-    .day-cell .ot-detail-popup .otp-time {
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    /* Relief popups on mobile: keep original cell-sized overlay */
-    .relief-popup .rp-label {
-      font-size: 8px;
-      letter-spacing: 0.2px;
-    }
-    .relief-popup .rp-brig {
-      font-size: 20px;
-      padding: 2px 0;
-    }
-    .relief-popup .rp-info {
-      font-size: 9px;
-    }
-
-    .day-cell .ot-marker {
-      width: 20px;
-      height: 20px;
-      font-size: 11px;
-      top: 2px;
-      right: 2px;
-    }
-  } */
-
-@media (max-width: 480px) {
-  /* OT detail popup: even more height for tiny screens */
-  .day-cell .ot-detail-popup {
-    min-height: 70px;
-    padding: 3px 2px;
-    font-size: 9px;
-  }
-  .day-cell .ot-detail-popup .rp-brig {
-    font-size: 18px;
-  }
-  .day-cell .ot-detail-popup .rp-label {
-    font-size: 8px;
-  }
-  .day-cell .ot-detail-popup .rp-info {
-    font-size: 9px;
-    line-height: 1.25;
-  }
-
-  .relief-popup .rp-label {
-    font-size: 7px;
-    letter-spacing: 0;
-  }
-  .relief-popup .rp-brig {
-    font-size: 18px;
-    padding: 2px 0;
-  }
-  .relief-popup .rp-info {
-    font-size: 8px;
-  }
-
-  .day-cell .ot-marker {
-    width: 20px;
-    height: 20px;
-    font-size: 11px;
-    top: 2px;
-    right: 2px;
-  }
-}
+   /* OT detail popup: even more height for tiny screens */
+   .day-cell .ot-marker {
+     width: 20px;
+     height: 20px;
+     font-size: 11px;
+     top: 2px;
+     right: 2px;
+   }
 
 @media (max-width: 600px) {
   .notif-lead-btn {
@@ -208,32 +109,8 @@
   .day-header {
     font-size: 11px;
     padding: 4px 2px;
-  }
-  .relief-popup {
-    width: 100%;
-    height: 100%;
-    min-width: 0;
-    max-width: none;
-    padding: 2px;
-  }
-  .relief-popup.top {
-    width: 100%;
-    height: 100%;
-    min-width: 0;
-    max-width: none;
-    padding: 2px;
-  }
-  .relief-popup .rp-brig {
-    font-size: 16px;
-    padding: 2px 0;
-  }
-  .relief-popup .rp-label {
-    font-size: 7px;
-  }
-  .relief-popup .rp-info {
-    font-size: 8px;
-  }
-  .brigade-table {
+}
+   .brigade-table {
     font-size: 11px;
     min-width: 600px;
   }
@@ -315,22 +192,11 @@
   .ot-quick-buttons {
     grid-template-columns: repeat(4, 1fr);
   }
-  .ot-qbtn {
-    padding: 8px 4px;
-    font-size: 12px;
-  }
-  .ot-popup {
-    min-width: 70px;
-    max-width: 90px;
-    padding: 4px 6px;
-  }
-  .ot-popup .otp-content {
-    font-size: 11px;
-  }
-  .ot-popup .otp-time {
-    font-size: 9px;
-  }
-  .ot-summary-grid {
+.ot-qbtn {
+     padding: 8px 4px;
+     font-size: 12px;
+   }
+   .ot-summary-grid {
     grid-template-columns: 1fr;
   }
   /* 7-day chips: equal columns, no horizontal scroll */

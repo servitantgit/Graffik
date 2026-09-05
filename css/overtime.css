@@ -33,141 +33,14 @@
   color: #fff;
 }
 
-/* Third popup: cell-sized, above day; same hover/selected as .relief-popup */
-.day-cell .ot-detail-popup {
-  position: absolute;
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  top: auto;
-  bottom: 100%;
-  min-width: 0;
-  max-width: none;
-  padding: 4px 3px;
-  border-radius: inherit;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  text-align: center;
-  z-index: 26;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-  opacity: 0;
-  visibility: hidden;
-  transform: scale(0.96);
-  pointer-events: none;
-  transition:
-    opacity 0.2s ease-out,
-    transform 0.2s ease-out,
-    visibility 0.2s;
-  transition-delay: 0.6s;
-}
-.day-cell .ot-detail-popup.ot-50 {
-  background: linear-gradient(135deg, #95a5a6, #7f8c8d);
-}
-.day-cell .ot-detail-popup.ot-100 {
-  background: linear-gradient(135deg, #8e44ad, #6c3483);
-}
-.day-cell .ot-detail-popup.ot-200 {
-  background: linear-gradient(135deg, #c0392b, #922b21);
-}
-.day-cell:hover .ot-detail-popup,
-.day-cell.selected .ot-detail-popup {
-  opacity: 1;
-  visibility: visible;
-  transform: scale(1);
-  transition-delay: 0.6s;
-}
-.day-cell.selected .ot-detail-popup {
-  transition-delay: 0s;
-}
-.day-cell .ot-detail-popup .otp-time {
-  font-weight: 700;
-  margin-top: 2px;
+
+
+
+
+
 }
 
-.ot-popup {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, #f1c40f, #d68910);
-  color: #1a1a1a;
-  padding: 6px 8px;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-  z-index: 15;
-  min-width: 90px;
-  max-width: 130px;
-  text-align: center;
-  cursor: pointer;
-  animation: popIn 0.25s ease-out;
-  font-weight: 700;
-  border: 2px solid #d68910;
-  transition: transform 0.15s;
-}
-.ot-popup:hover {
-  transform: translateX(-50%) scale(1.05);
-}
-.ot-popup.ot-top {
-  top: auto;
-  bottom: calc(100% + 6px);
-}
-.ot-popup.ot-bottom {
-  top: calc(100% + 6px);
-}
-.ot-popup::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 6px solid transparent;
-}
-.ot-popup.ot-top::before {
-  bottom: -12px;
-  border-top-color: #f1c40f;
-}
-.ot-popup.ot-bottom::before {
-  top: -12px;
-  border-bottom-color: #f1c40f;
-}
-.ot-popup .otp-label {
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  opacity: 0.85;
-}
-.ot-popup .otp-content {
-  font-size: 13px;
-  margin-top: 2px;
-  font-weight: 800;
-}
-.ot-popup .otp-time {
-  font-size: 10px;
-  opacity: 0.85;
-  font-weight: 600;
-}
-.ot-popup .otp-actions {
-  display: flex;
-  gap: 4px;
-  justify-content: center;
-  margin-top: 4px;
-}
-.ot-popup .otp-actions button {
-  background: rgba(0, 0, 0, 0.15);
-  border: none;
-  color: #1a1a1a;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 11px;
-  cursor: pointer;
-  font-weight: 700;
-}
-.ot-popup .otp-actions button:hover {
-  background: rgba(0, 0, 0, 0.3);
-}
+
 
 .ot-quick-buttons {
   display: grid;
@@ -298,231 +171,29 @@
   color: var(--text-header);
 }
 
-/* === RELIEF POPUP ===
-   Same size as a day-cell; sits on the previous/next day (intentional overlap). */
-.relief-popup {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  max-width: none;
-  padding: 4px 3px;
-  border-radius: inherit;
-  box-sizing: border-box;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-  z-index: 25;
-  color: #fff;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transform: scale(0.96);
-  pointer-events: none;
-  transition:
-    opacity 0.2s ease-out,
-    transform 0.2s ease-out,
-    visibility 0.2s;
-  transition-delay: 0.6s;
-}
 
-/* Pokazuj popupy przy hover na komórce LUB jeśli komórka jest wybrana */
-.day-cell:hover .relief-popup,
-.day-cell.selected .relief-popup {
-  opacity: 1;
-  visibility: visible;
-  transform: scale(1);
-  transition-delay: 0.6s; /* opóźnienie PRZED pojawieniem */
-}
 
-/* Wybrana komórka — popupy pojawiają się NATYCHMIAST */
-.day-cell.selected .relief-popup {
-  transition-delay: 0s;
-}
 
-/* Pozycjonowanie — flush to cell edges, cover neighbour day */
-.relief-popup.left {
-  right: 100%;
-  left: auto;
-}
-.relief-popup.right {
-  left: 100%;
-  right: auto;
-}
-.relief-popup.top {
-  left: 0;
-  right: 0;
-  width: 100%;
-  top: auto;
-  bottom: 100%;
-  height: 100%;
-  transform: scale(0.96);
-}
+
+
+
+
+
 
 /* === Auto-flip przy krawędziach ekranu === */
 
-/* Skrajna lewa kolumna (Poniedziałek) — lewy popup W DÓŁ, rozmiar jak komórka */
-.day-cell.col-first .relief-popup.left {
-  right: 0;
-  left: 0;
-  width: 100%;
-  top: 100%;
-  bottom: auto;
-  height: 100%;
-  transform: scale(0.96);
-}
-.day-cell.col-first:hover .relief-popup.left,
-.day-cell.col-first.selected .relief-popup.left {
-  transform: scale(1);
-}
-.day-cell.col-first .relief-popup.left::before {
-  right: auto;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-bottom-color: inherit;
-  border-left-color: transparent;
-}
 
-/* Skrajna prawa kolumna (Niedziela) — prawy popup W DÓŁ, rozmiar jak komórka */
-.day-cell.col-last .relief-popup.right {
-  left: 0;
-  right: 0;
-  width: 100%;
-  top: 100%;
-  bottom: auto;
-  height: 100%;
-  transform: scale(0.96);
-}
-.day-cell.col-last:hover .relief-popup.right,
-.day-cell.col-last.selected .relief-popup.right {
-  transform: scale(1);
-}
-.day-cell.col-last .relief-popup.right::before {
-  left: auto;
-  top: -10px;
-  right: 50%;
-  transform: translateX(50%);
-  border: 6px solid transparent;
-  border-bottom-color: inherit;
-  border-right-color: transparent;
-}
-.day-cell:hover .relief-popup.top,
-.day-cell.selected .relief-popup.top {
-  transform: scale(1);
-}
 
-/* Strzałki */
-.relief-popup::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  border: 8px solid transparent;
-}
-.relief-popup.left::before {
-  right: -16px;
-  border-left-color: inherit;
-}
-.relief-popup.right::before {
-  left: -16px;
-  border-right-color: inherit;
-}
-.relief-popup.top::before {
-  top: auto;
-  bottom: -16px;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 8px solid transparent;
-  border-top-color: inherit;
-}
 
-/* Kolory */
-.relief-popup.pop-R {
-  background: var(--color-R);
-  border-color: var(--color-R);
-  pointer-events: auto;
-  cursor: pointer;
-}
-.relief-popup.pop-P {
-  background: var(--color-P);
-  border-color: var(--color-P);
-  pointer-events: auto;
-  cursor: pointer;
-}
-.relief-popup.pop-N {
-  background: var(--color-N);
-  border-color: var(--color-N);
-  pointer-events: auto;
-  cursor: pointer;
-}
-.relief-popup.pop-none {
-  background: #7f8c8d;
-  border-color: #7f8c8d;
-  pointer-events: none;
-}
-.relief-popup.pop-urlop {
-  background: var(--color-U-grad);
-  border-color: #075985;
-  pointer-events: auto;
-  cursor: pointer;
-}
-.relief-popup.pop-urlop-remove {
-  background: linear-gradient(135deg, #c0392b, #922b21);
-  border-color: #922b21;
-  pointer-events: auto;
-  cursor: pointer;
-}
 
-/* Efekty hover na popupach — bez scale, żeby nie wychodzić poza siatkę */
-.relief-popup.pop-R:hover,
-.relief-popup.pop-P:hover,
-.relief-popup.pop-N:hover {
-  filter: brightness(1.12);
-}
-.relief-popup.pop-urlop:hover,
-.relief-popup.pop-urlop-remove:hover {
-  filter: brightness(1.12);
-}
 
-/* Style treści — mieszczą się w komórce */
-.relief-popup .rp-label {
-  font-size: 9px;
-  text-transform: uppercase;
-  opacity: 0.9;
-  margin-bottom: 2px;
-  letter-spacing: 0.3px;
-  line-height: 1.15;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.relief-popup .rp-brig {
-  font-size: 22px;
-  font-weight: bold;
-  line-height: 1;
-  padding: 3px 0;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 5px;
-  margin: 2px 0;
-  width: 100%;
-}
-.relief-popup .rp-info {
-  font-size: 10px;
-  opacity: 0.95;
-  margin-top: 2px;
-  line-height: 1.15;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+
+
+
+
+
+
+
 
 @keyframes popIn {
   from {
