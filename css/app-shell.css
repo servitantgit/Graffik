@@ -176,6 +176,38 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* Share Center tab styles */
+.share-tab-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: var(--bg-controls);
+  color: var(--text-main);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.share-tab-btn:hover {
+  background: var(--bg-info);
+  color: var(--text-header);
+}
+
+.share-tab-btn.active {
+  background: var(--bg-controls);
+  color: var(--text-header);
+  border-bottom-color: var(--text-header);
+}
+
+.share-tab-btn:active {
+  transform: scale(0.97);
+}
+
 /* === MOBILE: sheet slides from the bottom, safe-area aware === */
 @media (max-width: 600px) {
   .action-sheet.show {

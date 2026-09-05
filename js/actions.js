@@ -65,39 +65,76 @@ function exportICS() {
   a.click();
   showToast('success', t('exportSuccess'));
 }
-/* === PRINT HEADER/FOOTER === */
-function addPrintHeader() {
-  const existing = document.querySelector('.print-header');
-  if (existing) existing.remove();
-  const header = document.createElement('div');
-  header.className = 'print-header';
-  const today = new Date();
-  const dateStr = `${today.getDate()} ${monthNamesGenitive[today.getMonth()]} ${today.getFullYear()}`;
-  const viewName =
-    {
-      dashboard: t('printHeaderDashboard'),
-      month: t('printHeaderMonth'),
-      table: t('printHeaderTable'),
-    }[currentView] || '';
-  const yearSuffix = yearMode ? t('printYearSuffix') : '';
-  header.textContent = `🏭 ${t('appName')} — ${viewName}${yearSuffix} • Brygada ${selectedShift} • ${dateStr}`;
-  document.body.prepend(header);
+/* === EXPORT CENTER === */
+function openExportCenter() {
+  const html = `
+    <div style="padding: 24px;">
+      <div style="margin-bottom: 20px;">
+        <strong>${t('exportCenterTitle')}</strong>
+      </div>
+      
+      <!-- Export ICS -->
+      <div style="background: var(--bg-cell); border: 1px solid var(--border-cell); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+          <div style="flex-shrink: 0;">
+            <span style="font-size: 24px;">📤</span>
+          </div>
+          <div>
+            <div style="font-weight: 600; margin-bottom: 4px;">${t('exportICS')}</div>
+            <div style="font-size: 14px; color: var(--text-muted);">${t('exportDesc')}</div>
+          </div>
+        </div>
+        <button id="exportIcsBtn" class="modal-btn primary" style="width: 100%; margin-top: 12px; padding: 12px;">
+          ${t('exportICS')}
+        </button>
+      </div>
+      
+      <!-- Print -->
+      <div style="background: var(--bg-cell); border: 1px solid var(--border-cell); border-radius: 12px; padding: 16px;">
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+          <div style="flex-shrink: 0;">
+            <span style="font-size: 24px;">🖨️</span>
+          </div>
+          <div>
+            <div style="font-weight: 600; margin-bottom: 4px;">${t('print')}</div>
+            <div style="font-size: 14px; color: var(--text-muted);">${t('printDesc')}</div>
+          </div>
+        </div>
+        <button id="printBtn" class="modal-btn primary" style="width: 100%; margin-top: 12px; padding: 12px;">
+          ${t('print')}
+        </button>
+      </div>
+    </div>
+  `;
+  
+  openActionSheet({
+    id: 'export-center',
+    title: t('exportCenterTitle'),
+    html: html,
+    onMount: (bodyElement) => {
+      // Export ICS handler
+      const exportIcsBtn = bodyElement.querySelector('#exportIcsBtn');
+      if (exportIcsBtn) {
+        exportIcsBtn.onclick = () => {
+          closeActionSheet();
+          exportICS();
+        };
+      }
+      
+      // Print handler
+      const printBtn = bodyElement.querySelector('#printBtn');
+      if (printBtn) {
+        printBtn.onclick = () => {
+          closeActionSheet();
+          window.print();
+        };
+      }
+    }
+  });
 }
-function addPrintFooter() {
-  const existing = document.querySelector('.print-footer');
-  if (existing) existing.remove();
-  const footer = document.createElement('div');
-  footer.className = 'print-footer';
-  footer.textContent = `${t('printGenerated')}: ${new Date().toLocaleString('pl-PL')} • ${t('appName')}`;
-  document.body.appendChild(footer);
-}
-window.addEventListener('beforeprint', () => {
-  addPrintHeader();
-  addPrintFooter();
-});
-window.addEventListener('afterprint', () => {
-  document.querySelectorAll('.print-header, .print-footer').forEach((el) => el.remove());
-});
+
+// Expose globally
+window.openExportCenter = openExportCenter;
 
 /* === SHARE === */
 function buildShareUrl() {
@@ -194,19 +231,6 @@ function copyToClipboard(url) {
   }
 }
 
-bindClick('menuIcs', () => {
-  closeSideMenu();
-  exportICS();
-});
-bindClick('menuPrint', () => {
-  closeSideMenu();
-  window.print();
-});
-bindClick('menuShare', () => {
-  closeSideMenu();
-  shareCurrent();
-});
-
 /* === MENU: OPCJE === */
 
 function openVacationLimitModal() {
@@ -286,76 +310,164 @@ bindClick('resetCustomBtn', () => {
   );
 });
 
-/* === SHARE APP (link + QR code) === */
-function getAppUrl() {
-  // Base app URL (without parameters)
-  return `${location.origin}${location.pathname}`;
-}
-
-function buildQRCodeUrl(text, size = 250) {
-  // Use the public QR Server service (free, no key required)
-  const encoded = encodeURIComponent(text);
-  return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encoded}&margin=10`;
-}
-
-function shareApp() {
+/* === SHARE CENTER === */
+function openShareCenter() {
+  const isLocal = location.protocol === 'file:' || !location.origin || location.origin === 'null';
   const appUrl = getAppUrl();
-  const qrUrl = buildQRCodeUrl(appUrl, 280);
-
-  const body = `
-    <div style="text-align:center;">
-      <p style="margin-bottom:16px; font-size:14px;">
-        ${t('shareAppIntro')}
-      </p>
-
-      <div style="background:#fff; padding:12px; border-radius:12px; display:inline-block; box-shadow:0 4px 15px rgba(0,0,0,0.15); margin-bottom:16px;">
-        <img src="${qrUrl}" alt="QR Code" style="display:block; width:240px; height:240px;" onerror="this.style.display='none'; document.getElementById('qrError').style.display='block';">
-        <div id="qrError" style="display:none; color:#c0392b; padding:20px; font-size:13px;">
-          ⚠️ ${t('shareAppQrError')}
+  
+  // Create tabbed interface
+  let activeTab = 'current'; // current or application
+  
+  function renderCurrentViewTab() {
+    const url = buildShareUrl();
+    const text = buildShareText();
+    
+    return `
+      <div style="padding: 16px;">
+        <!-- Current View Tab Content -->
+        <div>
+          <div style="margin-bottom: 12px;">
+            <strong>${t('shareCurrentView')}</strong>
+          </div>
+          
+          <!-- Preview -->
+          <div style="background: var(--bg-cell); border: 1px solid var(--border-cell); border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+            <div style="font-size: 14px; margin-bottom: 8px;"><strong>${t('sharePreview')}</strong></div>
+            <div style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">${text}</div>
+            <div style="font-size: 13px; color: var(--text-muted);">${url}</div>
+          </div>
+          
+          <!-- URL -->
+          <div style="margin-bottom: 12px;">
+            <strong>${t('shareGeneratedUrl')}</strong>
+          </div>
+          <div style="background: var(--bg-cell); border: 1px solid var(--border-cell); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; word-break: break-all; font-family: monospace; font-size: 13px; color: var(--text-header);">
+            ${url}
+          </div>
+          
+          <!-- Actions -->
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button id="shareCurrentCopyBtn" class="modal-btn secondary" style="flex: 1; min-width: 140px;">
+              📋 ${t('shareCopyLink')}
+            </button>
+            <button id="shareCurrentNativeBtn" class="modal-btn primary" style="flex: 1; min-width: 140px;">
+              🔗 ${t('shareNativeShare')}
+            </button>
+          </div>
         </div>
       </div>
-
-      <div style="background:var(--bg-cell); border:1px solid var(--border-cell); border-radius:8px; padding:10px 12px; margin-bottom:12px; word-break:break-all; font-family:monospace; font-size:13px; color:var(--text-header);">
-        ${appUrl}
+    `;
+  }
+  
+  function renderApplicationTab() {
+    const qrUrl = buildQRCodeUrl(appUrl, 280);
+    
+    return `
+      <div style="padding: 16px;">
+        <!-- Application Tab Content -->
+        <div>
+          <div style="margin-bottom: 12px;">
+            <strong>${t('shareApplication')}</strong>
+          </div>
+          
+          <!-- QR Code Container -->
+          <div id="qrcodeContainer" style="text-align: center; margin-bottom: 20px;">
+            <!-- QR Code will be loaded here -->
+          </div>
+          
+          <!-- URL -->
+          <div style="margin-bottom: 12px;">
+            <strong>${t('shareAppUrl')}</strong>
+          </div>
+          <div style="background: var(--bg-cell); border: 1px solid var(--border-cell); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; word-break: break-all; font-family: monospace; font-size: 13px; color: var(--text-header);">
+            ${appUrl}
+          </div>
+          
+          <!-- Actions -->
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button id="shareAppCopyBtn" class="modal-btn secondary" style="flex: 1; min-width: 140px;">
+              📋 ${t('shareCopyLink')}
+            </button>
+            <button id="shareAppNativeBtn" class="modal-btn primary" style="flex: 1; min-width: 140px;">
+              🔗 ${t('shareNativeShare')}
+            </button>
+          </div>
+        </div>
       </div>
-
-      <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:8px;">
-        <button id="shareAppCopyBtn" class="modal-btn secondary" style="flex:1; min-width:130px;">
-          📋 ${t('shareAppCopy')}
-        </button>
-        <button id="shareAppNativeBtn" class="modal-btn primary" style="flex:1; min-width:130px;">
-          🔗 ${t('shareAppShare')}
-        </button>
-      </div>
-
-      <p style="font-size:11px; color:var(--text-muted); margin-top:12px;">
-        ${t('shareAppHint')}
-      </p>
-    </div>
-  `;
-
-  showModal({
-    title: `📱 ${t('shareAppTitle')}`,
-    body: body,
-    buttons: [{ text: t('close'), class: 'secondary' }],
-  });
-
-  // Attach handlers after modal is shown
-  setTimeout(() => {
-    const copyBtn = document.getElementById('shareAppCopyBtn');
-    const nativeBtn = document.getElementById('shareAppNativeBtn');
-
-    if (copyBtn) {
-      copyBtn.onclick = () => {
+    `;
+  }
+  
+  function attachHandlers(bodyElement) {
+    // Current view tab handlers
+    const currentCopyBtn = bodyElement.querySelector('#shareCurrentCopyBtn');
+    const currentNativeBtn = bodyElement.querySelector('#shareCurrentNativeBtn');
+    
+    if (currentCopyBtn) {
+      currentCopyBtn.onclick = () => {
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard
-            .writeText(appUrl)
+            .writeText(buildShareUrl())
+            .then(() => showToast('success', t('shareLinkCopied')))
+            .catch(() => showToast('error', t('shareLinkFailed')));
+        } else {
+          // Fallback for older browsers
+          const textarea = document.createElement('textarea');
+          textarea.value = buildShareUrl();
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          try {
+            document.execCommand('copy');
+            showToast('success', t('shareLinkCopied'));
+          } catch (e) {
+            showToast('error', t('shareLinkFailed'));
+          }
+          document.body.removeChild(textarea);
+        }
+      };
+    }
+    
+    if (currentNativeBtn) {
+      currentNativeBtn.onclick = () => {
+        if (navigator.share && !isLocal) {
+          navigator
+            .share({
+              title: t('appName'),
+              text: buildShareText(),
+              url: buildShareUrl(),
+            })
+            .then(() => showToast('success', t('shareSuccess')))
+            .catch((err) => {
+              // User cancelled — don't show an error
+              if (err.name !== 'AbortError') {
+                if (!isLocal) {
+                  copyToClipboard(buildShareUrl());
+                }
+              }
+            });
+        } else {
+          // Fallback to copy
+          copyToClipboard(buildShareUrl());
+        }
+      };
+    }
+    
+    // Application tab handlers
+    const appCopyBtn = bodyElement.querySelector('#shareAppCopyBtn');
+    const appNativeBtn = bodyElement.querySelector('#shareAppNativeBtn');
+    
+    if (appCopyBtn) {
+      appCopyBtn.onclick = () => {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard
+            .writeText(getAppUrl())
             .then(() => showToast('success', t('shareAppCopied')))
             .catch(() => showToast('error', t('shareCopyFailed')));
         } else {
           // Fallback for older browsers
           const textarea = document.createElement('textarea');
-          textarea.value = appUrl;
+          textarea.value = getAppUrl();
           textarea.style.position = 'fixed';
           textarea.style.opacity = '0';
           document.body.appendChild(textarea);
@@ -370,39 +482,102 @@ function shareApp() {
         }
       };
     }
-
-    if (nativeBtn) {
-      nativeBtn.onclick = () => {
-        if (navigator.share) {
+    
+    if (appNativeBtn) {
+      appNativeBtn.onclick = () => {
+        if (navigator.share && !isLocal) {
           navigator
             .share({
               title: t('appName'),
               text: t('shareAppText'),
-              url: appUrl,
+              url: getAppUrl(),
             })
             .then(() => showToast('success', t('shareSuccess')))
             .catch((err) => {
               // User cancelled — don't show an error
               if (err.name !== 'AbortError') {
-                showToast('error', t('shareCopyFailed'));
+                copyToClipboard(getAppUrl());
               }
             });
         } else {
-          // No Web Share API — just copy
-          navigator.clipboard
-            .writeText(appUrl)
-            .then(() => showToast('info', t('shareLinkCopied')))
-            .catch(() => showToast('error', t('shareCopyFailed')));
+          // Fallback to copy
+          copyToClipboard(getAppUrl());
         }
       };
     }
-  }, 100);
+    
+    // Load QR code when application tab is selected
+    const qrContainer = bodyElement.querySelector('#qrcodeContainer');
+    if (qrContainer) {
+      // Check if we're in the application tab
+      const tabButtons = bodyElement.querySelectorAll('.share-tab-btn');
+      tabButtons.forEach(btn => {
+        btn.onclick = (e) => {
+          // Update active tab
+          tabButtons.forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          
+          activeTab = e.target.dataset.tab;
+          
+          // Load QR code only when application tab is selected
+          if (activeTab === 'application' && qrContainer) {
+            qrContainer.innerHTML = `<img src="${buildQRCodeUrl(getAppUrl(), 280)}" alt="QR Code" style="width: 200px; height: 200px;">`;
+          } else if (activeTab === 'current') {
+            qrContainer.innerHTML = ''; // Clear QR code when not needed
+          }
+        };
+      });
+      
+      // Initialize QR code for application tab if it's active
+      if (activeTab === 'application') {
+        qrContainer.innerHTML = `<img src="${buildQRCodeUrl(getAppUrl(), 280)}" alt="QR Code" style="width: 200px; height: 200px;">`;
+      }
+    }
+  }
+  
+  const html = `
+    <div style="display: flex; flex-direction: column; height: 100%;">
+      <!-- Tabs -->
+      <div style="display: flex; border-bottom: 1px solid var(--border-cell);">
+        <button class="share-tab-btn${activeTab === 'current' ? ' active' : ''}" data-tab="current" style="flex: 1; padding: 12px; border: none; background: var(--bg-controls); color: var(--text-main); cursor: pointer;">
+          ${t('shareCurrentView')}
+        </button>
+        <button class="share-tab-btn${activeTab === 'application' ? ' active' : ''}" data-tab="application" style="flex: 1; padding: 12px; border: none; background: var(--bg-controls); color: var(--text-main); cursor: pointer;">
+          ${t('shareApplication')}
+        </button>
+      </div>
+      
+      <!-- Tab Content -->
+      <div style="flex: 1; overflow-y: auto;">
+        <!-- Content will be injected by onMount -->
+        <div id="shareCenterContent"></div>
+      </div>
+    </div>
+  `;
+  
+  openActionSheet({
+    id: 'share-center',
+    title: t('shareCenterTitle'),
+    html: html,
+    onMount: (bodyElement) => {
+      // Inject initial content based on active tab
+      const contentDiv = bodyElement.querySelector('#shareCenterContent');
+      if (contentDiv) {
+        if (activeTab === 'current') {
+          contentDiv.innerHTML = renderCurrentViewTab();
+        } else {
+          contentDiv.innerHTML = renderApplicationTab();
+        }
+      }
+      
+      // Attach event handlers
+      attachHandlers(bodyElement);
+    }
+  });
 }
 
-bindClick('menuShareApp', () => {
-  closeSideMenu();
-  shareApp();
-});
+// Expose globally
+window.openShareCenter = openShareCenter;
 
 /* === ADMIN: EXPORT FACTORY SCHEDULE AS data.js SNIPPET === */
 
