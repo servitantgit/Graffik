@@ -863,21 +863,12 @@ function countSyncPayloadStats(data) {
       return v != null && String(v).trim() !== '';
     }).length;
   }
-  let customShifts = 0;
-  if (data.customSchedule && typeof data.customSchedule === 'object') {
-    // structure: year -> month -> brigade -> day array or similar — count leaf day overrides
-    const walk = (obj, depth) => {
-      if (!obj || typeof obj !== 'object') return;
-      if (Array.isArray(obj)) {
-        obj.forEach((v) => {
-          if (v != null && v !== '' && v !== 0) customShifts++;
-        });
-        return;
-      }
-      Object.keys(obj).forEach((k) => walk(obj[k], depth + 1));
-    };
-    walk(data.customSchedule, 0);
-  }
+  const personalOverrides =
+    typeof getPersonalShiftOverrides === 'function'
+      ? getPersonalShiftOverrides(data)
+      : {};
+
+  const customShifts = Object.keys(personalOverrides).length;
   let factoryDraftChanges = 0;
   if (data.factoryDrafts && typeof data.factoryDrafts === 'object') {
     const walk = (obj, depth) => {
