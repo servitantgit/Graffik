@@ -32,12 +32,15 @@ function renderCalendar(direction) {
 
   const today = new Date();
   const hidePrivate = !shouldShowPersonalData();
+  const factoryEditorIsActive =
+    (typeof factoryPaintActive !== 'undefined' && factoryPaintActive) ||
+    window.factoryPaintActive === true;
 
   // cycleRange must use the same data source as cell rendering:
   // factory schedule when logged out, personal schedule when logged in.
   // Otherwise cycle highlighting can leak personal edits or disagree with visible cells.
   let cycleRange = null;
-  if (selectedDay) {
+  if (selectedDay && !factoryEditorIsActive) {
     if (hidePrivate) {
       cycleRange = getFactoryCycleRange(currentYear, currentMonth, selectedDay, selectedShift);
     } else {
@@ -52,9 +55,10 @@ function renderCalendar(direction) {
     
     
     // Factory painting mode override - show factory drafts when active
-    const isFactoryPaintingMode = factoryPaintActive && 
-                                  factoryPaintYear === currentYear && 
-                                  factoryPaintMonth === currentMonth;
+    const isFactoryPaintingMode =
+      factoryEditorIsActive &&
+      factoryPaintYear === currentYear &&
+      factoryPaintMonth === currentMonth;
     if (isFactoryPaintingMode) {
       // Show factory drafts for the selected shift
       shiftCode = window.getFactoryDraftShiftAt(currentYear, currentMonth, d, selectedShift) || '';
@@ -97,7 +101,7 @@ function renderCalendar(direction) {
       else cell.classList.add('cycle-middle');
     }
 
-    if (compareShift) {
+    if (compareShift && !isFactoryPaintingMode) {
       // Compare must use the same data source as visible cells (factory when privacy)
       let s1, s2;
       if (hidePrivate) {
@@ -145,7 +149,12 @@ function renderCalendar(direction) {
     cell.appendChild(shiftEl);
 
     // OVERTIME: colored ⏱ marker (detail in info-panel)
-    if (!hidePrivate && !isWolne(shiftCode) && !onUrlop) {
+    if (
+      !isFactoryPaintingMode &&
+      !hidePrivate &&
+      !isWolne(shiftCode) &&
+      !onUrlop
+    ) {
       const ot = getOvertimes(currentYear, currentMonth, d, selectedShift);
       if (ot.przed || ot.po) {
         cell.classList.add('has-ot');
@@ -189,7 +198,7 @@ function renderCalendar(direction) {
     }
 
     const noteKey = `${currentYear}-${currentMonth}-${d}-${selectedShift}`;
-    if (!hidePrivate && notes[noteKey]) {
+    if (!isFactoryPaintingMode && !hidePrivate && notes[noteKey]) {
       const nEl = document.createElement('div');
       nEl.className = 'day-note';
       nEl.textContent = '📝';
@@ -423,6 +432,12 @@ document.getElementById('otCustomHours').addEventListener('input', (e) => {
 function renderMonthOvertimeSummary() {
   const old = document.getElementById('otMonthSummary');
   if (old) old.remove();
+
+  const factoryEditorIsActive =
+    (typeof factoryPaintActive !== 'undefined' && factoryPaintActive) ||
+    window.factoryPaintActive === true;
+
+  if (factoryEditorIsActive) return;
   if (!shouldShowPersonalData()) return;
 
   const sum = getMonthOvertimeSummary(currentYear, currentMonth, selectedShift);
@@ -493,6 +508,15 @@ function renderProgress() {
 /* === INFO PANEL === */
 function renderInfo() {
     const panel = document.getElementById('infoPanel');
+    const factoryEditorIsActive =
+      (typeof factoryPaintActive !== 'undefined' && factoryPaintActive) ||
+      window.factoryPaintActive === true;
+
+    if (factoryEditorIsActive) {
+      panel.innerHTML = '';
+      return;
+    }
+
     if (!selectedDay) {
       panel.innerHTML = `<h3>${t('infoPanelTitle')}</h3><p>${t('infoPanelHint')}</p>`;
       return;
