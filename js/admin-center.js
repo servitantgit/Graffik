@@ -59,7 +59,7 @@ function activateFactoryPaintMode(year) {
   }
   
   factoryPaintYear = year;
-  // Sync with the calendar period so day clicks match
+  // Sync with the calendar period so day clicks match.
   try {
     if (typeof currentYear !== 'undefined') currentYear = year;
     if (typeof currentMonth !== 'undefined' && currentMonth >= 1 && currentMonth <= 12) {
@@ -71,6 +71,15 @@ function activateFactoryPaintMode(year) {
   } catch (_) {
     factoryPaintMonth = new Date().getMonth() + 1;
   }
+
+  // Factory painting always uses the monthly calendar grid.
+  if (typeof yearMode !== 'undefined') yearMode = false;
+  if (typeof prefs !== 'undefined' && prefs) {
+    prefs.year = year;
+    prefs.yearMode = false;
+    if (typeof savePrefs === 'function') savePrefs(prefs);
+  }
+
   factoryPaintMode = 'R';
   factoryPaintActive = true;
   // Expose state for other modules (calendar.js, main.js)

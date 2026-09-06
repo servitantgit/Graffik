@@ -114,10 +114,15 @@ function refreshViews() {
   
   if (typeof updateAppShellUI === 'function') updateAppShellUI();
 
+  const factoryEditorIsActive =
+    (typeof factoryPaintActive !== 'undefined' && factoryPaintActive) ||
+    window.factoryPaintActive === true;
+
   const empty =
     !hasFactoryData(currentYear) &&
     !hasCustomData(currentYear) &&
-    currentView !== 'dashboard';
+    currentView !== 'dashboard' &&
+    !factoryEditorIsActive;
 
   // Remove the old overtime summary when switching views
   const oldOtSum = document.getElementById('otMonthSummary');
