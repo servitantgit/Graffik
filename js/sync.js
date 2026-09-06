@@ -495,15 +495,49 @@ async function downloadFromDrive(confirmOverwrite = false) {
     const doApply = () => {
       let applyErrors = [];
 
-      // customSchedule — we MUTATE the object (not overwrite)
-      if (data.customSchedule && typeof customSchedule !== 'undefined') {
+      // Personal shifts: read compact v4 overrides or migrate a legacy v3 schedule.
+      const hasCompactShiftOverrides =
+        Object.prototype.hasOwnProperty.call(data, 'shiftOverrides') &&
+        data.shiftOverrides &&
+        typeof data.shiftOverrides === 'object' &&
+        !Array.isArray(data.shiftOverrides);
+
+      const hasLegacyCustomSchedule =
+        data.customSchedule &&
+        typeof data.customSchedule === 'object' &&
+        !Array.isArray(data.customSchedule);
+
+      if (
+        (hasCompactShiftOverrides || hasLegacyCustomSchedule) &&
+        typeof customSchedule !== 'undefined'
+      ) {
         try {
-          Object.keys(customSchedule).forEach((k) => delete customSchedule[k]);
-          Object.assign(customSchedule, data.customSchedule);
+          const personalOverrides = hasCompactShiftOverrides
+            ? getPersonalShiftOverrides(data)
+            : getPersonalShiftOverrides({
+                customSchedule: data.customSchedule,
+                factorySchedule:
+                  data.factorySchedule &&
+                  typeof data.factorySchedule === 'object' &&
+                  !Array.isArray(data.factorySchedule)
+                    ? data.factorySchedule
+                    : factorySchedule,
+              });
+
+          const rebuiltCustomSchedule =
+            buildCustomScheduleFromShiftOverrides(
+              personalOverrides,
+              factorySchedule
+            );
+
+          Object.keys(customSchedule).forEach(
+            (key) => delete customSchedule[key]
+          );
+          Object.assign(customSchedule, rebuiltCustomSchedule);
           saveCustomSchedule(customSchedule);
         } catch (e) {
-          console.error('[SYNC] customSchedule error', e);
-          applyErrors.push('customSchedule');
+          console.error('[SYNC] personal schedule migration error', e);
+          applyErrors.push('personalSchedule');
         }
       }
 
