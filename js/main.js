@@ -260,15 +260,15 @@ if (
           window.activateFactoryPaintTool(e.key.toUpperCase());
         }
         break;
-      case 'ArrowLeft':
+      case 'ARROWLEFT':
         e.preventDefault();
         goToPeriod(-1);
         break;
-      case 'ArrowRight':
+      case 'ARROWRIGHT':
         e.preventDefault();
         goToPeriod(1);
         break;
-      case 'Escape':
+      case 'ESCAPE':
         e.preventDefault();
         if (typeof window.deactivateFactoryPaintMode === 'function') {
           window.deactivateFactoryPaintMode();
