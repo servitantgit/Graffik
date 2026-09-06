@@ -57,6 +57,115 @@ function buildPersonalScheduleOverrides(customData, factoryData) {
   return overrides;
 }
 
+function normalizeShiftOverrides(overrides) {
+  const normalized = {};
+
+  if (!overrides || typeof overrides !== 'object' || Array.isArray(overrides)) {
+    return normalized;
+  }
+
+  Object.keys(overrides)
+    .sort()
+    .forEach((key) => {
+      if (!/^\d{4}-\d{1,2}-[ABCD]-\d{1,2}$/.test(key)) return;
+
+      const value = overrides[key];
+      if (value !== '' && value !== 'R' && value !== 'P' && value !== 'N') {
+        return;
+      }
+
+      normalized[key] = value;
+    });
+
+  return normalized;
+}
+
+function getPersonalShiftOverrides(payload) {
+  const source = payload && typeof payload === 'object' ? payload : null;
+
+  if (
+    source &&
+    Object.prototype.hasOwnProperty.call(source, 'shiftOverrides')
+  ) {
+    return normalizeShiftOverrides(source.shiftOverrides);
+  }
+
+  const customData = source
+    ? source.customSchedule || {}
+    : typeof customSchedule !== 'undefined'
+      ? customSchedule
+      : {};
+
+  const referenceFactory =
+    source &&
+    source.factorySchedule &&
+    typeof source.factorySchedule === 'object'
+      ? source.factorySchedule
+      : typeof factorySchedule !== 'undefined'
+        ? factorySchedule
+        : {};
+
+  return normalizeShiftOverrides(
+    buildPersonalScheduleOverrides(customData, referenceFactory)
+  );
+}
+
+function createScheduleYearFromFactory(year, sourceFactory) {
+  const result = {};
+  const factoryYear =
+    sourceFactory &&
+    sourceFactory[year] &&
+    typeof sourceFactory[year] === 'object'
+      ? sourceFactory[year]
+      : {};
+
+  for (let month = 1; month <= 12; month++) {
+    const daysInMonth = new Date(Number(year), month, 0).getDate();
+    result[month] = {};
+
+    ['A', 'B', 'C', 'D'].forEach((brigade) => {
+      const factoryDays =
+        factoryYear[month] && Array.isArray(factoryYear[month][brigade])
+          ? factoryYear[month][brigade]
+          : [];
+
+      result[month][brigade] = new Array(daysInMonth)
+        .fill('')
+        .map((unused, index) => normalizeSyncShift(factoryDays[index]));
+    });
+  }
+
+  return result;
+}
+
+function buildCustomScheduleFromShiftOverrides(overrides, sourceFactory) {
+  const normalized = normalizeShiftOverrides(overrides);
+  const factory =
+    sourceFactory && typeof sourceFactory === 'object' ? sourceFactory : {};
+  const result = {};
+
+  Object.keys(normalized).forEach((key) => {
+    const match = key.match(/^(\d{4})-(\d{1,2})-([ABCD])-(\d{1,2})$/);
+    if (!match) return;
+
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const brigade = match[3];
+    const day = Number(match[4]);
+
+    if (month < 1 || month > 12) return;
+    if (day < 1 || day > new Date(year, month, 0).getDate()) return;
+
+    if (!result[year]) {
+      result[year] = createScheduleYearFromFactory(year, factory);
+    }
+
+    result[year][month][brigade][day - 1] = normalized[key];
+  });
+
+  return result;
+}
+
 function buildFactoryDraftOverrides(draftData, factoryData) {
   const overrides = {};
   const drafts = draftData && typeof draftData === 'object' ? draftData : {};
@@ -382,3 +491,7 @@ window.getUnsyncedChangeCount = getUnsyncedChangeCount;
 window.formatLastSyncDateTime = formatLastSyncDateTime;
 window.getSyncFingerprint = getSyncFingerprint;
 window.reconcileSyncedFingerprint = reconcileSyncedFingerprint;
+window.normalizeShiftOverrides = normalizeShiftOverrides;
+window.getPersonalShiftOverrides = getPersonalShiftOverrides;
+window.buildCustomScheduleFromShiftOverrides =
+  buildCustomScheduleFromShiftOverrides;
