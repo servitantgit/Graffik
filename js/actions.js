@@ -1,5 +1,5 @@
 ﻿/* ================================================================
-   GRAFIK GILLETTE вЂ” Module 8: ACTIONS (ICS, JSON, SHARE, MENU)
+   GRAFIK GILLETTE — Module 8: ACTIONS (ICS, JSON, SHARE, MENU)
    ================================================================ */
 
 function bindClick(id, handler) {
@@ -54,7 +54,7 @@ function exportICS() {
     const dt = new Date(yy, mm - 1, dd);
     const dtEnd = new Date(dt);
     dtEnd.setDate(dd + 1);
-    ics += `BEGIN:VEVENT\r\nUID:urlop-${k}-${selectedShift}@gillette\r\nDTSTART;VALUE=DATE:${fmtD(dt)}\r\nDTEND;VALUE=DATE:${fmtD(dtEnd)}\r\nSUMMARY:рџЊґ URLOP - Brygada ${selectedShift}\r\nEND:VEVENT\r\n`;
+    ics += `BEGIN:VEVENT\r\nUID:urlop-${k}-${selectedShift}@gillette\r\nDTSTART;VALUE=DATE:${fmtD(dt)}\r\nDTEND;VALUE=DATE:${fmtD(dtEnd)}\r\nSUMMARY:🌴 URLOP - Brygada ${selectedShift}\r\nEND:VEVENT\r\n`;
   });
   ics += 'END:VCALENDAR\r\n';
   const blob = new Blob([ics], { type: 'text/calendar' });
@@ -77,7 +77,7 @@ function openExportCenter() {
       <div style="background: var(--bg-cell); border: 1px solid var(--border-cell); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
         <div style="display: flex; align-items: flex-start; gap: 12px;">
           <div style="flex-shrink: 0;">
-            <span style="font-size: 24px;">рџ“¤</span>
+            <span style="font-size: 24px;">📤</span>
           </div>
           <div>
             <div style="font-weight: 600; margin-bottom: 4px;">${t('exportICS')}</div>
@@ -93,7 +93,7 @@ function openExportCenter() {
       <div style="background: var(--bg-cell); border: 1px solid var(--border-cell); border-radius: 12px; padding: 16px;">
         <div style="display: flex; align-items: flex-start; gap: 12px;">
           <div style="flex-shrink: 0;">
-            <span style="font-size: 24px;">рџ–ЁпёЏ</span>
+            <span style="font-size: 24px;">🖨️</span>
           </div>
           <div>
             <div style="font-weight: 600; margin-bottom: 4px;">${t('print')}</div>
