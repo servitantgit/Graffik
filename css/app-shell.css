@@ -412,6 +412,11 @@ body.action-sheet-open {
   overflow: hidden;
 }
 
+/* Transactional modals must remain visible above panels and action sheets. */
+.modal-overlay.show {
+  z-index: 170;
+}
+
 /* === KEYBOARD FOCUS (focus-visible) === */
 .app-panel:focus-visible,
 .action-sheet:focus-visible,
