@@ -839,6 +839,23 @@ window.translations.en = {
   settingsVacationUsed: 'Vacation days used: {n}',
   settingsVacationRemaining: 'Vacation days remaining: {n}',
 
+  // === DATA AND PRIVACY SETTINGS ===
+  settingsPrivacyLocalFirstExplanation:
+    'Personal data is stored locally in this browser. Google Drive is used only for optional backup and synchronization.',
+  settingsPrivacyMode: 'Privacy mode',
+  settingsPrivacyDriveState: 'Google Drive backup status',
+  settingsPrivacyCustomShifts: 'Personal shift changes',
+  settingsPrivacyVacations: 'Vacations',
+  settingsPrivacyOvertime: 'Overtime',
+  settingsPrivacyNotes: 'Notes',
+  settingsPrivacyClear: 'Clear local personal data',
+  settingsPrivacyClearConfirmTitle: 'Clear local personal data?',
+  settingsPrivacyClearConfirmMessage:
+    'Personal shift changes, vacations, overtime and notes stored in this browser will be removed. Settings, Google Drive login, the public factory schedule and administrator drafts will remain unchanged.',
+  settingsPrivacyClearSuccess: 'Local personal data has been cleared',
+  driveNotLoggedIn: 'Not signed in',
+  clear: 'Clear',
+
   // === ADMIN CENTER AND FACTORY DRAFTS ===
   adminCenterTitle: 'Admin center',
   adminCenterDesc: 'Manage factory schedules and yearly data',

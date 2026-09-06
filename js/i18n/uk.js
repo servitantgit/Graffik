@@ -839,6 +839,23 @@ window.translations.uk = {
   settingsVacationUsed: 'Використано днів відпустки: {n}',
   settingsVacationRemaining: 'Залишилося днів відпустки: {n}',
 
+  // === DATA AND PRIVACY SETTINGS ===
+  settingsPrivacyLocalFirstExplanation:
+    'Персональні дані зберігаються локально в цьому браузері. Google Drive використовується лише для необов’язкової резервної копії та синхронізації.',
+  settingsPrivacyMode: 'Режим приватності',
+  settingsPrivacyDriveState: 'Стан резервної копії Google Drive',
+  settingsPrivacyCustomShifts: 'Особисті зміни',
+  settingsPrivacyVacations: 'Відпустки',
+  settingsPrivacyOvertime: 'Надгодини',
+  settingsPrivacyNotes: 'Нотатки',
+  settingsPrivacyClear: 'Очистити локальні персональні дані',
+  settingsPrivacyClearConfirmTitle: 'Очистити локальні персональні дані?',
+  settingsPrivacyClearConfirmMessage:
+    'Буде видалено особисті зміни, відпустки, надгодини та нотатки, збережені в цьому браузері. Налаштування, вхід у Google Drive, публічний заводський графік і чернетки адміністратора залишаться без змін.',
+  settingsPrivacyClearSuccess: 'Локальні персональні дані очищено',
+  driveNotLoggedIn: 'Не виконано вхід',
+  clear: 'Очистити',
+
   // === ADMIN CENTER AND FACTORY DRAFTS ===
   adminCenterTitle: 'Адмін-центр',
   adminCenterDesc: 'Керуйте заводськими графіками та річними даними',

@@ -841,6 +841,23 @@ window.translations.pl = {
   settingsVacationUsed: 'Wykorzystane dni urlopu: {n}',
   settingsVacationRemaining: 'Pozostałe dni urlopu: {n}',
 
+  // === DATA AND PRIVACY SETTINGS ===
+  settingsPrivacyLocalFirstExplanation:
+    'Dane osobiste są przechowywane lokalnie w tej przeglądarce. Google Drive służy wyłącznie do opcjonalnej kopii zapasowej i synchronizacji.',
+  settingsPrivacyMode: 'Tryb prywatności',
+  settingsPrivacyDriveState: 'Stan kopii Google Drive',
+  settingsPrivacyCustomShifts: 'Własne zmiany',
+  settingsPrivacyVacations: 'Urlopy',
+  settingsPrivacyOvertime: 'Nadgodziny',
+  settingsPrivacyNotes: 'Notatki',
+  settingsPrivacyClear: 'Wyczyść lokalne dane osobiste',
+  settingsPrivacyClearConfirmTitle: 'Wyczyścić lokalne dane osobiste?',
+  settingsPrivacyClearConfirmMessage:
+    'Zostaną usunięte własne zmiany, urlopy, nadgodziny i notatki zapisane w tej przeglądarce. Ustawienia, logowanie Google Drive, publiczny grafik fabryczny i szkice administratora pozostaną bez zmian.',
+  settingsPrivacyClearSuccess: 'Lokalne dane osobiste zostały wyczyszczone',
+  driveNotLoggedIn: 'Nie zalogowano',
+  clear: 'Wyczyść',
+
   // === ADMIN CENTER AND FACTORY DRAFTS ===
   adminCenterTitle: 'Panel administratora',
   adminCenterDesc: 'Zarządzaj grafikami fabrycznymi i danymi rocznymi',
