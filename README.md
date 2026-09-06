@@ -155,7 +155,7 @@ Następnie otwórz: `http://localhost:8000`
     │   ├── overtime-logic.js    # Kategoryzacja nadgodzin +50%/100%/200%
     │   ├── core.js              # Storage, getShiftAt, isUrlop, prefs…
     │   ├── ui.js                # Toast, Modal, Confirm, motyw
-    │   ├── edit.js              # Tryb edycji, undo/redo, pending buffer
+    │   ├── edit.js              # Natychmiastowa edycja zmian (applyEdit)
     │   ├── dashboard.js         # Dashboard (gated by shouldShowPersonalData)
     │   ├── calendar.js          # Kalendarz, popupy, nadgodziny
     │   ├── views.js             # Rok, Tabela

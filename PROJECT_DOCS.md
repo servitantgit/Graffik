@@ -106,7 +106,7 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - `currentYear`, `currentMonth`, `selectedShift`, `compareShift`
 - `selectedDay`, `currentView`, `yearMode`
 - `editMode`, `editPaletteMode`, `popupFadeTimer`
-- `pendingChanges`, `pendingOriginals`, `undoStack`, `redoStack` (w edit.js)
+- Immediate shift edits via `applyEdit` / `getShiftAtWithPending` (`js/edit.js`; no pending buffer)
 
 ## 3. Mapa plików JS (co gdzie)
 
@@ -208,18 +208,14 @@ W `js/personalization.js` dostępne są trzy style komórek:
 
 W stylu `quiet` kolory zmian R/P/N nie są zmieniane. Kolor odpracowania/urlopu korzysta z `--color-U`. Nazwa techniczna `quiet` pozostaje zachowana dla kompatybilności zapisanych preferencji; w interfejsie użytkownika nie należy nazywać tego stylu „kropkami”.
 
-### js/edit.js — Moduł 4: Tryb edycji
+### js/edit.js — Moduł 4: Natychmiastowa edycja zmian
 
-- `pendingChanges`, `pendingOriginals` — bufor zmian
-- `undoStack`, `redoStack` — historia cofania (Ctrl+Z / Ctrl+Y)
-- Przyciski UI: #undoBtn, #redoBtn w edit banner
-- `applyEdit(y, m, d, brig, val)` — aplikuje edycję do bufora
-- `undoLastEdit` — cofa ostatnią zmianę
-- `redoLastEdit` — przywraca cofniętą zmianę
-- `saveAllPendingChanges` — zapis bufora do customSchedule
-- `discardAllPendingChanges` — czyszczenie bufora
-- `updateDirtyIndicator` — licznik niezapisanych zmian
-- `redoLastEdit()` — przywraca cofniętą zmianę (Ctrl+Y lub Ctrl+Shift+Z)
+Cienka warstwa nad `customSchedule`:
+- `getShiftAtWithPending(year, month, day, brigade)` — alias `getShiftAt` (kompatybilność API)
+- `applyEdit(year, month, day, brigade, forcedValue?)` — zapisuje zmianę od razu (cykl R→P→N→wolne lub wymuszona wartość)
+
+Brak bufora `pendingChanges` / undo-redo; zapis jest natychmiastowy, tak jak urlop i nadgodziny.
+
 
 ### js/dashboard.js — Moduł 5: Widok Dashboard
 
@@ -310,6 +306,11 @@ W stylu `quiet` kolory zmian R/P/N nie są zmieniane. Kolor odpracowania/urlopu 
   — liczby urlopów / nadgodzin / notatek / własnych zmian / limitów urlopów
   oraz ostatni czas sync przy `hasUnsyncedChanges()`; przyciski w jednym rzędzie
   (klasa `modal-footer-single-row` na `#modalFooter`)
+
+### js/admin-center.js — Panel administratora
+
+Pełny UI Admin Center (fabryczny edytor R/P/N/W, eksport `YYYY.js`, poradnik, strefa ryzyka).
+Wejście: ☰ → 👑 Admin Panel → `openAdminCenter()` (tylko `ADMIN_EMAILS`).
 
 ### js/admin.js — Moduł Admin: identyfikacja administratora
 
@@ -443,7 +444,7 @@ Używany dla wszystkich przycisków w side menu i edit banner.
 - Kompatybilność `chrome-extension://` z Service Worker — wymaga jawnego filtra protokołu w handlerze `fetch`
 - **Relief timeline** (`getRelief` → `getShiftAt`) nadal czyta custom schedule nawet gdy UI pokazuje factory — niska waga, możliwe drobne niespójności przy wylogowaniu
 - **Edit mode** pozostaje lokalny/offline; Privacy Mode wpływa na widoczność danych, a nie na możliwość edycji
-- Etykieta Admin „Export data.js” jest legacy naming — eksport generuje już format `YYYY.js` (`registerYearData`)
+- Admin Export generuje pliki `YYYY.js` przez `registerYearData` (schedules architecture)
 
 ## 6. Strategia konfliktów synchronizacji
 

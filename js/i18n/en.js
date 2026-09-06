@@ -747,7 +747,7 @@ window.translations.en = {
 
   // === APP SHELL ===
   contextBrigade: 'Brigade',
-  contextHighlightBrigade: 'Your brigade',
+
   contextRange: 'Range',
   rangeMonth: 'Month',
   rangeYear: 'Year',

@@ -680,12 +680,8 @@ function renderSettingsSection(section, container) {
   }
 
   /* ---------- menu button ----------
-     #menuSettings previously carried a temporary listener bound by
-     app-shell.js, which is not part of this task's file set. The button is
-     clone-replaced here: cloning drops all listeners, and because this
-     module's DOMContentLoaded handler is registered after app-shell.js's
-     (script order), it also runs last — leaving exactly one handler that
-     opens the real settings panel. */
+     Own the #menuSettings click handler. Clone-replace clears any prior
+     listeners so exactly one handler opens the settings panel. */
   function bindMenuSettingsButton() {
     const btn = document.getElementById('menuSettings');
     if (!btn || !btn.parentNode || typeof btn.cloneNode !== 'function') return;

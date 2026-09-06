@@ -841,14 +841,6 @@ body.action-sheet-open {
   outline-offset: 2px;
 }
 
-/* Temporary note content for future panels/sheets */
-.menu-temp-note {
-  margin: 0 0 10px;
-  font-size: 14px;
-  line-height: 1.45;
-  color: var(--text-main);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .ui-switch,
   .ui-switch-knob {

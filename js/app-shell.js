@@ -417,38 +417,21 @@
     return typeof t === 'function' ? t(key) : key;
   }
 
-  function tempNote(key) {
-    return '<p class="menu-temp-note">' + tt(key) + '</p>';
-  }
-
-  function openMenuPanel(panelId, titleKey, bodyHtml) {
-    closeSideMenu();
-    openAppPanel({ id: panelId, title: tt(titleKey), html: bodyHtml });
-  }
-
-  function openMenuSheet(sheetId, titleKey, bodyHtml) {
-    closeSideMenu();
-    openActionSheet({ id: sheetId, title: tt(titleKey), html: bodyHtml });
-  }
-
-  /* Temporary behaviors until the Settings / Share / Export / About /
-     Admin Center tasks build the real panels. */
+  /* Menu feature entry points. Settings is owned by js/settings.js
+     (clone-binds #menuSettings so this module must not attach a second listener). */
   function bindMenuActions() {
     const onBtn = (id, fn) => {
       const b = el(id);
       if (b) b.addEventListener('click', fn);
     };
 
-    onBtn('menuSettings', () =>
-      openMenuPanel('settings', 'menuSettings', tempNote('menuSettingsDesc'))
-    );
     onBtn('menuShareCenter', () => {
       closeSideMenu();
-      openShareCenter();
+      if (typeof openShareCenter === 'function') openShareCenter();
     });
     onBtn('menuExportCenter', () => {
       closeSideMenu();
-      openExportCenter();
+      if (typeof openExportCenter === 'function') openExportCenter();
     });
     onBtn('menuAbout', () => {
       closeSideMenu();
@@ -491,13 +474,8 @@
       });
     });
     onBtn('menuAdminCenter', () => {
-      // Open the real Admin Center (admin-center.js)
       closeSideMenu();
-      if (typeof openAdminCenter === 'function') {
-        openAdminCenter();
-      } else if (typeof isCurrentUserAdmin === 'function' && isCurrentUserAdmin()) {
-        openMenuPanel('admin-center', 'adminCenterTitle', tempNote('adminCenterDesc'));
-      }
+      if (typeof openAdminCenter === 'function') openAdminCenter();
     });
   }
 

@@ -41,12 +41,6 @@
       <button class="icon-btn" id="menuBtn" data-i18n-title="menu" title="Menu">☰</button>
     </div>
 
-    <!-- Transitional hidden stubs (v4.0.0): edit-mode + admin FAQ controls move
-          to the Settings panel / Admin Center in later tasks. Kept invisible so
-          legacy handlers (views.js empty-state edit button, admin FAQ binding)
-          and updateEditModeUI() keep working without errors. -->
-    <!-- REMOVED: #editModeToggle and #adminFaqBtn -->
-
     <!-- PRIMARY NAVIGATION (desktop; hidden ≤700px — mobile bottom nav takes over) -->
     <nav class="primary-nav" id="primaryNav" aria-label="Views">
       <button type="button" class="primary-nav-btn" data-view="dashboard" data-i18n="viewDashboard">🏠 Dashboard</button>
@@ -173,7 +167,7 @@
       </button>
     </div>
 
-    <!-- 2) SETTINGS (temporary panel until the Settings task) -->
+    <!-- 2) SETTINGS -->
     <div class="menu-section">
       <div class="menu-section-title" data-i18n="menuSectionSettings">Ustawienia</div>
       <button type="button" class="menu-item" id="menuSettings">

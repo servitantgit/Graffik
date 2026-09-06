@@ -749,7 +749,7 @@ window.translations.pl = {
 
   // === APP SHELL ===
   contextBrigade: 'Brygada',
-  contextHighlightBrigade: 'Twoja brygada',
+
   contextRange: 'Zakres',
   rangeMonth: 'Miesiąc',
   rangeYear: 'Rok',

@@ -747,7 +747,7 @@ window.translations.uk = {
 
   // === APP SHELL ===
   contextBrigade: 'Бригада',
-  contextHighlightBrigade: 'Ваша бригада',
+
   contextRange: 'Діапазон',
   rangeMonth: 'Місяць',
   rangeYear: 'Рік',

@@ -28,6 +28,18 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 
 ## [Unreleased]
 
+### Changed
+- **Menu shell cleanup** — `js/app-shell.js` no longer opens temporary placeholder panels for Settings / Admin Center; Settings is owned by `js/settings.js`, Admin Center by `js/admin-center.js`
+- **Context toolbar** — brigade label uses the same “Brigade” wording on all views; month/year segmented toggle sits with brigade controls; “Today” stays next to period arrows
+- **Top bar** — removed view-name kicker above the app title (desktop and mobile)
+
+### Removed
+- Dead refactor leftovers: temporary `tempNote` menu panels, `.menu-temp-note` styles, obsolete HTML comments for removed `#editModeToggle` / `#adminFaqBtn`, unused `contextHighlightBrigade` i18n keys, local `.update-backups/` snapshots
+
+### Fixed
+- Admin Center year pickers, R/P/N/W factory paint tools, danger-zone handlers, and factory export overlay of admin drafts (see prior UI fix packages merged into main)
+
+
 ### Removed
 - **Status card** in month info-panel (redundant — free/vacation already visible on the cell and in the header)
 - **Week view** tab and all related UI/logic (`renderWeekView`, week navigation, week detail panel)
