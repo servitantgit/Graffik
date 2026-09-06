@@ -78,6 +78,11 @@ function getUiSkin() {
 function applyUiSkin(skin, persist) {
   const next = UI_SKIN_VALUES.includes(skin) ? skin : 'industrial';
   prefs.uiSkin = next;
+  // Align base theme with skin so leftover theme-* classes do not fight the palette
+  if (next === 'paper') prefs.theme = 'light';
+  else if (next === 'neon') prefs.theme = 'dark';
+  else if (next === 'industrial' && (!prefs.theme || prefs.theme === 'light')) prefs.theme = 'dark';
+  if (typeof _applyThemeClass === 'function') _applyThemeClass(_getEffectiveTheme());
   if (persist !== false && typeof savePrefs === 'function') savePrefs(prefs);
   document.body.classList.remove('ui-skin-industrial', 'ui-skin-paper', 'ui-skin-neon');
   document.body.classList.add('ui-skin-' + next);

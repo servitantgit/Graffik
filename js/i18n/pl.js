@@ -469,7 +469,7 @@ window.translations.pl = {
   settingsSkin: 'Wygląd komórek',
   settingsSkinDesc: 'Wypełnienie, pasek lub kolorowe obramowanie',
   settingsUiSkin: 'Skórka interfejsu',
-  settingsUiSkinDesc: 'Ogólny wygląd aplikacji: industrial, paper lub neon',
+  settingsUiSkinDesc: 'Ogólny wygląd aplikacji: Industrial, Paper lub Neon',
   uiSkinIndustrial: 'Industrial',
   uiSkinPaper: 'Paper',
   uiSkinNeon: 'Neon',

@@ -233,19 +233,10 @@ const SECTION_TITLES = {
   }
 
   function appearanceHtml() {
-    const theme = ['system', 'light', 'dark'].indexOf(prefs.theme) !== -1
-      ? prefs.theme
-      : 'light';
     const skin = typeof getCellSkin === 'function' ? getCellSkin() : 'full';
     const uiSkin = typeof getUiSkin === 'function' ? getUiSkin() : (prefs.uiSkin || 'industrial');
     return (
       '<div class="settings-section">' +
-      '<div class="st-group"><div class="st-label">' + tr('menuTheme') + '</div>' +
-      '<div class="seg" role="group" aria-label="' + tr('menuTheme') + '">' +
-      segBtn(tr('themeSystem'), 'system', theme, 'data-theme') +
-      segBtn(tr('themeLight'), 'light', theme, 'data-theme') +
-      segBtn(tr('themeDark'), 'dark', theme, 'data-theme') +
-      '</div></div>' +
       '<div class="st-group"><div class="st-label">' + tr('settingsUiSkin') + '</div>' +
       '<p class="st-hint">' + tr('settingsUiSkinDesc') + '</p>' +
       '<div class="seg seg-wrap" role="group" aria-label="' + tr('settingsUiSkin') + '">' +
@@ -288,17 +279,6 @@ const SECTION_TITLES = {
 
   function bindAppearance(body) {
     if (!body) return;
-
-    body.querySelectorAll('.seg-btn[data-theme]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        if (typeof applyTheme === 'function') applyTheme(btn.getAttribute('data-theme'));
-        else {
-          prefs.theme = btn.getAttribute('data-theme');
-          savePrefsSafe();
-        }
-        setActive(body, 'theme', prefs.theme);
-      });
-    });
 
     body.querySelectorAll('.seg-btn[data-ui-skin]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -361,7 +341,6 @@ const SECTION_TITLES = {
       resetBtn.addEventListener('click', function () {
         if (typeof resetCellColors === 'function') resetCellColors();
         if (typeof saveCellSkin === 'function') saveCellSkin('full', true);
-        if (typeof applyTheme === 'function') applyTheme('system');
         if (typeof applyUiSkin === 'function') applyUiSkin('industrial');
         refreshViewsSafe();
         toast('success', 'persSaved');

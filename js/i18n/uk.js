@@ -466,7 +466,7 @@ window.translations.uk = {
   settingsSkin: 'Скін клітинок',
   settingsSkinDesc: 'Заливка, смужка або кольорове обведення',
   settingsUiSkin: 'Скін інтерфейсу',
-  settingsUiSkinDesc: 'Загальний вигляд програми: industrial, paper або neon',
+  settingsUiSkinDesc: 'Загальний вигляд програми: Industrial, Paper або Neon',
   uiSkinIndustrial: 'Industrial',
   uiSkinPaper: 'Paper',
   uiSkinNeon: 'Neon',

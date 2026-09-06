@@ -467,7 +467,7 @@ window.translations.en = {
   settingsSkin: 'Cell skin',
   settingsSkinDesc: 'Full fill, strip, or colored outline',
   settingsUiSkin: 'UI skin',
-  settingsUiSkinDesc: 'Overall app look: industrial, paper, or neon',
+  settingsUiSkinDesc: 'Overall app look: Industrial, Paper, or Neon',
   uiSkinIndustrial: 'Industrial',
   uiSkinPaper: 'Paper',
   uiSkinNeon: 'Neon',
