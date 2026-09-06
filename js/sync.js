@@ -505,6 +505,25 @@ async function downloadFromDrive(confirmOverwrite = false) {
         }
       }
 
+      // factoryDrafts — optional for backward compatibility with old Drive payloads.
+      // When present, replace the local draft object while preserving its reference.
+      if (
+        Object.prototype.hasOwnProperty.call(data, 'factoryDrafts') &&
+        data.factoryDrafts &&
+        typeof data.factoryDrafts === 'object' &&
+        !Array.isArray(data.factoryDrafts) &&
+        typeof factoryDrafts !== 'undefined'
+      ) {
+        try {
+          Object.keys(factoryDrafts).forEach((k) => delete factoryDrafts[k]);
+          Object.assign(factoryDrafts, data.factoryDrafts);
+          saveFactoryDrafts(factoryDrafts);
+        } catch (e) {
+          console.error('[SYNC] factoryDrafts error', e);
+          applyErrors.push('factoryDrafts');
+        }
+      }
+
       // urlops — we MUTATE the object (CRITICAL — this used to be a bug!)
       if (data.urlops && typeof urlops !== 'undefined') {
         try {
@@ -817,7 +836,14 @@ function loginDrive() {
 /** Count entries in personal data objects for a short log. */
 function countSyncPayloadStats(data) {
   if (!data || typeof data !== 'object') {
-    return { urlops: 0, overtimes: 0, notes: 0, customShifts: 0, vacationLimits: 0 };
+    return {
+      urlops: 0,
+      overtimes: 0,
+      notes: 0,
+      customShifts: 0,
+      factoryDraftChanges: 0,
+      vacationLimits: 0,
+    };
   }
   let urlops = 0;
   if (data.urlops && typeof data.urlops === 'object') {
@@ -858,7 +884,7 @@ function countSyncPayloadStats(data) {
       if (!obj || typeof obj !== 'object') return;
       if (Array.isArray(obj)) {
         obj.forEach((v) => {
-          if (v != null && v !== '' && v !== 0) factoryDraftChanges++;
+          if (v !== null && v !== undefined) factoryDraftChanges++;
         });
         return;
       }
@@ -939,6 +965,11 @@ function formatSyncDiffLog(localStats, remoteStats, hasUnsynced, lastSyncText, r
   html += line(tr('driveDiffOvertimes', 'Overtime'), localStats.overtimes, showRemote ? remoteStats.overtimes : 0);
   html += line(tr('driveDiffNotes', 'Notes'), localStats.notes, showRemote ? remoteStats.notes : 0);
   html += line(tr('driveDiffCustom', 'Custom shifts'), localStats.customShifts, showRemote ? remoteStats.customShifts : 0);
+  html += line(
+    tr('syncDiffFactoryDrafts', 'Factory schedule drafts'),
+    localStats.factoryDraftChanges,
+    showRemote ? remoteStats.factoryDraftChanges : 0
+  );
   html += line(tr('driveDiffLimits', 'Vacation limits'), localStats.vacationLimits, showRemote ? remoteStats.vacationLimits : 0);
   html += '</ul>';
 
