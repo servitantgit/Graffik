@@ -622,77 +622,87 @@ function renderInfo() {
       }
 
       // Day action grid
-      let actionCard = '';
-      const actions = [
-        {
-          label: t('vacation'),
-          icon: '🌴',
-          enabled: !onUrlop, // Vacation toggle works on any day
-          action: () => {
-            toggleUrlop(currentYear, currentMonth, selectedDay, selectedShift);
-            showToast('success', isUrlop(currentYear, currentMonth, selectedDay, selectedShift) ? t('urlopAdded') : t('urlopRemoved'));
-            renderCalendar();
-            renderInfo();
-          },
-          disabledReason: !onUrlop ? '' : t('urlopAlreadyOnDay') // We need to check if this key exists
-        },
-        {
-          label: t('addShiftBtn'),
-          icon: '➕',
-          enabled: isFactoryFree,
-          action: () => {
-            openAddShiftModal(selectedDay);
-          },
-          disabledReason: !isFactoryFree ? t('addShiftFactoryHasShift') : ''
-        },
-        {
-          label: t('otBeforeBtn'),
-          icon: '⏱⬅',
-          enabled: !onUrlop && !isWolne(shiftCode) && (shiftCode === 'R' || shiftCode === 'P' || shiftCode === 'N'),
-          action: () => {
-            openOvertimeModal(selectedDay, shiftCode, 'przed', existingOtAntes);
-          },
-          disabledReason: !(!onUrlop && !isWolne(shiftCode) && (shiftCode === 'R' || shiftCode === 'P' || shiftCode === 'N')) ? t('otOnlyOnShift') : ''
-        },
-        {
-          label: t('otAfterBtn'),
-          icon: '⏱➡',
-          enabled: !onUrlop && !isWolne(shiftCode) && (shiftCode === 'R' || shiftCode === 'P' || shiftCode === 'N'),
-          action: () => {
-            openOvertimeModal(selectedDay, shiftCode, 'po', existingOtDespu);
-          },
-          disabledReason: !(!onUrlop && !isWolne(shiftCode) && (shiftCode === 'R' || shiftCode === 'P' || shiftCode === 'N')) ? t('otOnlyOnShift') : ''
-        },
-        {
-          label: t('infoNote'),
-          icon: '📝',
-          enabled: true,
-          action: () => {
-            const noteInput = document.getElementById('noteInput');
-            if (noteInput) noteInput.focus();
-          },
-          disabledReason: ''
-        }
-      ];
+      const canAddExtraShift = isFactoryFree && !onUrlop;
+      const canAddOvertime =
+        !onUrlop &&
+        !isWolne(shiftCode) &&
+        (shiftCode === 'R' || shiftCode === 'P' || shiftCode === 'N');
 
-      // Build action buttons HTML
-      let actionsHtml = '';
-      actions.forEach((action, index) => {
-        const disabled = !action.enabled;
-        const title = disabled ? action.disabledReason : '';
-        actionsHtml += `
-          <button class="day-action-btn" ${disabled ? 'disabled' : ''} title="${title}" aria-label="${action.label}" onclick="try { (${action.action.toString()})(); } catch(e) {}">
-            <span class="day-action-icon">${action.icon}</span>
-            <span class="day-action-label">${action.label}</span>
-          </button>
-        `;
-      });
+      const extraShiftDisabledReason = onUrlop
+        ? t('dayActionUnavailableVacation')
+        : !isFactoryFree
+          ? t('dayActionUnavailableFactoryShift')
+          : '';
 
-      actionCard = `
+      const overtimeDisabledReason = onUrlop
+        ? t('dayActionUnavailableVacation')
+        : !canAddOvertime
+          ? t('dayActionUnavailableNoShift')
+          : '';
+
+      const vacationActionLabel = onUrlop
+        ? t('dayActionVacationRemove')
+        : t('dayActionVacationAdd');
+
+      const actionCard = `
         <div class="info-card" style="grid-column:1/-1;">
-          <div class="label">${t('dayActions') || 'Dzienna akcja'}</div>
+          <div class="label">${t('dayActionsTitle')}</div>
           <div class="day-action-grid">
-            ${actionsHtml}
+            <button
+              type="button"
+              class="day-action-btn"
+              data-day-action="vacation"
+              aria-label="${escapeHtml(vacationActionLabel)}"
+            >
+              <span class="day-action-icon">🌴</span>
+              <span class="day-action-label">${vacationActionLabel}</span>
+            </button>
+
+            <button
+              type="button"
+              class="day-action-btn"
+              data-day-action="extra-shift"
+              aria-label="${escapeHtml(t('dayActionExtraShift'))}"
+              title="${escapeHtml(extraShiftDisabledReason)}"
+              ${canAddExtraShift ? '' : 'disabled'}
+            >
+              <span class="day-action-icon">➕</span>
+              <span class="day-action-label">${t('dayActionExtraShift')}</span>
+            </button>
+
+            <button
+              type="button"
+              class="day-action-btn"
+              data-day-action="overtime-before"
+              aria-label="${escapeHtml(t('dayActionOvertimeBefore'))}"
+              title="${escapeHtml(overtimeDisabledReason)}"
+              ${canAddOvertime ? '' : 'disabled'}
+            >
+              <span class="day-action-icon">⏱⬅</span>
+              <span class="day-action-label">${t('dayActionOvertimeBefore')}</span>
+            </button>
+
+            <button
+              type="button"
+              class="day-action-btn"
+              data-day-action="overtime-after"
+              aria-label="${escapeHtml(t('dayActionOvertimeAfter'))}"
+              title="${escapeHtml(overtimeDisabledReason)}"
+              ${canAddOvertime ? '' : 'disabled'}
+            >
+              <span class="day-action-icon">⏱➡</span>
+              <span class="day-action-label">${t('dayActionOvertimeAfter')}</span>
+            </button>
+
+            <button
+              type="button"
+              class="day-action-btn"
+              data-day-action="note"
+              aria-label="${escapeHtml(t('dayActionNote'))}"
+            >
+              <span class="day-action-icon">📝</span>
+              <span class="day-action-label">${t('dayActionNote')}</span>
+            </button>
           </div>
         </div>`;
 
@@ -724,31 +734,88 @@ function renderInfo() {
           ${vacationCard}
         </div>`;
 
-      // Bind note input events
-      setTimeout(() => {
-        const noteInput = document.getElementById('noteInput');
-        if (noteInput) {
-          const saveNote = () => {
-            const key = `${currentYear}-${currentMonth}-${selectedDay}-${selectedShift}`;
-            const noteValue = noteInput.value.trim();
-            if (noteValue) {
-              notes[key] = noteValue;
-            } else {
-              delete notes[key];
-            }
-            saveNotes(notes);
-            renderCalendar();
-            showToast('success', t('infoNoteSaved'));
-          };
-          noteInput.addEventListener('change', saveNote);
-          noteInput.addEventListener('blur', () => {
-            // Debounce to avoid saving on every keystroke, but we save on change already.
-            // We'll save on blur if the value changed since last change? 
-            // For simplicity, we'll save on blur as well, but we'll check if modified.
-            // We'll just save on blur and let the change event handle most cases.
-            saveNote();
-          });
-        }
-      }, 0);
+      // Bind selected-day actions after rendering the panel.
+      const vacationButton = panel.querySelector('[data-day-action="vacation"]');
+      if (vacationButton) {
+        vacationButton.addEventListener('click', () => {
+          toggleUrlop(currentYear, currentMonth, selectedDay, selectedShift);
+          const vacationIsNowActive = isUrlop(
+            currentYear,
+            currentMonth,
+            selectedDay,
+            selectedShift
+          );
+          showToast(
+            'success',
+            vacationIsNowActive ? t('urlopAdded') : t('urlopRemoved')
+          );
+          renderCalendar();
+          renderInfo();
+        });
+      }
+
+      const extraShiftButton = panel.querySelector('[data-day-action="extra-shift"]');
+      if (extraShiftButton) {
+        extraShiftButton.addEventListener('click', () => {
+          openAddShiftModal(selectedDay);
+        });
+      }
+
+      const overtimeBeforeButton = panel.querySelector(
+        '[data-day-action="overtime-before"]'
+      );
+      if (overtimeBeforeButton) {
+        overtimeBeforeButton.addEventListener('click', () => {
+          openOvertimeModal(
+            selectedDay,
+            shiftCode,
+            'przed',
+            existingOtAntes
+          );
+        });
+      }
+
+      const overtimeAfterButton = panel.querySelector(
+        '[data-day-action="overtime-after"]'
+      );
+      if (overtimeAfterButton) {
+        overtimeAfterButton.addEventListener('click', () => {
+          openOvertimeModal(
+            selectedDay,
+            shiftCode,
+            'po',
+            existingOtDespu
+          );
+        });
+      }
+
+      const noteInput = panel.querySelector('#noteInput');
+      const noteButton = panel.querySelector('[data-day-action="note"]');
+
+      if (noteButton && noteInput) {
+        noteButton.addEventListener('click', () => {
+          noteInput.focus();
+        });
+      }
+
+      if (noteInput) {
+        let savedNoteValue = String(notes[noteKey] || '').trim();
+
+        noteInput.addEventListener('change', () => {
+          const noteValue = noteInput.value.trim();
+          if (noteValue === savedNoteValue) return;
+
+          if (noteValue) {
+            notes[noteKey] = noteValue;
+          } else {
+            delete notes[noteKey];
+          }
+
+          savedNoteValue = noteValue;
+          saveNotes(notes);
+          renderCalendar();
+          showToast('success', t('infoNoteSaved'));
+        });
+      }
     }
   }
