@@ -961,46 +961,6 @@ function renderExportTab() {
 // Initialize admin center state
 window.adminCenterActiveTab = 'factory';
 
-// Keyboard handling for factory painting mode
-document.addEventListener('keydown', (e) => {
-  // Skip if typing in input/textarea/select
-  if (e.target.tagName === 'INPUT' || 
-      e.target.tagName === 'TEXTAREA' || 
-      e.target.tagName === 'SELECT') {
-    return;
-  }
-  
-  // Handle factory painting mode keys
-  if (factoryPaintActive) {
-    switch (e.key.toUpperCase()) {
-      case 'R':
-      case 'P':
-      case 'N':
-      case 'W':
-        e.preventDefault();
-        activateFactoryPaintTool(e.key.toUpperCase());
-        break;
-      case 'ArrowLeft':
-        e.preventDefault();
-        if (typeof goToPeriod === 'function') goToPeriod(-1);
-        else if (typeof goToMonth === 'function') goToMonth(-1);
-        syncFactoryPaintPeriodFromCalendar();
-        break;
-      case 'ArrowRight':
-        e.preventDefault();
-        if (typeof goToPeriod === 'function') goToPeriod(1);
-        else if (typeof goToMonth === 'function') goToMonth(1);
-        syncFactoryPaintPeriodFromCalendar();
-        break;
-      case 'Escape':
-        e.preventDefault();
-        if (factoryPaintActive) {
-          deactivateFactoryPaintMode();
-        }
-        break;
-    }
-  }
-});
 
 // Expose functions to global scope
 window.activateFactoryPaintMode = activateFactoryPaintMode;
