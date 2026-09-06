@@ -14,7 +14,6 @@ window.translations.uk = {
   theme: 'Перемкнути тему',
   menu: 'Меню',
   language: 'Мова',
-  compareHint: 'Ctrl+клік = порівняти',
   changeYear: 'Змінити рік',
   today: '📅 Сьогодні',
   prevMonth: 'Попередній місяць (←)',

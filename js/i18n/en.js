@@ -14,7 +14,6 @@ window.translations.en = {
   theme: 'Toggle theme',
   menu: 'Menu',
   language: 'Language',
-  compareHint: 'Ctrl+click = compare',
   changeYear: 'Change year',
   today: '📅 Today',
   prevMonth: 'Previous month (←)',

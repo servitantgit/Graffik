@@ -14,7 +14,6 @@ window.translations.pl = {
   theme: 'Przełącz motyw',
   menu: 'Menu',
   language: 'Język',
-  compareHint: 'Ctrl+klik = porównaj',
   changeYear: 'Zmień rok',
   today: '📅 Dziś',
   prevMonth: 'Poprzedni miesiąc (←)',
