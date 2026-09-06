@@ -379,19 +379,21 @@ async function uploadToDrive(force = false) {
     return false;
   }
 
-// Budujemy dane do zapisu
-   const payload = {
-     version: 3,
-     savedAt: new Date().toISOString(),
-     prefs: prefs,
-     factorySchedule: factorySchedule,
-     customSchedule: customSchedule,
-     factoryDrafts: factoryDrafts,
-     urlops: urlops,
-     overtimes: overtimes,
-     notes: notes,
-     vacationLimits: prefs.urlopLimits || {},
-   };
+// Compact v4 payload: public factory data stays in the application.
+  const payload = {
+    version: 4,
+    savedAt: new Date().toISOString(),
+    prefs: prefs,
+    shiftOverrides:
+      typeof getPersonalShiftOverrides === 'function'
+        ? getPersonalShiftOverrides()
+        : {},
+    factoryDrafts: factoryDrafts,
+    urlops: urlops,
+    overtimes: overtimes,
+    notes: notes,
+    vacationLimits: prefs.urlopLimits || {},
+  };
   const json = JSON.stringify(payload);
 
   try {
@@ -892,18 +894,24 @@ function countSyncPayloadStats(data) {
 }
 
 function buildLocalSyncPayload() {
-return {
-     version: 3,
-     savedAt: new Date().toISOString(),
-     prefs: typeof prefs !== 'undefined' ? prefs : {},
-     customSchedule: typeof customSchedule !== 'undefined' ? customSchedule : {},
-     urlops: typeof urlops !== 'undefined' ? urlops : {},
-     overtimes: typeof overtimes !== 'undefined' ? overtimes : {},
-     notes: typeof notes !== 'undefined' ? notes : {},
-     factoryDrafts: typeof factoryDrafts !== 'undefined' ? factoryDrafts : {},
-     vacationLimits:
-       typeof prefs !== 'undefined' && prefs.urlopLimits ? prefs.urlopLimits : {},
-   };
+  return {
+    version: 4,
+    savedAt: new Date().toISOString(),
+    prefs: typeof prefs !== 'undefined' ? prefs : {},
+    shiftOverrides:
+      typeof getPersonalShiftOverrides === 'function'
+        ? getPersonalShiftOverrides()
+        : {},
+    urlops: typeof urlops !== 'undefined' ? urlops : {},
+    overtimes: typeof overtimes !== 'undefined' ? overtimes : {},
+    notes: typeof notes !== 'undefined' ? notes : {},
+    factoryDrafts:
+      typeof factoryDrafts !== 'undefined' ? factoryDrafts : {},
+    vacationLimits:
+      typeof prefs !== 'undefined' && prefs.urlopLimits
+        ? prefs.urlopLimits
+        : {},
+  };
 }
 
 /**
