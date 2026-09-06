@@ -468,6 +468,12 @@ window.translations.pl = {
   settingsColorsDesc: 'Rano, popołudnie, noc, urlop',
   settingsSkin: 'Wygląd komórek',
   settingsSkinDesc: 'Wypełnienie, pasek lub kolorowe obramowanie',
+  settingsUiSkin: 'Skórka interfejsu',
+  settingsUiSkinDesc: 'Ogólny wygląd aplikacji: industrial, paper lub neon',
+  uiSkinIndustrial: 'Industrial',
+  uiSkinPaper: 'Paper',
+  uiSkinNeon: 'Neon',
+
   settingsVacation: 'Limit urlopu',
   settingsVacationDesc: 'Dni dla brygady',
   settingsNotifications: 'Powiadomienia o zmianach',

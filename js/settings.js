@@ -237,6 +237,7 @@ const SECTION_TITLES = {
       ? prefs.theme
       : 'light';
     const skin = typeof getCellSkin === 'function' ? getCellSkin() : 'full';
+    const uiSkin = typeof getUiSkin === 'function' ? getUiSkin() : (prefs.uiSkin || 'industrial');
     return (
       '<div class="settings-section">' +
       '<div class="st-group"><div class="st-label">' + tr('menuTheme') + '</div>' +
@@ -244,6 +245,13 @@ const SECTION_TITLES = {
       segBtn(tr('themeSystem'), 'system', theme, 'data-theme') +
       segBtn(tr('themeLight'), 'light', theme, 'data-theme') +
       segBtn(tr('themeDark'), 'dark', theme, 'data-theme') +
+      '</div></div>' +
+      '<div class="st-group"><div class="st-label">' + tr('settingsUiSkin') + '</div>' +
+      '<p class="st-hint">' + tr('settingsUiSkinDesc') + '</p>' +
+      '<div class="seg seg-wrap" role="group" aria-label="' + tr('settingsUiSkin') + '">' +
+      segBtn(tr('uiSkinIndustrial'), 'industrial', uiSkin, 'data-ui-skin') +
+      segBtn(tr('uiSkinPaper'), 'paper', uiSkin, 'data-ui-skin') +
+      segBtn(tr('uiSkinNeon'), 'neon', uiSkin, 'data-ui-skin') +
       '</div></div>' +
       '<div class="st-group"><div class="st-label">' + tr('settingsSkin') + '</div>' +
       '<div class="seg" role="group" aria-label="' + tr('settingsSkin') + '">' +
@@ -289,6 +297,19 @@ const SECTION_TITLES = {
           savePrefsSafe();
         }
         setActive(body, 'theme', prefs.theme);
+      });
+    });
+
+    body.querySelectorAll('.seg-btn[data-ui-skin]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (typeof applyUiSkin === 'function') applyUiSkin(btn.getAttribute('data-ui-skin'));
+        else {
+          prefs.uiSkin = btn.getAttribute('data-ui-skin');
+          savePrefsSafe();
+          document.body.classList.remove('ui-skin-industrial', 'ui-skin-paper', 'ui-skin-neon');
+          document.body.classList.add('ui-skin-' + prefs.uiSkin);
+        }
+        setActive(body, 'ui-skin', typeof getUiSkin === 'function' ? getUiSkin() : prefs.uiSkin);
       });
     });
 
@@ -341,6 +362,7 @@ const SECTION_TITLES = {
         if (typeof resetCellColors === 'function') resetCellColors();
         if (typeof saveCellSkin === 'function') saveCellSkin('full', true);
         if (typeof applyTheme === 'function') applyTheme('system');
+        if (typeof applyUiSkin === 'function') applyUiSkin('industrial');
         refreshViewsSafe();
         toast('success', 'persSaved');
         renderSettingsSection('appearance', body); // refresh all controls

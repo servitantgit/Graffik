@@ -465,6 +465,12 @@ window.translations.uk = {
   settingsColorsDesc: 'Ранок, день, ніч, відпустка',
   settingsSkin: 'Скін клітинок',
   settingsSkinDesc: 'Заливка, смужка або кольорове обведення',
+  settingsUiSkin: 'Скін інтерфейсу',
+  settingsUiSkinDesc: 'Загальний вигляд програми: industrial, paper або neon',
+  uiSkinIndustrial: 'Industrial',
+  uiSkinPaper: 'Paper',
+  uiSkinNeon: 'Neon',
+
   settingsVacation: 'Ліміт відпустки',
   settingsVacationDesc: 'Днів для бригади',
   settingsNotifications: 'Сповіщення про зміни',

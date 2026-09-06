@@ -88,3 +88,135 @@ body {
   transition: background 0.3s;
   overflow-x: hidden;
 }
+/* ================================================================
+   UI SKINS (prefs.uiSkin → body.ui-skin-*)
+   industrial = refined current, paper = light ops, neon = glass night
+   ================================================================ */
+
+/* Soft Industrial — polished dark slate (pairs well with theme-dark) */
+body.ui-skin-industrial.theme-dark,
+body.ui-skin-industrial:not(.theme-light) {
+  --bg-body: linear-gradient(180deg, #111827 0%, #0f172a 100%);
+  --bg-container: #1e293b;
+  --text-main: #f1f5f9;
+  --text-header: #60a5fa;
+  --bg-controls: #334155;
+  --bg-cell: #1e293b;
+  --border-cell: #475569;
+  --bg-info: linear-gradient(135deg, #1e293b, #0f172a);
+  --bg-info-card: #334155;
+  --text-muted: #94a3b8;
+  --shadow-color: rgba(0, 0, 0, 0.45);
+  --shadow-heavy: rgba(0, 0, 0, 0.7);
+  --color-W: #334155;
+  --color-W-text: #94a3b8;
+  --color-W-border: #475569;
+  --accent: #3b82f6;
+}
+body.ui-skin-industrial.theme-light {
+  --bg-body: linear-gradient(180deg, #e2e8f0 0%, #f1f5f9 100%);
+  --bg-container: #ffffff;
+  --text-main: #0f172a;
+  --text-header: #1e40af;
+  --bg-controls: #f1f5f9;
+  --bg-cell: #f8fafc;
+  --border-cell: #cbd5e1;
+  --bg-info: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  --bg-info-card: #ffffff;
+  --text-muted: #64748b;
+  --shadow-color: rgba(15, 23, 42, 0.12);
+  --accent: #2563eb;
+}
+
+/* Paper Ops — light operational paper look */
+body.ui-skin-paper {
+  --bg-body: #f4f1ea;
+  --bg-container: #ffffff;
+  --text-main: #1c1917;
+  --text-header: #0f766e;
+  --bg-controls: #f5f5f4;
+  --bg-cell: #fafaf9;
+  --border-cell: #e7e5e4;
+  --bg-info: linear-gradient(135deg, #fafaf9, #f5f5f4);
+  --bg-info-card: #ffffff;
+  --text-muted: #78716c;
+  --shadow-color: rgba(28, 25, 23, 0.1);
+  --shadow-heavy: rgba(28, 25, 23, 0.22);
+  --color-W: #f5f5f4;
+  --color-W-text: #a8a29e;
+  --color-W-border: #d6d3d1;
+  --accent: #0f766e;
+}
+body.ui-skin-paper .container {
+  border: 1px solid #e7e5e4;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04), 0 12px 32px rgba(28, 25, 23, 0.08);
+}
+body.ui-skin-paper .primary-nav-btn.active,
+body.ui-skin-paper .range-btn.active {
+  background: #0f766e !important;
+  border-color: #0f766e !important;
+  color: #fff !important;
+}
+body.ui-skin-paper .context-today-btn {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+/* Neon Glass — night shift board */
+body.ui-skin-neon {
+  --bg-body: radial-gradient(1200px 500px at 10% -10%, rgba(34, 211, 238, 0.16), transparent 55%),
+    radial-gradient(900px 400px at 100% 0%, rgba(168, 85, 247, 0.14), transparent 50%),
+    linear-gradient(160deg, #020617 0%, #0b1224 45%, #111827 100%);
+  --bg-container: rgba(15, 23, 42, 0.82);
+  --text-main: #ecfeff;
+  --text-header: #67e8f9;
+  --bg-controls: rgba(15, 23, 42, 0.7);
+  --bg-cell: rgba(15, 23, 42, 0.55);
+  --border-cell: rgba(148, 163, 184, 0.22);
+  --bg-info: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.95));
+  --bg-info-card: rgba(30, 41, 59, 0.85);
+  --text-muted: #94a3b8;
+  --shadow-color: rgba(0, 0, 0, 0.55);
+  --shadow-heavy: rgba(0, 0, 0, 0.85);
+  --color-W: rgba(15, 23, 42, 0.75);
+  --color-W-text: #64748b;
+  --color-W-border: rgba(148, 163, 184, 0.2);
+  --accent: #22d3ee;
+}
+body.ui-skin-neon .container {
+  border: 1px solid rgba(34, 211, 238, 0.18);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+}
+body.ui-skin-neon .context-title,
+body.ui-skin-neon #appContextTitle {
+  background: linear-gradient(90deg, #67e8f9, #c4b5fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+body.ui-skin-neon .primary-nav-btn.active,
+body.ui-skin-neon .range-btn.active {
+  background: rgba(34, 211, 238, 0.18) !important;
+  border-color: rgba(34, 211, 238, 0.5) !important;
+  color: #ecfeff !important;
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.12);
+}
+body.ui-skin-neon .day-cell.cell-R,
+body.ui-skin-neon .brigade-table td.R {
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.2);
+}
+body.ui-skin-neon .day-cell.cell-P,
+body.ui-skin-neon .brigade-table td.P {
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.18);
+}
+body.ui-skin-neon .day-cell.cell-N,
+body.ui-skin-neon .brigade-table td.N {
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.2);
+}
+body.ui-skin-neon .context-today-btn {
+  background: rgba(34, 211, 238, 0.12);
+  color: #a5f3fc;
+  border: 1px solid rgba(34, 211, 238, 0.35);
+}

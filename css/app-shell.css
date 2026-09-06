@@ -1560,3 +1560,15 @@ body.factory-editor-active {
 .export-year-btn:hover {
    background: var(--bg-hover);
 }
+
+
+/* UI skin segment can wrap on narrow screens */
+.seg.seg-wrap {
+  flex-wrap: wrap;
+}
+.st-hint {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.35;
+}

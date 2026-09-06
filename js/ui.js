@@ -64,8 +64,35 @@ function applyTheme(themeName) {
   _watchSystemTheme();
 }
 
+
+/* === UI SKINS (visual chrome) ===
+   Separate from cell skins (full/strip/quiet) and from theme preference.
+   prefs.uiSkin: industrial | paper | neon */
+const UI_SKIN_VALUES = ['industrial', 'paper', 'neon'];
+
+function getUiSkin() {
+  const s = prefs && prefs.uiSkin;
+  return UI_SKIN_VALUES.includes(s) ? s : 'industrial';
+}
+
+function applyUiSkin(skin, persist) {
+  const next = UI_SKIN_VALUES.includes(skin) ? skin : 'industrial';
+  prefs.uiSkin = next;
+  if (persist !== false && typeof savePrefs === 'function') savePrefs(prefs);
+  document.body.classList.remove('ui-skin-industrial', 'ui-skin-paper', 'ui-skin-neon');
+  document.body.classList.add('ui-skin-' + next);
+}
+
+function applyUiSkinFromPrefs() {
+  applyUiSkin(getUiSkin(), false);
+}
+
+window.getUiSkin = getUiSkin;
+window.applyUiSkin = applyUiSkin;
+
 if (prefs.dark && !prefs.theme) prefs.theme = 'dark';
 applyTheme(THEME_VALUES.includes(prefs.theme) ? prefs.theme : 'light');
+applyUiSkinFromPrefs();
 
 function toggleTheme() {
   applyTheme(_getEffectiveTheme() === 'dark' ? 'light' : 'dark');

@@ -466,6 +466,12 @@ window.translations.en = {
   settingsColorsDesc: 'Morning, afternoon, night, vacation',
   settingsSkin: 'Cell skin',
   settingsSkinDesc: 'Full fill, strip, or colored outline',
+  settingsUiSkin: 'UI skin',
+  settingsUiSkinDesc: 'Overall app look: industrial, paper, or neon',
+  uiSkinIndustrial: 'Industrial',
+  uiSkinPaper: 'Paper',
+  uiSkinNeon: 'Neon',
+
   settingsVacation: 'Vacation limit',
   settingsVacationDesc: 'Days per brigade',
   settingsNotifications: 'Shift notifications',
