@@ -14,6 +14,221 @@
 
 const SYNC_META_KEY = 'gillette_sync_meta';
 
+function normalizeSyncShift(value) {
+  return value === null || value === undefined ? '' : String(value);
+}
+
+function buildPersonalScheduleOverrides(customData, factoryData) {
+  const overrides = {};
+  const custom = customData && typeof customData === 'object' ? customData : {};
+  const factory = factoryData && typeof factoryData === 'object' ? factoryData : {};
+
+  Object.keys(custom).forEach((year) => {
+    const customYear = custom[year];
+    if (!customYear || typeof customYear !== 'object') return;
+
+    Object.keys(customYear).forEach((month) => {
+      const customMonth = customYear[month];
+      if (!customMonth || typeof customMonth !== 'object') return;
+
+      Object.keys(customMonth).forEach((brigade) => {
+        const customDays = customMonth[brigade];
+        if (!Array.isArray(customDays)) return;
+
+        const factoryDays =
+          factory[year] &&
+          factory[year][month] &&
+          Array.isArray(factory[year][month][brigade])
+            ? factory[year][month][brigade]
+            : [];
+
+        customDays.forEach((value, index) => {
+          const customShift = normalizeSyncShift(value);
+          const factoryShift = normalizeSyncShift(factoryDays[index]);
+
+          if (customShift !== factoryShift) {
+            overrides[`${year}-${month}-${brigade}-${index + 1}`] = customShift;
+          }
+        });
+      });
+    });
+  });
+
+  return overrides;
+}
+
+function buildFactoryDraftOverrides(draftData, factoryData) {
+  const overrides = {};
+  const drafts = draftData && typeof draftData === 'object' ? draftData : {};
+  const factory = factoryData && typeof factoryData === 'object' ? factoryData : {};
+
+  Object.keys(drafts).forEach((year) => {
+    const draftYear = drafts[year];
+    if (!draftYear || typeof draftYear !== 'object') return;
+
+    Object.keys(draftYear).forEach((month) => {
+      const draftMonth = draftYear[month];
+      if (!draftMonth || typeof draftMonth !== 'object') return;
+
+      Object.keys(draftMonth).forEach((brigade) => {
+        const draftDays = draftMonth[brigade];
+        if (!Array.isArray(draftDays)) return;
+
+        const factoryDays =
+          factory[year] &&
+          factory[year][month] &&
+          Array.isArray(factory[year][month][brigade])
+            ? factory[year][month][brigade]
+            : [];
+
+        draftDays.forEach((value, index) => {
+          if (value === null || value === undefined) return;
+
+          const draftShift = normalizeSyncShift(value);
+          const factoryShift = normalizeSyncShift(factoryDays[index]);
+
+          if (draftShift !== factoryShift) {
+            overrides[`${year}-${month}-${brigade}-${index + 1}`] = draftShift;
+          }
+        });
+      });
+    });
+  });
+
+  return overrides;
+}
+
+function buildComparableSyncState(payload) {
+  const source = payload && typeof payload === 'object' ? payload : null;
+  const sourcePrefs = source
+    ? source.prefs && typeof source.prefs === 'object'
+      ? source.prefs
+      : {}
+    : typeof prefs !== 'undefined' && prefs
+      ? prefs
+      : {};
+
+  const publicFactory = source
+    ? source.factorySchedule && typeof source.factorySchedule === 'object'
+      ? source.factorySchedule
+      : typeof factorySchedule !== 'undefined'
+        ? factorySchedule
+        : {}
+    : typeof factorySchedule !== 'undefined'
+      ? factorySchedule
+      : {};
+
+  const personalSchedule = source
+    ? source.customSchedule || {}
+    : typeof customSchedule !== 'undefined'
+      ? customSchedule
+      : {};
+
+  const drafts = source
+    ? source.factoryDrafts || {}
+    : typeof factoryDrafts !== 'undefined'
+      ? factoryDrafts
+      : {};
+
+  const vacationLimits = source
+    ? source.vacationLimits || sourcePrefs.urlopLimits || {}
+    : sourcePrefs.urlopLimits || {};
+
+  return {
+    customSchedule: buildPersonalScheduleOverrides(personalSchedule, publicFactory),
+    factoryDrafts: buildFactoryDraftOverrides(drafts, publicFactory),
+    urlops: source
+      ? source.urlops || {}
+      : typeof urlops !== 'undefined'
+        ? urlops
+        : {},
+    overtimes: source
+      ? source.overtimes || {}
+      : typeof overtimes !== 'undefined'
+        ? overtimes
+        : {},
+    notes: source
+      ? source.notes || {}
+      : typeof notes !== 'undefined'
+        ? notes
+        : {},
+    personalPrefs: {
+      cellColors: sourcePrefs.cellColors || {},
+      cellSkin: sourcePrefs.cellSkin || 'full',
+      vacationLimits,
+    },
+  };
+}
+
+function stableSyncSerialize(value) {
+  if (value === null) return 'null';
+
+  if (Array.isArray(value)) {
+    return `[${value
+      .map((item) => stableSyncSerialize(item === undefined ? null : item))
+      .join(',')}]`;
+  }
+
+  if (typeof value === 'object') {
+    const keys = Object.keys(value)
+      .filter((key) => value[key] !== undefined && typeof value[key] !== 'function')
+      .sort();
+
+    return `{${keys
+      .map((key) => `${JSON.stringify(key)}:${stableSyncSerialize(value[key])}`)
+      .join(',')}}`;
+  }
+
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? String(value) : 'null';
+  }
+
+  if (typeof value === 'boolean') {
+    return value ? 'true' : 'false';
+  }
+
+  return JSON.stringify(String(value));
+}
+
+function hashSyncString(value) {
+  let first = 2166136261;
+  let second = 2246822507;
+
+  for (let index = 0; index < value.length; index++) {
+    const code = value.charCodeAt(index);
+    first ^= code;
+    first = Math.imul(first, 16777619);
+    second ^= code;
+    second = Math.imul(second, 3266489917);
+  }
+
+  return (
+    'v1-' +
+    (first >>> 0).toString(16).padStart(8, '0') +
+    '-' +
+    (second >>> 0).toString(16).padStart(8, '0')
+  );
+}
+
+function getSyncFingerprint(payload) {
+  return hashSyncString(stableSyncSerialize(buildComparableSyncState(payload)));
+}
+
+function reconcileSyncedFingerprint(remotePayload) {
+  if (!remotePayload || typeof remotePayload !== 'object') return false;
+
+  const localFingerprint = getSyncFingerprint();
+  const remoteFingerprint = getSyncFingerprint(remotePayload);
+
+  if (localFingerprint !== remoteFingerprint) return false;
+
+  const meta = getSyncMeta();
+  meta.syncedFingerprint = localFingerprint;
+  meta.changeCount = 0;
+  setSyncMeta(meta);
+  return true;
+}
+
 /**
  * Reads sync metadata from localStorage.
  * @returns {object} - { lastModified: number, lastSync: number, changeCount: number }
@@ -27,6 +242,8 @@ function getSyncMeta() {
       lastModified: parsed.lastModified || 0,
       lastSync: parsed.lastSync || 0,
       changeCount: typeof parsed.changeCount === 'number' ? parsed.changeCount : 0,
+      syncedFingerprint:
+        typeof parsed.syncedFingerprint === 'string' ? parsed.syncedFingerprint : '',
     };
   } catch (e) {
     console.warn('[sync-tracking] Failed to parse sync meta:', e);
@@ -65,6 +282,7 @@ function updateLastSync() {
   const meta = getSyncMeta();
   meta.lastSync = Date.now();
   meta.changeCount = 0;
+  meta.syncedFingerprint = getSyncFingerprint();
   setSyncMeta(meta);
 }
 
@@ -74,6 +292,11 @@ function updateLastSync() {
  */
 function hasUnsyncedChanges() {
   const meta = getSyncMeta();
+
+  if (meta.syncedFingerprint) {
+    return getSyncFingerprint() !== meta.syncedFingerprint;
+  }
+
   return meta.lastModified > meta.lastSync;
 }
 
@@ -116,8 +339,9 @@ function timeSinceLastSync() {
  * @returns {number} - 0 when everything is synced; at least 1 when unsynced
  */
 function getUnsyncedChangeCount() {
+  if (!hasUnsyncedChanges()) return 0;
+
   const meta = getSyncMeta();
-  if (meta.lastModified <= meta.lastSync) return 0;
   return Math.max(1, Number(meta.changeCount) || 0);
 }
 
@@ -156,3 +380,5 @@ window.timeSinceLastSync = timeSinceLastSync;
 window.getSyncMeta = getSyncMeta;
 window.getUnsyncedChangeCount = getUnsyncedChangeCount;
 window.formatLastSyncDateTime = formatLastSyncDateTime;
+window.getSyncFingerprint = getSyncFingerprint;
+window.reconcileSyncedFingerprint = reconcileSyncedFingerprint;

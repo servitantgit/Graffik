@@ -1027,7 +1027,7 @@ async function syncWithDrive() {
 
   const localPayload = buildLocalSyncPayload();
   const localStats = countSyncPayloadStats(localPayload);
-  const hasUnsynced = typeof hasUnsyncedChanges === 'function' && hasUnsyncedChanges();
+  let hasUnsynced = typeof hasUnsyncedChanges === 'function' && hasUnsyncedChanges();
   const lastSyncText =
     typeof timeSinceLastSync === 'function'
       ? timeSinceLastSync()
@@ -1081,6 +1081,18 @@ async function syncWithDrive() {
   try {
     const remote = await fetchDriveRemotePayload();
     const remoteStats = remote ? countSyncPayloadStats(remote) : null;
+
+    if (
+      remote &&
+      typeof reconcileSyncedFingerprint === 'function' &&
+      reconcileSyncedFingerprint(remote)
+    ) {
+      gDriveRemoteNewer = false;
+      hasUnsynced =
+        typeof hasUnsyncedChanges === 'function' && hasUnsyncedChanges();
+      updateMenuSyncStatus();
+    }
+
     const bodyEl = document.getElementById('modalBody');
     const overlay = document.getElementById('modalOverlay');
     if (bodyEl && overlay && overlay.classList.contains('show')) {
