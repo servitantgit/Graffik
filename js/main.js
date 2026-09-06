@@ -343,34 +343,51 @@ document.addEventListener('touchend', (e) => {
 
 /* === BRIGADE SELECTION === */
 document.querySelectorAll('.shift-btn').forEach((btn) => {
-      btn.onclick = (e) => {
-        // Prevent brigade selection when in factory painting mode
-        if (factoryPaintActive) return;
-        
-        if (e.ctrlKey || e.metaKey) {
-          if (btn.dataset.shift === selectedShift) return;
-          if (compareShift === btn.dataset.shift) {
-            compareShift = null;
-            btn.classList.remove('compare');
-          } else {
-            document.querySelectorAll('.shift-btn').forEach((b) => b.classList.remove('compare'));
-            compareShift = btn.dataset.shift;
-            btn.classList.add('compare');
-          }
-        } else {
-          document.querySelectorAll('.shift-btn').forEach((b) => {
-            b.classList.remove('active');
-            b.classList.remove('compare');
-          });
-          btn.classList.add('active');
-          selectedShift = btn.dataset.shift;
-          compareShift = null;
-          prefs.shift = selectedShift;
-          savePrefs(prefs);
-        }
-        refreshViews();
-      };
-    });
+  btn.onclick = (e) => {
+    const factoryEditorIsActive =
+      (typeof factoryPaintActive !== 'undefined' && factoryPaintActive) ||
+      window.factoryPaintActive === true;
+
+    if (factoryEditorIsActive) {
+      document.querySelectorAll('.shift-btn').forEach((brigadeButton) => {
+        brigadeButton.classList.remove('active');
+        brigadeButton.classList.remove('compare');
+      });
+      btn.classList.add('active');
+      selectedShift = btn.dataset.shift;
+      compareShift = null;
+      prefs.shift = selectedShift;
+      savePrefs(prefs);
+      refreshViews();
+      return;
+    }
+
+    if (e.ctrlKey || e.metaKey) {
+      if (btn.dataset.shift === selectedShift) return;
+      if (compareShift === btn.dataset.shift) {
+        compareShift = null;
+        btn.classList.remove('compare');
+      } else {
+        document
+          .querySelectorAll('.shift-btn')
+          .forEach((brigadeButton) => brigadeButton.classList.remove('compare'));
+        compareShift = btn.dataset.shift;
+        btn.classList.add('compare');
+      }
+    } else {
+      document.querySelectorAll('.shift-btn').forEach((brigadeButton) => {
+        brigadeButton.classList.remove('active');
+        brigadeButton.classList.remove('compare');
+      });
+      btn.classList.add('active');
+      selectedShift = btn.dataset.shift;
+      compareShift = null;
+      prefs.shift = selectedShift;
+      savePrefs(prefs);
+    }
+    refreshViews();
+  };
+});
 
 /* === TODAY === */
 bindClick('todayBtn', () => {
