@@ -612,7 +612,7 @@ function renderDangerZoneContent() {
       
       <h4>${t('factoryDraftResetAll') || 'Reset all drafts'}</h4>
       <p>${t('adminDangerZoneResetAllDesc') || 'Delete all factory schedule drafts for all years.'}</p>
-      <button class="admin-danger-btn" onclick="handleResetAllDrafts()">
+      <button type="button" class="admin-danger-btn" id="adminResetAllDraftsBtn">
         ${t('factoryDraftResetAll') || 'Reset all drafts'}
       </button>
       
@@ -621,21 +621,39 @@ function renderDangerZoneContent() {
         <p>${t('adminDangerZoneClearYearDesc') || 'Delete factory schedule draft for a specific year.'}</p>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <input type="number" id="clearYearInput" min="2020" max="2030" value="${new Date().getFullYear()}" style="padding:8px; border:1px solid var(--border-cell); border-radius:4px; width:100px;">
-          <button class="admin-danger-btn" onclick="handleClearYearDraft()">
+          <button type="button" class="admin-danger-btn" id="adminClearDraftYearBtn">
             ${t('factoryDraftClearYear') || 'Clear year'}
           </button>
         </div>
       </div>
       
-      <div style="margin-top:12px;">
-        <h4>${t('adminResetAllData') || 'Reset all personal data'}</h4>
-        <p>${t('adminDangerZoneResetPersonalDesc') || 'Clear all personal data (schedule, notes, urlops, etc.) for the current user.'}</p>
-        <button class="admin-danger-btn" onclick="handleResetPersonalData()">
-          ${t('adminResetAllData') || 'Reset all personal data'}
-        </button>
-      </div>
+
     </div>
   `;
+}
+
+function bindDangerZoneActions(root) {
+  if (!root) return;
+
+  const resetAllDraftsButton = root.querySelector(
+    '#adminResetAllDraftsBtn'
+  );
+  if (resetAllDraftsButton) {
+    resetAllDraftsButton.addEventListener(
+      'click',
+      handleResetAllDrafts
+    );
+  }
+
+  const clearDraftYearButton = root.querySelector(
+    '#adminClearDraftYearBtn'
+  );
+  if (clearDraftYearButton) {
+    clearDraftYearButton.addEventListener(
+      'click',
+      handleClearYearDraft
+    );
+  }
 }
 
 /**
@@ -702,34 +720,7 @@ function handleClearYearDraft() {
   );
 }
 
-/**
- * Handles resetting all personal data (calls clearLocalPersonalData)
- */
-function handleResetPersonalData() {
-  if (!window.requireAdmin()) {
-    showToast('error', t('adminRequired') || 'Admin access required');
-    return;
-  }
-  
-  showConfirm(
-    t('adminResetAllDataTitle') || 'Reset all personal data?',
-    t('adminResetAllDataBody') || 'This will clear ALL your personal data (schedule, notes, urlops, overtimes, etc.). This action cannot be undone.',
-    () => {
-      // Call the clearLocalPersonalData function from core.js
-      if (typeof window.clearLocalPersonalData === 'function') {
-        window.clearLocalPersonalData();
-        showToast('success', t('adminResetPersonalDataSuccess') || 'Personal data reset');
-      } else {
-        showToast('error', t('adminResetPersonalDataError') || 'Unable to reset personal data');
-      }
-      // Refresh views
-      if (typeof refreshViews === 'function') {
-        refreshViews();
-      }
-    },
-    { primaryText: t('adminResetAllData') || 'Reset all', primaryClass: 'danger' }
-  );
-}
+
 
 /* === EXPOSE TO GLOBAL SCOPE === */
 
@@ -834,6 +825,7 @@ function renderAdminCenterTab(tabId, bodyElement) {
       break;
     case 'danger':
       contentEl.innerHTML = renderDangerZoneContent();
+      bindDangerZoneActions(contentEl);
       break;
     default:
       contentEl.innerHTML = `<p>${t('adminCenterTabNotFound') || 'Tab not found'}</p>`;
@@ -982,7 +974,7 @@ window.exportFactorySchedule = exportFactorySchedule;
 window.openAdminCenter = openAdminCenter;
 window.handleResetAllDrafts = handleResetAllDrafts;
 window.handleClearYearDraft = handleClearYearDraft;
-window.handleResetPersonalData = handleResetPersonalData;
+
 window.generateAndDownloadDataJs = generateAndDownloadDataJs;
 window.mergeFactoryWithCustom = mergeFactoryWithCustom;
 
