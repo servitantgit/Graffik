@@ -849,8 +849,6 @@ function bindFactoryEditorTab(root) {
         return;
       }
       activateFactoryPaintMode(year);
-      const status = root.querySelector('#factoryEditorStatusText');
-      if (status) status.textContent = t('factoryEditorActive') || 'Active';
       // Close admin panel so calendar is usable
       if (typeof closeAppPanel === 'function') closeAppPanel();
       else if (typeof window.closeAppPanel === 'function') window.closeAppPanel();
@@ -917,10 +915,7 @@ function renderFactoryEditorTab() {
         </button>
       </div>
       
-      <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border-cell); font-size:14px; color:var(--text-muted);">
-        ${t('factoryEditorStatus') || 'Status: '}<span id="factoryEditorStatusText">-${t('factoryEditorInactive') || 'Inactive'}</span>
       </div>
-    </div>
   `;
 }
 
