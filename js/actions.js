@@ -333,7 +333,7 @@ function openShareCenter() {
   const isLocal =
     location.protocol === 'file:' || !location.origin || location.origin === 'null';
   const appUrl = getAppUrl();
-  let activeTab = 'current';
+  let activeTab = 'application';
 
   function copyShareValue(value, successKey, failureKey) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -521,19 +521,19 @@ function openShareCenter() {
       <div class="share-tabs" role="tablist">
         <button
           type="button"
-          class="share-tab-btn active"
+          class="share-tab-btn"
           data-share-tab="current"
           role="tab"
-          aria-selected="true"
+          aria-selected="false"
         >
           ${t('shareCurrentView')}
         </button>
         <button
           type="button"
-          class="share-tab-btn"
+          class="share-tab-btn active"
           data-share-tab="application"
           role="tab"
-          aria-selected="false"
+          aria-selected="true"
         >
           ${t('shareApplication')}
         </button>

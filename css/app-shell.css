@@ -208,6 +208,186 @@
   transform: scale(0.97);
 }
 
+/* === SHARE CENTER === */
+.action-sheet[data-screen-id='share-center'] .action-sheet-header {
+  padding-left: 54px;
+}
+
+.action-sheet[data-screen-id='share-center'] .action-sheet-title {
+  text-align: center;
+}
+
+.action-sheet[data-screen-id='share-center'] .action-sheet-body {
+  padding: 0;
+}
+
+.share-center {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+}
+
+.share-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+  border-bottom: 1px solid var(--border-cell);
+  background: var(--bg-controls);
+}
+
+.share-tabs .share-tab-btn {
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 12px;
+  text-align: center;
+  line-height: 1.25;
+}
+
+.share-center-content {
+  width: 100%;
+  min-width: 0;
+}
+
+.share-center-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 18px;
+  width: 100%;
+  padding: 22px;
+  text-align: center;
+}
+
+.share-qr {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+  padding: 4px;
+}
+
+.share-qr img {
+  display: block;
+  width: min(240px, 70vw);
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px;
+  box-shadow: 0 4px 18px var(--shadow-color);
+}
+
+.share-qr-error {
+  width: 100%;
+  padding: 18px;
+  border: 1px solid rgba(192, 57, 43, 0.35);
+  border-radius: 10px;
+  background: rgba(192, 57, 43, 0.1);
+  color: #c0392b;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.share-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--border-cell);
+  border-radius: 12px;
+  background: var(--bg-cell);
+  text-align: center;
+}
+
+.share-preview-label {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.share-preview-text {
+  width: 100%;
+  color: var(--text-main);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.share-preview-url {
+  width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  color: var(--text-header);
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.share-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+
+.share-actions .modal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 12px;
+  line-height: 1.25;
+  text-align: center;
+  white-space: normal;
+}
+
+@media (max-width: 480px) {
+  .share-center-panel {
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .share-tabs .share-tab-btn {
+    min-height: 46px;
+    padding: 9px 8px;
+    font-size: 13px;
+  }
+
+  .share-qr {
+    min-height: 210px;
+  }
+
+  .share-qr img {
+    width: min(210px, 64vw);
+  }
+
+  .share-preview {
+    padding: 12px;
+  }
+
+  .share-actions {
+    gap: 8px;
+  }
+
+  .share-actions .modal-btn {
+    min-height: 46px;
+    padding: 9px 8px;
+    font-size: 12px;
+  }
+}
+
 /* === MOBILE: sheet slides from the bottom, safe-area aware === */
 @media (max-width: 600px) {
   .action-sheet.show {
