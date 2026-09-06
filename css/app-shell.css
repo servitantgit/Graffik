@@ -1366,6 +1366,113 @@ body.compact-cells .info-section {
    color: var(--text-danger);
 }
 
+/* === ACTIVE FACTORY EDITOR VISUAL STATE === */
+body.factory-editor-active {
+  background:
+    linear-gradient(rgba(230, 126, 34, 0.08), rgba(230, 126, 34, 0.08)),
+    var(--bg-body);
+}
+
+body.factory-editor-active .container {
+  outline: 4px solid #e67e22;
+  outline-offset: -4px;
+  box-shadow:
+    0 0 0 4px rgba(230, 126, 34, 0.18),
+    0 12px 40px var(--shadow-color);
+}
+
+body.factory-editor-active .top-bar {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(230, 126, 34, 0.12);
+  box-shadow: inset 4px 0 0 #e67e22;
+}
+
+body.factory-editor-active #factoryEditorBar {
+  min-height: 58px;
+  height: auto;
+  gap: 14px;
+  padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px));
+  border-top: 4px solid #e67e22;
+  background: var(--bg-container);
+  box-shadow: 0 -8px 24px rgba(230, 126, 34, 0.28);
+}
+
+body.factory-editor-active #factoryEditorContext {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+body.factory-editor-active #factoryEditorContext strong {
+  color: #e67e22;
+}
+
+body.factory-editor-active .factory-tool-btn {
+  border-color: rgba(230, 126, 34, 0.55);
+}
+
+body.factory-editor-active .factory-tool-btn.active {
+  border-color: #f1c40f;
+  background: #e67e22;
+  color: #fff;
+  box-shadow:
+    0 0 0 3px rgba(241, 196, 15, 0.4),
+    0 3px 10px rgba(0, 0, 0, 0.24);
+  transform: translateY(-1px);
+}
+
+body.factory-editor-active #factoryEditorExitBtn {
+  border: 1px solid rgba(192, 57, 43, 0.55);
+  background: rgba(192, 57, 43, 0.12);
+  color: #c0392b;
+}
+
+body.factory-editor-active .mobile-bottom-nav {
+  display: none;
+}
+
+body.factory-editor-active {
+  padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 700px) {
+  body.factory-editor-active #factoryEditorBar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 7px 10px;
+    padding: 7px 10px calc(7px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.factory-editor-active #factoryEditorContext {
+    flex: 1 1 100%;
+    min-width: 0;
+    justify-content: center;
+    gap: 8px;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  body.factory-editor-active #factoryEditorTools {
+    flex: 0 1 auto;
+  }
+
+  body.factory-editor-active .factory-tool-btn,
+  body.factory-editor-active #factoryEditorExitBtn {
+    width: 40px;
+    height: 40px;
+  }
+
+  body.factory-editor-active {
+    padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.factory-editor-active .factory-tool-btn.active {
+    transform: none;
+  }
+}
+
 /* === ADMIN CENTER TABS === */
 .admin-tab-btn {
    flex: 1;

@@ -82,6 +82,7 @@ function activateFactoryPaintMode(year) {
 
   factoryPaintMode = 'R';
   factoryPaintActive = true;
+  document.body.classList.add('factory-editor-active');
   // Expose state for other modules (calendar.js, main.js)
   window.factoryPaintActive = true;
   window.factoryPaintYear = factoryPaintYear;
@@ -115,6 +116,7 @@ function deactivateFactoryPaintMode() {
   factoryPaintMode = null;
   factoryPaintYear = null;
   factoryPaintMonth = null;
+  document.body.classList.remove('factory-editor-active');
   window.factoryPaintActive = false;
   window.factoryPaintYear = null;
   window.factoryPaintMonth = null;
