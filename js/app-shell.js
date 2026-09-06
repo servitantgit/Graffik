@@ -459,10 +459,10 @@
           <div class="about-content">
             <p><strong>${t('appName')}</strong></p>
             <p>${t('aboutDescription')}</p>
-            <p><strong>${t('aboutVersion')}</strong>: <span id="about-version">1.0.0</span></p>
+            <p><strong>${t('aboutVersion')}</strong>: <span id="about-version">2.0.0</span></p>
             <p><strong>${t('aboutPrivacy')}</strong>: ${t('aboutOffline')}</p>
-            <p><strong>${t('menuGitHub')}</strong>: <a href="https://github.com/tantsiura/grafik-gillette" target="_blank" rel="noopener">github.com/tantsiura/grafik-gillette</a></p>
-            <p><strong>${t('aboutDeveloper')}</strong>: ${t('faqBugEmail')}</p>
+            <p><strong>${t('menuGitHub')}</strong>: <a href="https://github.com/servitantgit/Graffik" target="_blank" rel="noopener noreferrer">github.com/servitantgit/Graffik</a></p>
+            <p><strong>${t('aboutDeveloper')}</strong>: <a href="mailto:servitant@gmail.com">servitant@gmail.com</a></p>
             <p><strong>${t('menuShareCenter')}</strong>: ${t('shareCenterTitle')} (${t('shareCurrentView')})</p>
             <p><strong>Online/Offline</strong>: <span id="about-online-status">Checking...</span></p>
             <p><strong>PWA Status</strong>: <span id="about-pwa-status">Checking...</span></p>
@@ -502,7 +502,6 @@
           if (checkUpdateBtn) {
             checkUpdateBtn.onclick = () => {
               window.checkForAppUpdate();
-              showToast('info', t('aboutUpdateChecking'));
             };
           }
         }
