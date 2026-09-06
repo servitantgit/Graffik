@@ -80,15 +80,15 @@ function openExportCenter() {
             <span style="font-size: 24px;">📤</span>
           </div>
           <div>
-            <div style="font-weight: 600; margin-bottom: 4px;">${t('exportICS')}</div>
-            <div style="font-size: 14px; color: var(--text-muted);">${t('exportDesc')}</div>
+            <div style="font-weight: 600; margin-bottom: 4px;">${t('exportIcsTitle')}</div>
+            <div style="font-size: 14px; color: var(--text-muted);">${t('exportIcsDesc')}</div>
           </div>
         </div>
         <button id="exportIcsBtn" class="modal-btn primary" style="width: 100%; margin-top: 12px; padding: 12px;">
-          ${t('exportICS')}
+          ${t('exportIcsTitle')}
         </button>
       </div>
-      
+
       <!-- Print -->
       <div style="background: var(--bg-cell); border: 1px solid var(--border-cell); border-radius: 12px; padding: 16px;">
         <div style="display: flex; align-items: flex-start; gap: 12px;">
@@ -96,12 +96,12 @@ function openExportCenter() {
             <span style="font-size: 24px;">🖨️</span>
           </div>
           <div>
-            <div style="font-weight: 600; margin-bottom: 4px;">${t('print')}</div>
-            <div style="font-size: 14px; color: var(--text-muted);">${t('printDesc')}</div>
+            <div style="font-weight: 600; margin-bottom: 4px;">${t('printCurrentTitle')}</div>
+            <div style="font-size: 14px; color: var(--text-muted);">${t('printCurrentDesc')}</div>
           </div>
         </div>
         <button id="printBtn" class="modal-btn primary" style="width: 100%; margin-top: 12px; padding: 12px;">
-          ${t('print')}
+          ${t('printCurrentTitle')}
         </button>
       </div>
     </div>
