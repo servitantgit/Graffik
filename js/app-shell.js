@@ -277,11 +277,11 @@
       b.classList.toggle('active', (b.dataset.range === 'year') === isYear);
     });
 
-    // 6) Brigade label (same wording on all views)
-    const brigLabel = el('brigadeContextLabel');
-    if (brigLabel) {
-      brigLabel.textContent = localized ? t('contextBrigade') : '';
-    }
+    // 6) Brigade label (same wording on all views) - REMOVED
+    // const brigLabel = el('brigadeContextLabel');
+    // if (brigLabel) {
+    //   brigLabel.textContent = localized ? t('contextBrigade') : '';
+    // }
   }
   window.updateAppShellUI = updateAppShellUI;
 
