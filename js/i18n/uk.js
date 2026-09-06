@@ -644,7 +644,7 @@ window.translations.uk = {
   driveDiffLoading: 'Порівняння з Drive…',
   driveDiffNoRemote: 'Не вдалося завантажити версію з Drive для порівняння.',
   driveDiffIdentical: 'Кількості збігаються з Drive (структурних відмінностей не виявлено).',
-  driveDiffHint: 'Числа: локально / Drive. (+N) більше на пристрої, (−N) більше на Drive.',
+  driveDiffHint: 'Числа: локально / Drive. 📱 +N = більше на пристрої, ☁️ +N = більше на Drive.',
   driveLoggedOut: 'Вийшли з Google Drive',
 
   // === LOGOUT UNSYNCED WARNING (v3.7.0) ===

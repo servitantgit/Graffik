@@ -964,12 +964,25 @@ function formatSyncDiffLog(localStats, remoteStats, hasUnsynced, lastSyncText, r
     if (!showRemote) {
       return `<li>${label}: <b>${localN}</b></li>`;
     }
-    const d = localN - remoteN;
-    let delta = '';
-    if (d > 0) delta = ` <span style="color:#27ae60">(+${d})</span>`;
-    else if (d < 0) delta = ` <span style="color:#e74c3c">(${d})</span>`;
-    else delta = ' <span style="color:var(--text-muted)">(0)</span>';
-    return `<li>${label}: <b>${localN}</b> / Drive ${remoteN}${delta}</li>`;
+
+    const difference = localN - remoteN;
+    let differenceLabel = '';
+
+    if (difference > 0) {
+      differenceLabel =
+        ` <span style="color:#e67e22">(📱 +${difference})</span>`;
+    } else if (difference < 0) {
+      differenceLabel =
+        ` <span style="color:#4285f4">(☁️ +${Math.abs(difference)})</span>`;
+    } else {
+      differenceLabel =
+        ' <span style="color:var(--text-muted)">(✓)</span>';
+    }
+
+    return (
+      `<li>${label}: <b>${localN}</b> / Drive ${remoteN}` +
+      `${differenceLabel}</li>`
+    );
   };
 
   const tr = (key, fb) => (typeof t === 'function' ? t(key) : fb);

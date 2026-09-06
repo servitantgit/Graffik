@@ -646,7 +646,7 @@ window.translations.pl = {
   driveDiffLoading: 'Porównywanie z Drive…',
   driveDiffNoRemote: 'Nie udało się pobrać wersji z Drive do porównania.',
   driveDiffIdentical: 'Liczby zgodne z Drive (brak różnic strukturalnych).',
-  driveDiffHint: 'Liczby: lokalnie / Drive. (+N) więcej na urządzeniu, (−N) więcej na Drive.',
+  driveDiffHint: 'Liczby: lokalnie / Drive. 📱 +N = więcej na urządzeniu, ☁️ +N = więcej na Drive.',
   driveLoggedOut: 'Wylogowano z Google Drive',
 
   // === LOGOUT UNSYNCED WARNING (v3.7.0) ===

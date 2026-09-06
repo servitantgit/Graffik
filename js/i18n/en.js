@@ -644,7 +644,7 @@ window.translations.en = {
   driveDiffLoading: 'Comparing with Drive…',
   driveDiffNoRemote: 'Could not load Drive version for comparison.',
   driveDiffIdentical: 'Counts match Drive (no structural differences detected).',
-  driveDiffHint: 'Numbers: local / Drive. (+N) more on device, (−N) more on Drive.',
+  driveDiffHint: 'Numbers: local / Drive. 📱 +N = more on this device, ☁️ +N = more on Drive.',
   driveLoggedOut: 'Logged out from Google Drive',
 
   // === LOGOUT UNSYNCED WARNING (v3.7.0) ===
