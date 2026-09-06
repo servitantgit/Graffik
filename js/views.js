@@ -61,32 +61,31 @@ el.className = 'mini-day m' + cls;
       el.onclick = (ev) => {
         ev.stopPropagation();
 
-        
-      // Factory painting mode: apply direct shift replacement (admin factory editing)
-      // Free day is stored as '' internally ('W' is only its display/CSS representation).
-      if (factoryPaintActive && 
-          factoryPaintYear === currentYear && 
-          factoryPaintMonth === month) {
-        const val = factoryPaintMode === 'W' ? '' : factoryPaintMode;
-        window.handleFactoryPaintDayClick(currentYear, month, d, brig, val);
-        refreshViews();
-        return;
-      }
-      
-      selectedShift = brig;
-      currentMonth = month;
-      selectedDay = d;
-      compareShift = null;
-      yearMode = false;
-      prefs.shift = selectedShift;
-      prefs.yearMode = false;
-      savePrefs(prefs);
-      updateShiftButtons();
-      const yt = document.getElementById('yearToggle');
-      if (yt) yt.checked = false;
-      const ytl = document.getElementById('yearToggleLabel');
-      if (ytl) ytl.classList.remove('active');
-      switchView('month');
+        // Preserve the current brigade in Year view.
+        // Factory painting uses the month represented by this mini-calendar.
+        if (
+          typeof factoryPaintActive !== 'undefined' &&
+          factoryPaintActive &&
+          factoryPaintYear === currentYear &&
+          factoryPaintMonth === m
+        ) {
+          const val = factoryPaintMode === 'W' ? '' : factoryPaintMode;
+          if (typeof window.handleFactoryPaintDayClick === 'function') {
+            window.handleFactoryPaintDayClick(currentYear, m, d, selectedShift, val);
+          }
+          refreshViews();
+          return;
+        }
+
+        currentMonth = m;
+        selectedDay = d;
+        compareShift = null;
+        yearMode = false;
+        prefs.shift = selectedShift;
+        prefs.yearMode = false;
+        savePrefs(prefs);
+        updateShiftButtons();
+        switchView('month');
       };
       mini.appendChild(el);
     }
@@ -202,7 +201,7 @@ let s = getShiftAtWithPending(currentYear, month, d, brig);
         factorySchedule[currentYear] &&
         factorySchedule[currentYear][month] &&
         factorySchedule[currentYear][month][brig]
-          ? factorySchedule[currentYear][currentMonth][brig][d - 1]
+          ? factorySchedule[currentYear][month][brig][d - 1]
           : '';
       onU = false;
       
