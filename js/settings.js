@@ -67,7 +67,6 @@
     { id: 'notifications', titleKey: 'settingsNotifications', icon: '🔔', active: true },
     { id: 'vacation', titleKey: 'settingsVacation', icon: '🌴', active: true },
     { id: 'privacy', titleKey: 'settingsDataPrivacy', icon: '🔒', active: true },
-    { id: 'accessibility', titleKey: 'settingsAccessibility', icon: '♿', active: true },
   ];
 
 const SECTION_TITLES = {
@@ -75,7 +74,6 @@ const SECTION_TITLES = {
      appearance: 'settingsAppearance',
      notifications: 'settingsNotifications',
      vacation: 'settingsVacation',
-     accessibility: 'settingsAccessibility',
      privacy: 'settingsDataPrivacy',
    };
 
@@ -501,54 +499,6 @@ const SECTION_TITLES = {
     }
   }
 
-  /* ---------- ACCESSIBILITY section ---------- */
-
-  function accessibilityHtml() {
-    const reduceMotion = prefs.reduceMotion === true;
-    const largeText = prefs.largeText === true;
-    const compactCells = prefs.compactCells === true;
-
-    return (
-      '<div class="settings-section">' +
-      '<button type="button" class="st-row st-switch" id="stReduceMotion" role="switch" aria-checked="' +
-      (reduceMotion ? 'true' : 'false') + '">' +
-      '<span class="st-row-label">' + tr('settingsReduceMotion') + '</span>' +
-      '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
-      '</button>' +
-      '<button type="button" class="st-row st-switch" id="stLargeText" role="switch" aria-checked="' +
-      (largeText ? 'true' : 'false') + '">' +
-      '<span class="st-row-label">' + tr('settingsLargeText') + '</span>' +
-      '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
-      '</button>' +
-      '<button type="button" class="st-row st-switch" id="stCompactCells" role="switch" aria-checked="' +
-      (compactCells ? 'true' : 'false') + '">' +
-      '<span class="st-row-label">' + tr('settingsCompactCells') + '</span>' +
-      '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
-      '</button>' +
-      '</div>'
-    );
-  }
-
-function bindAccessibility(body) {
-     if (!body) return;
-
-     function togglePref(key, btnId) {
-       const btn = body.querySelector('#' + btnId);
-       if (!btn) return;
-       btn.addEventListener('click', function () {
-         const next = btn.getAttribute('aria-checked') !== 'true';
-         prefs[key] = next;
-         savePrefsSafe();
-         btn.setAttribute('aria-checked', next ? 'true' : 'false');
-         if (typeof applyAccessibilityPreferences === 'function') applyAccessibilityPreferences();
-       });
-     }
-
-     togglePref('reduceMotion', 'stReduceMotion');
-     togglePref('largeText', 'stLargeText');
-     togglePref('compactCells', 'stCompactCells');
-   }
-
    /* ---------- PRIVACY section ---------- */
 
 function privacyHtml() {
@@ -670,9 +620,6 @@ function renderSettingsSection(section, container) {
      } else if (section === 'vacation') {
        body.innerHTML = vacationHtml();
        bindVacation(body);
-     } else if (section === 'accessibility') {
-       body.innerHTML = accessibilityHtml();
-       bindAccessibility(body);
      } else if (section === 'privacy') {
        body.innerHTML = privacyHtml();
        bindPrivacy(body);
