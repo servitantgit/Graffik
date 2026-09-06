@@ -18,7 +18,85 @@ function normalizeSyncShift(value) {
   return value === null || value === undefined ? '' : String(value);
 }
 
-function buildPersonalScheduleOverrides(customData, factoryData) {
+function countShiftArrayDifferences(first, second) {
+  const firstDays = Array.isArray(first) ? first : [];
+  const secondDays = Array.isArray(second) ? second : [];
+  const sharedLength = Math.min(firstDays.length, secondDays.length);
+  let differences = Math.abs(firstDays.length - secondDays.length);
+
+  for (let index = 0; index < sharedLength; index++) {
+    if (
+      normalizeSyncShift(firstDays[index]) !==
+      normalizeSyncShift(secondDays[index])
+    ) {
+      differences++;
+    }
+  }
+
+  return differences;
+}
+
+function buildLegacyFactoryReference(year, month, brigade, currentDays) {
+  const legacyDays = Array.isArray(currentDays) ? currentDays.slice() : [];
+  const key = `${year}-${month}-${brigade}`;
+
+  if (key === '2026-2-B') {
+    legacyDays.splice(9, 1);
+  } else if (key === '2026-4-A') {
+    legacyDays.splice(8, 1);
+    legacyDays.push('');
+  } else if (key === '2026-10-A') {
+    legacyDays.splice(10, 1);
+    if (legacyDays.length > 0) {
+      legacyDays[legacyDays.length - 1] = '';
+    }
+  } else if (key === '2026-12-C') {
+    legacyDays.splice(30, 1);
+  }
+
+  return legacyDays;
+}
+
+function selectPersonalScheduleReference(
+  year,
+  month,
+  brigade,
+  customDays,
+  currentFactoryDays,
+  allowLegacyReference
+) {
+  const currentDays = Array.isArray(currentFactoryDays)
+    ? currentFactoryDays
+    : [];
+
+  if (!allowLegacyReference) return currentDays;
+
+  const legacyDays = buildLegacyFactoryReference(
+    year,
+    month,
+    brigade,
+    currentDays
+  );
+
+  const currentDifferenceCount = countShiftArrayDifferences(
+    customDays,
+    currentDays
+  );
+  const legacyDifferenceCount = countShiftArrayDifferences(
+    customDays,
+    legacyDays
+  );
+
+  return legacyDifferenceCount < currentDifferenceCount
+    ? legacyDays
+    : currentDays;
+}
+
+function buildPersonalScheduleOverrides(
+  customData,
+  factoryData,
+  allowLegacyReference
+) {
   const overrides = {};
   const custom = customData && typeof customData === 'object' ? customData : {};
   const factory = factoryData && typeof factoryData === 'object' ? factoryData : {};
@@ -42,11 +120,20 @@ function buildPersonalScheduleOverrides(customData, factoryData) {
             ? factory[year][month][brigade]
             : [];
 
+        const referenceDays = selectPersonalScheduleReference(
+          year,
+          month,
+          brigade,
+          customDays,
+          factoryDays,
+          allowLegacyReference === true
+        );
+
         customDays.forEach((value, index) => {
           const customShift = normalizeSyncShift(value);
-          const factoryShift = normalizeSyncShift(factoryDays[index]);
+          const referenceShift = normalizeSyncShift(referenceDays[index]);
 
-          if (customShift !== factoryShift) {
+          if (customShift !== referenceShift) {
             overrides[`${year}-${month}-${brigade}-${index + 1}`] = customShift;
           }
         });
@@ -96,17 +183,24 @@ function getPersonalShiftOverrides(payload) {
       ? customSchedule
       : {};
 
-  const referenceFactory =
+  const embeddedFactoryIsAvailable = !!(
     source &&
     source.factorySchedule &&
     typeof source.factorySchedule === 'object'
-      ? source.factorySchedule
-      : typeof factorySchedule !== 'undefined'
-        ? factorySchedule
-        : {};
+  );
+
+  const referenceFactory = embeddedFactoryIsAvailable
+    ? source.factorySchedule
+    : typeof factorySchedule !== 'undefined'
+      ? factorySchedule
+      : {};
 
   return normalizeShiftOverrides(
-    buildPersonalScheduleOverrides(customData, referenceFactory)
+    buildPersonalScheduleOverrides(
+      customData,
+      referenceFactory,
+      !embeddedFactoryIsAvailable
+    )
   );
 }
 
