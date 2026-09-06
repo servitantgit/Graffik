@@ -177,14 +177,14 @@ function buildShareText() {
       : t('monthViewTitle', { month: monthNames[currentMonth - 1], year: currentYear }),
   };
 
-  let text = `рџ“… ${viewNames[currentView]}`;
+  let text = `📅 ${viewNames[currentView]}`;
 
   if (currentView === 'month' && selectedDay && !yearMode) {
-    text = `рџ“… ${selectedDay} ${monthNamesGenitive[currentMonth - 1]} ${currentYear}`;
+    text = `📅 ${selectedDay} ${monthNamesGenitive[currentMonth - 1]} ${currentYear}`;
   }
 
   if (currentView !== 'table') {
-    text += ` вЂў Brygada ${selectedShift}`;
+    text += ` • Brygada ${selectedShift}`;
   }
 
   return text;
@@ -197,7 +197,7 @@ function shareCurrent() {
 
   // Local file: copy text without URL
   if (isLocal) {
-    const content = `${text}\nрџЏ­ ${t('appName')}`;
+    const content = `${text}\n🏭 ${t('appName')}`;
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard
         .writeText(content)
@@ -310,271 +310,256 @@ bindClick('resetCustomBtn', () => {
   );
 });
 
+/* === SHARE APP HELPERS === */
+function getAppUrl() {
+  return `${location.origin}${location.pathname}`;
+}
+
+function buildQRCodeUrl(text, size) {
+  const qrSize = Number(size) > 0 ? Number(size) : 250;
+  return (
+    `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}` +
+    `&data=${encodeURIComponent(text)}&margin=10`
+  );
+}
+
 /* === SHARE CENTER === */
 function openShareCenter() {
-  const isLocal = location.protocol === 'file:' || !location.origin || location.origin === 'null';
+  if (typeof openActionSheet !== 'function') {
+    console.error('[actions]', 'Action sheet API is not available');
+    return;
+  }
+
+  const isLocal =
+    location.protocol === 'file:' || !location.origin || location.origin === 'null';
   const appUrl = getAppUrl();
-  
-  // Create tabbed interface
-  let activeTab = 'current'; // current or application
-  
-  function renderCurrentViewTab() {
-    const url = buildShareUrl();
-    const text = buildShareText();
-    
-    return `
-      <div style="padding: 16px;">
-        <!-- Current View Tab Content -->
-        <div>
-          <div style="margin-bottom: 12px;">
-            <strong>${t('shareCurrentView')}</strong>
-          </div>
-          
-          <!-- Preview -->
-          <div style="background: var(--bg-cell); border: 1px solid var(--border-cell); border-radius: 8px; padding: 12px; margin-bottom: 16px;">
-            <div style="font-size: 14px; margin-bottom: 8px;"><strong>${t('sharePreview')}</strong></div>
-            <div style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">${text}</div>
-            <div style="font-size: 13px; color: var(--text-muted);">${url}</div>
-          </div>
-          
-          <!-- URL -->
-          <div style="margin-bottom: 12px;">
-            <strong>${t('shareGeneratedUrl')}</strong>
-          </div>
-          <div style="background: var(--bg-cell); border: 1px solid var(--border-cell); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; word-break: break-all; font-family: monospace; font-size: 13px; color: var(--text-header);">
-            ${url}
-          </div>
-          
-          <!-- Actions -->
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button id="shareCurrentCopyBtn" class="modal-btn secondary" style="flex: 1; min-width: 140px;">
-              рџ“‹ ${t('shareCopyLink')}
-            </button>
-            <button id="shareCurrentNativeBtn" class="modal-btn primary" style="flex: 1; min-width: 140px;">
-              рџ”— ${t('shareNativeShare')}
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-  
-  function renderApplicationTab() {
-    const qrUrl = buildQRCodeUrl(appUrl, 280);
-    
-    return `
-      <div style="padding: 16px;">
-        <!-- Application Tab Content -->
-        <div>
-          <div style="margin-bottom: 12px;">
-            <strong>${t('shareApplication')}</strong>
-          </div>
-          
-          <!-- QR Code Container -->
-          <div id="qrcodeContainer" style="text-align: center; margin-bottom: 20px;">
-            <!-- QR Code will be loaded here -->
-          </div>
-          
-          <!-- URL -->
-          <div style="margin-bottom: 12px;">
-            <strong>${t('shareAppUrl')}</strong>
-          </div>
-          <div style="background: var(--bg-cell); border: 1px solid var(--border-cell); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; word-break: break-all; font-family: monospace; font-size: 13px; color: var(--text-header);">
-            ${appUrl}
-          </div>
-          
-          <!-- Actions -->
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button id="shareAppCopyBtn" class="modal-btn secondary" style="flex: 1; min-width: 140px;">
-              рџ“‹ ${t('shareCopyLink')}
-            </button>
-            <button id="shareAppNativeBtn" class="modal-btn primary" style="flex: 1; min-width: 140px;">
-              рџ”— ${t('shareNativeShare')}
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-  
-  function attachHandlers(bodyElement) {
-    // Current view tab handlers
-    const currentCopyBtn = bodyElement.querySelector('#shareCurrentCopyBtn');
-    const currentNativeBtn = bodyElement.querySelector('#shareCurrentNativeBtn');
-    
-    if (currentCopyBtn) {
-      currentCopyBtn.onclick = () => {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard
-            .writeText(buildShareUrl())
-            .then(() => showToast('success', t('shareLinkCopied')))
-            .catch(() => showToast('error', t('shareLinkFailed')));
-        } else {
-          // Fallback for older browsers
-          const textarea = document.createElement('textarea');
-          textarea.value = buildShareUrl();
-          textarea.style.position = 'fixed';
-          textarea.style.opacity = '0';
-          document.body.appendChild(textarea);
-          textarea.select();
-          try {
-            document.execCommand('copy');
-            showToast('success', t('shareLinkCopied'));
-          } catch (e) {
-            showToast('error', t('shareLinkFailed'));
-          }
-          document.body.removeChild(textarea);
-        }
-      };
+  let activeTab = 'current';
+
+  function copyShareValue(value, successKey, failureKey) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(value)
+        .then(() => showToast('success', t(successKey)))
+        .catch(() => showToast('error', t(failureKey)));
+      return;
     }
-    
-    if (currentNativeBtn) {
-      currentNativeBtn.onclick = () => {
+
+    const textarea = document.createElement('textarea');
+    textarea.value = value;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    textarea.style.pointerEvents = 'none';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+
+    try {
+      const copied = document.execCommand('copy');
+      showToast(copied ? 'success' : 'error', t(copied ? successKey : failureKey));
+    } catch (error) {
+      console.warn('[actions]', 'Clipboard fallback failed', error);
+      showToast('error', t(failureKey));
+    } finally {
+      textarea.remove();
+    }
+  }
+
+  function renderCurrentViewTab() {
+    const shareUrl = buildShareUrl();
+    const shareText = buildShareText();
+    const safeUrl = escapeHtml(shareUrl);
+    const safeText = escapeHtml(shareText);
+
+    return `
+      <div class="share-center-panel" data-share-panel="current">
+        <div class="share-preview">
+          <div class="share-preview-label">${t('shareContextPreview')}</div>
+          <div class="share-preview-text">${safeText}</div>
+          <div class="share-preview-url">${safeUrl}</div>
+        </div>
+
+        <div class="share-actions">
+          <button type="button" class="modal-btn secondary" data-share-action="copy-current">
+            📋 ${t('shareCopyCurrentLink')}
+          </button>
+          <button type="button" class="modal-btn primary" data-share-action="native-current">
+            🔗 ${t('shareAppShare')}
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderApplicationTab() {
+    const safeAppUrl = escapeHtml(appUrl);
+    const qrUrl = buildQRCodeUrl(appUrl, 280);
+
+    return `
+      <div class="share-center-panel" data-share-panel="application">
+        <div class="share-qr" data-share-qr>
+          <img
+            data-share-qr-image
+            src="${qrUrl}"
+            alt="QR Code"
+            width="240"
+            height="240"
+          >
+          <div class="share-qr-error" data-share-qr-error hidden>
+            ⚠️ ${t('shareAppQrError')}
+          </div>
+        </div>
+
+        <div class="share-preview">
+          <div class="share-preview-label">${t('shareApplication')}</div>
+          <div class="share-preview-url">${safeAppUrl}</div>
+        </div>
+
+        <div class="share-actions">
+          <button type="button" class="modal-btn secondary" data-share-action="copy-app">
+            📋 ${t('shareCopyAppLink')}
+          </button>
+          <button type="button" class="modal-btn primary" data-share-action="native-app">
+            🔗 ${t('shareAppShare')}
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderActiveTab(bodyElement) {
+    const content = bodyElement.querySelector('[data-share-content]');
+    if (!content) {
+      console.error('[actions]', 'Share Center content container is missing');
+      return;
+    }
+
+    bodyElement.querySelectorAll('[data-share-tab]').forEach((button) => {
+      const isActive = button.dataset.shareTab === activeTab;
+      button.classList.toggle('active', isActive);
+      button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    content.innerHTML =
+      activeTab === 'application' ? renderApplicationTab() : renderCurrentViewTab();
+
+    const copyCurrentButton = content.querySelector('[data-share-action="copy-current"]');
+    if (copyCurrentButton) {
+      copyCurrentButton.addEventListener('click', () => {
+        copyShareValue(buildShareUrl(), 'shareLinkCopied', 'shareLinkFailed');
+      });
+    }
+
+    const nativeCurrentButton = content.querySelector('[data-share-action="native-current"]');
+    if (nativeCurrentButton) {
+      nativeCurrentButton.addEventListener('click', () => {
+        const shareUrl = buildShareUrl();
+        const shareText = buildShareText();
+
         if (navigator.share && !isLocal) {
           navigator
             .share({
               title: t('appName'),
-              text: buildShareText(),
-              url: buildShareUrl(),
+              text: shareText,
+              url: shareUrl,
             })
             .then(() => showToast('success', t('shareSuccess')))
-            .catch((err) => {
-              // User cancelled вЂ” don't show an error
-              if (err.name !== 'AbortError') {
-                if (!isLocal) {
-                  copyToClipboard(buildShareUrl());
-                }
-              }
+            .catch((error) => {
+              if (error && error.name === 'AbortError') return;
+              console.warn('[actions]', 'Native current-view share failed', error);
+              copyShareValue(shareUrl, 'shareLinkCopied', 'shareLinkFailed');
             });
-        } else {
-          // Fallback to copy
-          copyToClipboard(buildShareUrl());
+          return;
         }
-      };
+
+        const localValue = isLocal ? `${shareText}\n🏭 ${t('appName')}` : shareUrl;
+        copyShareValue(localValue, 'shareCopied', 'shareCopyFailed');
+      });
     }
-    
-    // Application tab handlers
-    const appCopyBtn = bodyElement.querySelector('#shareAppCopyBtn');
-    const appNativeBtn = bodyElement.querySelector('#shareAppNativeBtn');
-    
-    if (appCopyBtn) {
-      appCopyBtn.onclick = () => {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard
-            .writeText(getAppUrl())
-            .then(() => showToast('success', t('shareAppCopied')))
-            .catch(() => showToast('error', t('shareCopyFailed')));
-        } else {
-          // Fallback for older browsers
-          const textarea = document.createElement('textarea');
-          textarea.value = getAppUrl();
-          textarea.style.position = 'fixed';
-          textarea.style.opacity = '0';
-          document.body.appendChild(textarea);
-          textarea.select();
-          try {
-            document.execCommand('copy');
-            showToast('success', t('shareAppCopied'));
-          } catch (e) {
-            showToast('error', t('shareCopyFailed'));
-          }
-          document.body.removeChild(textarea);
-        }
-      };
+
+    const copyAppButton = content.querySelector('[data-share-action="copy-app"]');
+    if (copyAppButton) {
+      copyAppButton.addEventListener('click', () => {
+        copyShareValue(appUrl, 'shareAppCopied', 'shareCopyFailed');
+      });
     }
-    
-    if (appNativeBtn) {
-      appNativeBtn.onclick = () => {
+
+    const nativeAppButton = content.querySelector('[data-share-action="native-app"]');
+    if (nativeAppButton) {
+      nativeAppButton.addEventListener('click', () => {
         if (navigator.share && !isLocal) {
           navigator
             .share({
               title: t('appName'),
               text: t('shareAppText'),
-              url: getAppUrl(),
+              url: appUrl,
             })
             .then(() => showToast('success', t('shareSuccess')))
-            .catch((err) => {
-              // User cancelled вЂ” don't show an error
-              if (err.name !== 'AbortError') {
-                copyToClipboard(getAppUrl());
-              }
+            .catch((error) => {
+              if (error && error.name === 'AbortError') return;
+              console.warn('[actions]', 'Native application share failed', error);
+              copyShareValue(appUrl, 'shareAppCopied', 'shareCopyFailed');
             });
-        } else {
-          // Fallback to copy
-          copyToClipboard(getAppUrl());
+          return;
         }
-      };
-    }
-    
-    // Load QR code when application tab is selected
-    const qrContainer = bodyElement.querySelector('#qrcodeContainer');
-    if (qrContainer) {
-      // Check if we're in the application tab
-      const tabButtons = bodyElement.querySelectorAll('.share-tab-btn');
-      tabButtons.forEach(btn => {
-        btn.onclick = (e) => {
-          // Update active tab
-          tabButtons.forEach(b => b.classList.remove('active'));
-          e.target.classList.add('active');
-          
-          activeTab = e.target.dataset.tab;
-          
-          // Load QR code only when application tab is selected
-          if (activeTab === 'application' && qrContainer) {
-            qrContainer.innerHTML = `<img src="${buildQRCodeUrl(getAppUrl(), 280)}" alt="QR Code" style="width: 200px; height: 200px;">`;
-          } else if (activeTab === 'current') {
-            qrContainer.innerHTML = ''; // Clear QR code when not needed
-          }
-        };
+
+        copyShareValue(appUrl, 'shareAppCopied', 'shareCopyFailed');
       });
-      
-      // Initialize QR code for application tab if it's active
-      if (activeTab === 'application') {
-        qrContainer.innerHTML = `<img src="${buildQRCodeUrl(getAppUrl(), 280)}" alt="QR Code" style="width: 200px; height: 200px;">`;
-      }
+    }
+
+    const qrImage = content.querySelector('[data-share-qr-image]');
+    const qrError = content.querySelector('[data-share-qr-error]');
+    if (qrImage && qrError) {
+      qrImage.addEventListener('error', () => {
+        qrImage.hidden = true;
+        qrError.hidden = false;
+      });
     }
   }
-  
+
   const html = `
-    <div style="display: flex; flex-direction: column; height: 100%;">
-      <!-- Tabs -->
-      <div style="display: flex; border-bottom: 1px solid var(--border-cell);">
-        <button class="share-tab-btn${activeTab === 'current' ? ' active' : ''}" data-tab="current" style="flex: 1; padding: 12px; border: none; background: var(--bg-controls); color: var(--text-main); cursor: pointer;">
+    <div class="share-center">
+      <div class="share-tabs" role="tablist">
+        <button
+          type="button"
+          class="share-tab-btn active"
+          data-share-tab="current"
+          role="tab"
+          aria-selected="true"
+        >
           ${t('shareCurrentView')}
         </button>
-        <button class="share-tab-btn${activeTab === 'application' ? ' active' : ''}" data-tab="application" style="flex: 1; padding: 12px; border: none; background: var(--bg-controls); color: var(--text-main); cursor: pointer;">
+        <button
+          type="button"
+          class="share-tab-btn"
+          data-share-tab="application"
+          role="tab"
+          aria-selected="false"
+        >
           ${t('shareApplication')}
         </button>
       </div>
-      
-      <!-- Tab Content -->
-      <div style="flex: 1; overflow-y: auto;">
-        <!-- Content will be injected by onMount -->
-        <div id="shareCenterContent"></div>
-      </div>
+
+      <div class="share-center-content" data-share-content></div>
     </div>
   `;
-  
+
   openActionSheet({
     id: 'share-center',
     title: t('shareCenterTitle'),
-    html: html,
+    html,
     onMount: (bodyElement) => {
-      // Inject initial content based on active tab
-      const contentDiv = bodyElement.querySelector('#shareCenterContent');
-      if (contentDiv) {
-        if (activeTab === 'current') {
-          contentDiv.innerHTML = renderCurrentViewTab();
-        } else {
-          contentDiv.innerHTML = renderApplicationTab();
-        }
-      }
-      
-      // Attach event handlers
-      attachHandlers(bodyElement);
-    }
+      bodyElement.querySelectorAll('[data-share-tab]').forEach((button) => {
+        button.addEventListener('click', () => {
+          activeTab = button.dataset.shareTab;
+          renderActiveTab(bodyElement);
+        });
+      });
+
+      renderActiveTab(bodyElement);
+    },
   });
 }
 
-// Expose globally
+window.getAppUrl = getAppUrl;
+window.buildQRCodeUrl = buildQRCodeUrl;
 window.openShareCenter = openShareCenter;
