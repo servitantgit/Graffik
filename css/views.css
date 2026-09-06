@@ -389,3 +389,87 @@ body:not(.theme-dark) .mini-day.mW.mWeekend {
   outline: 1.5px solid rgba(239, 68, 68, 0.9);
   outline-offset: -1px;
 }
+
+
+/* ===== Table density: comfortable (mockup-like) ===== */
+body.table-density-comfortable .brigade-table {
+  border-spacing: 5px;
+  min-width: 720px;
+}
+body.table-density-comfortable .brigade-table th,
+body.table-density-comfortable .brigade-table td {
+  border-radius: 10px;
+}
+body.table-density-comfortable .brigade-table th.brig-label {
+  min-width: 44px;
+  padding: 8px 6px;
+  font-size: 13px;
+  border-radius: 10px;
+}
+body.table-density-comfortable .brigade-table th.date-header {
+  min-width: 36px;
+  padding: 6px 3px;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: none;
+}
+body.table-density-comfortable .brigade-table th.date-header .dh-num {
+  font-size: 13px;
+  font-weight: 700;
+}
+body.table-density-comfortable .brigade-table th.date-header .dh-day {
+  font-size: 10px;
+  opacity: 0.75;
+}
+body.table-density-comfortable .brigade-table th.date-header.weekend {
+  background: transparent;
+  color: #f87171;
+  box-shadow: none;
+}
+body.table-density-comfortable .brigade-table th.date-header.today {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #111;
+  box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.45);
+}
+body.table-density-comfortable .brigade-table td {
+  height: 40px;
+  min-width: 36px;
+}
+body.table-density-comfortable .brigade-table td.tc {
+  font-size: 15px;
+  font-weight: 800;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+body.table-density-comfortable .brigade-table td.tc:hover {
+  transform: scale(1.06);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+}
+body.table-density-comfortable .table-legend {
+  gap: 10px;
+  padding: 12px 8px 4px;
+}
+body.table-density-comfortable .table-legend span {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--bg-controls);
+  font-size: 12px;
+}
+body.table-density-comfortable .table-scroll {
+  border-radius: 14px;
+  padding: 8px;
+  background: color-mix(in srgb, var(--bg-controls) 55%, transparent);
+}
+
+@media (max-width: 600px) {
+  body.table-density-comfortable .brigade-table {
+    min-width: 640px;
+  }
+  body.table-density-comfortable .brigade-table td {
+    height: 36px;
+    min-width: 32px;
+  }
+  body.table-density-comfortable .brigade-table td.tc {
+    font-size: 13px;
+  }
+}

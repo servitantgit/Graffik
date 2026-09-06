@@ -235,6 +235,7 @@ const SECTION_TITLES = {
   function appearanceHtml() {
     const skin = typeof getCellSkin === 'function' ? getCellSkin() : 'full';
     const uiSkin = typeof getUiSkin === 'function' ? getUiSkin() : (prefs.uiSkin || 'industrial');
+    const tableDensity = typeof getTableDensity === 'function' ? getTableDensity() : (prefs.tableDensity || 'compact');
     return (
       '<div class="settings-section">' +
       '<div class="st-group"><div class="st-label">' + tr('settingsUiSkin') + '</div>' +
@@ -243,6 +244,12 @@ const SECTION_TITLES = {
       segBtn(tr('uiSkinIndustrial'), 'industrial', uiSkin, 'data-ui-skin') +
       segBtn(tr('uiSkinPaper'), 'paper', uiSkin, 'data-ui-skin') +
       segBtn(tr('uiSkinNeon'), 'neon', uiSkin, 'data-ui-skin') +
+      '</div></div>' +
+      '<div class="st-group"><div class="st-label">' + tr('settingsTableDensity') + '</div>' +
+      '<p class="st-hint">' + tr('settingsTableDensityDesc') + '</p>' +
+      '<div class="seg" role="group" aria-label="' + tr('settingsTableDensity') + '">' +
+      segBtn(tr('tableDensityCompact'), 'compact', tableDensity, 'data-table-density') +
+      segBtn(tr('tableDensityComfortable'), 'comfortable', tableDensity, 'data-table-density') +
       '</div></div>' +
       '<div class="st-group"><div class="st-label">' + tr('settingsSkin') + '</div>' +
       '<div class="seg" role="group" aria-label="' + tr('settingsSkin') + '">' +
@@ -290,6 +297,22 @@ const SECTION_TITLES = {
           document.body.classList.add('ui-skin-' + prefs.uiSkin);
         }
         setActive(body, 'ui-skin', typeof getUiSkin === 'function' ? getUiSkin() : prefs.uiSkin);
+      });
+    });
+
+    body.querySelectorAll('.seg-btn[data-table-density]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const val = btn.getAttribute('data-table-density');
+        if (typeof applyTableDensity === 'function') applyTableDensity(val);
+        else {
+          prefs.tableDensity = val;
+          savePrefsSafe();
+          document.body.classList.remove('table-density-compact', 'table-density-comfortable');
+          document.body.classList.add('table-density-' + val);
+        }
+        setActive(body, 'table-density', val);
+        if (typeof refreshViews === 'function') refreshViews();
+        else refreshViewsSafe();
       });
     });
 
@@ -342,6 +365,7 @@ const SECTION_TITLES = {
         if (typeof resetCellColors === 'function') resetCellColors();
         if (typeof saveCellSkin === 'function') saveCellSkin('full', true);
         if (typeof applyUiSkin === 'function') applyUiSkin('industrial');
+        if (typeof applyTableDensity === 'function') applyTableDensity('compact');
         refreshViewsSafe();
         toast('success', 'persSaved');
         renderSettingsSection('appearance', body); // refresh all controls

@@ -99,6 +99,31 @@ if (prefs.dark && !prefs.theme) prefs.theme = 'dark';
 applyTheme(THEME_VALUES.includes(prefs.theme) ? prefs.theme : 'light');
 applyUiSkinFromPrefs();
 
+/* === TABLE DENSITY (compact | comfortable) === */
+const TABLE_DENSITY_VALUES = ['compact', 'comfortable'];
+
+function getTableDensity() {
+  const d = prefs && prefs.tableDensity;
+  return TABLE_DENSITY_VALUES.includes(d) ? d : 'compact';
+}
+
+function applyTableDensity(density, persist) {
+  const next = TABLE_DENSITY_VALUES.includes(density) ? density : 'compact';
+  prefs.tableDensity = next;
+  if (persist !== false && typeof savePrefs === 'function') savePrefs(prefs);
+  document.body.classList.remove('table-density-compact', 'table-density-comfortable');
+  document.body.classList.add('table-density-' + next);
+}
+
+function applyTableDensityFromPrefs() {
+  applyTableDensity(getTableDensity(), false);
+}
+
+window.getTableDensity = getTableDensity;
+window.applyTableDensity = applyTableDensity;
+
+applyTableDensityFromPrefs();
+
 function toggleTheme() {
   applyTheme(_getEffectiveTheme() === 'dark' ? 'light' : 'dark');
 }
