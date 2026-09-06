@@ -891,7 +891,22 @@ window.translations.en = {
   factoryDraftsReset: 'All drafts reset',
   factoryExportDownloaded: 'Export file downloaded',
   factoryExportInstructions:
-    'The downloaded file contains the yearly schedule. Paste it into the factory data source (Google Sheet) to update the schedule.',
+    'The downloaded file contains the public schedule for the selected year.',
+  factoryExportDeployTitle: 'Deployment instructions',
+  factoryExportDeployIntro:
+    'The {year}.js file has been downloaded. To publish the schedule for all users:',
+  factoryExportDeployStepFile:
+    'Place {year}.js in js/schedules/gillette/.',
+  factoryExportDeployStepIndex:
+    'When adding a new year, add its script tag to index.html directly after the other yearly schedule files.',
+  factoryExportDeployStepCache:
+    'When adding a new year, add ./js/schedules/gillette/{year}.js to the ASSETS array in sw.js.',
+  factoryExportDeployStepCommit:
+    'Review the changes, then commit the year file and any required index.html and sw.js updates.',
+  factoryExportDeployStepPush:
+    'Push the commit to the main branch. GitHub Actions will publish the new application version.',
+  factoryExportExistingYearHint:
+    'When updating an existing year, replace only its file. Do not change index.html or sw.js if that year is already registered.',
   syncDiffFactoryDrafts: 'Factory schedule drafts differ between devices',
 
   // === ADMIN CENTER (full UI strings) ===

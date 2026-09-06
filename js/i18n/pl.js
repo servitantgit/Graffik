@@ -893,7 +893,22 @@ window.translations.pl = {
   factoryDraftsReset: 'Wszystkie szkice zresetowane',
   factoryExportDownloaded: 'Plik eksportu pobrany',
   factoryExportInstructions:
-    'Pobrany plik zawiera grafik roku. Wklej go do źródła danych fabrycznych (arkusza Google), aby zaktualizować grafik.',
+    'Pobrany plik zawiera publiczny grafik wybranego roku.',
+  factoryExportDeployTitle: 'Instrukcja wdrożenia',
+  factoryExportDeployIntro:
+    'Plik {year}.js został pobrany. Aby opublikować grafik dla wszystkich użytkowników:',
+  factoryExportDeployStepFile:
+    'Umieść plik {year}.js w katalogu js/schedules/gillette/.',
+  factoryExportDeployStepIndex:
+    'Jeśli dodajesz nowy rok, dodaj jego znacznik script w index.html bezpośrednio po pozostałych plikach rocznych.',
+  factoryExportDeployStepCache:
+    'Jeśli dodajesz nowy rok, dodaj ./js/schedules/gillette/{year}.js do tablicy ASSETS w sw.js.',
+  factoryExportDeployStepCommit:
+    'Sprawdź zmiany, a następnie zatwierdź plik roku oraz wymagane zmiany index.html i sw.js.',
+  factoryExportDeployStepPush:
+    'Wyślij commit do gałęzi main. GitHub Actions opublikuje nową wersję aplikacji.',
+  factoryExportExistingYearHint:
+    'Przy aktualizacji istniejącego roku wystarczy zastąpić jego plik. Nie zmieniaj index.html ani sw.js, jeśli ten rok jest już zarejestrowany.',
   syncDiffFactoryDrafts: 'Szkice grafiku fabrycznego różnią się między urządzeniami',
 
   // === ADMIN CENTER (full UI strings) ===

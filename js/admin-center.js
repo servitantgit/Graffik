@@ -517,34 +517,38 @@ ${hoursInner}
  * @param {number} year
  */
 function showInstructionsModal(year) {
+  const params = { year };
   const body = `
     <div style="padding:12px; background:var(--bg-info); border-radius:10px; margin-bottom:15px;">
       <p style="margin:0; font-weight:600; color:var(--text-header);">
-        ✅ Файл скачано: <code>${year}.js</code>
+        ✅ ${t('factoryExportDownloaded')}: <code>${year}.js</code>
+      </p>
+      <p style="margin:8px 0 0; color:var(--text-muted); font-size:13px;">
+        ${t('factoryExportInstructions')}
       </p>
     </div>
-    <p style="font-weight:600; margin-bottom:10px;">📦 Деплой (автопідключення script + SW):</p>
+
+    <p style="font-weight:600; margin-bottom:10px;">
+      ${t('factoryExportDeployIntro', params)}
+    </p>
+
     <ol style="line-height:1.7; font-size:14px; padding-left:22px;">
-      <li>Помісти <code>${year}.js</code> у <code>js/schedules/gillette/</code></li>
-      <li>У корені проєкту запусти:<br>
-        <code>python3 tools/sync_schedule_assets.py</code><br>
-        <span style="font-size:12px;color:var(--text-muted);">Скрипт сам оновить <code>index.html</code> і <code>sw.js</code></span>
-      </li>
-      <li><code>git add js/schedules/gillette/${year}.js index.html sw.js</code></li>
-      <li><code>git commit -m "chore(data): add ${year} factory schedule"</code></li>
-      <li><code>git push</code> → GitHub Actions задеплоїть (2–5 хв)</li>
-      <li>Юзери побачать toast про нову версію</li>
+      <li>${t('factoryExportDeployStepFile', params)}</li>
+      <li>${t('factoryExportDeployStepIndex', params)}</li>
+      <li>${t('factoryExportDeployStepCache', params)}</li>
+      <li>${t('factoryExportDeployStepCommit', params)}</li>
+      <li>${t('factoryExportDeployStepPush', params)}</li>
     </ol>
+
     <p style="font-size:12px; color:var(--text-muted); margin-top:12px; padding-top:12px; border-top:1px solid var(--border-cell);">
-      💡 Для <b>оновлення існуючого</b> року достатньо замінити файл і push
-      (sync-скрипт можна не запускати, якщо index/sw уже містять цей рік).
+      💡 ${t('factoryExportExistingYearHint', params)}
     </p>
   `;
 
   showModal({
-    title: '📦 Інструкція деплою',
-    body: body,
-    buttons: [{ text: 'Зрозуміло', class: 'primary' }],
+    title: `📦 ${t('factoryExportDeployTitle')}`,
+    body,
+    buttons: [{ text: t('gotIt'), class: 'primary' }],
   });
 }
 

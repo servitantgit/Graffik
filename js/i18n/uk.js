@@ -891,7 +891,22 @@ window.translations.uk = {
   factoryDraftsReset: 'Усі чернетки скинуто',
   factoryExportDownloaded: 'Файл експорту завантажено',
   factoryExportInstructions:
-    'Завантажений файл містить річний графік. Вставте його в джерело заводських даних (Google Таблицю), щоб оновити графік.',
+    'Завантажений файл містить публічний графік вибраного року.',
+  factoryExportDeployTitle: 'Інструкція з розгортання',
+  factoryExportDeployIntro:
+    'Файл {year}.js завантажено. Щоб опублікувати графік для всіх користувачів:',
+  factoryExportDeployStepFile:
+    'Помістіть файл {year}.js у каталог js/schedules/gillette/.',
+  factoryExportDeployStepIndex:
+    'Якщо додаєте новий рік, додайте його тег script до index.html одразу після інших файлів річних графіків.',
+  factoryExportDeployStepCache:
+    'Якщо додаєте новий рік, додайте ./js/schedules/gillette/{year}.js до масиву ASSETS у sw.js.',
+  factoryExportDeployStepCommit:
+    'Перевірте зміни, а потім закомітьте файл року та необхідні зміни index.html і sw.js.',
+  factoryExportDeployStepPush:
+    'Надішліть commit у гілку main. GitHub Actions опублікує нову версію додатка.',
+  factoryExportExistingYearHint:
+    'Для оновлення наявного року достатньо замінити його файл. Не змінюйте index.html або sw.js, якщо цей рік уже зареєстрований.',
   syncDiffFactoryDrafts: 'Чернетки заводського графіка відрізняються між пристроями',
 
   // === ADMIN CENTER (full UI strings) ===
