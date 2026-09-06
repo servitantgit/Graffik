@@ -460,12 +460,8 @@
             <p><strong>${t('appName')}</strong></p>
             <p>${t('aboutDescription')}</p>
             <p><strong>${t('aboutVersion')}</strong>: <span id="about-version">2.0.0</span></p>
-            <p><strong>${t('aboutPrivacy')}</strong>: ${t('aboutOffline')}</p>
             <p><strong>${t('menuGitHub')}</strong>: <a href="https://github.com/servitantgit/Graffik" target="_blank" rel="noopener noreferrer">github.com/servitantgit/Graffik</a></p>
             <p><strong>${t('aboutDeveloper')}</strong>: <a href="mailto:servitant@gmail.com">servitant@gmail.com</a></p>
-            <p><strong>${t('menuShareCenter')}</strong>: ${t('shareCenterTitle')} (${t('shareCurrentView')})</p>
-            <p><strong>Online/Offline</strong>: <span id="about-online-status">Checking...</span></p>
-            <p><strong>PWA Status</strong>: <span id="about-pwa-status">Checking...</span></p>
             <button id="about-check-update" class="btn-primary">${t('aboutCheckUpdates')}</button>
           </div>
         `,
@@ -483,19 +479,6 @@
                 })
                 .catch(() => {/* ignore */});
             }
-          }
-          // Online status
-          const onlineEl = body.querySelector('#about-online-status');
-          if (onlineEl) {
-            onlineEl.textContent = navigator.onLine ? t('driveLoggedInHint') : t('driveLoginRequired');
-            onlineEl.style.color = navigator.onLine ? 'var(--text-header)' : 'var(--text-muted)';
-          }
-          // PWA status
-          const pwaEl = body.querySelector('#about-pwa-status');
-          if (pwaEl) {
-            const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-            pwaEl.textContent = standalone ? t('installApp') : 'Browser';
-            pwaEl.style.color = standalone ? 'var(--text-header)' : 'var(--text-muted)';
           }
           // Check for updates button
           const checkUpdateBtn = body.querySelector('#about-check-update');
