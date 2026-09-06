@@ -311,20 +311,14 @@ function buildComparableSyncState(payload) {
       ? prefs
       : {};
 
-  const publicFactory = source
-    ? source.factorySchedule && typeof source.factorySchedule === 'object'
-      ? source.factorySchedule
-      : typeof factorySchedule !== 'undefined'
-        ? factorySchedule
-        : {}
-    : typeof factorySchedule !== 'undefined'
+  const currentFactory =
+    typeof factorySchedule !== 'undefined' && factorySchedule
       ? factorySchedule
       : {};
 
-  const personalSchedule = source
-    ? source.customSchedule || {}
-    : typeof customSchedule !== 'undefined'
-      ? customSchedule
+  const personalOverrides =
+    typeof getPersonalShiftOverrides === 'function'
+      ? getPersonalShiftOverrides(source)
       : {};
 
   const drafts = source
@@ -338,8 +332,8 @@ function buildComparableSyncState(payload) {
     : sourcePrefs.urlopLimits || {};
 
   return {
-    customSchedule: buildPersonalScheduleOverrides(personalSchedule, publicFactory),
-    factoryDrafts: buildFactoryDraftOverrides(drafts, publicFactory),
+    customSchedule: personalOverrides,
+    factoryDrafts: buildFactoryDraftOverrides(drafts, currentFactory),
     urlops: source
       ? source.urlops || {}
       : typeof urlops !== 'undefined'
