@@ -101,29 +101,6 @@ function renderCalendar(direction) {
       else cell.classList.add('cycle-middle');
     }
 
-    if (compareShift && !isFactoryPaintingMode) {
-      // Compare must use the same data source as visible cells (factory when privacy)
-      let s1, s2;
-      if (hidePrivate) {
-        s1 =
-          factorySchedule[currentYear] &&
-          factorySchedule[currentYear][currentMonth] &&
-          factorySchedule[currentYear][currentMonth][selectedShift]
-            ? factorySchedule[currentYear][currentMonth][selectedShift][d - 1]
-            : '';
-        s2 =
-          factorySchedule[currentYear] &&
-          factorySchedule[currentYear][currentMonth] &&
-          factorySchedule[currentYear][currentMonth][compareShift]
-            ? factorySchedule[currentYear][currentMonth][compareShift][d - 1]
-            : '';
-      } else {
-        s1 = getShiftAtWithPending(currentYear, currentMonth, d, selectedShift);
-        s2 = getShiftAtWithPending(currentYear, currentMonth, d, compareShift);
-      }
-      if (s1 === s2 && !isWolne(s1)) cell.classList.add('compare-match');
-      if (isWolne(s1) && isWolne(s2)) cell.classList.add('compare-match');
-    }
 
     const numEl = document.createElement('div');
     numEl.className = 'day-num';

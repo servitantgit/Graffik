@@ -79,7 +79,6 @@ el.className = 'mini-day m' + cls;
 
         currentMonth = m;
         selectedDay = d;
-        compareShift = null;
         yearMode = false;
         prefs.shift = selectedShift;
         prefs.yearMode = false;
@@ -225,7 +224,6 @@ let s = getShiftAtWithPending(currentYear, month, d, brig);
         selectedShift = brig;
         currentMonth = month;
         selectedDay = d;
-        compareShift = null;
         yearMode = false;
         prefs.shift = selectedShift;
         prefs.yearMode = false;

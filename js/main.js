@@ -12,7 +12,6 @@ prefs.restoreLastView =
 let currentYear = prefs.year || 2026;
 let currentMonth = new Date().getMonth() + 1;
 let selectedShift = prefs.shift || 'A';
-let compareShift = null;
 let selectedDay = null;
 /* Startup view: URL parameters override everything (applyUrlParams below);
     otherwise honor restoreLastView, falling back to the start view. */
@@ -164,7 +163,6 @@ function refreshViews() {
 function updateShiftButtons() {
   document.querySelectorAll('.shift-btn').forEach((b) => {
     b.classList.remove('active');
-    b.classList.remove('compare');
     if (b.dataset.shift === selectedShift) b.classList.add('active');
   });
 }
@@ -346,11 +344,9 @@ document.querySelectorAll('.shift-btn').forEach((btn) => {
   btn.onclick = () => {
     document.querySelectorAll('.shift-btn').forEach((brigadeButton) => {
       brigadeButton.classList.remove('active');
-      brigadeButton.classList.remove('compare');
     });
     btn.classList.add('active');
     selectedShift = btn.dataset.shift;
-    compareShift = null;
     prefs.shift = selectedShift;
     savePrefs(prefs);
     refreshViews();
