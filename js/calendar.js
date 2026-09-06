@@ -706,11 +706,41 @@ function renderInfo() {
           </div>
         </div>`;
 
-      // Note card
+      // Notes card: overtime notes remain attached to their OT records,
+      // while the editable field remains the independent day note.
+      const overtimeNoteRows = [
+        existingOtAntes && existingOtAntes.note
+          ? `<div class="overtime-note-row">
+              <strong>${t('otBefore')}</strong>
+              <span>${escapeHtml(existingOtAntes.note)}</span>
+            </div>`
+          : '',
+        existingOtDespu && existingOtDespu.note
+          ? `<div class="overtime-note-row">
+              <strong>${t('otAfter')}</strong>
+              <span>${escapeHtml(existingOtDespu.note)}</span>
+            </div>`
+          : '',
+      ]
+        .filter(Boolean)
+        .join('');
+
       const noteCard = `
-        <div class="info-card" style="grid-column:1/-1;">
+        <div class="info-card info-section-note" style="grid-column:1/-1;">
           <div class="label">${t('infoNote')}</div>
-          <div class="value"><input class="note-input" id="noteInput" value="${escapeHtml(notes[noteKey] || '')}" placeholder="${t('infoNotePlaceholder')}"></div>
+          ${
+            overtimeNoteRows
+              ? `<div class="overtime-note-list">${overtimeNoteRows}</div>`
+              : ''
+          }
+          <div class="value">
+            <input
+              class="note-input"
+              id="noteInput"
+              value="${escapeHtml(notes[noteKey] || '')}"
+              placeholder="${t('infoNotePlaceholder')}"
+            >
+          </div>
         </div>`;
 
       // Vacation summary

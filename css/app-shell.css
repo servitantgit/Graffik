@@ -1231,6 +1231,46 @@ body.compact-cells .info-section {
   font-size: 12px;
   text-align: center;
 }
+
+/* Add-shift modal: global small text must not override button contrast. */
+.add-shift-modal-btn small {
+  color: inherit;
+}
+
+/* OT notes stay separate from the editable general day note. */
+.overtime-note-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 10px 0 12px;
+}
+
+.overtime-note-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border-cell);
+  border-radius: 8px;
+  background: var(--bg-controls);
+  color: var(--text-main);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.overtime-note-row strong {
+  flex: 0 0 auto;
+  color: var(--text-header);
+  font-size: 12px;
+}
+
+.overtime-note-row span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
 .privacy-disable-btn {
   padding: 8px 16px;
   border: 1px solid var(--border-cell);
