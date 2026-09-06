@@ -263,52 +263,7 @@ function openVacationLimitModal() {
   });
 }
 
-bindClick('editVacationLimitBtn', () => {
-  openVacationLimitModal();
-});
-
 /* === CZYSZCZENIE ROKU / RESET === */
-bindClick('clearYearBtn', () => {
-  showConfirm(
-    t('clearYearTitle', { year: currentYear }),
-    t('clearYearBody'),
-    () => {
-      delete customSchedule[currentYear];
-      saveCustomSchedule(customSchedule);
-      Object.keys(pendingChanges).forEach((k) => {
-        if (parseInt(k.split('-')[0], 10) === currentYear) {
-          delete pendingChanges[k];
-          delete pendingOriginals[k];
-        }
-      });
-      undoStack = [];
-      redoStack = [];
-      updateDirtyIndicator();
-      refreshViews();
-      showToast('warn', t('yearCleared', { year: currentYear }));
-    },
-    { primaryText: t('clearYearBtn'), primaryClass: 'danger' }
-  );
-});
-
-bindClick('resetCustomBtn', () => {
-  showConfirm(
-    t('resetTitle'),
-    t('resetBody'),
-    () => {
-      customSchedule = {};
-      saveCustomSchedule(customSchedule);
-      pendingChanges = {};
-      pendingOriginals = {};
-      undoStack = [];
-      redoStack = [];
-      updateDirtyIndicator();
-      refreshViews();
-      showToast('warn', t('resetSuccess'));
-    },
-    { primaryText: t('resetBtn'), primaryClass: 'danger' }
-  );
-});
 
 /* === SHARE APP HELPERS === */
 function getAppUrl() {
