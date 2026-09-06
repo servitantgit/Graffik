@@ -41,7 +41,6 @@ const ASSETS = [
   './js/i18n/i18n.js',
   './js/personalization.js',
   './js/app-shell.js',
-  './js/day-editor.js',
   './js/settings.js',
   './js/admin-center.js',
   './js/main.js',
