@@ -299,6 +299,11 @@ window.translations.en = {
   faqIntro:
     'Click a question to see the answer. Below you will find a detailed description of tabs, features and what the application shows.',
   faqOk: 'I understand',
+  faqUiModeTitle: '🎛️ What is the difference between Basic and Advanced mode?',
+  faqUiModeDesc: 'The app has two interface modes — you can choose in Settings → Interface mode.',
+  faqUiModeSimple: '🟢 Basic (for new users) — calendar, brigades, vacations. Hides less-used features: overtime, notes, notifications, privacy, custom colors.',
+  faqUiModeAdvanced: '🔵 Advanced (for experienced users) — all features: overtime (before/after shift, on day off), day notes, shift notifications, privacy mode, R/P/N/U color customization.',
+  faqUiModeAutoDetect: '💡 On first launch, the app detects if you already have data (vacations, overtime, notes). If yes — you stay in Advanced mode. If no — you start with Basic.',
   faqStartTitle: '🚀 How to get started with the app?',
   faqStart1: 'Choose your brigade (A/B/C/D)',
   faqStart2: 'Choose the year with the arrow keys ‹ ›',

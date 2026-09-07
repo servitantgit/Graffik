@@ -50,6 +50,17 @@ function renderFAQ(container) {
 
   const faqItems = [
     {
+      title: t('faqUiModeTitle'),
+      content: `
+                 <p>${t('faqUiModeDesc')}</p>
+                 <ul>
+                     <li>${t('faqUiModeSimple')}</li>
+                     <li>${t('faqUiModeAdvanced')}</li>
+                 </ul>
+                 <p>${t('faqUiModeAutoDetect')}</p>
+             `,
+    },
+    {
       title: t('faqStartTitle'),
       content: `
                  <ol>

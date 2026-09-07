@@ -298,6 +298,11 @@ window.translations.pl = {
   faqIntro:
     'Kliknij pytanie, aby zobaczyć odpowiedź. Poniżej znajdziesz szczegółowy opis zakładek, możliwości i tego, co aplikacja pokazuje.',
   faqOk: 'Rozumiem',
+  faqUiModeTitle: '🎛️ Czym różni się tryb Podstawowy od Zaawansowanego?',
+  faqUiModeDesc: 'Aplikacja ma dwa tryby interfejsu — możesz wybrać w Ustawieniach → Tryb interfejsu.',
+  faqUiModeSimple: '🟢 Podstawowy (dla nowych użytkowników) — kalendarz, brygady, urlopy. Ukrywa mniej używane funkcje: nadgodziny, notatki, powiadomienia, prywatność, niestandardowe kolory.',
+  faqUiModeAdvanced: '🔵 Zaawansowany (dla doświadczonych) — wszystkie funkcje: nadgodziny (przed/po zmianie, w dzień wolny), notatki do dni, powiadomienia o zmianach, tryb prywatności, personalizacja kolorów R/P/N/U.',
+  faqUiModeAutoDetect: '💡 Przy pierwszym uruchomieniu aplikacja wykrywa czy masz już dane (urlopy, nadgodziny, notatki). Jeśli tak — zostajesz w trybie Zaawansowanym. Jeśli nie — zaczynasz od Podstawowego.',
   faqStartTitle: '🚀 Jak zacząć pracę z aplikacją?',
   faqStart1: 'Wybierz swoją brygadę (A/B/C/D)',
   faqStart2: 'Wybierz rok strzałkami ‹ ›',
