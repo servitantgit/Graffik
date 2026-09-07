@@ -694,21 +694,46 @@ return factoryMonthHours[year][month];
  }
 
 function countPersonalCustomShifts() {
-     if (!customSchedule || typeof customSchedule !== 'object') return 0;
-     let count = 0;
-     const walk = (obj) => {
-       if (!obj || typeof obj !== 'object') return;
-       if (Array.isArray(obj)) {
-         obj.forEach((v) => {
-           if (v != null && v !== '' && v !== 0) count++;
-         });
-         return;
-       }
-       Object.keys(obj).forEach((k) => walk(obj[k]));
-     };
-     walk(customSchedule);
-     return count;
-   }
+  if (typeof getPersonalShiftOverrides !== 'function') return 0;
+  const overrides = getPersonalShiftOverrides();
+  return Object.keys(overrides).length;
+}
+
+/**
+ * ONE-SHOT MIGRATION: cleanup customSchedule from mirror entries.
+ * Historical bug: ensureCustomYear() deep-cloned factorySchedule into customSchedule
+ * on first edit, leaving 1000+ mirror entries that identical to factory.
+ * This migration removes them, keeping only real overrides.
+ * Runs once (flagged by prefs.personalDataMigratedV5).
+ */
+function cleanupCustomScheduleMirrors() {
+  if (prefs.personalDataMigratedV5 === true) return;
+  if (typeof getPersonalShiftOverrides !== 'function') return;
+  if (!customSchedule || typeof customSchedule !== 'object') {
+    prefs.personalDataMigratedV5 = true;
+    savePrefs(prefs);
+    return;
+  }
+  try {
+    const realOverrides = getPersonalShiftOverrides();
+    const cleanCustom = typeof buildCustomScheduleFromShiftOverrides === 'function'
+      ? buildCustomScheduleFromShiftOverrides(realOverrides, factorySchedule)
+      : {};
+
+    Object.keys(customSchedule).forEach((key) => delete customSchedule[key]);
+    Object.assign(customSchedule, cleanCustom);
+    saveCustomSchedule(customSchedule);
+
+    console.log('[migration] Cleaned customSchedule mirrors. Real overrides:', Object.keys(realOverrides).length);
+  } catch (error) {
+    console.error('[migration] cleanupCustomScheduleMirrors failed:', error);
+  }
+
+  prefs.personalDataMigratedV5 = true;
+  savePrefs(prefs);
+}
+
+window.cleanupCustomScheduleMirrors = cleanupCustomScheduleMirrors;
 
    function countVacations() {
      if (!urlops || typeof urlops !== 'object') return 0;

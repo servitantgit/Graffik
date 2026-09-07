@@ -380,6 +380,16 @@ if (!window._gilletteTimer) {
 
 /* === START === */
 updateShiftButtons();
+
+/* One-shot migration: clean customSchedule from factory mirrors (v5) */
+if (typeof cleanupCustomScheduleMirrors === 'function') {
+  try {
+    cleanupCustomScheduleMirrors();
+  } catch (e) {
+    console.warn('[main] cleanupCustomScheduleMirrors failed:', e);
+  }
+}
+
 if (typeof updateAppShellUI === 'function') updateAppShellUI();
 refreshViews();
 
