@@ -797,6 +797,9 @@ window.translations.uk = {
   aboutDeveloper: 'Розробник',
   aboutCheckUpdates: 'Перевірити оновлення',
   aboutUpdateChecking: 'Перевірка...',
+  aboutUpdateUpToDate: 'У вас остання версія',
+  aboutUpdateError: 'Не вдалося перевірити оновлення',
+  aboutUpdateNotSupported: 'Оновлення не підтримуються в цьому браузері',
 
   // === DAY EDITOR ===
   dayActionsTitle: 'Для цього дня',

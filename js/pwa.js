@@ -307,15 +307,31 @@ window.sendTestNotification = function () {
 
 window.checkForAppUpdate = function () {
   if (!('serviceWorker' in navigator)) {
-    showToast('info', t('aboutUpdateChecking'));
+    showToast('error', t('aboutUpdateNotSupported'));
     return;
   }
+
   showToast('info', t('aboutUpdateChecking'));
-  navigator.serviceWorker.getRegistrations().then(function (regs) {
-    regs.forEach(function (reg) {
-      reg.update();
+  window._updatePromptShown = false;
+
+  navigator.serviceWorker.getRegistrations()
+    .then(function (regs) {
+      if (!regs || regs.length === 0) {
+        showToast('error', t('aboutUpdateError'));
+        return;
+      }
+      return Promise.all(regs.map(function (reg) { return reg.update(); }));
+    })
+    .then(function () {
+      setTimeout(function () {
+        if (window._updatePromptShown) return;
+        showToast('success', '✅ ' + t('aboutUpdateUpToDate'));
+      }, 2500);
+    })
+    .catch(function (error) {
+      console.warn('[pwa]', 'checkForAppUpdate failed', error);
+      showToast('error', t('aboutUpdateError'));
     });
-  });
 };
 
 function requestNotificationPermission() {

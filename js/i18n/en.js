@@ -797,6 +797,9 @@ window.translations.en = {
   aboutDeveloper: 'Developer',
   aboutCheckUpdates: 'Check for updates',
   aboutUpdateChecking: 'Checking...',
+  aboutUpdateUpToDate: 'You have the latest version',
+  aboutUpdateError: 'Failed to check for updates',
+  aboutUpdateNotSupported: 'Updates are not supported in this browser',
 
   // === DAY EDITOR ===
   dayActionsTitle: 'For this day',

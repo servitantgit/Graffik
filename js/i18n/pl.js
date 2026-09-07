@@ -799,6 +799,9 @@ window.translations.pl = {
   aboutDeveloper: 'Autor',
   aboutCheckUpdates: 'Sprawdź aktualizacje',
   aboutUpdateChecking: 'Sprawdzanie...',
+  aboutUpdateUpToDate: 'Masz najnowszą wersję',
+  aboutUpdateError: 'Nie udało się sprawdzić aktualizacji',
+  aboutUpdateNotSupported: 'Aktualizacje nie są obsługiwane w tej przeglądarce',
 
   // === DAY EDITOR ===
   dayActionsTitle: 'Dla tego dnia',
