@@ -1,3 +1,38 @@
+# Unreleased — Post Simple/Advanced Fixes
+
+## Fixed
+- **Sync count badge** — показує реальну кількість різниць між локальними даними і Drive, замість counter save-операцій. Раніше badge показував `⚠ 8` коли реально відрізнялась лише 1 нотатка. Тепер після відкриття sync modal обчислюється справжній diff і кешується в `lastKnownDiffCount`.
+- **Note double-save** — виправлено baг з AGENT.md розділу 10. Note зберігається один раз замість двох (при change + blur). Додано:
+  - `saveInProgress` flag з 100ms cooldown
+  - `commitNote()` named function
+  - Blur event listener (гарантує save якщо change не спрацював)
+  - Enter key handler (preventDefault + blur → clean save)
+- **i18n missing keys** — виявлено і виправлено через новий audit tool:
+  - `infoWorking` (був сирий у Info Panel) → Zmiana/Shift/Зміна
+  - `adminAuthLost` (був сирий у admin logout toast) → перекладено в 3 мовах
+  - `en.login` (був `login` замість перекладу) → `sign in`
+
+## Added
+- **`tools/i18n-audit.js`** — standalone Node.js аудит-скрипт:
+  - Missing keys (used in code, not in i18n)
+  - Unused keys (defined but never called)
+  - Parity mismatches (pl vs en vs uk)
+  - Untranslated values (value === key)
+  - Placeholder mismatches (`{name}` різниться між мовами)
+  - Запуск: `node tools/i18n-audit.js`
+  - Read-only, не модифікує production files
+  - Exit code 0/1 для CI integration в майбутньому
+- **`sanitizePrefs()`** в `js/core.js` — internal safety net що валідує структуру `prefs` при завантаженні з localStorage:
+  - Захищає від corrupted localStorage (сторонні скрипти, ручне редагування)
+  - Обробляє legacy формат prefs зі старих версій
+  - Sanitize invalid values → safe defaults з console warning
+  - Preserved unknown keys (forward compatibility)
+  - Тестовано 28 сценаріями (валідні prefs, corrupted values, empty, non-object, malformed JSON, unknown keys)
+  - Non-destructive: заміна на default тільки для конкретного поля, не всієї prefs
+- Console warnings з prefix `[core]` при виявленні invalid prefs values (для debug)
+
+---
+
 # Unreleased — Simple/Advanced UI Mode
 
 ## Added
