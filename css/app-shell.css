@@ -1311,6 +1311,37 @@ body.compact-cells .info-section {
   margin-top: 16px;
 }
 
+/* === SETTINGS WARNING BLOCK === */
+.st-warning {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(243, 156, 18, 0.12);
+  border-left: 4px solid #f39c12;
+  color: var(--text-main);
+}
+
+.st-warning-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f39c12;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.st-warning-title::before {
+  content: '⚠️';
+  font-size: 15px;
+}
+
+.st-warning-body {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+
 /* === FACTORY EDITOR BAR === */
 #factoryEditorBar {
    position: fixed;

@@ -483,6 +483,8 @@ window.translations.pl = {
   settingsVacationDesc: 'Dni dla brygady',
   settingsNotifications: 'Powiadomienia o zmianach',
   settingsNotificationsDesc: 'Przypomnienia przed zmianą',
+  settingsNotificationsPwaLimitTitle: 'Ograniczenia powiadomień w przeglądarce',
+  settingsNotificationsPwaLimitBody: 'Powiadomienia działają tylko gdy aplikacja jest otwarta w przeglądarce lub jako zainstalowane PWA na ekranie głównym. Dla niezawodnych przypomnień o zmianach planowana jest natywna aplikacja Android.',
   settingsPrivacy: 'Tryb prywatności',
   settingsPrivacyDesc: 'Ukryj dane osobiste na ekranie',
   skinFull: 'Pełne wypełnienie',

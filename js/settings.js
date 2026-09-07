@@ -404,6 +404,12 @@ const SECTION_TITLES = {
 
     return (
       '<div class="settings-section">' +
+      '<div class="st-group">' +
+      '<div class="st-warning">' +
+      '<div class="st-warning-title">' + tr('settingsNotificationsPwaLimitTitle') + '</div>' +
+      '<div class="st-warning-body">' + tr('settingsNotificationsPwaLimitBody') + '</div>' +
+      '</div>' +
+      '</div>' +
       '<div class="st-group"><div class="st-label">' + tr('settingsNotificationsDesc') + '</div>' +
       '<div class="st-perm st-perm-' + permClass + '">' + permLabel + '</div>' +
       '</div>' +

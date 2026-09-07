@@ -480,6 +480,8 @@ window.translations.uk = {
   settingsVacationDesc: 'Днів для бригади',
   settingsNotifications: 'Сповіщення про зміни',
   settingsNotificationsDesc: 'Нагадування перед зміною',
+  settingsNotificationsPwaLimitTitle: 'Обмеження сповіщень у браузері',
+  settingsNotificationsPwaLimitBody: 'Сповіщення працюють тільки коли додаток відкритий у браузері або як встановлений PWA на головному екрані. Для надійних нагадувань про зміни планується нативний Android додаток.',
   settingsPrivacy: 'Режим приватності',
   settingsPrivacyDesc: 'Приховати особисті дані на екрані',
   skinFull: 'Повна заливка',

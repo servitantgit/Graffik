@@ -481,6 +481,8 @@ window.translations.en = {
   settingsVacationDesc: 'Days per brigade',
   settingsNotifications: 'Shift notifications',
   settingsNotificationsDesc: 'Reminders before shift',
+  settingsNotificationsPwaLimitTitle: 'Browser notification limits',
+  settingsNotificationsPwaLimitBody: 'Notifications only work while the app is open in the browser or as an installed PWA on the home screen. A native Android app is planned for reliable shift reminders.',
   settingsPrivacy: 'Privacy mode',
   settingsPrivacyDesc: 'Hide personal data on screen',
   skinFull: 'Full fill',
