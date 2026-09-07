@@ -318,13 +318,6 @@
         /* ignore */
       }
     }
-    if (typeof updatePrivacyMenuUI === 'function') {
-      try {
-        updatePrivacyMenuUI();
-      } catch (e) {
-        /* ignore */
-      }
-    }
     if (
       typeof checkDriveRemoteStatus === 'function' &&
       typeof isDriveLoggedIn === 'function' &&

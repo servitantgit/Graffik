@@ -167,27 +167,6 @@ function updateShiftButtons() {
   });
 }
 /* Year picker removed (v4.0.0) — year lives in the context toolbar + top bar. */
-function updatePrivacyMenuUI() {
-  const toggle = document.getElementById('menuPrivacyToggle');
-  const on = !!(prefs && prefs.privacyMode);
-  if (toggle) {
-    toggle.setAttribute('aria-checked', on ? 'true' : 'false');
-    toggle.classList.toggle('checked', on);
-  }
-}
-
-bindClick('menuPrivacyToggle', () => {
-  const next = !(prefs && prefs.privacyMode);
-  if (typeof setPrivacyMode === 'function') setPrivacyMode(next);
-  else {
-    prefs.privacyMode = next;
-    savePrefs(prefs);
-    refreshViews();
-  }
-  updatePrivacyMenuUI();
-  showToast('info', next ? t('privacyOnToast') : t('privacyOffToast'), 3000);
-  closeSideMenu();
-});
 
 /* === NAWIGACJA === */
 function goToMonth(delta) {
