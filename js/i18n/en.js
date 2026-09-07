@@ -847,6 +847,9 @@ window.translations.en = {
   settingsNotificationTest: 'Send test notification',
   settingsVacationUsed: 'Vacation days used',
   settingsVacationRemaining: 'Vacation days remaining',
+  settingsVacationLimit: 'Annual vacation limit',
+  settingsVacationPreUsed: 'Already used before',
+  settingsVacationBreakdown: 'In calendar: {cal}. Entered before: {pre}. Total: {total} of {limit}.',
 
   // === DATA AND PRIVACY SETTINGS ===
   settingsPrivacyLocalFirstExplanation:

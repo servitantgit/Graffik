@@ -226,6 +226,48 @@ function setVacationLimit(brigade, value) {
   return limit;
 }
 
+/**
+ * Get pre-installation vacation days (days used before app install or outside calendar).
+ * @param {string} brigade
+ * @returns {number} >= 0
+ */
+function getVacationPreUsed(brigade) {
+  if (!prefs.vacationPreUsed || typeof prefs.vacationPreUsed !== 'object') return 0;
+  const raw = prefs.vacationPreUsed[brigade];
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 0) return 0;
+  return Math.floor(value);
+}
+
+/**
+ * Set pre-installation vacation days for a brigade.
+ * Marks personal data as unsynced (persists to Drive).
+ * @param {string} brigade
+ * @param {number} value
+ * @returns {number} normalized value that was saved
+ */
+function setVacationPreUsed(brigade, value) {
+  const days = Math.max(0, Math.floor(Number(value) || 0));
+  if (!prefs.vacationPreUsed) prefs.vacationPreUsed = {};
+  prefs.vacationPreUsed[brigade] = days;
+  savePrefs(prefs, true);
+  return days;
+}
+
+/**
+ * Total used vacation days = calendar entries + pre-installation days.
+ * @param {number} year
+ * @param {string} brigade
+ * @returns {number}
+ */
+function getTotalUsedVacation(year, brigade) {
+  const fromCalendar = typeof countWorkingUrlops === 'function'
+    ? countWorkingUrlops(year, brigade)
+    : 0;
+  const preUsed = getVacationPreUsed(brigade);
+  return fromCalendar + preUsed;
+}
+
 /* === Schedule === */
 function makeEmptyMonth(year, month) {
   const dim = new Date(year, month, 0).getDate();

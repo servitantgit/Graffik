@@ -170,7 +170,7 @@ function renderDashboard() {
     `;
   }
 
-  const usedUrlop = hidePrivate ? 0 : countWorkingUrlops(y, selectedShift);
+  const usedUrlop = hidePrivate ? 0 : (typeof getTotalUsedVacation === 'function' ? getTotalUsedVacation(y, selectedShift) : countWorkingUrlops(y, selectedShift));
 
   const otMonthSum = hidePrivate
     ? { h50: 0, h100: 0, h200: 0 }

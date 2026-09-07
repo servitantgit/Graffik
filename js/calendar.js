@@ -745,7 +745,7 @@ function renderInfo() {
         </div>`;
 
       // Vacation summary
-      const usedUrlop = countWorkingUrlops(currentYear, selectedShift);
+      const usedUrlop = typeof getTotalUsedVacation === 'function' ? getTotalUsedVacation(currentYear, selectedShift) : countWorkingUrlops(currentYear, selectedShift);
       const limit = getVacationLimit(selectedShift);
       const remainingUrlop = Math.max(0, limit - usedUrlop);
       const vacationCard = `

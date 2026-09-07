@@ -849,6 +849,9 @@ window.translations.pl = {
   settingsNotificationTest: 'Wyślij powiadomienie testowe',
   settingsVacationUsed: 'Wykorzystane dni urlopu',
   settingsVacationRemaining: 'Pozostałe dni urlopu',
+  settingsVacationLimit: 'Roczny limit urlopu',
+  settingsVacationPreUsed: 'Już wykorzystane wcześniej',
+  settingsVacationBreakdown: 'W kalendarzu: {cal}. Wpisane wcześniej: {pre}. Razem: {total} z {limit}.',
 
   // === DATA AND PRIVACY SETTINGS ===
   settingsPrivacyLocalFirstExplanation:

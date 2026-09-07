@@ -464,8 +464,10 @@ const SECTION_TITLES = {
   function vacationHtml() {
     const brigade = prefs.shift || 'A';
     const limit = typeof getVacationLimit === 'function' ? getVacationLimit(brigade) : 26;
-    const used = typeof countWorkingUrlops === 'function' ? countWorkingUrlops(currentYear, brigade) : 0;
-    const remaining = Math.max(0, limit - used);
+    const fromCalendar = typeof countWorkingUrlops === 'function' ? countWorkingUrlops(currentYear, brigade) : 0;
+    const preUsed = typeof getVacationPreUsed === 'function' ? getVacationPreUsed(brigade) : 0;
+    const totalUsed = fromCalendar + preUsed;
+    const remaining = Math.max(0, limit - totalUsed);
 
     const brigades = ['A', 'B', 'C', 'D'];
 
@@ -480,16 +482,19 @@ const SECTION_TITLES = {
       brigButtons +
       '</div></div>' +
       '<div class="st-group">' +
-      '<div class="st-row"><span class="st-row-label">' + tr('settingsVacationDesc') + '</span>' +
-      '<input type="number" class="st-number" id="stVacLimit" value="' + limit + '" min="0" max="365" aria-label="' + tr('settingsVacationDesc') + '">' +
+      '<div class="st-row"><span class="st-row-label">' + tr('settingsVacationLimit') + '</span>' +
+      '<input type="number" class="st-number" id="stVacLimit" value="' + limit + '" min="0" max="365" aria-label="' + tr('settingsVacationLimit') + '">' +
+      '</div>' +
+      '<div class="st-row"><span class="st-row-label">' + tr('settingsVacationPreUsed') + '</span>' +
+      '<input type="number" class="st-number" id="stVacPreUsed" value="' + preUsed + '" min="0" max="' + limit + '" aria-label="' + tr('settingsVacationPreUsed') + '">' +
       '</div>' +
       '<div class="st-row"><span class="st-row-label">' + tr('settingsVacationUsed') + '</span>' +
-      '<span class="st-mono">' + used + '</span>' +
+      '<span class="st-mono" id="stVacTotalUsed">' + totalUsed + '</span>' +
       '</div>' +
       '<div class="st-row"><span class="st-row-label">' + tr('settingsVacationRemaining') + '</span>' +
-      '<span class="st-mono">' + remaining + '</span>' +
+      '<span class="st-mono" id="stVacRemaining">' + remaining + '</span>' +
       '</div>' +
-      '<p class="st-hint">' + tr('infoUrlopWorking') + ': ' + used + ' / ' + limit + '</p>' +
+      '<p class="st-hint">' + t('settingsVacationBreakdown', { cal: fromCalendar, pre: preUsed, total: totalUsed, limit: limit }) + '</p>' +
       '</div>' +
       '</div>'
     );
@@ -519,6 +524,28 @@ const SECTION_TITLES = {
             toast('success', 'persSaved');
             renderSettingsSection('vacation', body);
           }
+        }
+      });
+    }
+
+    const preUsedInput = body.querySelector('#stVacPreUsed');
+    if (preUsedInput) {
+      preUsedInput.addEventListener('change', function () {
+        const val = parseInt(preUsedInput.value, 10);
+        const brigade = prefs.shift || 'A';
+        const limit = typeof getVacationLimit === 'function' ? getVacationLimit(brigade) : 26;
+
+        if (!Number.isFinite(val) || val < 0) {
+          preUsedInput.value = typeof getVacationPreUsed === 'function' ? getVacationPreUsed(brigade) : 0;
+          return;
+        }
+
+        const clamped = Math.min(val, limit);
+        if (typeof setVacationPreUsed === 'function') {
+          setVacationPreUsed(brigade, clamped);
+          preUsedInput.value = clamped;
+          toast('success', 'persSaved');
+          renderSettingsSection('vacation', body);
         }
       });
     }

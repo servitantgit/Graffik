@@ -847,6 +847,9 @@ window.translations.uk = {
   settingsNotificationTest: 'Надіслати тестове сповіщення',
   settingsVacationUsed: 'Використано днів відпустки',
   settingsVacationRemaining: 'Залишилося днів відпустки',
+  settingsVacationLimit: 'Річний ліміт відпустки',
+  settingsVacationPreUsed: 'Вже відгуляно до цього',
+  settingsVacationBreakdown: 'У календарі: {cal}. Введено раніше: {pre}. Разом: {total} з {limit}.',
 
   // === DATA AND PRIVACY SETTINGS ===
   settingsPrivacyLocalFirstExplanation:
