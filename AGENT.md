@@ -64,6 +64,9 @@ current GitHub Pages deployment workflow;
 current factory-draft storage concept;
 current Admin Center entry point;
 current factory editor period synchronization.
+Simple/Advanced UI mode toggle behavior;
+`.advanced-only` CSS class semantics;
+`prefs.uiMode` default detection logic;
 Local bug fixes inside these areas are allowed. Structural redesign is not.
 
 2. PROJECT OVERVIEW

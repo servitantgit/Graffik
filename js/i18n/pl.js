@@ -827,6 +827,16 @@ window.translations.pl = {
 
   // === SETTINGS ===
   settingsGeneral: 'Ogólne',
+  settingsUiMode: 'Tryb interfejsu',
+  settingsUiModeDesc: 'Podstawowy lub Zaawansowany',
+  uiModeSimple: 'Podstawowy',
+  uiModeAdvanced: 'Zaawansowany',
+  uiModeSimpleDesc: 'Kalendarz, brygady, urlopy — najważniejsze funkcje.',
+  uiModeAdvancedDesc: 'Wszystkie funkcje: nadgodziny, notatki, powiadomienia, prywatność.',
+  uiModeHint: 'Wybierz poziom szczegółowości interfejsu. Możesz zmieniać w każdej chwili.',
+  uiModeSwitchedToSimple: '✅ Tryb podstawowy włączony',
+  uiModeSwitchedToAdvanced: '✅ Tryb zaawansowany włączony',
+  uiModeAdvancedAutoDetected: 'ℹ️ Dodano tryb Podstawowy dla nowych użytkowników. Pozostajesz w trybie Zaawansowanym jako doświadczony użytkownik.',
   settingsAppearance: 'Wygląd',
   settingsDataPrivacy: 'Dane i prywatność',
   settingsAccessibility: 'Dostępność',

@@ -825,6 +825,16 @@ window.translations.uk = {
 
   // === SETTINGS ===
   settingsGeneral: 'Загальні',
+  settingsUiMode: 'Режим інтерфейсу',
+  settingsUiModeDesc: 'Простий або Розширений',
+  uiModeSimple: 'Простий',
+  uiModeAdvanced: 'Розширений',
+  uiModeSimpleDesc: 'Календар, бригади, відпустки — основні функції.',
+  uiModeAdvancedDesc: 'Усі функції: надгодини, нотатки, сповіщення, приватність.',
+  uiModeHint: 'Оберіть рівень складності інтерфейсу. Можна змінити будь-коли.',
+  uiModeSwitchedToSimple: '✅ Простий режим увімкнено',
+  uiModeSwitchedToAdvanced: '✅ Розширений режим увімкнено',
+  uiModeAdvancedAutoDetected: 'ℹ️ Додано Простий режим для новачків. Ви залишаєтесь у Розширеному як досвідчений користувач.',
   settingsAppearance: 'Вигляд',
   settingsDataPrivacy: 'Дані та приватність',
   settingsAccessibility: 'Доступність',

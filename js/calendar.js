@@ -416,6 +416,7 @@ function renderMonthOvertimeSummary() {
 
   if (factoryEditorIsActive) return;
   if (!shouldShowPersonalData()) return;
+  if (typeof isAdvancedMode === 'function' && !isAdvancedMode()) return;
 
   const sum = getMonthOvertimeSummary(currentYear, currentMonth, selectedShift);
   if (sum.count === 0) return;
@@ -661,7 +662,7 @@ function renderInfo() {
 
             <button
               type="button"
-              class="day-action-btn"
+              class="day-action-btn advanced-only"
               data-day-action="extra-shift"
               aria-label="${escapeHtml(t('dayActionExtraShift'))}"
               title="${escapeHtml(extraShiftDisabledReason)}"
@@ -673,7 +674,7 @@ function renderInfo() {
 
             <button
               type="button"
-              class="day-action-btn"
+              class="day-action-btn advanced-only"
               data-day-action="overtime-before"
               aria-label="${escapeHtml(t('dayActionOvertimeBefore'))}"
               title="${escapeHtml(overtimeDisabledReason)}"
@@ -685,7 +686,7 @@ function renderInfo() {
 
             <button
               type="button"
-              class="day-action-btn"
+              class="day-action-btn advanced-only"
               data-day-action="overtime-after"
               aria-label="${escapeHtml(t('dayActionOvertimeAfter'))}"
               title="${escapeHtml(overtimeDisabledReason)}"
@@ -697,7 +698,7 @@ function renderInfo() {
 
             <button
               type="button"
-              class="day-action-btn"
+              class="day-action-btn advanced-only"
               data-day-action="note"
               aria-label="${escapeHtml(t('dayActionNote'))}"
             >

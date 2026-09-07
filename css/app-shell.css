@@ -1623,3 +1623,8 @@ body.factory-editor-active {
   color: var(--text-muted);
   line-height: 1.35;
 }
+
+/* === UI MODE VISIBILITY === */
+body.ui-mode-simple .advanced-only {
+  display: none !important;
+}

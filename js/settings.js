@@ -62,14 +62,16 @@
   /* ---------- main screen (cards) ---------- */
 
   const SECTIONS = [
+    { id: 'uiMode', titleKey: 'settingsUiMode', icon: '🎛️', active: true },
     { id: 'general', titleKey: 'settingsGeneral', icon: '🧭', active: true },
     { id: 'appearance', titleKey: 'settingsAppearance', icon: '🎨', active: true },
-    { id: 'notifications', titleKey: 'settingsNotifications', icon: '🔔', active: true },
+    { id: 'notifications', titleKey: 'settingsNotifications', icon: '🔔', active: true, advancedOnly: true },
     { id: 'vacation', titleKey: 'settingsVacation', icon: '🌴', active: true },
-    { id: 'privacy', titleKey: 'settingsDataPrivacy', icon: '🔒', active: true },
+    { id: 'privacy', titleKey: 'settingsDataPrivacy', icon: '🔒', active: true, advancedOnly: true },
   ];
 
 const SECTION_TITLES = {
+     uiMode: 'settingsUiMode',
      general: 'settingsGeneral',
      appearance: 'settingsAppearance',
      notifications: 'settingsNotifications',
@@ -86,8 +88,9 @@ const SECTION_TITLES = {
         const body =
           '<span class="sc-body"><span class="sc-title">' + tr(s.titleKey) + '</span></span>';
         if (s.active) {
+          const advancedClass = s.advancedOnly ? ' advanced-only' : '';
           return (
-            '<button type="button" class="settings-card" data-section="' + s.id + '">' +
+            '<button type="button" class="settings-card' + advancedClass + '" data-section="' + s.id + '">' +
             '<span class="sc-icon">' + s.icon + '</span>' + body +
             '<span class="sc-arrow" aria-hidden="true">›</span></button>'
           );
@@ -232,6 +235,43 @@ const SECTION_TITLES = {
     );
   }
 
+  /* ---------- UI MODE section (Simple / Advanced) ---------- */
+
+  function uiModeHtml() {
+    const mode = typeof getUiMode === 'function' ? getUiMode() : (prefs.uiMode || 'simple');
+    return (
+      '<div class="settings-section">' +
+      '<div class="st-group">' +
+      '<div class="st-label">' + tr('settingsUiMode') + '</div>' +
+      '<p class="st-hint">' + tr('uiModeHint') + '</p>' +
+      '<div class="seg" role="group" aria-label="' + tr('settingsUiMode') + '">' +
+      segBtn(tr('uiModeSimple'), 'simple', mode, 'data-ui-mode') +
+      segBtn(tr('uiModeAdvanced'), 'advanced', mode, 'data-ui-mode') +
+      '</div>' +
+      '<p class="st-hint" style="margin-top:12px;">' +
+      '<strong>' + tr('uiModeSimple') + ':</strong> ' + tr('uiModeSimpleDesc') + '<br>' +
+      '<strong>' + tr('uiModeAdvanced') + ':</strong> ' + tr('uiModeAdvancedDesc') +
+      '</p>' +
+      '</div>' +
+      '</div>'
+    );
+  }
+
+  function bindUiMode(body) {
+    if (!body) return;
+    body.querySelectorAll('.seg-btn[data-ui-mode]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const mode = btn.getAttribute('data-ui-mode');
+        if (typeof setUiMode === 'function') setUiMode(mode);
+        setActive(body, 'ui-mode', mode);
+        /* Refresh settings hub after mode change so advanced cards appear/disappear */
+        setTimeout(function () {
+          rerenderCurrentScreen();
+        }, 300);
+      });
+    });
+  }
+
   function appearanceHtml() {
     const skin = typeof getCellSkin === 'function' ? getCellSkin() : 'full';
     const uiSkin = typeof getUiSkin === 'function' ? getUiSkin() : (prefs.uiSkin || 'industrial');
@@ -257,7 +297,7 @@ const SECTION_TITLES = {
       segBtn(tr('skinStrip'), 'strip', skin, 'data-skin') +
       segBtn(tr('skinQuiet'), 'quiet', skin, 'data-skin') +
       '</div>' + previewHtml() + '</div>' +
-      '<div class="st-group"><div class="st-label">' + tr('settingsColors') + '</div>' +
+      '<div class="st-group advanced-only"><div class="st-label">' + tr('settingsColors') + '</div>' +
       colorRowHtml('R', tr('persColorR')) +
       colorRowHtml('P', tr('persColorP')) +
       colorRowHtml('N', tr('persColorN')) +
@@ -666,7 +706,10 @@ function bindPrivacy(body) {
 function renderSettingsSection(section, container) {
      const body = container || document.getElementById('appPanelBody');
      if (!body) return;
-     if (section === 'general') {
+     if (section === 'uiMode') {
+       body.innerHTML = uiModeHtml();
+       bindUiMode(body);
+     } else if (section === 'general') {
        body.innerHTML = generalHtml();
        bindGeneral(body);
      } else if (section === 'appearance') {

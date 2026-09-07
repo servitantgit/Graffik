@@ -124,6 +124,37 @@ window.applyTableDensity = applyTableDensity;
 
 applyTableDensityFromPrefs();
 
+/* === UI MODE (simple | advanced) === */
+function getUiMode() {
+  return prefs.uiMode === 'advanced' ? 'advanced' : 'simple';
+}
+
+function isAdvancedMode() {
+  return getUiMode() === 'advanced';
+}
+
+function setUiMode(mode) {
+  const next = mode === 'advanced' ? 'advanced' : 'simple';
+  prefs.uiMode = next;
+  savePrefs(prefs);
+  applyUiModeFromPrefs();
+  if (typeof refreshViews === 'function') refreshViews();
+  if (typeof showToast === 'function') {
+    showToast('success', t(next === 'advanced' ? 'uiModeSwitchedToAdvanced' : 'uiModeSwitchedToSimple'));
+  }
+}
+
+function applyUiModeFromPrefs() {
+  const mode = getUiMode();
+  document.body.classList.remove('ui-mode-simple', 'ui-mode-advanced');
+  document.body.classList.add('ui-mode-' + mode);
+}
+
+window.getUiMode = getUiMode;
+window.isAdvancedMode = isAdvancedMode;
+window.setUiMode = setUiMode;
+window.applyUiModeFromPrefs = applyUiModeFromPrefs;
+
 function toggleTheme() {
   applyTheme(_getEffectiveTheme() === 'dark' ? 'light' : 'dark');
 }

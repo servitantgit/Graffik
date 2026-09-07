@@ -90,6 +90,30 @@ if (!prefs.urlopLimits) prefs.urlopLimits = {};
    if (prefs.urlopLimits[brigade] === undefined) prefs.urlopLimits[brigade] = URLOP_LIMIT;
  });
 
+/* === UI MODE default detection (Simple/Advanced) ===
+   New users (no personal data yet) default to Simple mode.
+   Migrating users (existing customSchedule/urlops/overtimes/notes) default
+   to Advanced mode and see a one-time explanatory toast. */
+if (!prefs.uiMode) {
+  const hasData =
+    Object.keys(customSchedule).length > 0 ||
+    Object.values(urlops).some((arr) => Array.isArray(arr) && arr.length > 0) ||
+    Object.keys(overtimes).length > 0 ||
+    Object.keys(notes).some((k) => notes[k] && String(notes[k]).trim());
+  prefs.uiMode = hasData ? 'advanced' : 'simple';
+  savePrefs(prefs);
+
+  if (hasData && !prefs.uiModeToastShown) {
+    setTimeout(() => {
+      if (typeof showToast === 'function' && typeof t === 'function') {
+        showToast('info', t('uiModeAdvancedAutoDetected'), 6000);
+      }
+    }, 1000);
+    prefs.uiModeToastShown = true;
+    savePrefs(prefs);
+  }
+}
+
  /* === Factory drafts === */
   function getFactoryShift(year, month, day, brigade) {
     if (factoryDrafts[year] && factoryDrafts[year][month] && factoryDrafts[year][month][brigade]) {

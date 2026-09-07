@@ -381,6 +381,8 @@ if (!window._gilletteTimer) {
 /* === START === */
 updateShiftButtons();
 
+if (typeof applyUiModeFromPrefs === 'function') applyUiModeFromPrefs();
+
 /* One-shot migration: clean customSchedule from factory mirrors (v5) */
 if (typeof cleanupCustomScheduleMirrors === 'function') {
   try {

@@ -156,7 +156,7 @@ function renderDashboard() {
           const dom = cat.h200 > 0 ? '+200%' : cat.h100 > 0 ? '+100%' : '+50%';
           parts.push(`${otToday.po.hours}h ${dom} ➡`);
         }
-        otInfo = `<div style="margin-top:8px; padding:8px 12px; background:rgba(0,0,0,0.35); border-radius:8px; font-size:13px; font-weight:600; color:#fff;">⏱ ${t('infoOvertime')}: ${parts.join(' · ')}<br><span style="font-size:12px; font-weight:700; color:#fff;">${t('infoTime')} ${actualTime}</span></div>`;
+        otInfo = `<div class="advanced-only" style="margin-top:8px; padding:8px 12px; background:rgba(0,0,0,0.35); border-radius:8px; font-size:13px; font-weight:600; color:#fff;">⏱ ${t('infoOvertime')}: ${parts.join(' · ')}<br><span style="font-size:12px; font-weight:700; color:#fff;">${t('infoTime')} ${actualTime}</span></div>`;
       }
     }
 
@@ -218,7 +218,7 @@ function renderDashboard() {
   const vacationCard = hidePrivate
     ? ''
     : `
-      <div class="dash-stat-card dash-vacation-stats">
+      <div class="dash-stat-card dash-vacation-stats advanced-only">
         <div class="dsc-icon">🌴</div>
         <div class="dsc-info">
           <div class="dsc-label">${t('vacation')} ${y}</div>
@@ -229,7 +229,7 @@ function renderDashboard() {
   const overtimeCard =
     !hidePrivate && totalOT > 0
       ? `
-      <div class="dash-stat-card dash-overtime-summary" style="border:2px solid #f1c40f;">
+      <div class="dash-stat-card dash-overtime-summary advanced-only" style="border:2px solid #f1c40f;">
         <div class="dsc-icon">⏱</div>
         <div class="dsc-info">
           <div class="dsc-label">${t('infoOvertime')} (${monthNamesShort[m - 1]})</div>

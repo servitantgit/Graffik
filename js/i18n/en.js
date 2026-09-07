@@ -825,6 +825,16 @@ window.translations.en = {
 
   // === SETTINGS ===
   settingsGeneral: 'General',
+  settingsUiMode: 'Interface mode',
+  settingsUiModeDesc: 'Basic or Advanced',
+  uiModeSimple: 'Basic',
+  uiModeAdvanced: 'Advanced',
+  uiModeSimpleDesc: 'Calendar, brigades, vacations — essential functions.',
+  uiModeAdvancedDesc: 'All functions: overtime, notes, notifications, privacy.',
+  uiModeHint: 'Choose interface complexity level. You can change it anytime.',
+  uiModeSwitchedToSimple: '✅ Basic mode enabled',
+  uiModeSwitchedToAdvanced: '✅ Advanced mode enabled',
+  uiModeAdvancedAutoDetected: 'ℹ️ Basic mode added for new users. You remain in Advanced mode as an experienced user.',
   settingsAppearance: 'Appearance',
   settingsDataPrivacy: 'Data & privacy',
   settingsAccessibility: 'Accessibility',

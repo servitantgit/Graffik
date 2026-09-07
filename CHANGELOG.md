@@ -1,3 +1,22 @@
+# Unreleased — Simple/Advanced UI Mode
+
+## Added
+- **Simple/Advanced Mode** — двошаровий інтерфейс:
+  - **Simple** (default для нових): календар, бригади, відпустки, базові налаштування
+  - **Advanced**: додатково нагодини, нотатки, сповіщення, приватність, custom colors
+- Auto-detection для migrating users (мають дані → Advanced за замовчуванням)
+- One-time toast для існуючих юзерів про новий режим
+- Toggle в Settings → Tryb interfejsu (першою карткою)
+- CSS class `.advanced-only` + `body.ui-mode-*` для conditional rendering
+- i18n keys для 3 мов (pl/en/uk)
+
+## Changed
+- Settings → Notifications, Privacy — тепер тільки в Advanced mode
+- Settings → Appearance → Cell colors — тільки в Advanced mode
+- Dashboard → Overtime/Vacation stats cards — тільки в Advanced mode
+- Info panel → Overtime/Note/Extra shift buttons — тільки в Advanced mode
+- Monthly overtime summary — тільки в Advanced mode
+
 # Unreleased — 2026-08-22
 
 - **Sync modal** — short change log (vacations, overtime, notes, custom shifts, vacation limits) comparing local counts vs Google Drive; shows last-sync time when there are unsynced changes.

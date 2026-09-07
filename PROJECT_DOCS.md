@@ -36,7 +36,9 @@ Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą p
   vacationLimits: { A: 26, B: 26, C: 26, D: 26 },  // Limity urlopów
   welcomed: true,                // Czy pokazano ekran powitalny
   skipEditConfirm: false,        // Pomiń potwierdzenie trybu edycji
-  driveTokenExpiry: null         // Wygaśnięcie tokenu Drive (jeśli sync)
+  driveTokenExpiry: null,        // Wygaśnięcie tokenu Drive (jeśli sync)
+  uiMode: 'simple' | 'advanced', // Режим інтерфейсу (Simple/Advanced Mode)
+  uiModeToastShown: false        // Прапорець показу one-time toast
 }
 ```
 
@@ -363,6 +365,29 @@ Folder z 4 plikami:
 - `beforeunload` handler — ostrzeżenie przed niezapisanymi zmianami
 - Auto-refresh timer (setInterval 60s) — aktualizacja Dashboard
 - Inicjalizacja na końcu pliku
+
+## 3.5. Simple/Advanced Mode
+
+Двошаровий інтерфейс для новачків і досвідчених користувачів.
+
+### API (js/ui.js)
+- `getUiMode()` → 'simple' | 'advanced'
+- `isAdvancedMode()` → boolean
+- `setUiMode(mode)` — зберігає + apply CSS + refresh + toast
+- `applyUiModeFromPrefs()` — на старті додає body class
+
+### CSS
+- `body.ui-mode-simple` / `body.ui-mode-advanced`
+- Елементи з класом `.advanced-only` приховуються в Simple mode
+
+### Default logic
+- Новий юзер (без даних) → Simple mode
+- Migrating юзер (має customSchedule/urlops/overtimes/notes) → Advanced mode + one-time toast
+
+### Що в якому mode
+- **Simple**: Views (Dashboard/Month/Table), brigade, vacations, base settings, Drive, Share, Export ICS, Help, About
+- **Advanced**: усе Simple + overtime, notes, extra shift, notifications, privacy, custom colors, monthly OT summary, dashboard OT/vacation cards
+- **Admin**: незалежний вимір, доступний тільки для `ADMIN_EMAILS`
 
 ## 4. Ważne konwencje
 
