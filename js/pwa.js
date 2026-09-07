@@ -297,7 +297,7 @@ window.sendTestNotification = function () {
     tag: 'grafik-test',
   }).then((success) => {
     if (success) {
-      showToast('success', '✅ ' + t('notificationsEnabled'));
+      showToast('success', t('notificationTestSent'));
     } else {
       showToast('error', t('browserNoNotificationSupport'));
     }

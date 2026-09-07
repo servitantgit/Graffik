@@ -701,6 +701,7 @@ window.translations.en = {
   browserNoNotificationSupport: 'Browser does not support notifications',
   notificationsBlockedInBrowser: 'Notifications blocked in browser',
   notificationsEnabled: 'Notifications enabled',
+  notificationTestSent: 'Test notification sent',
   notificationsTestBody: 'This is a test notification',
   notificationsDisabled: 'Notifications disabled',
 

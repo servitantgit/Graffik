@@ -703,6 +703,7 @@ window.translations.pl = {
   browserNoNotificationSupport: 'Przeglądarka nie obsługuje powiadomień',
   notificationsBlockedInBrowser: 'Powiadomienia zablokowane w przeglądarce',
   notificationsEnabled: 'Powiadomienia włączone',
+  notificationTestSent: 'Wysłano powiadomienie testowe',
   notificationsTestBody: 'To jest test powiadomienia',
   notificationsDisabled: 'Powiadomienia wyłączone',
 

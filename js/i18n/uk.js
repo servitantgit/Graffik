@@ -701,6 +701,7 @@ window.translations.uk = {
   browserNoNotificationSupport: 'Браузер не підтримує сповіщення',
   notificationsBlockedInBrowser: 'Сповіщення заблоковано в браузері',
   notificationsEnabled: 'Сповіщення увімкнено',
+  notificationTestSent: 'Тестове сповіщення надіслано',
   notificationsTestBody: 'Це тестове сповіщення',
   notificationsDisabled: 'Сповіщення вимкнено',
 
