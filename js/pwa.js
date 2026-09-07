@@ -198,14 +198,14 @@ function setupInstallPrompt() {
   window.addEventListener('appinstalled', () => {
     deferredInstallPrompt = null;
     installItem.style.display = 'none';
-    showToast('success', `✅ ${t('appInstalled')}`);
+    showToast('success', t('appInstalled'));
   });
 
   installItem.onclick = async () => {
     if (!deferredInstallPrompt) return;
     deferredInstallPrompt.prompt();
     const choice = await deferredInstallPrompt.userChoice;
-    if (choice.outcome === 'accepted') showToast('success', `✅ ${t('installStarted')}`);
+    if (choice.outcome === 'accepted') showToast('success', t('installStarted'));
     else showToast('info', t('installCancelled'));
     deferredInstallPrompt = null;
     installItem.style.display = 'none';
@@ -325,7 +325,7 @@ window.checkForAppUpdate = function () {
     .then(function () {
       setTimeout(function () {
         if (window._updatePromptShown) return;
-        showToast('success', '✅ ' + t('aboutUpdateUpToDate'));
+        showToast('success', t('aboutUpdateUpToDate'));
       }, 2500);
     })
     .catch(function (error) {

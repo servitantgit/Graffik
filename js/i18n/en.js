@@ -724,7 +724,7 @@ window.translations.en = {
   shareAppIntro: 'Scan the QR code with your phone or share the link with your brigade colleagues.',
   shareAppCopy: 'Copy link',
   shareAppShare: 'Share',
-  shareAppCopied: '✅ App link copied',
+  shareAppCopied: 'App link copied',
   shareAppHint: 'The QR code works with any scanning app (camera, Google Lens, etc.)',
   shareAppQrError: 'Failed to load QR code. Check your internet connection.',
   shareAppText: 'Check out this shift schedule app:',
