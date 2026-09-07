@@ -6,6 +6,46 @@
 let deferredInstallPrompt = null;
 let lastNotified = null; // 'YYYY-MM-DD:ZMIANA'
 
+/**
+ * Cross-platform notification display via ServiceWorker.
+ * Works on Android Chrome, iOS PWA, Desktop — replaces deprecated new Notification().
+ * @param {string} title
+ * @param {object} options - standard Notification options + optional data
+ * @returns {Promise<boolean>} - true on success
+ */
+function showNotificationViaServiceWorker(title, options) {
+  if (!('Notification' in window)) {
+    return Promise.resolve(false);
+  }
+  if (Notification.permission !== 'granted') {
+    return Promise.resolve(false);
+  }
+  if (!('serviceWorker' in navigator)) {
+    return Promise.resolve(false);
+  }
+  return navigator.serviceWorker.ready
+    .then((registration) => {
+      if (!registration || typeof registration.showNotification !== 'function') {
+        return false;
+      }
+      const opts = Object.assign(
+        {
+          icon: './icons/icon-192.png',
+          badge: './icons/icon-192.png',
+        },
+        options || {}
+      );
+      return registration.showNotification(title, opts).then(() => true);
+    })
+    .catch((error) => {
+      console.warn('[pwa]', 'ServiceWorker.showNotification failed', error);
+      return false;
+    });
+}
+
+window.showNotificationViaServiceWorker = showNotificationViaServiceWorker;
+
+
 /* === SERVICE WORKER + AUTO-UPDATE === */
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
@@ -215,14 +255,10 @@ window.setNotificationsEnabled = function (enabled) {
           prefs.notifications = true;
           savePrefs(prefs);
           showToast('success', '🔔 ' + t('notificationsEnabled'));
-          try {
-            new Notification('🔔 ' + t('appName'), {
-              body: t('notificationsTestBody'),
-              icon: './icons/icon-192.png',
-            });
-          } catch (e) {
-            /* ignoruj */
-          }
+          showNotificationViaServiceWorker('🔔 ' + t('appName'), {
+            body: t('notificationsTestBody'),
+            tag: 'grafik-welcome',
+          });
           resolve(true);
         } else {
           prefs.notifications = false;
@@ -248,19 +284,25 @@ window.setNotificationLead = function (lead) {
 };
 
 window.sendTestNotification = function () {
-  if (!('Notification' in window) || Notification.permission !== 'granted') {
+  if (!('Notification' in window)) {
     showToast('warn', t('browserNoNotificationSupport'));
     return false;
   }
-  try {
-    new Notification('🔔 ' + t('appName'), {
-      body: t('notificationsTestBody'),
-      icon: './icons/icon-192.png',
-    });
-    return true;
-  } catch (e) {
+  if (Notification.permission !== 'granted') {
+    showToast('warn', t('notificationsBlockedInBrowser'));
     return false;
   }
+  showNotificationViaServiceWorker('🔔 ' + t('appName'), {
+    body: t('notificationsTestBody'),
+    tag: 'grafik-test',
+  }).then((success) => {
+    if (success) {
+      showToast('success', '✅ ' + t('notificationsEnabled'));
+    } else {
+      showToast('error', t('browserNoNotificationSupport'));
+    }
+  });
+  return true;
 };
 
 window.checkForAppUpdate = function () {
@@ -298,14 +340,10 @@ function requestNotificationPermission() {
       savePrefs(prefs);
       showToast('success', '🔔 ' + t('notificationsEnabled'));
       // testowe powiadomienie
-      try {
-        new Notification(`🔔 ${t('appName')}`, {
-          body: t('notificationsTestBody'),
-          icon: './icons/icon-192.png',
-        });
-      } catch (e) {
-        /* ignoruj */
-      }
+      showNotificationViaServiceWorker(`🔔 ${t('appName')}`, {
+        body: t('notificationsTestBody'),
+        tag: 'grafik-welcome',
+      });
     } else {
       prefs.notifications = false;
       savePrefs(prefs);
@@ -358,19 +396,13 @@ function notifyCurrentShift() {
 
     const title = `⏰ ${t('shift')} ${s} — ${shiftLabel}`;
     const body = `${t('brigade')} ${selectedShift} • ${d} ${monthNamesGenitive[m - 1]} ${y}\n${timeRange}`;
-    const notification = new Notification(title, {
+    showNotificationViaServiceWorker(title, {
       body: body,
-      icon: './icons/icon-192.png',
-      badge: './icons/icon-192.png',
       vibrate: [200, 100, 200],
       tag: 'grafik-shift-start',
       requireInteraction: false,
+      data: { url: './' },
     });
-    notification.onclick = () => {
-      window.focus();
-      if (currentView !== 'dashboard') switchView('dashboard');
-      notification.close();
-    };
   }
 }
 
