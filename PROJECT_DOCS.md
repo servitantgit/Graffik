@@ -640,7 +640,7 @@ Fabryczny grafik jest **publiczny** (w plikach `js/schedules/gillette/YYYY.js`).
 
 ### Kontakt
 
-- Email: tantsiura.s@pg.com
+- Email: servitant@gmail.com
 - Demo: https://servitantgit.github.io/Graffik/
 
 ## Privacy & Google Drive (local-first)

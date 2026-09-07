@@ -436,7 +436,7 @@ window.translations.en = {
     'In the app menu (☰ Menu → Install app) a detailed step-by-step instruction is also available.',
   faqBugTitle: '🐛 How to report a bug or suggestion?',
   faqBugDesc: '📧 Contact:',
-  faqBugEmail: 'tantsiura.s@pg.com',
+  faqBugEmail: 'servitant@gmail.com',
   faqBugNote:
     'When reporting a bug, please provide the year, date, brigade, browser and a short description of the problem.',
 

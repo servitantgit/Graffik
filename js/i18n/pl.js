@@ -438,7 +438,7 @@ window.translations.pl = {
     'W menu aplikacji (☰ Menu → Zainstaluj aplikację) dostępna jest także szczegółowa instrukcja krok po kroku.',
   faqBugTitle: '🐛 Jak zgłosić problem lub sugestię?',
   faqBugDesc: '📧 Kontakt:',
-  faqBugEmail: 'tantsiura.s@pg.com',
+  faqBugEmail: 'servitant@gmail.com',
   faqBugNote:
     'Przy zgłoszeniu błędu warto podać rok, datę, brygadę, przeglądarkę i krótki opis problemu.',
 

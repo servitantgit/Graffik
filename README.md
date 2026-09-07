@@ -246,7 +246,7 @@ To zastępuje stary ręczny „Privacy Mode”. Logowanie = dostęp do personal 
 
 ## 🐛 Zgłaszanie błędów
 
-Znaleziono błąd lub masz sugestię? Napisz na: [tantsiura.s@pg.com](mailto:tantsiura.s@pg.com)
+Znaleziono błąd lub masz sugestię? Napisz na: [servitant@gmail.com](mailto:servitant@gmail.com)
 
 Przy zgłoszeniu podaj:
 
