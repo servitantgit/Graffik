@@ -750,6 +750,8 @@ window.translations.en = {
   syncStatusRemoteNewerShort: '☁ Newer',
   syncStatusRemoteNewer: '☁ Newer version on Google Drive — download',
   syncStatusConflict: '⚠ Local and Drive both changed — sync needed',
+  driveAutoSynced: 'Synced with Drive',
+  driveSyncConflictWarn: 'Sync conflict — check Drive menu',
   syncStatusLogin: 'Sign in to Google Drive',
   driveCardConnected: 'Google Drive',
   driveCardActive: 'Active',

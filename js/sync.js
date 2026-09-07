@@ -83,11 +83,6 @@ async function checkDriveRemoteStatus(force = false) {
     gDriveRemoteNewer = false;
     return false;
   }
-  // throttle: max once per 30s unless forced
-  if (!force && Date.now() - gDriveRemoteCheckAt < 30000) {
-    return gDriveRemoteNewer;
-  }
-  gDriveRemoteCheckAt = Date.now();
   try {
     const found = await findDriveFile();
     if (!found || !found.modifiedTime) {
@@ -111,6 +106,49 @@ async function checkDriveRemoteStatus(force = false) {
     return gDriveRemoteNewer;
   }
 }
+
+/**
+ * Auto-sync helper: check Drive, auto-download if safe, warn on conflict.
+ * Called on page load, visibility change, and can be called manually.
+ * @returns {Promise<'idle'|'up-to-date'|'downloaded'|'conflict'|'error'>}
+ */
+async function handleAutoSyncCheck() {
+  if (!isDriveLoggedIn() || !isDriveTokenValid()) {
+    return 'idle';
+  }
+  try {
+    const remoteNewer = await checkDriveRemoteStatus(true);
+    if (!remoteNewer) {
+      return 'up-to-date';
+    }
+
+    const hasLocal =
+      typeof hasUnsyncedChanges === 'function' && hasUnsyncedChanges();
+
+    if (!hasLocal) {
+      // Safe auto-download
+      const ok = await downloadFromDrive(false);
+      if (ok) {
+        showToast('success', '☁️ ' + t('driveAutoSynced'));
+        return 'downloaded';
+      }
+      return 'error';
+    }
+
+    // Conflict: local changes + remote is newer
+    if (!window._syncConflictWarned) {
+      window._syncConflictWarned = true;
+      showToast('warn', '⚠️ ' + t('driveSyncConflictWarn'));
+    }
+    updateMenuSyncStatus();
+    return 'conflict';
+  } catch (error) {
+    console.warn('[sync]', 'handleAutoSyncCheck failed', error);
+    return 'error';
+  }
+}
+
+window.handleAutoSyncCheck = handleAutoSyncCheck;
 
 /** Re-render current view after Google Drive authentication. */
 function refreshAfterDriveAuth() {
@@ -1139,6 +1177,21 @@ async function syncWithDrive() {
       updateMenuSyncStatus();
     }
 
+    // Update lastKnownDiffCount з реальним diff (для точного badge count)
+    if (remoteStats && typeof getSyncMeta === 'function' && typeof setSyncMeta === 'function') {
+      const totalDiff =
+        Math.abs(localStats.urlops - remoteStats.urlops) +
+        Math.abs(localStats.overtimes - remoteStats.overtimes) +
+        Math.abs(localStats.notes - remoteStats.notes) +
+        Math.abs(localStats.customShifts - remoteStats.customShifts) +
+        Math.abs(localStats.factoryDraftChanges - remoteStats.factoryDraftChanges) +
+        Math.abs(localStats.vacationLimits - remoteStats.vacationLimits);
+      const meta = getSyncMeta();
+      meta.lastKnownDiffCount = totalDiff;
+      setSyncMeta(meta);
+      updateMenuSyncStatus();
+    }
+
     const bodyEl = document.getElementById('modalBody');
     const overlay = document.getElementById('modalOverlay');
     if (bodyEl && overlay && overlay.classList.contains('show')) {
@@ -1339,6 +1392,15 @@ function initSync() {
     // No auto OAuth / silent refresh. Token used only if still valid until user syncs again.
     if (isDriveTokenValid()) {
       fetchDriveUserEmail();
+      // Auto-check Drive on load (user may have pushed from another device)
+      handleAutoSyncCheck();
+    }
+  });
+
+  // Auto-check Drive when user returns to the PWA (unlock phone, switch tab back, etc.)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && isDriveTokenValid()) {
+      handleAutoSyncCheck();
     }
   });
 }

@@ -422,6 +422,7 @@ function reconcileSyncedFingerprint(remotePayload) {
   const meta = getSyncMeta();
   meta.syncedFingerprint = localFingerprint;
   meta.changeCount = 0;
+  meta.lastKnownDiffCount = 0;
   setSyncMeta(meta);
   return true;
 }
@@ -441,10 +442,12 @@ function getSyncMeta() {
       changeCount: typeof parsed.changeCount === 'number' ? parsed.changeCount : 0,
       syncedFingerprint:
         typeof parsed.syncedFingerprint === 'string' ? parsed.syncedFingerprint : '',
+      lastKnownDiffCount:
+        typeof parsed.lastKnownDiffCount === 'number' ? parsed.lastKnownDiffCount : null,
     };
   } catch (e) {
     console.warn('[sync-tracking] Failed to parse sync meta:', e);
-    return { lastModified: 0, lastSync: 0, changeCount: 0 };
+    return { lastModified: 0, lastSync: 0, changeCount: 0, lastKnownDiffCount: null };
   }
 }
 
@@ -479,6 +482,7 @@ function updateLastSync() {
   const meta = getSyncMeta();
   meta.lastSync = Date.now();
   meta.changeCount = 0;
+  meta.lastKnownDiffCount = 0;
   meta.syncedFingerprint = getSyncFingerprint();
   setSyncMeta(meta);
 }
@@ -539,6 +543,11 @@ function getUnsyncedChangeCount() {
   if (!hasUnsyncedChanges()) return 0;
 
   const meta = getSyncMeta();
+  // Prefer real diff count (обчислений при останньому відкритті sync modal)
+  if (meta.lastKnownDiffCount !== null && meta.lastKnownDiffCount !== undefined) {
+    return Math.max(1, Number(meta.lastKnownDiffCount) || 0);
+  }
+  // Fallback: counter save-операцій (не точний, але кращий за нічого)
   return Math.max(1, Number(meta.changeCount) || 0);
 }
 
