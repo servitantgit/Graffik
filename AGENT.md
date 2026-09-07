@@ -63,10 +63,12 @@ current Google Drive card;
 current GitHub Pages deployment workflow;
 current factory-draft storage concept;
 current Admin Center entry point;
-current factory editor period synchronization.
+current factory editor period synchronization;
 Simple/Advanced UI mode toggle behavior;
 `.advanced-only` CSS class semantics;
 `prefs.uiMode` default detection logic;
+`sanitizePrefs()` schema validation logic in `js/core.js`;
+privacy auto-disable when switching Advanced → Simple.
 Local bug fixes inside these areas are allowed. Structural redesign is not.
 
 2. PROJECT OVERVIEW
@@ -298,6 +300,27 @@ notes;
 vacation dates;
 overtime content;
 personal schedule content.
+
+### 4.10 New prefs keys must go through sanitizePrefs
+
+When adding a new `prefs.XXX` key:
+
+1. Add validation rule to `sanitizePrefs()` in `js/core.js`.
+2. Provide safe default value.
+3. Preserve behavior: unknown keys are kept (forward compat).
+4. Document in `PROJECT_DOCS.md` section "prefs schema".
+
+Do not silently accept new prefs keys without validation. Corrupted or missing values must not crash the app.
+
+### 4.11 i18n keys must be defined before use
+
+Before calling `t('newKey')` in code:
+
+1. Add key to all three files: `js/i18n/pl.js`, `en.js`, `uk.js`.
+2. Do NOT use fallback pattern `t('key') || 'text'` — `t()` returns key name (truthy) if missing, so fallback never triggers.
+3. Run `node tools/i18n-audit.js` before commit to detect missing keys.
+
+If dynamic key construction is used (e.g. `t('label' + variant)`), ensure all possible variants are defined.
 5. UTF-8 AND TEXT SAFETY
 All source files must remain UTF-8 without BOM.
 
@@ -594,7 +617,7 @@ Selected-day actions serialize closures into inline onclick.
 Selected-day action errors are silently swallowed.
 Existing vacation may disable the button instead of allowing removal.
 Extra shift availability may ignore vacation state.
-Note change and blur may save the same value twice.
+~~Note change and blur may save the same value twice.~~ FIXED via saveInProgress flag + commitNote() (see CHANGELOG).
 There is no separate day-editor module; day UI is rendered in js/calendar.js with js/edit.js helpers.
 Factory editor keyboard handling exists in more than one module.
 Factory editor may block brigade selection.
@@ -605,7 +628,7 @@ Draft change counting may ignore explicit free-day overrides.
 Admin Center contains inline handlers.
 Admin Danger Zone includes personal-data reset even though it should be draft-only.
 Admin export instructions are hardcoded in Ukrainian.
-Settings and Share use translation keys that do not exist.
+~~Settings and Share use translation keys that do not exist.~~ 3 keys fixed (infoWorking, adminAuthLost, en.login). Use `tools/i18n-audit.js` to find remaining gaps.
 Accessibility settings are incomplete and may appear ineffective.
 Old edit, popup and language CSS remains after corresponding UI removal.
 .verify-modal.html is a temporary artifact and is not production functionality.

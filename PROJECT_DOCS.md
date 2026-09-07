@@ -37,8 +37,10 @@ Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą p
   welcomed: true,                // Czy pokazano ekran powitalny
   skipEditConfirm: false,        // Pomiń potwierdzenie trybu edycji
   driveTokenExpiry: null,        // Wygaśnięcie tokenu Drive (jeśli sync)
-  uiMode: 'simple' | 'advanced', // Режим інтерфейсу (Simple/Advanced Mode)
-  uiModeToastShown: false        // Прапорець показу one-time toast
+  uiMode: 'simple' | 'advanced', // Simple/Advanced UI mode (auto-detected on first run)
+  uiModeToastShown: boolean,     // One-time toast flag для migrating users
+  privacyMode: boolean,          // Приховати особисті дані на екрані
+  personalDataMigratedV5: true   // One-shot migration flag (customSchedule cleanup)
 }
 ```
 
@@ -174,6 +176,7 @@ js/schedules/
 ### js/core.js — Moduł 2: Storage + logika biznesowa
 
 - `loadPrefs` / `savePrefs(p, markSync?)` — UI prefs; `markSync=true` tylko dla personal (np. urlopLimits)
+- `sanitizePrefs(raw)` — валідує структуру prefs при завантаженні (safety net, exported to window)
 - `loadCustomSchedule/saveCustomSchedule`, `loadUrlops/saveUrlops`, `loadNotes/saveNotes`, `loadOvertimes/saveOvertimes`
   - wszystkie `save*` (poza zwykłym savePrefs) wołają `updateLastModified()`
 - `getShiftAt(y, m, d, brig)` — customSchedule jeśli jest, inaczej factory
@@ -351,6 +354,14 @@ Folder z 4 plikami:
   - `applyTranslations()` — aplikuje do wszystkich `[data-i18n]`, `[data-i18n-title]`, `[data-i18n-placeholder]`
   - `renderFAQ()` — dynamiczne generowanie FAQ z tłumaczeń
 
+### tools/ — Development utilities
+
+Standalone scripts для dev/QA. НЕ включаються в production build.
+
+- **`tools/i18n-audit.js`** — аудит translation keys (див. §3.7)
+- Не імпортуються з app коду
+- Запускаються через `node tools/*.js` з project root
+
 ### js/main.js — Moduł 11: Stan + Init
 
 - Globalne zmienne stanu (wszystkie z sekcji 2)
@@ -388,6 +399,81 @@ Folder z 4 plikami:
 - **Simple**: Views (Dashboard/Month/Table), brigade, vacations, base settings, Drive, Share, Export ICS, Help, About
 - **Advanced**: усе Simple + overtime, notes, extra shift, notifications, privacy, custom colors, monthly OT summary, dashboard OT/vacation cards
 - **Admin**: незалежний вимір, доступний тільки для `ADMIN_EMAILS`
+
+### Edge case: Privacy trap prevention
+Якщо юзер увімкнув Privacy Mode в Advanced, а потім перемикається на Simple:
+- Privacy toggle зникає (це `.advanced-only`)
+- Юзер не міг би вимкнути privacy → trap
+- **Solution:** `setUiMode('simple')` автоматично встановлює `prefs.privacyMode = false`
+- Другий toast (info) інформує юзера про це через `uiModePrivacyAutoDisabled`
+
+## 3.6. Prefs Validation (sanitizePrefs)
+
+Internal safety net в `js/core.js` що валідує структуру `prefs` при завантаженні з localStorage.
+
+### API
+- `sanitizePrefs(rawPrefs)` — приймає object (можливо invalid), повертає sanitized
+- Викликається з `loadPrefs()` після `JSON.parse`
+- Non-destructive: unknown keys **зберігаються**
+- Invalid known keys → replaced with safe defaults + console warning
+
+### Захищає від
+- Corrupted localStorage (сторонні скрипти, ручне редагування)
+- Legacy formats зі старих версій app
+- Missing keys після upgrade
+- Wrong types (string замість number, тощо)
+- Malformed JSON (fallback до порожнього об'єкта)
+- Non-object inputs (null, array, string)
+
+### Приклад
+```javascript
+sanitizePrefs({ year: 'abc', shift: 'X', lang: 'de' })
+// → { year: 2026, shift: 'A', lang: 'pl', ... + console warnings }
+```
+
+### Validation schema (не exhaustive)
+- `year`: number, MIN_YEAR..MAX_YEAR → default `new Date().getFullYear()`
+- `shift`: 'A'/'B'/'C'/'D' → default 'A'
+- `view`: 'dashboard'/'month'/'table' → default 'dashboard'
+- `theme`: 'system'/'light'/'dark' → default 'light'
+- `lang`: 'pl'/'en'/'uk' → default 'pl'
+- `uiMode`: 'simple'/'advanced' → залишається undefined якщо не було (для auto-detect)
+- `urlopLimits[A|B|C|D]`: number >= 0 → default URLOP_LIMIT (26)
+- `cellColors[R|P|N|U]`: valid hex #RRGGBB → invalid removed
+- Booleans: yearMode, notifications, privacyMode, etc.
+
+### Console output
+При виявленні issue:
+```
+[core] Invalid prefs.year: abc -> 2026 (out of range)
+[core] sanitizePrefs fixed 5 invalid field(s)
+```
+
+## 3.7. i18n Audit Tool
+
+Standalone Node.js script `tools/i18n-audit.js` для аудиту translation keys.
+
+### Запуск
+```
+node tools/i18n-audit.js
+```
+
+### Що перевіряє
+- Missing keys — used in code but not defined
+- Unused keys — defined but never used (candidate для cleanup)
+- Parity mismatches — key в pl.js але не в en.js
+- Untranslated values — value === key (fallback text)
+- Placeholder mismatches — `{name}` в PL але не в EN
+
+### Output
+- Кольоровий report у console
+- Exit code 0 = clean, 1 = critical issues
+- Read-only: не модифікує production files
+
+### Scan patterns
+- `t('key')` / `t("key")` в JS
+- `tr('key')` в settings.js
+- `data-i18n="key"` / `data-i18n-title="key"` / `data-i18n-placeholder="key"` в HTML
 
 ## 4. Ważne konwencje
 
