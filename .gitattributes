@@ -1,0 +1,3 @@
+# Ensure LF line endings for cross-platform tests
+tests/**/*.js text eol=lf
+tests/**/*.md text eol=lf
