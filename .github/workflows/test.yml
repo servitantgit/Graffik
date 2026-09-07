@@ -23,7 +23,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # GitHub Actions runners: Node 20 is deprecated; use 22 LTS or 24
+          node-version: '22'
+
+      - name: Show Node version
+        run: node --version
 
       - name: Run unit tests
-        run: node --test --test-reporter=spec "tests/*.test.js"
+        # Unquoted glob so the shell expands to real files (more reliable than a quoted pattern)
+        run: node --test --test-reporter=spec tests/*.test.js
