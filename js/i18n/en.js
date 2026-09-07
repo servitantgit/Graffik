@@ -133,6 +133,7 @@ window.translations.en = {
   dayShiftsLabel: 'day',
   nightShiftsLabel: 'night',
   urlopRemaining: '{n} left',
+  vacationStatsFormat: 'Left {left} · Used {used} / {limit}',
   infoOvertime: '⏱ Overtime',
   infoLiveShift: '⏱️ SHIFT IN PROGRESS',
   infoUrlop: '🌴 VACATION',

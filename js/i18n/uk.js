@@ -132,6 +132,7 @@ window.translations.uk = {
   dayShiftsLabel: 'денні',
   nightShiftsLabel: 'нічні',
   urlopRemaining: 'залишилось {n}',
+  vacationStatsFormat: 'Залишилось {left} · Витрачено {used} / {limit}',
   infoOvertime: '⏱ Надгодини',
   infoLiveShift: '⏱️ ЗМІНА ТРИВАЄ',
   infoUrlop: '🌴 ВІДПУСТКА',

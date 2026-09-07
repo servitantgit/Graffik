@@ -132,6 +132,7 @@ window.translations.pl = {
   dayShiftsLabel: 'dzienne',
   nightShiftsLabel: 'nocne',
   urlopRemaining: 'pozostało {n}',
+  vacationStatsFormat: 'Zostało {left} · Wykorzystano {used} / {limit}',
   infoOvertime: '⏱ Nadgodziny',
   infoLiveShift: '⏱️ TRWA ZMIANA',
   infoUrlop: '🌴 URLOP',

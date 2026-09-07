@@ -751,7 +751,7 @@ function renderInfo() {
       const vacationCard = `
         <div class="info-card" style="grid-column:1/-1;">
           <div class="label">🌴 ${t('vacation')} ${currentYear}</div>
-          <div class="value">${usedUrlop} / ${limit} <small style="opacity:.85;">(${t('urlopRemaining', { n: remainingUrlop })})</small></div>
+          <div class="value">${t('vacationStatsFormat', { left: remainingUrlop, used: usedUrlop, limit: limit })}</div>
         </div>`;
 
       // Build the info-grid

@@ -222,7 +222,7 @@ function renderDashboard() {
         <div class="dsc-icon">🌴</div>
         <div class="dsc-info">
           <div class="dsc-label">${t('vacation')} ${y}</div>
-          <div class="dsc-value">${usedUrlop} / ${limit} ${t('dayOff')}</div>
+          <div class="dsc-value">${t('vacationStatsFormat', { left: Math.max(0, limit - usedUrlop), used: usedUrlop, limit: limit })}</div>
         </div>
       </div>`;
 
