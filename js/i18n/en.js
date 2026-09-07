@@ -835,6 +835,7 @@ window.translations.en = {
   uiModeSwitchedToSimple: '✅ Basic mode enabled',
   uiModeSwitchedToAdvanced: '✅ Advanced mode enabled',
   uiModeAdvancedAutoDetected: 'ℹ️ Basic mode added for new users. You remain in Advanced mode as an experienced user.',
+  uiModePrivacyAutoDisabled: '🔓 Privacy mode was turned off (available only in Advanced mode)',
   settingsAppearance: 'Appearance',
   settingsDataPrivacy: 'Data & privacy',
   settingsAccessibility: 'Accessibility',

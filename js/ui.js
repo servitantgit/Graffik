@@ -135,12 +135,24 @@ function isAdvancedMode() {
 
 function setUiMode(mode) {
   const next = mode === 'advanced' ? 'advanced' : 'simple';
+  const privacyWasOn = prefs.privacyMode === true;
+  const privacyGettingDisabled = next === 'simple' && privacyWasOn;
+
+  if (privacyGettingDisabled) {
+    prefs.privacyMode = false;
+  }
+
   prefs.uiMode = next;
   savePrefs(prefs);
   applyUiModeFromPrefs();
   if (typeof refreshViews === 'function') refreshViews();
   if (typeof showToast === 'function') {
     showToast('success', t(next === 'advanced' ? 'uiModeSwitchedToAdvanced' : 'uiModeSwitchedToSimple'));
+    if (privacyGettingDisabled) {
+      setTimeout(function () {
+        showToast('info', t('uiModePrivacyAutoDisabled'));
+      }, 400);
+    }
   }
 }
 

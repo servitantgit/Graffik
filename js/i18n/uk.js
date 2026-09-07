@@ -835,6 +835,7 @@ window.translations.uk = {
   uiModeSwitchedToSimple: '✅ Простий режим увімкнено',
   uiModeSwitchedToAdvanced: '✅ Розширений режим увімкнено',
   uiModeAdvancedAutoDetected: 'ℹ️ Додано Простий режим для новачків. Ви залишаєтесь у Розширеному як досвідчений користувач.',
+  uiModePrivacyAutoDisabled: '🔓 Режим приватності вимкнено (доступний лише в Розширеному режимі)',
   settingsAppearance: 'Вигляд',
   settingsDataPrivacy: 'Дані та приватність',
   settingsAccessibility: 'Доступність',

@@ -837,6 +837,7 @@ window.translations.pl = {
   uiModeSwitchedToSimple: '✅ Tryb podstawowy włączony',
   uiModeSwitchedToAdvanced: '✅ Tryb zaawansowany włączony',
   uiModeAdvancedAutoDetected: 'ℹ️ Dodano tryb Podstawowy dla nowych użytkowników. Pozostajesz w trybie Zaawansowanym jako doświadczony użytkownik.',
+  uiModePrivacyAutoDisabled: '🔓 Tryb prywatności został wyłączony (dostępny tylko w trybie Zaawansowanym)',
   settingsAppearance: 'Wygląd',
   settingsDataPrivacy: 'Dane i prywatność',
   settingsAccessibility: 'Dostępność',
