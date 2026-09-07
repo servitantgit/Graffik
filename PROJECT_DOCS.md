@@ -307,6 +307,10 @@ Brak bufora `pendingChanges` / undo-redo; zapis jest natychmiastowy, tak jak url
   oraz ostatni czas sync przy `hasUnsyncedChanges()`; przyciski w jednym rzędzie
   (klasa `modal-footer-single-row` na `#modalFooter`)
 
+### Wygląd (UI skins + tabela)
+
+W Ustawienia → Wygląd: **Industrial / Paper / Neon** (`prefs.uiSkin`), gęstość tabeli **Standard / Capsule** (`prefs.tableDensity`), oraz skórki komórek full/strip/quiet.
+
 ### js/admin-center.js — Panel administratora
 
 Pełny UI Admin Center (fabryczny edytor R/P/N/W, eksport `YYYY.js`, poradnik, strefa ryzyka).
@@ -583,55 +587,42 @@ Ustawienia (Settings → Pages):
 - [x] Filtr protokołu w Service Worker (chrome-extension) ✅ v3.5.0
 - [x] Konfiguracja Prettier ✅ v3.5.0
 
-## 10. Dodawanie nowego roku (Admin workflow)
+## 10. Publikacja fabrycznego grafiku (Admin workflow)
 
-Nowa architektura upraszcza dodawanie nowych lat — **każdy rok w osobnym pliku**.
+Fabryczny grafik jest **publiczny** (w plikach `js/schedules/gillette/YYYY.js`). Edycja w Admin Center zapisuje tylko **lokalne szkice** (factory drafts) w przeglądarce admina. Użytkownicy zobaczą zmiany dopiero po eksporcie + deployu.
 
-### 10.1. Krok po kroku:
+### 10.1. Szkic (lokalnie)
 
-1. **Zaloguj się** jako admin (servitant@gmail.com w Google Drive)
-2. **Przejdź na nowy rok** (year picker → np. 2027)
-3. **Włącz tryb edycji** ✏️
-4. **Zaznacz zmiany** klikając komórki (użyj palety R/P/N/W dla admin)
-5. **Zapisz** (Ctrl+S) — dane w localStorage
-6. **Export factory year** (☰ Menu → 👑 Admin Panel → 📤 Export factory year → wybierz rok)
-7. **Pobierz plik** `YYYY.js` (np. `2027.js`)
-8. **Umieść plik** w folderze `js/schedules/gillette/`
-9. **Zaktualizuj index.html** — dodaj nowy script tag:
+1. Zaloguj się Google Drive jako admin (`ADMIN_EMAILS` w `js/admin.js`).
+2. ☰ → **Admin Panel** (pod blokiem Drive) → **Edytor fabryczny**.
+3. Wybierz rok → **Start editing**.
+4. Maluj R / P / N / W (klawisze lub pasek narzędzi); szkice zapisują się automatycznie.
+5. Publiczny grafik w aplikacji **nie zmienia się** na tym etapie.
+
+### 10.2. Eksport („gdy gotowy do publikacji”)
+
+1. Admin Center → zakładka **Eksport**.
+2. Wybierz rok → **Eksport factory-roku (.js)**.
+3. Pobierany jest plik `YYYY.js` w formacie `registerYearData('gillette', year, schedule, hours)`.
+4. Eksport **nie** wysyła nic na Drive i **nie** publikuje strony — tylko generuje plik.
+
+### 10.3. Deploy („rozwiń .js, aby był dostępny dla wszystkich”)
+
+1. Skopiuj `YYYY.js` do `js/schedules/gillette/` (nadpisz, jeśli rok już istnieje).
+2. **Nowy rok:** dodaj w `index.html`:
    ```html
-   <script src="js/schedules/gillette/2027.js"></script>
+   <script src="js/schedules/gillette/YYYY.js"></script>
    ```
-   (dodaj po istniejącym 2026.js)
-10. **Git commit + push:**
-    ```bash
-    git add js/schedules/gillette/2027.js index.html
-    git commit -m "chore(data): add 2027 factory schedule"
-    git push
-    ```
-11. **GitHub Actions** zadeploi automatycznie (2-5 min)
-12. Użytkownicy zobaczą toast **"🔄 Nowa wersja dostępna"** → klikną → zobaczą 2027
+   oraz wpis `./js/schedules/gillette/YYYY.js` w `ASSETS` w `sw.js`.
+3. **Istniejący rok:** wystarczy wymienić plik `.js` — bez zmian `index.html` / `sw.js`.
+4. Commit + push do `main` → GitHub Actions (Pages) → użytkownicy dostają update przez Service Worker.
 
-### 10.2. Zalety nowej architektury:
+### 10.4. Zalety
 
-- ✅ **Zero ryzyka zepsucia starych lat** — 2026 w osobnym pliku, nie ruszamy
-- ✅ **Łatwy rollback** — można cofnąć jeden rok bez wpływu na inne
-- ✅ **Jasny historia w Git** — każdy rok osobny commit
-- ✅ **Modułowa struktura** — łatwo dodawać nowe typy grafików w przyszłości
-- ✅ **Prostszy debugging** — problemy w danym roku izolowane
+- Szkice admina nie psują produkcji, dopóki nie zrobisz deployu
+- Każdy rok w osobnym pliku — łatwy rollback
+- Osobiste dane użytkowników (urlopy, custom shifts) są poza tym pipeline’em
 
-### 10.3. Future: Multi-schedule support
-
-Aktualnie tylko `gillette` schedule (4 brygady × 3 zmiany).
-Struktura gotowa na przyszłe schedules (np. office 5×1, produkcja 5×3):
-
-```
-js/schedules/
-├── gillette/         # 4×3 rotating
-├── office-5x1/       # future: office schedule (5 days × 1 shift)
-└── production-5x3/   # future: production 5×3
-```
-
-Każdy schedule ma własne metadata + dane per rok.
 
 ## 11. Szybkie odwołania
 

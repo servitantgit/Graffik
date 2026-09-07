@@ -292,7 +292,7 @@ window.translations.pl = {
   inDays: 'Za {n} dni',
 
   // === FAQ ===
-  faqTitle: '❓ Pomoc — Grafik Gillette (FAQ v3)',
+  faqTitle: '❓ Pomoc — Grafik Gillette (FAQ)',
   faqIntro:
     'Kliknij pytanie, aby zobaczyć odpowiedź. Poniżej znajdziesz szczegółowy opis zakładek, możliwości i tego, co aplikacja pokazuje.',
   faqOk: 'Rozumiem',
@@ -300,12 +300,12 @@ window.translations.pl = {
   faqStart1: 'Wybierz swoją brygadę (A/B/C/D)',
   faqStart2: 'Wybierz rok strzałkami ‹ ›',
   faqStart3: 'Uruchom 🏠 Dashboard, bo jest najlepszy do szybkiego przeglądu',
-  faqStart4: 'Jeżeli chcesz wprowadzać zmiany, przejdź do trybu edycji przyciskiem ✏️',
+  faqStart4: 'Aby zmienić zmianę, urlop lub notatkę — otwórz 📅 Miesiąc i dotknij wybranego dnia',
   faqStartNote:
-    'Ustawienia zapisują się automatycznie w przeglądarce, więc po powrocie do aplikacji wracasz do ostatniego stanu.',
+    'Dane osobiste są w przeglądarce; możesz je zsynchronizować przez Google Drive w menu. Grafik fabryczny aktualizuje się z nową wersją aplikacji.',
   faqLangTitle: '🌐 Jak zmienić język aplikacji?',
   faqLangDesc:
-    'W górnym pasku jest przycisk 🌐 (flaga języka). Kliknięcie otwiera listę dostępnych języków:',
+    'Język zmieniasz w ☰ Menu → Ustawienia → Ogólne → Język. Dostępne:',
   faqLangPl: '🇵🇱 Polski',
   faqLangEn: '🇺🇸 English',
   faqLangUk: '🇺🇦 Українська',
@@ -320,9 +320,9 @@ window.translations.pl = {
   faqViewsTable:
     '📋 Tabela — pokazuje wszystkie 4 brygady w jednym miesiącu, co ułatwia porównanie grafików między brygadami.',
   faqViewsYear:
-    '📊 Rok — rozszerza widok miesiąca lub tabeli na cały rok i pokazuje 12 mini-kalendarzy albo 12 tabel.',
+    'Przełącznik Miesiąc / Rok na pasku pod zakładkami rozszerza bieżący widok (kalendarz lub tabelę) na cały rok.',
   faqViewsNote:
-    'Każda zakładka odpowiada innemu celowi: szybki przegląd, planowanie, edycja i analiza całego okresu.',
+    'Nawigacja: strzałki ‹ › zmieniają miesiąc lub rok; „Dziś” wraca do bieżącej daty.',
   faqFeaturesTitle: '🧩 Jakie są najważniejsze możliwości programu?',
   faqFeaturesDesc:
     'Program potrafi robić znacznie więcej niż tylko pokazywać grafik. Oto jego najważniejsze możliwości:',
@@ -337,21 +337,21 @@ window.translations.pl = {
   faqFeaturesCompare:
     'Porównywanie brygad — można zobaczyć, kiedy dwie brygady mają tę samą zmianę.',
   faqFeaturesExport:
-    'Eksport do kalendarza i backup JSON — dane można zapisać lub przenieść do innych narzędzi.',
+    'Eksport do kalendarza ICS i udostępnianie linku / QR; kopia zapasowa przez Google Drive.',
   faqFeaturesPrint: 'Drukowanie i udostępnianie wybranego widoku albo konkretnego dnia.',
   faqFeaturesNote:
     'W praktyce aplikacja łączy funkcje grafiku, planera, kalendarza i prostego narzędzia do analizy zmian.',
-  faqSkinTitle: '🎨 Jakie style komórek są dostępne?',
+  faqSkinTitle: '🎨 Jak zmienić wygląd aplikacji?',
   faqSkinDesc:
-    'W ustawieniach można wybrać jeden z trzech stylów: pełne wypełnienie, spokojny pasek lub kolorowe obramowanie.',
-  faqSkinFull: 'Pełne wypełnienie — cała komórka używa koloru odpowiedniej zmiany.',
-  faqSkinStrip: 'Spokojny pasek — neutralna komórka z kolorowym paskiem po lewej stronie.',
+    '☰ Menu → Ustawienia → Wygląd. Są trzy poziomy ustawień:',
+  faqSkinFull: 'Skórka interfejsu — Industrial, Paper lub Neon (ogólny styl aplikacji).',
+  faqSkinStrip: 'Tabela — Standard (gęsta siatka) lub Kapsuła (zaokrąglone komórki).',
   faqSkinQuiet:
-    'Kolorowe obramowanie — neutralna komórka z kolorowym obramowaniem zarówno komórki, jak i daty. Kolory R/P/N pozostają bez zmian.',
-  faqSkinVacation: 'Urlop używa tej samej zasady kolorowego obramowania, ale z kolorem urlopu.',
+    'Wygląd komórek — pełne wypełnienie, pasek z lewej lub kolorowe obramowanie ramki i daty.',
+  faqSkinVacation: 'Kolory zmian R/P/N/U można zmienić osobno w tej samej sekcji „Wygląd”.',
   faqOvertimeTitle: '⏱ Jak dodawać nadgodziny?',
-  faqOvertime1: 'Włącz ✏️ tryb edycji',
-  faqOvertime2: 'W palecie na dole wybierz ⏱ lub naciśnij klawisz O',
+  faqOvertime1: 'Otwórz 📅 Miesiąc i wybierz dzień ze zmianą',
+  faqOvertime2: 'W dolnym panelu / popupach wybierz nadgodziny ⏱ (lub klawisz O, jeśli dostępny)',
   faqOvertime3: 'Kliknij dzień z zmianą — pojawią się dwa popupy:',
   faqOvertime3a: '⏱ PRZED — nadgodziny przed zmianą',
   faqOvertime3b: '⏱ PO — nadgodziny po zmianie',
@@ -902,22 +902,22 @@ window.translations.pl = {
   factoryDraftsReset: 'Wszystkie szkice zresetowane',
   factoryExportDownloaded: 'Plik eksportu pobrany',
   factoryExportInstructions:
-    'Pobrany plik zawiera publiczny grafik wybranego roku.',
+    'Plik zawiera publiczny grafik roku w formacie registerYearData. Jeszcze go nie ma na serwerze — potrzebny deploy przez git.',
   factoryExportDeployTitle: 'Instrukcja wdrożenia',
   factoryExportDeployIntro:
-    'Plik {year}.js został pobrany. Aby opublikować grafik dla wszystkich użytkowników:',
+    'Plik {year}.js pobrano na komputer. Aby grafik był dostępny dla wszystkich użytkowników aplikacji:',
   factoryExportDeployStepFile:
-    'Umieść plik {year}.js w katalogu js/schedules/gillette/.',
+    'Skopiuj {year}.js do katalogu js/schedules/gillette/ w repozytorium (zastąp plik, jeśli rok już istnieje).',
   factoryExportDeployStepIndex:
-    'Jeśli dodajesz nowy rok, dodaj jego znacznik script w index.html bezpośrednio po pozostałych plikach rocznych.',
+    'Tylko dla NOWEGO roku: dodaj w index.html wiersz <script src="js/schedules/gillette/{year}.js"></script> zaraz po innych plikach rocznych gillette.',
   factoryExportDeployStepCache:
-    'Jeśli dodajesz nowy rok, dodaj ./js/schedules/gillette/{year}.js do tablicy ASSETS w sw.js.',
+    'Tylko dla NOWEGO roku: dodaj ./js/schedules/gillette/{year}.js do listy ASSETS w sw.js, aby PWA cache’owała plik offline.',
   factoryExportDeployStepCommit:
-    'Sprawdź zmiany, a następnie zatwierdź plik roku oraz wymagane zmiany index.html i sw.js.',
+    'git add odpowiednie pliki i commit (np. chore(data): publish {year} factory schedule).',
   factoryExportDeployStepPush:
-    'Wyślij commit do gałęzi main. GitHub Actions opublikuje nową wersję aplikacji.',
+    'git push do gałęzi main. GitHub Actions zbuduje stronę; użytkownicy dostaną aktualizację przez Service Worker (toast „nowa wersja”).',
   factoryExportExistingYearHint:
-    'Przy aktualizacji istniejącego roku wystarczy zastąpić jego plik. Nie zmieniaj index.html ani sw.js, jeśli ten rok jest już zarejestrowany.',
+    'Aktualizacja już opublikowanego roku: wystarczy zastąpić js/schedules/gillette/{year}.js. Nie ruszaj index.html ani sw.js, jeśli script tego roku jest już podłączony.',
   syncDiffFactoryDrafts: 'Szkice grafiku fabrycznego różnią się między urządzeniami',
 
   // === ADMIN CENTER (full UI strings) ===
@@ -929,7 +929,7 @@ window.translations.pl = {
   factoryEditorStep2: 'Kliknij „Rozpocznij edycję”, aby włączyć tryb malowania',
   factoryEditorStep3: 'Maluj zmiany klawiszami R/P/N/W lub przyciskami paska',
   factoryEditorStep4: 'Zmiany są automatycznie zapisywane jako szkice',
-  factoryEditorStep5: 'Gdy wszystko gotowe — wyeksportuj rok, aby opublikować dla wszystkich',
+  factoryEditorStep5: 'Gdy wszystko gotowe — wyeksportuj rok (zakładka „Eksport”), aby przygotować publiczny plik dla wszystkich użytkowników',
   factoryEditorSelectYear: 'Wybierz rok do edycji:',
   factoryEditorStatus: 'Status: ',
   factoryEditorInactive: 'Nieaktywny',
@@ -941,28 +941,28 @@ window.translations.pl = {
   factoryEditorWorkflow: 'Typowy przebieg:',
   factoryDraftClearYearSuccess: 'Szkic roku {year} wyczyszczony',
   adminExportTitle: 'Eksport',
-  adminExportDescription: 'Eksportuj fabryczny grafik roku do pliku .js do wdrożenia.',
+  adminExportDescription: 'Eksport zbiera publiczny grafik fabryczny wybranego roku (wraz z lokalnymi szkicami admina) do pliku YYYY.js na potrzeby wdrożenia w repozytorium.',
   adminExportHowItWorks: 'Jak to działa:',
-  adminExportStep1: 'Wybierz rok z listy',
-  adminExportStep2: 'Kliknij „Eksport factory-roku (.js)”',
-  adminExportStep3: 'Dodaj pobrany plik do repozytorium / źródła danych',
+  adminExportStep1: 'Wybierz rok z listy (dostępne lata z danych + szkiców)',
+  adminExportStep2: 'Kliknij „Eksport factory-roku (.js)” — przeglądarka pobierze plik',
+  adminExportStep3: 'Dodaj plik do repozytorium: js/schedules/gillette/YYYY.js; dla nowego roku — także script w index.html i wpis w sw.js; commit + push do main',
   adminExportSelectYear: 'Wybierz rok do eksportu:',
   adminExportNoData: 'Brak danych do eksportu',
   adminExportError: 'Błąd eksportu',
   adminExportYearWithEdits: 'Zawiera Twoje poprawki',
   adminExportYearFactory: 'Tylko dane fabryczne',
   adminExportYearNew: 'Nowy rok (tylko dane własne)',
-  adminGuideIntro: 'Ten poradnik wyjaśnia, jak zarządzać grafikami fabrycznymi w Panelu administratora.',
-  adminGuideFactoryEditor: 'Edytor grafiku fabrycznego pozwala tworzyć i zmieniać grafiki obowiązujące wszystkich użytkowników.',
+  adminGuideIntro: 'Centrum admina zarządza fabrycznym (publicznym) grafikiem. Osobiste zmiany użytkowników (urlopy, własne zmiany) tu nie wchodzą. Szkice są tylko lokalne, dopóki nie wyeksportujesz i nie wdrożysz pliku.',
+  adminGuideFactoryEditor: 'Edytor pozwala malować zmiany R/P/N/W dla wszystkich brygad. Wszystko trafia do lokalnych szkiców factory drafts i nie zmienia opublikowanego grafiku, dopóki nie zrobisz eksportu i deployu.',
   adminGuideStep1: 'Włącz tryb edycji dla wybranego roku',
   adminGuideStep2: 'Maluj zmiany klawiszami R/P/N/W lub przyciskami paska',
   adminGuideStep3: 'Zmiany są zapisywane lokalnie jako szkice',
-  adminGuideStep4: 'Wyeksportuj rok, gdy będziesz gotowy do publikacji',
-  adminGuideStep5: 'Wdróż wyeksportowany plik .js, aby grafik był dostępny dla wszystkich',
+  adminGuideStep4: 'Eksportuj rok, gdy będziesz gotowy do publikacji: szkice zostają tylko w Twojej przeglądarce; eksport zbiera grafik fabryczny (+ szkice) do pliku YYYY.js dla repozytorium',
+  adminGuideStep5: 'Wdróż wyeksportowany plik .js: umieść go w js/schedules/gillette/, w razie potrzeby dodaj script w index.html i ścieżkę w sw.js, zrób commit i push do main — GitHub Pages opublikuje aktualizację, a wszyscy użytkownicy zobaczą nowy grafik po odświeżeniu aplikacji',
   adminGuideNavigateMonth: 'Przechodzenie między miesiącami',
   adminGuideExitEditor: 'Wyjdź z edytora',
-  adminGuideExport: 'Eksportuj grafik fabryczny, aby utworzyć pliki .js dla wszystkich użytkowników.',
-  adminGuideDangerZone: 'Używaj ostrożnie — tych działań nie da się łatwo cofnąć.',
+  adminGuideExport: 'Eksport tworzy plik YYYY.js (format registerYearData). To nie wysyła danych na Google Drive i samo z siebie nie zmienia strony — plik trzeba dodać do gita i wypchnąć, aby GitHub Actions opublikował nową wersję dla wszystkich.',
+  adminGuideDangerZone: 'Strefa niebezpieczna czyści lokalne szkice lub dane osobiste. Nie usuwa już opublikowanych plików z repozytorium.',
   keyboardShortcuts: 'Skróty klawiszowe',
   labelR: 'R — Rano (6–14)',
   labelP: 'P — Popołudnie (14–22)',

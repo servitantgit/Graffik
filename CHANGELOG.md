@@ -29,6 +29,12 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 ## [Unreleased]
 
 ### Changed
+- Admin guide / export copy: clearer publish vs draft vs deploy (YYYY.js → gillette/ → git push)
+- FAQ updated for current UX (settings language, UI skins, table Standard/Capsule, no separate edit-mode button)
+- Admin menu under Google Drive; solid red danger-zone buttons
+
+
+### Changed
 - **Menu shell cleanup** — `js/app-shell.js` no longer opens temporary placeholder panels for Settings / Admin Center; Settings is owned by `js/settings.js`, Admin Center by `js/admin-center.js`
 - **Context toolbar** — brigade label uses the same “Brigade” wording on all views; month/year segmented toggle sits with brigade controls; “Today” stays next to period arrows
 - **Top bar** — removed view-name kicker above the app title (desktop and mobile)

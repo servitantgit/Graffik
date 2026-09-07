@@ -267,3 +267,12 @@ MIT License (lub wewnętrzne narzędzie fabryczne — wg wyboru autora)
 ---
 
 **Uwaga dla developerów:** Szczegółowa dokumentacja techniczna (architektura, sync, edge cases) znajduje się w [PROJECT_DOCS.md](./PROJECT_DOCS.md). FAQ w aplikacji (☰ Menu → ❓) zawiera przewodnik dla użytkowników.
+
+
+## Admin: publikacja fabrycznego grafiku
+
+1. Admin Center → edytor (lokalne szkice R/P/N/W).
+2. **Eksport** → plik `YYYY.js` (to jeszcze nie jest publikacja).
+3. W repo: `js/schedules/gillette/YYYY.js` (+ `index.html` / `sw.js` tylko dla **nowego** roku).
+4. `git push` na `main` → GitHub Pages → wszyscy użytkownicy po update SW.
+

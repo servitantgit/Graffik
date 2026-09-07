@@ -293,7 +293,7 @@ window.translations.en = {
   inDays: 'In {n} days',
 
   // === FAQ ===
-  faqTitle: '❓ Help — Grafik Gillette (FAQ v3)',
+  faqTitle: '❓ Help — Grafik Gillette (FAQ)',
   faqIntro:
     'Click a question to see the answer. Below you will find a detailed description of tabs, features and what the application shows.',
   faqOk: 'I understand',
@@ -301,12 +301,12 @@ window.translations.en = {
   faqStart1: 'Choose your brigade (A/B/C/D)',
   faqStart2: 'Choose the year with the arrow keys ‹ ›',
   faqStart3: 'Open 🏠 Dashboard, it is the best for a quick overview',
-  faqStart4: 'If you want to make changes, switch to edit mode with the ✏️ button',
+  faqStart4: 'To change a shift, vacation or note — open 📅 Month and tap the day',
   faqStartNote:
-    'Settings are saved automatically in the browser, so when you return to the app you return to the last state.',
+    'Personal data is stored in the browser; optionally sync via Google Drive in the menu. The factory schedule updates with a new app version.',
   faqLangTitle: '🌐 How to change the app language?',
   faqLangDesc:
-    'In the top bar there is a 🌐 button (language flag). Clicking opens a list of available languages:',
+    'Change language in ☰ Menu → Settings → General → Language. Available:',
   faqLangPl: '🇵🇱 Polish',
   faqLangEn: '🇺🇸 English (default)',
   faqLangUk: '🇺🇦 Ukrainian',
@@ -321,9 +321,9 @@ window.translations.en = {
   faqViewsTable:
     '📋 Table — shows all 4 brigades in one month, making it easy to compare schedules between brigades.',
   faqViewsYear:
-    '📊 Year — expands the month or table view to the entire year and shows 12 mini-calendars or 12 tables.',
+    'The Month / Year toggle under the tabs expands the current view (calendar or table) to the full year.',
   faqViewsNote:
-    'Each tab serves a different purpose: quick overview, planning, editing and analysis of the entire period.',
+    'Navigation: ‹ › change month or year; Today jumps to the current date.',
   faqFeaturesTitle: '🧩 What are the key features of the program?',
   faqFeaturesDesc:
     'The program can do much more than just show the schedule. Here are its key features:',
@@ -337,21 +337,21 @@ window.translations.en = {
   faqFeaturesNotes: 'Notes for days — you can save additional information for specific dates.',
   faqFeaturesCompare: 'Brigade comparison — you can see when two brigades have the same shift.',
   faqFeaturesExport:
-    'Export to calendar and JSON backup — data can be saved or transferred to other tools.',
+    'ICS calendar export and link/QR sharing; backup sync via Google Drive.',
   faqFeaturesPrint: 'Printing and sharing the selected view or a specific day.',
   faqFeaturesNote:
     'In practice, the application combines the functions of a schedule, planner, calendar and a simple analysis tool for shifts.',
-  faqSkinTitle: '🎨 What cell styles are available?',
+  faqSkinTitle: '🎨 How do I change the app look?',
   faqSkinDesc:
-    'In settings you can choose one of three styles: full fill, calm strip, or colored outline.',
-  faqSkinFull: 'Full fill — the entire cell uses the color of the corresponding shift.',
-  faqSkinStrip: 'Calm strip — a neutral cell with a colored strip on the left.',
+    '☰ Menu → Settings → Appearance. There are three levels:',
+  faqSkinFull: 'UI skin — Industrial, Paper or Neon (overall app style).',
+  faqSkinStrip: 'Table — Standard (dense grid) or Capsule (rounded cells).',
   faqSkinQuiet:
-    'Colored outline — a neutral cell with both the cell border and date outlined in the shift color. R/P/N colors remain unchanged.',
-  faqSkinVacation: 'Vacation uses the same colored-outline principle with the vacation color.',
+    'Cell skin — full fill, left strip, or colored outline on the cell and date.',
+  faqSkinVacation: 'Shift colors R/P/N/U can be customized in the same Appearance section.',
   faqOvertimeTitle: '⏱ How to add overtime?',
-  faqOvertime1: 'Enable ✏️ edit mode',
-  faqOvertime2: 'In the palette at the bottom select ⏱ or press key O',
+  faqOvertime1: 'Open 📅 Month and select a day with a shift',
+  faqOvertime2: 'In the bottom panel / popups choose overtime ⏱ (or key O if available)',
   faqOvertime3: 'Click a day with a shift — two popups will appear:',
   faqOvertime3a: '⏱ BEFORE — overtime before the shift',
   faqOvertime3b: '⏱ AFTER — overtime after the shift',
@@ -900,22 +900,22 @@ window.translations.en = {
   factoryDraftsReset: 'All drafts reset',
   factoryExportDownloaded: 'Export file downloaded',
   factoryExportInstructions:
-    'The downloaded file contains the public schedule for the selected year.',
+    'The file holds the public year schedule in registerYearData format. It is not on the server yet — deploy via git is required.',
   factoryExportDeployTitle: 'Deployment instructions',
   factoryExportDeployIntro:
-    'The {year}.js file has been downloaded. To publish the schedule for all users:',
+    'File {year}.js was downloaded. To make the schedule available to all app users:',
   factoryExportDeployStepFile:
-    'Place {year}.js in js/schedules/gillette/.',
+    'Copy {year}.js into js/schedules/gillette/ in the repository (replace the file if the year already exists).',
   factoryExportDeployStepIndex:
-    'When adding a new year, add its script tag to index.html directly after the other yearly schedule files.',
+    'NEW year only: add <script src="js/schedules/gillette/{year}.js"></script> to index.html right after the other gillette year files.',
   factoryExportDeployStepCache:
-    'When adding a new year, add ./js/schedules/gillette/{year}.js to the ASSETS array in sw.js.',
+    'NEW year only: add ./js/schedules/gillette/{year}.js to the ASSETS list in sw.js so the PWA caches it offline.',
   factoryExportDeployStepCommit:
-    'Review the changes, then commit the year file and any required index.html and sw.js updates.',
+    'git add the relevant files and commit (e.g. chore(data): publish {year} factory schedule).',
   factoryExportDeployStepPush:
-    'Push the commit to the main branch. GitHub Actions will publish the new application version.',
+    'git push to main. GitHub Actions builds the site; users get the update via Service Worker (“new version” toast).',
   factoryExportExistingYearHint:
-    'When updating an existing year, replace only its file. Do not change index.html or sw.js if that year is already registered.',
+    'Updating an already published year: just replace js/schedules/gillette/{year}.js. Do not touch index.html or sw.js if that year’s script is already linked.',
   syncDiffFactoryDrafts: 'Factory schedule drafts differ between devices',
 
   // === ADMIN CENTER (full UI strings) ===
@@ -927,7 +927,7 @@ window.translations.en = {
   factoryEditorStep2: 'Click "Start editing" to activate factory painting mode',
   factoryEditorStep3: 'Use R/P/N/W keys or toolbar buttons to paint shifts',
   factoryEditorStep4: 'Changes are saved automatically as drafts',
-  factoryEditorStep5: 'When ready, export the year to publish for all users',
+  factoryEditorStep5: 'When ready — export the year (Export tab) to prepare the public file for all users',
   factoryEditorSelectYear: 'Select year to edit:',
   factoryEditorStatus: 'Status: ',
   factoryEditorInactive: 'Inactive',
@@ -939,28 +939,28 @@ window.translations.en = {
   factoryEditorWorkflow: 'Typical workflow:',
   factoryDraftClearYearSuccess: 'Draft for {year} cleared',
   adminExportTitle: 'Export',
-  adminExportDescription: 'Export a factory year schedule to a .js file for deployment.',
+  adminExportDescription: 'Export packs the public factory schedule for the selected year (including your local admin drafts) into YYYY.js for repository deployment.',
   adminExportHowItWorks: 'How it works:',
-  adminExportStep1: 'Select a year from the list',
-  adminExportStep2: 'Click "Export factory year (.js)"',
-  adminExportStep3: 'Add the downloaded file to the repository / data source',
+  adminExportStep1: 'Pick a year from the list (years from data + drafts)',
+  adminExportStep2: 'Click “Export factory year (.js)” — the browser downloads the file',
+  adminExportStep3: 'Add the file to the repo: js/schedules/gillette/YYYY.js; for a new year also a script in index.html and an entry in sw.js; commit + push to main',
   adminExportSelectYear: 'Select year to export:',
   adminExportNoData: 'No data to export',
   adminExportError: 'Export failed',
   adminExportYearWithEdits: 'Contains your edits',
   adminExportYearFactory: 'Factory data only',
   adminExportYearNew: 'New year (custom only)',
-  adminGuideIntro: 'This guide explains how to manage factory schedules in the Admin Center.',
-  adminGuideFactoryEditor: 'The factory editor lets you create and modify schedules that apply to all users.',
+  adminGuideIntro: 'Admin Center manages the factory (public) schedule. Personal user edits (vacations, own shifts) are not included. Drafts stay local until you export and deploy the file.',
+  adminGuideFactoryEditor: 'The editor paints R/P/N/W shifts for all brigades. Everything is written to local factory drafts and does not change the published schedule until you export and deploy.',
   adminGuideStep1: 'Activate factory painting mode for a year from the factory editor tab',
   adminGuideStep2: 'Use R/P/N/W keys or toolbar buttons to paint shifts',
   adminGuideStep3: 'Changes are saved locally as drafts',
-  adminGuideStep4: 'Export the year when ready to publish',
-  adminGuideStep5: 'Deploy the exported .js file to make it live for all users',
+  adminGuideStep4: 'Export the year when ready to publish: drafts stay only in your browser; export packs the factory schedule (+ your drafts) into YYYY.js for the repository',
+  adminGuideStep5: 'Deploy the exported .js file: put it in js/schedules/gillette/, add a script tag in index.html and an entry in sw.js if it is a new year, then commit and push to main — GitHub Pages publishes the update and everyone sees the new schedule after the app refreshes',
   adminGuideNavigateMonth: 'Navigate months',
   adminGuideExitEditor: 'Exit editor',
-  adminGuideExport: 'Export factory schedules to create deployable .js files for all users.',
-  adminGuideDangerZone: 'Use with caution — these actions cannot be easily undone.',
+  adminGuideExport: 'Export creates YYYY.js (registerYearData format). It does not upload to Google Drive or change the live site by itself — add the file to git and push so GitHub Actions publishes a new version for everyone.',
+  adminGuideDangerZone: 'The danger zone clears local drafts or personal data. It does not delete already published files from the repository.',
   keyboardShortcuts: 'Keyboard shortcuts',
   labelR: 'R — Morning (6–14)',
   labelP: 'P — Afternoon (14–22)',
