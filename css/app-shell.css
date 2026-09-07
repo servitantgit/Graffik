@@ -1281,6 +1281,36 @@ body.compact-cells .info-section {
    background: var(--bg-info);
  }
 
+/* === ABOUT PANEL === */
+.about-content {
+  text-align: center;
+  line-height: 1.6;
+}
+
+.about-content p {
+  margin: 10px 0;
+}
+
+.about-content a {
+  color: var(--text-header);
+  text-decoration: underline;
+  transition: filter 0.15s;
+}
+
+.about-content a:hover {
+  filter: brightness(1.2);
+}
+
+.about-content a:focus-visible {
+  outline: 2px solid var(--text-header);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.about-content button#about-check-update {
+  margin-top: 16px;
+}
+
 /* === FACTORY EDITOR BAR === */
 #factoryEditorBar {
    position: fixed;
