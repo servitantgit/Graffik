@@ -845,8 +845,8 @@ window.translations.en = {
   settingsNotificationsBlocked: 'Notifications are blocked in the browser',
   settingsNotificationLead: 'Remind me before the shift',
   settingsNotificationTest: 'Send test notification',
-  settingsVacationUsed: 'Vacation days used: {n}',
-  settingsVacationRemaining: 'Vacation days remaining: {n}',
+  settingsVacationUsed: 'Vacation days used',
+  settingsVacationRemaining: 'Vacation days remaining',
 
   // === DATA AND PRIVACY SETTINGS ===
   settingsPrivacyLocalFirstExplanation:

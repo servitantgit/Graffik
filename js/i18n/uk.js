@@ -845,8 +845,8 @@ window.translations.uk = {
   settingsNotificationsBlocked: 'Сповіщення заблоковано в браузері',
   settingsNotificationLead: 'Нагадати перед зміною',
   settingsNotificationTest: 'Надіслати тестове сповіщення',
-  settingsVacationUsed: 'Використано днів відпустки: {n}',
-  settingsVacationRemaining: 'Залишилося днів відпустки: {n}',
+  settingsVacationUsed: 'Використано днів відпустки',
+  settingsVacationRemaining: 'Залишилося днів відпустки',
 
   // === DATA AND PRIVACY SETTINGS ===
   settingsPrivacyLocalFirstExplanation:

@@ -847,8 +847,8 @@ window.translations.pl = {
   settingsNotificationsBlocked: 'Powiadomienia są zablokowane w przeglądarce',
   settingsNotificationLead: 'Przypomnij przed zmianą',
   settingsNotificationTest: 'Wyślij powiadomienie testowe',
-  settingsVacationUsed: 'Wykorzystane dni urlopu: {n}',
-  settingsVacationRemaining: 'Pozostałe dni urlopu: {n}',
+  settingsVacationUsed: 'Wykorzystane dni urlopu',
+  settingsVacationRemaining: 'Pozostałe dni urlopu',
 
   // === DATA AND PRIVACY SETTINGS ===
   settingsPrivacyLocalFirstExplanation:
