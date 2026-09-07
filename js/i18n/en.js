@@ -138,6 +138,7 @@ window.translations.en = {
   infoLiveShift: '⏱️ SHIFT IN PROGRESS',
   infoUrlop: '🌴 VACATION',
   infoFree: '🏖️ Free',
+  infoWorking: 'Shift',
   infoUrlopStats: '🌴 Vacation {brig} ({year}):',
   infoUrlopMarked: 'Marked',
   infoUrlopWorking: 'Working',
@@ -624,7 +625,7 @@ window.translations.en = {
   driveLoggedInHint: 'Logged in to Google Drive',
   loggedIn: 'logged in',
   logoutFromDrive: 'Log out from Google Drive',
-  login: 'login',
+  login: 'sign in',
   driveLoggedOutHint: 'Logged out from Google Drive',
   driveConfigTitle: 'Google Drive Configuration',
   driveConfigIntro: 'To use sync, configure the app in Google Cloud Console.',
@@ -943,6 +944,7 @@ window.translations.en = {
 
   // === ADMIN CENTER (full UI strings) ===
   adminRequired: 'Admin access required',
+  adminAuthLost: 'Logged out from Google Drive — factory editor disabled',
   adminCenterTabNotFound: 'Tab not found',
   adminInvalidYear: 'Invalid year',
   factoryEditorHowToUse: 'How to use:',

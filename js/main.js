@@ -354,7 +354,7 @@ if (typeof window !== 'undefined') {
   window.addEventListener('driveAuthChanged', () => {
     if (factoryPaintActive && !window.requireAdmin()) {
       window.deactivateFactoryPaintMode();
-      showToast('warning', t('adminAuthLost') || 'Admin access lost - factory editor exited');
+      showToast('warning', t('adminAuthLost'));
     }
   });
 }

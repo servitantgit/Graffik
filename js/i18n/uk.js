@@ -137,6 +137,7 @@ window.translations.uk = {
   infoLiveShift: '⏱️ ЗМІНА ТРИВАЄ',
   infoUrlop: '🌴 ВІДПУСТКА',
   infoFree: '🏖️ Вихідний',
+  infoWorking: 'Зміна',
   infoUrlopStats: '🌴 Відпустка {brig} ({year}):',
   infoUrlopMarked: 'Позначено',
   infoUrlopWorking: 'Робочі',
@@ -943,6 +944,7 @@ window.translations.uk = {
 
   // === ADMIN CENTER (full UI strings) ===
   adminRequired: 'Потрібні права адміністратора',
+  adminAuthLost: 'Вихід з Google Drive — фабричний редактор вимкнено',
   adminCenterTabNotFound: 'Вкладку не знайдено',
   adminInvalidYear: 'Невірний рік',
   factoryEditorHowToUse: 'Як користуватися:',

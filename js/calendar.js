@@ -565,7 +565,7 @@ function renderInfo() {
       } else {
         const [sh, eh] = shiftHours[shiftCode];
         const shiftTimeStr = `${String(sh).padStart(2, '0')}:00-${String(eh % 24).padStart(2, '0')}:00`;
-        statusCard = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoWorking') || 'Zmiana'}</div><div class="value">${shiftEmoji[shiftCode]} ${shiftCode} (${shiftTimeStr})</div></div>`;
+        statusCard = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoWorking')}</div><div class="value">${shiftEmoji[shiftCode]} ${shiftCode} (${shiftTimeStr})</div></div>`;
       }
 
       // Timeline (only for working non-vacation day)

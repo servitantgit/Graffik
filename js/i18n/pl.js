@@ -137,6 +137,7 @@ window.translations.pl = {
   infoLiveShift: '⏱️ TRWA ZMIANA',
   infoUrlop: '🌴 URLOP',
   infoFree: '🏖️ Wolne',
+  infoWorking: 'Zmiana',
   infoUrlopStats: '🌴 Urlop {brig} ({year}):',
   infoUrlopMarked: 'Zaznaczone',
   infoUrlopWorking: 'Robocze',
@@ -945,6 +946,7 @@ window.translations.pl = {
 
   // === ADMIN CENTER (full UI strings) ===
   adminRequired: 'Wymagane uprawnienia administratora',
+  adminAuthLost: 'Wylogowano z Google Drive — edytor fabryczny wyłączony',
   adminCenterTabNotFound: 'Nie znaleziono karty',
   adminInvalidYear: 'Nieprawidłowy rok',
   factoryEditorHowToUse: 'Jak używać:',
