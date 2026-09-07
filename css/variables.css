@@ -33,6 +33,9 @@ body {
   --color-U-text: #ffffff;
   --color-U-grad: linear-gradient(135deg, #2dd4bf 0%, #0f766e 100%);
   --accent: #ff5722;
+  --bg-danger: #fef2f2;
+  --text-danger: #dc2626;
+  --bg-danger-solid: #dc2626;
 
   --bg-body: linear-gradient(135deg, #1e3c72, #2a5298);
   --bg-container: #fff;
@@ -52,6 +55,9 @@ body {
   --brig-D: #8e44ad;
 }
 body.theme-dark {
+  --bg-danger: rgba(220, 38, 38, 0.15);
+  --text-danger: #f87171;
+  --bg-danger-solid: #dc2626;
   --bg-body: linear-gradient(135deg, #0a0e27, #1a1a2e);
   --bg-container: #1e222d;
   --text-main: #e0e0e0;

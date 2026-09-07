@@ -51,6 +51,7 @@
     <!-- CONTEXT TOOLBAR (brigade + range toggle / period; per-view row visibility) -->
     <div class="context-toolbar" id="contextToolbar" data-view="dashboard">
       <div class="context-row context-row-brigade" id="contextRowBrigade">
+        <span class="context-label" id="brigadeContextLabel"></span>
         <div class="shift-buttons" id="shiftBtns">
           <button type="button" class="shift-btn A active" data-shift="A">A</button>
           <button type="button" class="shift-btn B" data-shift="B">B</button>
@@ -152,6 +153,18 @@
       </div>
     </div>
 
+    <!-- ADMIN (admin-only) -->
+    <div class="menu-section admin-only">
+      <div class="menu-section-title" data-i18n="menuSectionAdmin">👑 Admin Panel</div>
+      <button type="button" class="menu-item" id="menuAdminCenter">
+        <span class="mi-icon">🛠️</span>
+        <span class="mi-text">
+          <span class="mi-title" data-i18n="adminCenterTitle">Panel administratora</span>
+          <span class="mi-desc" data-i18n="adminCenterDesc">Zarządzaj grafikami fabrycznymi i danymi rocznymi</span>
+        </span>
+      </button>
+    </div>
+
     <!-- 1) PRIVACY QUICK SWITCH (role=switch; state via aria-checked) -->
     <div class="menu-section">
       <div class="menu-section-title" data-i18n="menuSectionPrivacy">Prywatność</div>
@@ -177,7 +190,6 @@
         </span>
       </button>
     </div>
-
 
     <!-- 3) TOOLS -->
     <div class="menu-section">
@@ -222,21 +234,7 @@
       </button>
     </div>
 
-    <!-- 5) ADMIN (admin-only) -->
-    <div class="menu-section admin-only">
-      <div class="menu-section-title" data-i18n="menuSectionAdmin">👑 Admin Panel</div>
-      <button type="button" class="menu-item" id="menuAdminCenter">
-        <span class="mi-icon">🛠️</span>
-        <span class="mi-text">
-          <span class="mi-title" data-i18n="adminCenterTitle">Panel administratora</span>
-          <span class="mi-desc" data-i18n="adminCenterDesc">Zarządzaj grafikami fabrycznymi i danymi rocznymi</span>
-        </span>
-      </button>
-    </div>
-
-
   </div>
-
 
    <!-- FACTORY EDITOR BAR (shown during factory painting mode) -->
   <div id="factoryEditorBar" style="display:none;">
@@ -348,8 +346,6 @@
       <div class="modal-footer" id="otFooter"></div>
     </div>
   </div>
-
-
 
   <!-- ===== MODUŁY JS (rozbito monolit na 9 plików) ===== -->
   <!-- Schedules architecture: core + registry + Gillette schedule -->
