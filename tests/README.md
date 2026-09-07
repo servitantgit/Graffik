@@ -78,3 +78,39 @@ if (typeof module !== 'undefined' && module.exports) {
 ```
 
 Tests import via CommonJS `require()`. No bundler, no transpilation, no npm.
+
+## CI (GitHub Actions)
+
+Workflow: `.github/workflows/test.yml`
+
+Runs on push to `main`, pull requests, and manual **workflow_dispatch**.
+
+### What you see in GitHub
+
+1. **Actions → Unit Tests** — live log (`spec` reporter).
+2. **Job summary** (bottom of the run) — table with total / failures.
+3. **Checks → Test report** — visual pass/fail list (`dorny/test-reporter` + JUnit XML).
+4. **Artifacts → test-results** — downloadable `test-results.xml`.
+
+### Local commands
+
+```bash
+# Readable console output
+node --test --test-reporter=spec tests/*.test.js
+
+# Also write JUnit XML (same as CI)
+node --test \
+  --test-reporter=spec \
+  --test-reporter=junit \
+  --test-reporter-destination=stdout \
+  --test-reporter-destination=test-results.xml \
+  tests/*.test.js
+```
+
+No `npm install` — Node built-ins only.
+
+### Badge (optional)
+
+```markdown
+[![Unit Tests](https://github.com/OWNER/REPO/actions/workflows/test.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/test.yml)
+```

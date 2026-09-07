@@ -12,6 +12,8 @@ concurrency:
 
 permissions:
   contents: read
+  checks: write
+  pull-requests: write
 
 jobs:
   test:
@@ -23,12 +25,60 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          # GitHub Actions runners: Node 20 is deprecated; use 22 LTS or 24
           node-version: '22'
 
       - name: Show Node version
         run: node --version
 
       - name: Run unit tests
-        # Unquoted glob so the shell expands to real files (more reliable than a quoted pattern)
-        run: node --test --test-reporter=spec tests/*.test.js
+        id: tests
+        run: |
+          set +e
+          node --test \
+            --test-reporter=spec \
+            --test-reporter=junit \
+            --test-reporter-destination=stdout \
+            --test-reporter-destination=test-results.xml \
+            tests/*.test.js
+          code=$?
+          set -e
+          # Build a short markdown summary for the Actions UI
+          {
+            echo "## Unit test results"
+            echo ""
+            if [ -f test-results.xml ]; then
+              total=$(grep -c '<testcase ' test-results.xml || true)
+              fails=$(grep -c '<failure' test-results.xml || true)
+              echo "| Metric | Count |"
+              echo "|--------|------:|"
+              echo "| Tests | ${total} |"
+              echo "| Failures | ${fails} |"
+              echo ""
+              if [ "$code" -eq 0 ]; then
+                echo "✅ All tests passed."
+              else
+                echo "❌ Some tests failed — see the **Test report** check and the log above."
+              fi
+            else
+              echo "⚠️ No test-results.xml produced."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $code
+
+      - name: Upload JUnit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results.xml
+          if-no-files-found: warn
+
+      # Visual report in the Checks tab / PR (pass & fail lists)
+      - name: Publish test report
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Test report
+          path: test-results.xml
+          reporter: java-junit
+          fail-on-error: false
