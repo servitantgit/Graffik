@@ -832,10 +832,14 @@ function renderInfo() {
 
       if (noteInput) {
         let savedNoteValue = String(notes[noteKey] || '').trim();
+        let saveInProgress = false;
 
-        noteInput.addEventListener('change', () => {
+        const commitNote = () => {
+          if (saveInProgress) return;
           const noteValue = noteInput.value.trim();
           if (noteValue === savedNoteValue) return;
+
+          saveInProgress = true;
 
           if (noteValue) {
             notes[noteKey] = noteValue;
@@ -847,6 +851,19 @@ function renderInfo() {
           saveNotes(notes);
           renderCalendar();
           showToast('success', t('infoNoteSaved'));
+
+          setTimeout(() => {
+            saveInProgress = false;
+          }, 100);
+        };
+
+        noteInput.addEventListener('change', commitNote);
+        noteInput.addEventListener('blur', commitNote);
+        noteInput.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            noteInput.blur();
+          }
         });
       }
     }
