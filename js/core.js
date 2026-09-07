@@ -5,11 +5,205 @@
 /* === PERSISTENCJA === */
 function loadPrefs() {
   try {
-    return JSON.parse(localStorage.getItem(LS_KEY)) || {};
+    const raw = JSON.parse(localStorage.getItem(LS_KEY)) || {};
+    return sanitizePrefs(raw);
   } catch (e) {
-    return {};
+    console.warn('[core]', 'Failed to parse prefs, using defaults', e);
+    return sanitizePrefs({});
   }
 }
+
+/**
+ * Validates prefs structure and replaces invalid values with safe defaults.
+ * Internal safety net — protects against corrupted localStorage, legacy formats,
+ * and manual editing. Non-destructive: unknown keys are preserved.
+ *
+ * @param {object} raw - prefs object (possibly invalid)
+ * @returns {object} - sanitized prefs
+ */
+function sanitizePrefs(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    console.warn('[core]', 'prefs is not an object, resetting to defaults');
+    raw = {};
+  }
+
+  const p = Object.assign({}, raw);
+  let fixedCount = 0;
+
+  function fix(key, condition, defaultValue, reason) {
+    if (!condition) {
+      if (p[key] !== undefined) {
+        console.warn('[core]', 'Invalid prefs.' + key + ':', p[key], '->', defaultValue, '(' + reason + ')');
+        fixedCount++;
+      }
+      p[key] = defaultValue;
+    }
+  }
+
+  // === Navigation ===
+  fix('year',
+    typeof p.year === 'number' && p.year >= MIN_YEAR && p.year <= MAX_YEAR,
+    new Date().getFullYear(),
+    'out of range');
+
+  fix('shift',
+    typeof p.shift === 'string' && ['A', 'B', 'C', 'D'].includes(p.shift),
+    'A',
+    'invalid brigade');
+
+  fix('view',
+    typeof p.view === 'string' && ['dashboard', 'month', 'table'].includes(p.view),
+    'dashboard',
+    'unknown view');
+
+  fix('yearMode',
+    typeof p.yearMode === 'boolean',
+    false,
+    'not boolean');
+
+  // === UI preferences ===
+  fix('theme',
+    typeof p.theme === 'string' && ['system', 'light', 'dark'].includes(p.theme),
+    'light',
+    'unknown theme');
+
+  fix('lang',
+    typeof p.lang === 'string' && ['pl', 'en', 'uk'].includes(p.lang),
+    'pl',
+    'unsupported lang');
+
+  fix('cellSkin',
+    typeof p.cellSkin === 'string' && ['full', 'strip', 'quiet'].includes(p.cellSkin),
+    'full',
+    'unknown cellSkin');
+
+  fix('uiSkin',
+    typeof p.uiSkin === 'string' && ['industrial', 'paper', 'neon'].includes(p.uiSkin),
+    'industrial',
+    'unknown uiSkin');
+
+  fix('tableDensity',
+    typeof p.tableDensity === 'string' && ['compact', 'comfortable'].includes(p.tableDensity),
+    'compact',
+    'unknown tableDensity');
+
+  fix('uiMode',
+    typeof p.uiMode === 'string' && ['simple', 'advanced'].includes(p.uiMode),
+    p.uiMode === undefined ? undefined : 'simple',
+    'unknown uiMode');
+
+  fix('startView',
+    typeof p.startView === 'string' && ['dashboard', 'month', 'table'].includes(p.startView),
+    'dashboard',
+    'unknown startView');
+
+  fix('restoreLastView',
+    typeof p.restoreLastView === 'boolean',
+    true,
+    'not boolean');
+
+  // === Features ===
+  fix('notifications',
+    typeof p.notifications === 'boolean',
+    false,
+    'not boolean');
+
+  fix('notificationsLead',
+    typeof p.notificationsLead === 'number' && p.notificationsLead >= 1 && p.notificationsLead <= 3,
+    1,
+    'out of range');
+
+  fix('privacyMode',
+    typeof p.privacyMode === 'boolean',
+    false,
+    'not boolean');
+
+  // === Onboarding flags ===
+  fix('welcomed',
+    typeof p.welcomed === 'boolean',
+    false,
+    'not boolean');
+
+  fix('uiModeToastShown',
+    typeof p.uiModeToastShown === 'boolean',
+    false,
+    'not boolean');
+
+  fix('personalDataMigratedV5',
+    typeof p.personalDataMigratedV5 === 'boolean',
+    false,
+    'not boolean');
+
+  // === Accessibility ===
+  fix('reduceMotion', typeof p.reduceMotion === 'boolean', false, 'not boolean');
+  fix('largeText', typeof p.largeText === 'boolean', false, 'not boolean');
+  fix('compactCells', typeof p.compactCells === 'boolean', false, 'not boolean');
+
+  // === Vacation limits (object per brigade) ===
+  if (!p.urlopLimits || typeof p.urlopLimits !== 'object' || Array.isArray(p.urlopLimits)) {
+    if (p.urlopLimits !== undefined) {
+      console.warn('[core]', 'Invalid prefs.urlopLimits, resetting');
+      fixedCount++;
+    }
+    p.urlopLimits = {};
+  }
+  ['A', 'B', 'C', 'D'].forEach(function (brig) {
+    const val = p.urlopLimits[brig];
+    if (typeof val !== 'number' || val < 0 || !isFinite(val)) {
+      if (val !== undefined) {
+        console.warn('[core]', 'Invalid urlopLimits.' + brig + ':', val, '-> ' + URLOP_LIMIT);
+        fixedCount++;
+      }
+      p.urlopLimits[brig] = URLOP_LIMIT;
+    } else {
+      p.urlopLimits[brig] = Math.floor(val);
+    }
+  });
+
+  // === Vacation pre-used ===
+  if (!p.vacationPreUsed || typeof p.vacationPreUsed !== 'object' || Array.isArray(p.vacationPreUsed)) {
+    if (p.vacationPreUsed !== undefined) {
+      console.warn('[core]', 'Invalid prefs.vacationPreUsed, resetting');
+      fixedCount++;
+    }
+    p.vacationPreUsed = {};
+  }
+  ['A', 'B', 'C', 'D'].forEach(function (brig) {
+    const val = p.vacationPreUsed[brig];
+    if (typeof val !== 'number' || val < 0 || !isFinite(val)) {
+      p.vacationPreUsed[brig] = 0;
+    } else {
+      p.vacationPreUsed[brig] = Math.floor(val);
+    }
+  });
+
+  // === Cell colors (object with hex strings) ===
+  if (!p.cellColors || typeof p.cellColors !== 'object' || Array.isArray(p.cellColors)) {
+    if (p.cellColors !== undefined) {
+      console.warn('[core]', 'Invalid prefs.cellColors, resetting');
+      fixedCount++;
+    }
+    p.cellColors = {};
+  }
+  ['R', 'P', 'N', 'U'].forEach(function (k) {
+    const hex = p.cellColors[k];
+    if (typeof hex !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(hex)) {
+      if (hex !== undefined) {
+        console.warn('[core]', 'Invalid cellColors.' + k + ':', hex);
+        fixedCount++;
+      }
+      delete p.cellColors[k];
+    }
+  });
+
+  if (fixedCount > 0) {
+    console.warn('[core]', 'sanitizePrefs fixed', fixedCount, 'invalid field(s)');
+  }
+
+  return p;
+}
+
+window.sanitizePrefs = sanitizePrefs;
 /**
  * Persist UI/prefs to localStorage.
  * @param {object} p - prefs object
