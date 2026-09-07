@@ -579,16 +579,32 @@ function formatLastSyncDateTime() {
 }
 
 /* === EXPOSE TO GLOBAL SCOPE === */
-window.updateLastModified = updateLastModified;
-window.updateLastSync = updateLastSync;
-window.hasUnsyncedChanges = hasUnsyncedChanges;
-window.timeSinceLastSync = timeSinceLastSync;
-window.getSyncMeta = getSyncMeta;
-window.getUnsyncedChangeCount = getUnsyncedChangeCount;
-window.formatLastSyncDateTime = formatLastSyncDateTime;
-window.getSyncFingerprint = getSyncFingerprint;
-window.reconcileSyncedFingerprint = reconcileSyncedFingerprint;
-window.normalizeShiftOverrides = normalizeShiftOverrides;
-window.getPersonalShiftOverrides = getPersonalShiftOverrides;
-window.buildCustomScheduleFromShiftOverrides =
-  buildCustomScheduleFromShiftOverrides;
+// Guarded so the module can also load under Node.js for isolated logic tests
+// (browsers always pass the check, so runtime exposure is unchanged).
+if (typeof window !== 'undefined') {
+  window.updateLastModified = updateLastModified;
+  window.updateLastSync = updateLastSync;
+  window.hasUnsyncedChanges = hasUnsyncedChanges;
+  window.timeSinceLastSync = timeSinceLastSync;
+  window.getSyncMeta = getSyncMeta;
+  window.getUnsyncedChangeCount = getUnsyncedChangeCount;
+  window.formatLastSyncDateTime = formatLastSyncDateTime;
+  window.getSyncFingerprint = getSyncFingerprint;
+  window.reconcileSyncedFingerprint = reconcileSyncedFingerprint;
+  window.normalizeShiftOverrides = normalizeShiftOverrides;
+  window.getPersonalShiftOverrides = getPersonalShiftOverrides;
+  window.buildCustomScheduleFromShiftOverrides =
+    buildCustomScheduleFromShiftOverrides;
+}
+
+// Node.js compatibility for unit tests (browser ignores this block)
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    normalizeShiftOverrides,
+    getPersonalShiftOverrides,
+    buildCustomScheduleFromShiftOverrides,
+    getSyncFingerprint,
+    hashSyncString,
+    stableSyncSerialize,
+  };
+}

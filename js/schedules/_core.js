@@ -262,5 +262,12 @@ function buildHolidays(year) {
 
 // Node.js exports (for isolated logic tests)
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { buildHolidays, shiftHours };
+  module.exports = {
+    buildHolidays,
+    shiftHours,
+    isWolne,
+    escapeHtml,
+    daysInMonthCal,
+    formatTimeRange,
+  };
 }
