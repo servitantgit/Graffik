@@ -2,11 +2,10 @@
 
 Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w systemie 3-zmianowym (Rano/Popołudnie/Noc). Zastępuje papierowy kalendarz w plakietce.
 
-![Tests](https://github.com/servitantgit/Graffik/actions/workflows/test.yml/badge.svg)
-
 **Demo:** [https://servitantgit.github.io/Graffik/](https://servitantgit.github.io/Graffik/)
 
 ![Status](https://img.shields.io/badge/status-production-brightgreen)
+![Tests](https://github.com/servitantgit/Graffik/actions/workflows/test.yml/badge.svg)
 ![PWA](https://img.shields.io/badge/PWA-ready-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
