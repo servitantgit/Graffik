@@ -50,7 +50,9 @@ function categorizeOvertime(year, month, day, shift, position, hours) {
     if (h >= 22 || h < 6) nightH++;
     else dayH++;
   }
-  if (isSunday) return { h50: 0, h100: dayH + nightH, h200: 0 };
+  // For 4-brigade 24/7 schedule, Saturday and Sunday are regular workdays.
+  // Standard weekly workers (5-day) use +100% for Sunday, but that rule
+  // does not apply here. Only day/night distinction matters.
   return { h50: dayH, h100: nightH, h200: 0 };
 }
 

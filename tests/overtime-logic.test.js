@@ -100,9 +100,10 @@ test('categorizeOvertime: holiday weekend type → still +200%', () => {
 // categorizeOvertime — Sunday special rules
 // ============================================================
 
-test('categorizeOvertime: Sunday przed → +100%', () => {
-  // 4 January 2026 = Sunday (not holiday). R shift, OT przed 2h day hours
-  // Expected: Sunday overrides day/night → all h100
+test('categorizeOvertime: Sunday przed → normal day rate (4-brigade)', () => {
+  // 4 January 2026 = Sunday (not holiday). R shift, OT przed 2h.
+  // R = 06:00-14:00, so OT przed 2h = 04:00-06:00 (pre-dawn = night hours)
+  // For 4-brigade schedule, Sunday is a regular workday → night hours = +100%
   const result = categorizeOvertime(2026, 1, 4, 'R', 'przed', 2);
   assert.deepStrictEqual(result, { h50: 0, h100: 2, h200: 0 });
 });
@@ -121,6 +122,24 @@ test('categorizeOvertime: Saturday weekend type → +100%', () => {
   // 3 January 2026 = Saturday (not holiday). Weekend OT
   const result = categorizeOvertime(2026, 1, 3, null, 'weekend', 8);
   assert.deepStrictEqual(result, { h50: 0, h100: 8, h200: 0 });
+});
+
+test('categorizeOvertime: Sunday po day hours → +50% (4-brigade regular workday)', () => {
+  // 4 January 2026 = Sunday. R shift 06-14, OT po 2h = 14:00-16:00 (day)
+  const result = categorizeOvertime(2026, 1, 4, 'R', 'po', 2);
+  assert.deepStrictEqual(result, { h50: 2, h100: 0, h200: 0 });
+});
+
+test('categorizeOvertime: Saturday po day hours → +50% (4-brigade regular workday)', () => {
+  // 3 January 2026 = Saturday. R shift 06-14, OT po 2h = 14:00-16:00 (day)
+  const result = categorizeOvertime(2026, 1, 3, 'R', 'po', 2);
+  assert.deepStrictEqual(result, { h50: 2, h100: 0, h200: 0 });
+});
+
+test('categorizeOvertime: Sunday night OT → +100% (regular night rate)', () => {
+  // Sunday, P shift 14-22, OT po 2h = 22:00-24:00 (all night)
+  const result = categorizeOvertime(2026, 1, 4, 'P', 'po', 2);
+  assert.deepStrictEqual(result, { h50: 0, h100: 2, h200: 0 });
 });
 
 // ============================================================
