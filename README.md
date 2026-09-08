@@ -32,37 +32,57 @@ Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w system
 
 ## 📸 Zrzuty ekranu
 
-<style>
-  .screenshot-grid { display:flex; gap:14px; flex-wrap:wrap; }
-  .screenshot-item { text-align:center; text-decoration:none; }
-  .screenshot-item img { width:200px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.15); display:block; }
-  .screenshot-item .shot-caption { display:block; margin-top:6px; font-size:12px; color:#57606a; }
-  .lightbox { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,.86); align-items:center; justify-content:center; }
-  .lightbox:target { display:flex; }
-  .lightbox .lightbox-bg { position:absolute; inset:0; cursor:pointer; }
-  .lightbox img { max-width:92vw; max-height:86vh; border-radius:8px; position:relative; box-shadow:0 6px 30px rgba(0,0,0,.55); }
-  .lightbox .close { position:absolute; top:10px; right:18px; color:#fff; font-size:40px; line-height:1; text-decoration:none; z-index:2; }
-</style>
+<div style="text-align:center;">
 
-<div class="screenshot-grid">
-  <a class="screenshot-item" href="#shot1"><img src="screenshots/1.png" width="200" alt="Dashboard (Pulpit)"><span class="shot-caption">Dashboard (Pulpit)</span></a>
-  <a class="screenshot-item" href="#shot2"><img src="screenshots/2.png" width="200" alt="Widok miesiąca"><span class="shot-caption">Widok miesiąca</span></a>
-  <a class="screenshot-item" href="#shot3"><img src="screenshots/3.png" width="200" alt="Tabela zmian"><span class="shot-caption">Tabela zmian</span></a>
-  <a class="screenshot-item" href="#shot4"><img src="screenshots/4.png" width="200" alt="Tryb Rok (przegląd)"><span class="shot-caption">Tryb Rok (przegląd)</span></a>
-  <a class="screenshot-item" href="#shot5"><img src="screenshots/5.png" width="200" alt="Tabela — widok roczny"><span class="shot-caption">Tabela — widok roczny</span></a>
-  <a class="screenshot-item" href="#shot6"><img src="screenshots/6.png" width="200" alt="Ustawienia ogólne"><span class="shot-caption">Ustawienia ogólne</span></a>
-  <a class="screenshot-item" href="#shot7"><img src="screenshots/7.png" width="200" alt="Ustawienia wyglądu"><span class="shot-caption">Ustawienia wyglądu</span></a>
-  <a class="screenshot-item" href="#shot8"><img src="screenshots/8.png" width="200" alt="Udostępnianie — kod QR"><span class="shot-caption">Udostępnianie — kod QR</span></a>
+<details style="display:inline-block; vertical-align:top; margin:0 8px 18px 8px; text-align:center;">
+  <summary style="cursor:pointer; list-style:none; padding:0;"><img src="screenshots/1.png" width="200" alt="Dashboard (Pulpit)"></summary>
+  <span style="display:block; margin-top:6px; font-size:12px; color:#57606a;">Dashboard (Pulpit)</span>
+  <img src="screenshots/1.png" width="520" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Dashboard (Pulpit) — powiększenie">
+</details>
+
+<details style="display:inline-block; vertical-align:top; margin:0 8px 18px 8px; text-align:center;">
+  <summary style="cursor:pointer; list-style:none; padding:0;"><img src="screenshots/2.png" width="200" alt="Widok miesiąca"></summary>
+  <span style="display:block; margin-top:6px; font-size:12px; color:#57606a;">Widok miesiąca</span>
+  <img src="screenshots/2.png" width="520" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Widok miesiąca — powiększenie">
+</details>
+
+<details style="display:inline-block; vertical-align:top; margin:0 8px 18px 8px; text-align:center;">
+  <summary style="cursor:pointer; list-style:none; padding:0;"><img src="screenshots/3.png" width="200" alt="Tabela zmian"></summary>
+  <span style="display:block; margin-top:6px; font-size:12px; color:#57606a;">Tabela zmian</span>
+  <img src="screenshots/3.png" width="520" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Tabela zmian — powiększenie">
+</details>
+
+<details style="display:inline-block; vertical-align:top; margin:0 8px 18px 8px; text-align:center;">
+  <summary style="cursor:pointer; list-style:none; padding:0;"><img src="screenshots/4.png" width="200" alt="Tryb Rok (przegląd)"></summary>
+  <span style="display:block; margin-top:6px; font-size:12px; color:#57606a;">Tryb Rok (przegląd)</span>
+  <img src="screenshots/4.png" width="520" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Tryb Rok (przegląd) — powiększenie">
+</details>
+
+<details style="display:inline-block; vertical-align:top; margin:0 8px 18px 8px; text-align:center;">
+  <summary style="cursor:pointer; list-style:none; padding:0;"><img src="screenshots/5.png" width="200" alt="Tabela — widok roczny"></summary>
+  <span style="display:block; margin-top:6px; font-size:12px; color:#57606a;">Tabela — widok roczny</span>
+  <img src="screenshots/5.png" width="520" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Tabela — widok roczny — powiększenie">
+</details>
+
+<details style="display:inline-block; vertical-align:top; margin:0 8px 18px 8px; text-align:center;">
+  <summary style="cursor:pointer; list-style:none; padding:0;"><img src="screenshots/6.png" width="200" alt="Ustawienia ogólne"></summary>
+  <span style="display:block; margin-top:6px; font-size:12px; color:#57606a;">Ustawienia ogólne</span>
+  <img src="screenshots/6.png" width="520" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Ustawienia ogólne — powiększenie">
+</details>
+
+<details style="display:inline-block; vertical-align:top; margin:0 8px 18px 8px; text-align:center;">
+  <summary style="cursor:pointer; list-style:none; padding:0;"><img src="screenshots/7.png" width="200" alt="Ustawienia wyglądu"></summary>
+  <span style="display:block; margin-top:6px; font-size:12px; color:#57606a;">Ustawienia wyglądu</span>
+  <img src="screenshots/7.png" width="520" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Ustawienia wyglądu — powiększenie">
+</details>
+
+<details style="display:inline-block; vertical-align:top; margin:0 8px 18px 8px; text-align:center;">
+  <summary style="cursor:pointer; list-style:none; padding:0;"><img src="screenshots/8.png" width="200" alt="Udostępnianie — kod QR"></summary>
+  <span style="display:block; margin-top:6px; font-size:12px; color:#57606a;">Udostępnianie — kod QR</span>
+  <img src="screenshots/8.png" width="520" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Udostępnianie — kod QR — powiększenie">
+</details>
+
 </div>
-
-<div id="shot1" class="lightbox"><a href="#" class="lightbox-bg" aria-label="Zamknij"></a><a href="#" class="close" aria-label="Zamknij">×</a><img src="screenshots/1.png" alt="Dashboard (Pulpit)"></div>
-<div id="shot2" class="lightbox"><a href="#" class="lightbox-bg" aria-label="Zamknij"></a><a href="#" class="close" aria-label="Zamknij">×</a><img src="screenshots/2.png" alt="Widok miesiąca"></div>
-<div id="shot3" class="lightbox"><a href="#" class="lightbox-bg" aria-label="Zamknij"></a><a href="#" class="close" aria-label="Zamknij">×</a><img src="screenshots/3.png" alt="Tabela zmian"></div>
-<div id="shot4" class="lightbox"><a href="#" class="lightbox-bg" aria-label="Zamknij"></a><a href="#" class="close" aria-label="Zamknij">×</a><img src="screenshots/4.png" alt="Tryb Rok (przegląd)"></div>
-<div id="shot5" class="lightbox"><a href="#" class="lightbox-bg" aria-label="Zamknij"></a><a href="#" class="close" aria-label="Zamknij">×</a><img src="screenshots/5.png" alt="Tabela — widok roczny"></div>
-<div id="shot6" class="lightbox"><a href="#" class="lightbox-bg" aria-label="Zamknij"></a><a href="#" class="close" aria-label="Zamknij">×</a><img src="screenshots/6.png" alt="Ustawienia ogólne"></div>
-<div id="shot7" class="lightbox"><a href="#" class="lightbox-bg" aria-label="Zamknij"></a><a href="#" class="close" aria-label="Zamknij">×</a><img src="screenshots/7.png" alt="Ustawienia wyglądu"></div>
-<div id="shot8" class="lightbox"><a href="#" class="lightbox-bg" aria-label="Zamknij"></a><a href="#" class="close" aria-label="Zamknij">×</a><img src="screenshots/8.png" alt="Udostępnianie — kod QR"></div>
 
 ## 🚀 Szybki start
 
