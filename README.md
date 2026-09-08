@@ -2,6 +2,8 @@
 
 Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w systemie 3-zmianowym (Rano/Popołudnie/Noc). Zastępuje papierowy kalendarz w plakietce.
 
+![Tests](https://github.com/servitantgit/Graffik/actions/workflows/test.yml/badge.svg)
+
 **Demo:** [https://servitantgit.github.io/Graffik/](https://servitantgit.github.io/Graffik/)
 
 ![Status](https://img.shields.io/badge/status-production-brightgreen)
@@ -38,7 +40,7 @@ Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w system
 
 **Style komórek:** w Personalizacji dostępne są trzy warianty: pełne wypełnienie, spokojny pasek oraz kolorowe obramowanie. W ostatnim wariancie kolor obramowania komórki i okręgu wokół daty odpowiada zmianie.
 
-**Szczegóły funkcji:** ☰ Menu → ❓ Pomoc / FAQ  ·  kod: [GitHub](https://github.com/servitantgit/Graffik)
+**Szczegóły funkcji:** ☰ Menu → ❓ Pomoc / FAQ · kod: [GitHub](https://github.com/servitantgit/Graffik)
 
 ## 📱 Instalacja jako PWA
 
@@ -62,14 +64,14 @@ Funkcja **🔗 Udostępnij widok** w bocznym menu tworzy link do dokładnie tego
 
 ### Parametry URL
 
-| Parametr | Znaczenie                                         | Przykład     | Opcjonalny |
-| -------- | ------------------------------------------------- | ------------ | ---------- |
+| Parametr | Znaczenie                                 | Przykład     | Opcjonalny |
+| -------- | ----------------------------------------- | ------------ | ---------- |
 | `view`   | Typ widoku: `dashboard`, `month`, `table` | `view=month` | Nie        |
-| `y`      | Rok                                               | `y=2026`     | Nie        |
-| `m`      | Miesiąc (1-12)                                    | `m=8`        | Tak\*      |
-| `d`      | Dzień (1-31)                                      | `d=10`       | Tak\*      |
-| `brig`   | Brygada (A/B/C/D)                                 | `brig=C`     | Tak\*      |
-| `rok`    | Tryb Rok (1 = włączony)                           | `rok=1`      | Tak\*      |
+| `y`      | Rok                                       | `y=2026`     | Nie        |
+| `m`      | Miesiąc (1-12)                            | `m=8`        | Tak\*      |
+| `d`      | Dzień (1-31)                              | `d=10`       | Tak\*      |
+| `brig`   | Brygada (A/B/C/D)                         | `brig=C`     | Tak\*      |
+| `rok`    | Tryb Rok (1 = włączony)                   | `rok=1`      | Tak\*      |
 
 \* Parametr jest dodawany automatycznie, jeśli ma sens w danym widoku.
 
@@ -195,7 +197,7 @@ Następnie otwórz: `http://localhost:8000`
 
 | Skrót     | Działanie                              |
 | --------- | -------------------------------------- |
-| `←` / `→` | Poprzedni/następny miesiąc |
+| `←` / `→` | Poprzedni/następny miesiąc             |
 | `E`       | Włącz/wyłącz tryb edycji               |
 | `Esc`     | Zamknij popup/modal lub wyjdź z edycji |
 
@@ -239,6 +241,7 @@ Przy otwarciu menu synchronizacji z Drive widać **krótki log różnic** (lokal
 Wszystkie dane przechowywane są lokalnie w przeglądarce użytkownika. Synchronizacja Google Drive używa własnego konta użytkownika — brak zewnętrznych serwerów. Aplikacja nie wysyła żadnych danych do innych serwisów.
 
 **Widoczność danych osobistych** (urlopy, nadgodziny, notatki, własny grafik):
+
 - **Zalogowany** do Google Drive → widać pełne dane osobiste
 - **Wylogowany** → tylko fabryczny grafik (bez urlopów / OT / notatek)
 
@@ -268,11 +271,9 @@ MIT License (lub wewnętrzne narzędzie fabryczne — wg wyboru autora)
 
 **Uwaga dla developerów:** Szczegółowa dokumentacja techniczna (architektura, sync, edge cases) znajduje się w [PROJECT_DOCS.md](./PROJECT_DOCS.md). FAQ w aplikacji (☰ Menu → ❓) zawiera przewodnik dla użytkowników.
 
-
 ## Admin: publikacja fabrycznego grafiku
 
 1. Admin Center → edytor (lokalne szkice R/P/N/W).
 2. **Eksport** → plik `YYYY.js` (to jeszcze nie jest publikacja).
 3. W repo: `js/schedules/gillette/YYYY.js` (+ `index.html` / `sw.js` tylko dla **nowego** roku).
 4. `git push` na `main` → GitHub Pages → wszyscy użytkownicy po update SW.
-
