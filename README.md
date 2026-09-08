@@ -195,11 +195,14 @@ Następnie otwórz: `http://localhost:8000`
     │   ├── icon-512.png
     │   └── icon-512-maskable.png
     ├── screenshots/             # Zrzuty ekranu do README
-    │   ├── 1.png … 8.png
-    ├── tools/                   # Dev helpers (check_js, generate_icons…)
+    │   └── 1.png … 8.png
+    ├── docs/                    # Dokumentacja techniczna
+    │   ├── AGENT.md             # Reguły dla AI / engineering rules
+    │   ├── PROJECT_DOCS.md      # Architektura, schema, edge cases
+    │   └── tests-README.md
+    ├── tools/                   # Dev helpers (check_js, generate_icons, export-code…)
     ├── tests/                   # Testy jednostkowe
     ├── CHANGELOG.md
-    ├── PROJECT_DOCS.md
     └── README.md
     ```
 
@@ -293,7 +296,7 @@ MIT License (lub wewnętrzne narzędzie fabryczne — wg wyboru autora)
 
 ---
 
-**Uwaga dla developerów:** Szczegółowa dokumentacja techniczna (architektura, sync, edge cases) znajduje się w [PROJECT_DOCS.md](./PROJECT_DOCS.md). FAQ w aplikacji (☰ Menu → ❓) zawiera przewodnik dla użytkowników.
+**Uwaga dla developerów:** Szczegółowa dokumentacja techniczna (architektura, sync, edge cases) znajduje się w [docs/PROJECT_DOCS.md](./docs/PROJECT_DOCS.md). Reguły dla AI — [docs/AGENT.md](./docs/AGENT.md). FAQ w aplikacji (☰ Menu → ❓) zawiera przewodnik dla użytkowników.
 
 ## Admin: publikacja fabrycznego grafiku
 
