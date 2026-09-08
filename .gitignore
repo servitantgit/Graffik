@@ -48,3 +48,9 @@ __pycache__/
 .env
 .env.local
 .env.*.local
+
+# === GENERATED / LOCAL ARTIFACTS ===
+code.json
+.update-backups/
+*.backup
+test-results.xml
