@@ -32,17 +32,13 @@ Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w system
 
 ## 📸 Zrzuty ekranu
 
-| Dashboard (Pulpit) | Widok miesiąca |
-|:---:|:---:|
-| ![Dashboard](screenshots/1.png) | ![Miesiąc](screenshots/2.png) |
-
-| Tabela zmian | Tryb Rok (przegląd) |
-|:---:|:---:|
-| ![Tabela](screenshots/3.png) | ![Rok](screenshots/4.png) |
-
-| Tabela — widok roczny |
-|:---:|
-| ![Tabela Rok](screenshots/5.png) |
+<div style="display:flex; gap:10px; flex-wrap:wrap;">
+  <a href="screenshots/1.png"><img src="screenshots/1.png" width="200" alt="Dashboard (Pulpit)"></a>
+  <a href="screenshots/2.png"><img src="screenshots/2.png" width="200" alt="Widok miesiąca"></a>
+  <a href="screenshots/3.png"><img src="screenshots/3.png" width="200" alt="Tabela zmian"></a>
+  <a href="screenshots/4.png"><img src="screenshots/4.png" width="200" alt="Tryb Rok (przegląd)"></a>
+  <a href="screenshots/5.png"><img src="screenshots/5.png" width="200" alt="Tabela — widok roczny"></a>
+</div>
 
 ## 🚀 Szybki start
 
