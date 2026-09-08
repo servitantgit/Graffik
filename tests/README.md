@@ -1,24 +1,36 @@
 # Unit Tests
 
-Zero-dependency unit tests using Node.js built-in `node:test` (Node 18+).
+Zero-dependency unit tests using Node.js built-in `node:test`.
+
+**Requirements:**
+- Node 20+ (recommended for local development)
+- Node 22+ (used in CI, most reliable)
+- Node 18 works but has slower test discovery
 
 ## Run all tests
 
-From the project root, use the glob form (works on Windows and POSIX):
+```bash
+# Recommended (cross-platform, works everywhere)
+node --test "tests/*.test.js"
+
+# Alternative (may fail on Windows/Node 22+, see below)
+node --test tests/
+```
+
+## Windows/Node 22+ compatibility
+
+The directory form `node --test tests/` may fail on Windows with Node 22+
+with error `MODULE_NOT_FOUND: Cannot find module 'tests\'`. Node treats
+the trailing separator as a module path instead of a directory glob.
+
+Always use glob form on Windows:
 
 ```bash
 node --test "tests/*.test.js"
 ```
 
-Or let Node discover tests from the current directory:
-
-```bash
-node --test
-```
-
-> Note: `node --test tests/` (directory form) is unreliable on Windows with
-> Node 22+ — Node can try to load the directory as a module and fail with
-> `MODULE_NOT_FOUND`. Prefer the glob form above.
+Linux/macOS work with both forms. CI (GitHub Actions on Ubuntu + Node 22)
+uses glob form for consistency.
 
 ## Run a specific test file
 
