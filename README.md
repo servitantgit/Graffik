@@ -32,61 +32,19 @@ Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w system
 
 ## 📸 Zrzuty ekranu
 
-<div align="center">
+<p align="center">
+  <a href="screenshots/1.png"><img src="screenshots/1.png" width="160" alt="Dashboard (Pulpit)"></a>&nbsp;
+  <a href="screenshots/2.png"><img src="screenshots/2.png" width="160" alt="Widok miesiąca"></a>&nbsp;
+  <a href="screenshots/3.png"><img src="screenshots/3.png" width="160" alt="Tabela zmian"></a>&nbsp;
+  <a href="screenshots/4.png"><img src="screenshots/4.png" width="160" alt="Tryb Rok"></a>
+</p>
 
-<!-- Ряд 1 -->
-<details style="display:inline-block; vertical-align:top; margin:6px 8px 16px 8px; text-align:center;">
-  <summary style="cursor:pointer; list-style:none;"><img src="screenshots/1.png" width="180" alt="Dashboard (Pulpit)"></summary>
-  <div style="margin-top:6px; font-size:12px; color:#57606a;">Dashboard (Pulpit)</div>
-  <img src="screenshots/1.png" width="480" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Dashboard">
-</details>
-
-<details style="display:inline-block; vertical-align:top; margin:6px 8px 16px 8px; text-align:center;">
-  <summary style="cursor:pointer; list-style:none;"><img src="screenshots/2.png" width="180" alt="Widok miesiąca"></summary>
-  <div style="margin-top:6px; font-size:12px; color:#57606a;">Widok miesiąca</div>
-  <img src="screenshots/2.png" width="480" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Miesiąc">
-</details>
-
-<details style="display:inline-block; vertical-align:top; margin:6px 8px 16px 8px; text-align:center;">
-  <summary style="cursor:pointer; list-style:none;"><img src="screenshots/3.png" width="180" alt="Tabela zmian"></summary>
-  <div style="margin-top:6px; font-size:12px; color:#57606a;">Tabela zmian</div>
-  <img src="screenshots/3.png" width="480" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Tabela">
-</details>
-
-<details style="display:inline-block; vertical-align:top; margin:6px 8px 16px 8px; text-align:center;">
-  <summary style="cursor:pointer; list-style:none;"><img src="screenshots/4.png" width="180" alt="Tryb Rok"></summary>
-  <div style="margin-top:6px; font-size:12px; color:#57606a;">Tryb Rok (przegląd)</div>
-  <img src="screenshots/4.png" width="480" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Rok">
-</details>
-
-<br>
-
-<!-- Ряд 2 -->
-<details style="display:inline-block; vertical-align:top; margin:6px 8px 16px 8px; text-align:center;">
-  <summary style="cursor:pointer; list-style:none;"><img src="screenshots/5.png" width="180" alt="Tabela Rok"></summary>
-  <div style="margin-top:6px; font-size:12px; color:#57606a;">Tabela — widok roczny</div>
-  <img src="screenshots/5.png" width="480" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Tabela Rok">
-</details>
-
-<details style="display:inline-block; vertical-align:top; margin:6px 8px 16px 8px; text-align:center;">
-  <summary style="cursor:pointer; list-style:none;"><img src="screenshots/6.png" width="180" alt="Ustawienia ogólne"></summary>
-  <div style="margin-top:6px; font-size:12px; color:#57606a;">Ustawienia ogólne</div>
-  <img src="screenshots/6.png" width="480" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Ustawienia">
-</details>
-
-<details style="display:inline-block; vertical-align:top; margin:6px 8px 16px 8px; text-align:center;">
-  <summary style="cursor:pointer; list-style:none;"><img src="screenshots/7.png" width="180" alt="Ustawienia wyglądu"></summary>
-  <div style="margin-top:6px; font-size:12px; color:#57606a;">Ustawienia wyglądu</div>
-  <img src="screenshots/7.png" width="480" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Wygląd">
-</details>
-
-<details style="display:inline-block; vertical-align:top; margin:6px 8px 16px 8px; text-align:center;">
-  <summary style="cursor:pointer; list-style:none;"><img src="screenshots/8.png" width="180" alt="Udostępnianie QR"></summary>
-  <div style="margin-top:6px; font-size:12px; color:#57606a;">Udostępnianie — kod QR</div>
-  <img src="screenshots/8.png" width="480" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="QR">
-</details>
-
-</div>
+<p align="center">
+  <a href="screenshots/5.png"><img src="screenshots/5.png" width="160" alt="Tabela — widok roczny"></a>&nbsp;
+  <a href="screenshots/6.png"><img src="screenshots/6.png" width="160" alt="Ustawienia ogólne"></a>&nbsp;
+  <a href="screenshots/7.png"><img src="screenshots/7.png" width="160" alt="Ustawienia wyglądu"></a>&nbsp;
+  <a href="screenshots/8.png"><img src="screenshots/8.png" width="160" alt="Udostępnianie — kod QR"></a>
+</p>
 
 ## 🚀 Szybki start
 
