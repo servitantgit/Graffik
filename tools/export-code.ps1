@@ -9,8 +9,8 @@
 #   that apply-update.ps1 can parse and apply automatically.
 #
 # TWO-SCRIPT WORKFLOW:
-#   1. .\export-code.ps1        
-#       -> powershell -ExecutionPolicy Bypass -File .\export-code.ps1
+#   1. .\tools\export-code.ps1       
+#       -> powershell -ExecutionPolicy Bypass -File .\tools\export-code.ps1
 #   2. Upload code.json to AI chat (Claude, ChatGPT, Gemini)
 #   3. Describe desired changes in natural language
 #   4. AI responds using format from code.json.ai_response_contract
