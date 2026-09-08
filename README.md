@@ -32,13 +32,37 @@ Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w system
 
 ## 📸 Zrzuty ekranu
 
-<div style="display:flex; gap:10px; flex-wrap:wrap;">
-  <a href="screenshots/1.png"><img src="screenshots/1.png" width="200" alt="Dashboard (Pulpit)"></a>
-  <a href="screenshots/2.png"><img src="screenshots/2.png" width="200" alt="Widok miesiąca"></a>
-  <a href="screenshots/3.png"><img src="screenshots/3.png" width="200" alt="Tabela zmian"></a>
-  <a href="screenshots/4.png"><img src="screenshots/4.png" width="200" alt="Tryb Rok (przegląd)"></a>
-  <a href="screenshots/5.png"><img src="screenshots/5.png" width="200" alt="Tabela — widok roczny"></a>
+<style>
+  .screenshot-grid { display:flex; gap:14px; flex-wrap:wrap; }
+  .screenshot-item { text-align:center; text-decoration:none; }
+  .screenshot-item img { width:200px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.15); display:block; }
+  .screenshot-item .shot-caption { display:block; margin-top:6px; font-size:12px; color:#57606a; }
+  .lightbox { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,.86); align-items:center; justify-content:center; }
+  .lightbox:target { display:flex; }
+  .lightbox .lightbox-bg { position:absolute; inset:0; cursor:pointer; }
+  .lightbox img { max-width:92vw; max-height:86vh; border-radius:8px; position:relative; box-shadow:0 6px 30px rgba(0,0,0,.55); }
+  .lightbox .close { position:absolute; top:10px; right:18px; color:#fff; font-size:40px; line-height:1; text-decoration:none; z-index:2; }
+</style>
+
+<div class="screenshot-grid">
+  <a class="screenshot-item" href="#shot1"><img src="screenshots/1.png" width="200" alt="Dashboard (Pulpit)"><span class="shot-caption">Dashboard (Pulpit)</span></a>
+  <a class="screenshot-item" href="#shot2"><img src="screenshots/2.png" width="200" alt="Widok miesiąca"><span class="shot-caption">Widok miesiąca</span></a>
+  <a class="screenshot-item" href="#shot3"><img src="screenshots/3.png" width="200" alt="Tabela zmian"><span class="shot-caption">Tabela zmian</span></a>
+  <a class="screenshot-item" href="#shot4"><img src="screenshots/4.png" width="200" alt="Tryb Rok (przegląd)"><span class="shot-caption">Tryb Rok (przegląd)</span></a>
+  <a class="screenshot-item" href="#shot5"><img src="screenshots/5.png" width="200" alt="Tabela — widok roczny"><span class="shot-caption">Tabela — widok roczny</span></a>
+  <a class="screenshot-item" href="#shot6"><img src="screenshots/6.png" width="200" alt="Ustawienia ogólne"><span class="shot-caption">Ustawienia ogólne</span></a>
+  <a class="screenshot-item" href="#shot7"><img src="screenshots/7.png" width="200" alt="Ustawienia wyglądu"><span class="shot-caption">Ustawienia wyglądu</span></a>
+  <a class="screenshot-item" href="#shot8"><img src="screenshots/8.png" width="200" alt="Udostępnianie — kod QR"><span class="shot-caption">Udostępnianie — kod QR</span></a>
 </div>
+
+<div id="shot1" class="lightbox"><a href="#" class="lightbox-bg" aria-label="Zamknij"></a><a href="#" class="close" aria-label="Zamknij">×</a><img src="screenshots/1.png" alt="Dashboard (Pulpit)"></div>
+<div id="shot2" class="lightbox"><a href="#" class="lightbox-bg" aria-label="Zamknij"></a><a href="#" class="close" aria-label="Zamknij">×</a><img src="screenshots/2.png" alt="Widok miesiąca"></div>
+<div id="shot3" class="lightbox"><a href="#" class="lightbox-bg" aria-label="Zamknij"></a><a href="#" class="close" aria-label="Zamknij">×</a><img src="screenshots/3.png" alt="Tabela zmian"></div>
+<div id="shot4" class="lightbox"><a href="#" class="lightbox-bg" aria-label="Zamknij"></a><a href="#" class="close" aria-label="Zamknij">×</a><img src="screenshots/4.png" alt="Tryb Rok (przegląd)"></div>
+<div id="shot5" class="lightbox"><a href="#" class="lightbox-bg" aria-label="Zamknij"></a><a href="#" class="close" aria-label="Zamknij">×</a><img src="screenshots/5.png" alt="Tabela — widok roczny"></div>
+<div id="shot6" class="lightbox"><a href="#" class="lightbox-bg" aria-label="Zamknij"></a><a href="#" class="close" aria-label="Zamknij">×</a><img src="screenshots/6.png" alt="Ustawienia ogólne"></div>
+<div id="shot7" class="lightbox"><a href="#" class="lightbox-bg" aria-label="Zamknij"></a><a href="#" class="close" aria-label="Zamknij">×</a><img src="screenshots/7.png" alt="Ustawienia wyglądu"></div>
+<div id="shot8" class="lightbox"><a href="#" class="lightbox-bg" aria-label="Zamknij"></a><a href="#" class="close" aria-label="Zamknij">×</a><img src="screenshots/8.png" alt="Udostępnianie — kod QR"></div>
 
 ## 🚀 Szybki start
 
@@ -189,7 +213,7 @@ Następnie otwórz: `http://localhost:8000`
     │   ├── icon-512.png
     │   └── icon-512-maskable.png
     ├── screenshots/             # Zrzuty ekranu do README
-    │   ├── 1.png … 5.png
+    │   ├── 1.png … 8.png
     ├── tools/                   # Dev helpers (check_js, generate_icons…)
     ├── tests/                   # Testy jednostkowe
     ├── CHANGELOG.md
