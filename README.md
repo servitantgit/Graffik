@@ -32,54 +32,58 @@ Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w system
 
 ## 📸 Zrzuty ekranu
 
-<div style="text-align:center;">
+<div align="center">
 
-<details style="display:inline-block; vertical-align:top; margin:0 8px 18px 8px; text-align:center;">
-  <summary style="cursor:pointer; list-style:none; padding:0;"><img src="screenshots/1.png" width="200" alt="Dashboard (Pulpit)"></summary>
-  <span style="display:block; margin-top:6px; font-size:12px; color:#57606a;">Dashboard (Pulpit)</span>
-  <img src="screenshots/1.png" width="520" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Dashboard (Pulpit) — powiększenie">
+<!-- Ряд 1 -->
+<details style="display:inline-block; vertical-align:top; margin:6px 8px 16px 8px; text-align:center;">
+  <summary style="cursor:pointer; list-style:none;"><img src="screenshots/1.png" width="180" alt="Dashboard (Pulpit)"></summary>
+  <div style="margin-top:6px; font-size:12px; color:#57606a;">Dashboard (Pulpit)</div>
+  <img src="screenshots/1.png" width="480" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Dashboard">
 </details>
 
-<details style="display:inline-block; vertical-align:top; margin:0 8px 18px 8px; text-align:center;">
-  <summary style="cursor:pointer; list-style:none; padding:0;"><img src="screenshots/2.png" width="200" alt="Widok miesiąca"></summary>
-  <span style="display:block; margin-top:6px; font-size:12px; color:#57606a;">Widok miesiąca</span>
-  <img src="screenshots/2.png" width="520" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Widok miesiąca — powiększenie">
+<details style="display:inline-block; vertical-align:top; margin:6px 8px 16px 8px; text-align:center;">
+  <summary style="cursor:pointer; list-style:none;"><img src="screenshots/2.png" width="180" alt="Widok miesiąca"></summary>
+  <div style="margin-top:6px; font-size:12px; color:#57606a;">Widok miesiąca</div>
+  <img src="screenshots/2.png" width="480" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Miesiąc">
 </details>
 
-<details style="display:inline-block; vertical-align:top; margin:0 8px 18px 8px; text-align:center;">
-  <summary style="cursor:pointer; list-style:none; padding:0;"><img src="screenshots/3.png" width="200" alt="Tabela zmian"></summary>
-  <span style="display:block; margin-top:6px; font-size:12px; color:#57606a;">Tabela zmian</span>
-  <img src="screenshots/3.png" width="520" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Tabela zmian — powiększenie">
+<details style="display:inline-block; vertical-align:top; margin:6px 8px 16px 8px; text-align:center;">
+  <summary style="cursor:pointer; list-style:none;"><img src="screenshots/3.png" width="180" alt="Tabela zmian"></summary>
+  <div style="margin-top:6px; font-size:12px; color:#57606a;">Tabela zmian</div>
+  <img src="screenshots/3.png" width="480" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Tabela">
 </details>
 
-<details style="display:inline-block; vertical-align:top; margin:0 8px 18px 8px; text-align:center;">
-  <summary style="cursor:pointer; list-style:none; padding:0;"><img src="screenshots/4.png" width="200" alt="Tryb Rok (przegląd)"></summary>
-  <span style="display:block; margin-top:6px; font-size:12px; color:#57606a;">Tryb Rok (przegląd)</span>
-  <img src="screenshots/4.png" width="520" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Tryb Rok (przegląd) — powiększenie">
+<details style="display:inline-block; vertical-align:top; margin:6px 8px 16px 8px; text-align:center;">
+  <summary style="cursor:pointer; list-style:none;"><img src="screenshots/4.png" width="180" alt="Tryb Rok"></summary>
+  <div style="margin-top:6px; font-size:12px; color:#57606a;">Tryb Rok (przegląd)</div>
+  <img src="screenshots/4.png" width="480" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Rok">
 </details>
 
-<details style="display:inline-block; vertical-align:top; margin:0 8px 18px 8px; text-align:center;">
-  <summary style="cursor:pointer; list-style:none; padding:0;"><img src="screenshots/5.png" width="200" alt="Tabela — widok roczny"></summary>
-  <span style="display:block; margin-top:6px; font-size:12px; color:#57606a;">Tabela — widok roczny</span>
-  <img src="screenshots/5.png" width="520" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Tabela — widok roczny — powiększenie">
+<br>
+
+<!-- Ряд 2 -->
+<details style="display:inline-block; vertical-align:top; margin:6px 8px 16px 8px; text-align:center;">
+  <summary style="cursor:pointer; list-style:none;"><img src="screenshots/5.png" width="180" alt="Tabela Rok"></summary>
+  <div style="margin-top:6px; font-size:12px; color:#57606a;">Tabela — widok roczny</div>
+  <img src="screenshots/5.png" width="480" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Tabela Rok">
 </details>
 
-<details style="display:inline-block; vertical-align:top; margin:0 8px 18px 8px; text-align:center;">
-  <summary style="cursor:pointer; list-style:none; padding:0;"><img src="screenshots/6.png" width="200" alt="Ustawienia ogólne"></summary>
-  <span style="display:block; margin-top:6px; font-size:12px; color:#57606a;">Ustawienia ogólne</span>
-  <img src="screenshots/6.png" width="520" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Ustawienia ogólne — powiększenie">
+<details style="display:inline-block; vertical-align:top; margin:6px 8px 16px 8px; text-align:center;">
+  <summary style="cursor:pointer; list-style:none;"><img src="screenshots/6.png" width="180" alt="Ustawienia ogólne"></summary>
+  <div style="margin-top:6px; font-size:12px; color:#57606a;">Ustawienia ogólne</div>
+  <img src="screenshots/6.png" width="480" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Ustawienia">
 </details>
 
-<details style="display:inline-block; vertical-align:top; margin:0 8px 18px 8px; text-align:center;">
-  <summary style="cursor:pointer; list-style:none; padding:0;"><img src="screenshots/7.png" width="200" alt="Ustawienia wyglądu"></summary>
-  <span style="display:block; margin-top:6px; font-size:12px; color:#57606a;">Ustawienia wyglądu</span>
-  <img src="screenshots/7.png" width="520" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Ustawienia wyglądu — powiększenie">
+<details style="display:inline-block; vertical-align:top; margin:6px 8px 16px 8px; text-align:center;">
+  <summary style="cursor:pointer; list-style:none;"><img src="screenshots/7.png" width="180" alt="Ustawienia wyglądu"></summary>
+  <div style="margin-top:6px; font-size:12px; color:#57606a;">Ustawienia wyglądu</div>
+  <img src="screenshots/7.png" width="480" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Wygląd">
 </details>
 
-<details style="display:inline-block; vertical-align:top; margin:0 8px 18px 8px; text-align:center;">
-  <summary style="cursor:pointer; list-style:none; padding:0;"><img src="screenshots/8.png" width="200" alt="Udostępnianie — kod QR"></summary>
-  <span style="display:block; margin-top:6px; font-size:12px; color:#57606a;">Udostępnianie — kod QR</span>
-  <img src="screenshots/8.png" width="520" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="Udostępnianie — kod QR — powiększenie">
+<details style="display:inline-block; vertical-align:top; margin:6px 8px 16px 8px; text-align:center;">
+  <summary style="cursor:pointer; list-style:none;"><img src="screenshots/8.png" width="180" alt="Udostępnianie QR"></summary>
+  <div style="margin-top:6px; font-size:12px; color:#57606a;">Udostępnianie — kod QR</div>
+  <img src="screenshots/8.png" width="480" style="margin-top:8px; max-width:100%; border-radius:8px;" alt="QR">
 </details>
 
 </div>
