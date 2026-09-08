@@ -30,6 +30,20 @@ Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w system
 - 📥 **Eksport .ics** do kalendarza, **drukowanie**
 - ☁️ **Google Drive** — opcjonalny backup i synchronizacja danych
 
+## 📸 Zrzuty ekranu
+
+| Dashboard (Pulpit) | Widok miesiąca |
+|:---:|:---:|
+| ![Dashboard](screenshots/1.png) | ![Miesiąc](screenshots/2.png) |
+
+| Tabela zmian | Tryb Rok (przegląd) |
+|:---:|:---:|
+| ![Tabela](screenshots/3.png) | ![Rok](screenshots/4.png) |
+
+| Tabela — widok roczny |
+|:---:|
+| ![Tabela Rok](screenshots/5.png) |
+
 ## 🚀 Szybki start
 
 1. Otwórz [https://servitantgit.github.io/Graffik/](https://servitantgit.github.io/Graffik/)
@@ -134,6 +148,7 @@ Następnie otwórz: `http://localhost:8000`
     ├── manifest.json       # PWA manifest
     ├── sw.js               # Service Worker (precache ASSETS)
     ├── css/
+    │   ├── app-shell.css      # Shell aplikacji
     │   ├── calendar.css       # Kalendarz miesiąca
     │   ├── components.css     # Komponenty i widoczność Privacy Mode
     │   ├── dashboard.css      # Dashboard
@@ -164,6 +179,11 @@ Następnie otwórz: `http://localhost:8000`
     │   ├── pwa.js               # SW registration, powiadomienia
     │   ├── sync.js              # Google Drive OAuth + upload/download
     │   ├── admin.js             # Identyfikacja admina (ADMIN_EMAILS)
+    │   ├── admin-center.js      # Panel admina
+    │   ├── app-shell.js         # Shell UI
+    │   ├── personalization.js   # Style komórek, preferencje UI
+    │   ├── settings.js          # Ustawienia
+    │   ├── smart-popup.js       # Inteligentne popupy
     │   ├── i18n/
     │   │   ├── pl.js / en.js / uk.js
     │   │   └── i18n.js          # t(), setLanguage(), renderFAQ()
@@ -172,7 +192,10 @@ Następnie otwórz: `http://localhost:8000`
     │   ├── icon-192.png
     │   ├── icon-512.png
     │   └── icon-512-maskable.png
+    ├── screenshots/             # Zrzuty ekranu do README
+    │   ├── 1.png … 5.png
     ├── tools/                   # Dev helpers (check_js, generate_icons…)
+    ├── tests/                   # Testy jednostkowe
     ├── CHANGELOG.md
     ├── PROJECT_DOCS.md
     └── README.md
