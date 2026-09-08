@@ -118,8 +118,62 @@ function extractKeyUsages(filePath) {
     keys.add(match[1]);
   }
 
+  // translate('key', ...) — helper used in js/schedules/_core.js
+  // Signature: translate(key, fallback) with i18n resolution
+  const translateCallRegex = /\btranslate\(\s*['"`]([a-zA-Z_][a-zA-Z0-9_]*)['"`]/g;
+  while ((match = translateCallRegex.exec(content)) !== null) {
+    keys.add(match[1]);
+  }
+
   return keys;
 }
+
+/**
+ * Extract dynamic key prefixes from code.
+ * Detects patterns like:
+ *   t('prefix' + variable)
+ *   t('prefix' + var + 'suffix')
+ *   t(`prefix${variable}`)
+ * Returns Set of prefix strings (without trailing quotes).
+ */
+function extractDynamicPrefixes(filePath) {
+  const content = fs.readFileSync(filePath, 'utf8');
+  const prefixes = new Set();
+
+  // Pattern 1: t('prefix' + variable), tr('prefix' + var), translate('prefix' + var)
+  // \b(t|tr|translate)\w* matches t, tr, translate, and their compound forms
+  const concatRegex = /\b(?:t|tr|translate)\w*\(\s*['"`]([a-zA-Z_][a-zA-Z0-9_]*)['"`]\s*\+/g;
+  let match;
+  while ((match = concatRegex.exec(content)) !== null) {
+    prefixes.add(match[1]);
+  }
+
+  // Pattern 2: t(`prefix${var}`), tr(`prefix${var}`), translate(`prefix${var}`)
+  const templateRegex = /\b(?:t|tr|translate)\w*\(\s*`([a-zA-Z_][a-zA-Z0-9_]*)\$\{/g;
+  while ((match = templateRegex.exec(content)) !== null) {
+    prefixes.add(match[1]);
+  }
+
+  return prefixes;
+}
+
+/**
+ * Check if a key matches any dynamic prefix pattern.
+ * E.g. "labelR" matches prefix "label".
+ */
+function matchesDynamicPrefix(key, prefixes) {
+  for (const prefix of prefixes) {
+    if (key.startsWith(prefix) && key.length > prefix.length) {
+      // Ensure next char is uppercase or digit (typical suffix pattern)
+      const nextChar = key[prefix.length];
+      if (nextChar === nextChar.toUpperCase() || /\d/.test(nextChar)) {
+        return prefix;
+      }
+    }
+  }
+  return null;
+}
+
 /**
  * Extract placeholder names from i18n value string.
  * E.g. "Hello {name}, you have {count} items" -> ['name', 'count']
@@ -174,14 +228,21 @@ console.log(`  ${green('✓')} Scanned ${bold(sourceFiles.length)} source files\
 
 // 3. Collect used keys
 const usedKeys = new Map(); // key -> Set of files where used
+const dynamicPrefixes = new Map(); // prefix -> Set of files
 for (const file of sourceFiles) {
   const keys = extractKeyUsages(file);
   for (const k of keys) {
     if (!usedKeys.has(k)) usedKeys.set(k, new Set());
     usedKeys.get(k).add(path.relative(PROJECT_ROOT, file));
   }
+  const prefixes = extractDynamicPrefixes(file);
+  for (const p of prefixes) {
+    if (!dynamicPrefixes.has(p)) dynamicPrefixes.set(p, new Set());
+    dynamicPrefixes.get(p).add(path.relative(PROJECT_ROOT, file));
+  }
 }
-console.log(`  ${green('✓')} Found ${bold(usedKeys.size)} unique key usages in code\n`);
+console.log(`  ${green('✓')} Found ${bold(usedKeys.size)} unique static key usages in code`);
+console.log(`  ${green('✓')} Found ${bold(dynamicPrefixes.size)} dynamic key prefixes (t('prefix' + var))\n`);
 
 
 // ============================================================
@@ -214,14 +275,41 @@ if (missingKeys.length === 0) {
   console.log('');
 }
 
+// --- Show dynamic patterns detected ---
+if (dynamicPrefixes.size > 0) {
+  console.log(bold(cyan('─── DYNAMIC KEY PATTERNS DETECTED ───')));
+  console.log(dim('  These prefixes are used with variable concatenation (e.g. t("label" + shift))'));
+  console.log(dim('  Keys starting with these prefixes are treated as USED to avoid false positives.\n'));
+  const sortedPrefixes = [...dynamicPrefixes.keys()].sort();
+  for (const prefix of sortedPrefixes) {
+    const files = [...dynamicPrefixes.get(prefix)].slice(0, 2);
+    // Count matching keys per prefix
+    const matched = [...allDefinedKeys].filter((k) => {
+      const m = matchesDynamicPrefix(k, new Set([prefix]));
+      return m === prefix;
+    });
+    console.log(`    ${cyan('•')} ${bold(prefix + '*')} → ${matched.length} matching key(s) ${dim('(' + files.join(', ') + ')')}`);
+  }
+  console.log('');
+}
+
 // --- 2. UNUSED KEYS (defined but never used) ---
 console.log(bold(yellow('─── 2. UNUSED KEYS (defined in i18n, not used in code) ───')));
 const unusedKeys = [];
+const dynamicallyUsed = [];
 for (const key of allDefinedKeys) {
-  if (!usedKeys.has(key)) {
-    const definedIn = LANGS.filter((lang) => translations[lang].has(key));
-    unusedKeys.push({ key, definedIn });
+  if (usedKeys.has(key)) continue; // static usage
+  const matchedPrefix = matchesDynamicPrefix(key, new Set(dynamicPrefixes.keys()));
+  if (matchedPrefix) {
+    dynamicallyUsed.push({ key, prefix: matchedPrefix });
+    continue; // matched dynamic pattern → treat as used
   }
+  const definedIn = LANGS.filter((lang) => translations[lang].has(key));
+  unusedKeys.push({ key, definedIn });
+}
+
+if (dynamicallyUsed.length > 0) {
+  console.log(dim(`  ℹ ${dynamicallyUsed.length} keys matched dynamic patterns and excluded from "unused"`));
 }
 if (unusedKeys.length === 0) {
   console.log(green('  ✓ No unused keys\n'));
