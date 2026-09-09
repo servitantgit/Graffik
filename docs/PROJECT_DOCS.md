@@ -94,6 +94,24 @@ Przykład: `{ 2026: { 8: { A: ['R','R','P','P',...], B: ['P','P','N','N',...] } 
 
 Uwaga: struktura jest **płaska** (jeden poziom kluczy string), nie zagnieżdżona przez `[brigade][year][month][day]`. Zobacz `otKey()`, `getOvertimes()`, `setOvertime()` w `core.js`.
 
+### syncMeta (localStorage: `gillette_sync_meta`)
+
+```javascript
+{
+  lastModified: 1725900000000,   // Date.now() при останньому save (будь-який модуль)
+  lastSync: 1725900500000,       // Date.now() при останньому успішному upload/download
+  changeCount: 0,                // Лічильник save-операцій з моменту lastSync (fallback-евристика)
+  syncedFingerprint: 'v1-...',   // Хеш стану даних на момент останньої синхронізації (js/personal/sync-tracking.js)
+  lastKnownDiffCount: 0,         // Точна кількість відмінностей, порахована при відкритті sync modal
+  revision: 3,                   // Монотонний лічильник ревізій (2026-09 fix). Інкрементується
+                                  // при кожному uploadToDrive(); при download встановлюється
+                                  // з payload.revision. Порівнюється замість/поряд з mtime, щоб
+                                  // не залежати від годинників пристроїв (див. §6.3).
+}
+```
+
+Керується виключно через `js/personal/sync-tracking.js` (`getSyncMeta()`/`setSyncMeta()`) — інші модулі не повинні читати `localStorage.gillette_sync_meta` напряму.
+
 ### pendingChanges (w pamięci, tylko w trybie edycji)
 
 ```javascript
@@ -304,8 +322,12 @@ Brak bufora `pendingChanges` / undo-redo; zapis jest natychmiastowy, tak jak url
 - Logowanie/wylogowanie (OAuth 2.0)
 - `findDriveFile()` — wyszukiwanie pliku w Drive (najnowszy po modifiedTime)
 - `downloadFromDrive()` — pobieranie i pełne zastąpienie lokalnych danych
-- `uploadToDrive()` — wysyłanie danych do Drive
-- Obsługa konfliktów (brak merge — last-write-wins)
+- `uploadToDrive()` — wysyłanie danych do Drive; przypisuje monotoniczny `revision`
+- `handleAutoSyncCheck()` — auto-check przy load/visibilitychange/otwarciu menu;
+  próbuje cichy (`prompt:''`) refresh tokenu, potem weryfikuje pozorny konflikt
+  fingerprintem i licznikiem `revision` przed ostrzeżeniem użytkownika (§6.3)
+- Obsługa konfliktów (brak trójstronnego merge — last-write-wins po realnej
+  weryfikacji treści; patrz §6 pełny opis)
 - `syncWithDrive()` — modal synchronizacji: krótki log różnic lokalnie vs Drive
   (`countSyncPayloadStats`, `formatSyncDiffLog`, `fetchDriveRemotePayload`)
   — liczby urlopów / nadgodzin / notatek / własnych zmian / limitów urlopów
@@ -563,28 +585,40 @@ Używany dla wszystkich przycisków w side menu i edit banner.
 
 ## 6. Strategia konfliktów synchronizacji
 
-### 6.1. Wybór pliku w chmurze (`findDriveFile()`)
+### 6.1. Wybір файлу в хмарі (`findDriveFile()`)
 
-Funkcja `findDriveFile()` w `js/sync.js` wyszukuje pliki w folderze aplikacji na Google Drive i **wybiera wyłącznie najnowszy plik** według pola `modifiedTime`. Starsze duplikaty są pomijane. System **nie porównuje zawartości** plików.
+Функція `findDriveFile()` в `js/sync.js` шукає файли в appData папці Google Drive і **обирає лише найновіший файл** за полем `modifiedTime`. Старіші дублікати видаляються. Порівняння вмісту тут не робиться — це лише дешева метадата-перевірка.
 
-### 6.2. Pobieranie danych z chmury (`downloadFromDrive()`)
+### 6.2. Тихе оновлення токена (fix 2026-09)
 
-Po pobraniu pliku funkcja `downloadFromDrive()` **w pełni zastępuje lokalny stan** danymi z chmury. Nie ma mechanizmu merge, diff ani scalania zmian.
+Access token живе ~1 годину. Раніше не було жодного автоматичного оновлення — після протухання токена всі auto-sync перевірки (бейдж, `visibilitychange`, відкриття меню) мовчки нічого не робили аж до ручного logout/login. Тепер:
 
-### 6.3. Synchronizacja z wielu urządzeń (tryb offline)
+- `ensureDriveToken(false)` намагається тихий (`prompt:''`) refresh перед відмовою — викликається з `handleAutoSyncCheck()` і з відкриття бокового меню.
+- `scheduleDriveTokenRefresh()` проактивно оновлює токен за ~5 хв до закінчення строку, поки вкладка видима (best-effort — не рятує довго-фонові вкладки, для цього і є (1)).
+- Якщо тихий refresh не вдався (реально протухла Google-сесія) — стан позначається як **stale** (`gDriveCheckStale`), а не мовчки "все ок": бейдж і `title` в меню показують окреме попередження (`syncStatusStale` / `driveCardStaleWarn`) замість зеленого "Active".
 
-System **nie obsługuje bezpiecznej synchronizacji z wielu urządzeń jednocześnie**. Jeśli użytkownik edytuje dane na dwóch urządzeniach:
+### 6.3. Перевірка конфлікту (`handleAutoSyncCheck()`)
 
-1. Oba urządzenia pracują z własną wersją w `localStorage`
-2. Po synchronizacji **wygraje urządzenie, które zapisało plik jako ostatnie**
-3. **Zmiany z drugiego urządzenia zostaną bezpowrotnie utracone**
-4. Jedynym ostrzeżeniem jest dialog `showConfirm` z tekstem _"Dane lokalne zostaną nadpisane"_
+`checkDriveRemoteStatus()` — дешева mtime-евристика (порівнює `modifiedTime` файлу з локальним `meta.lastSync`, 8с slack на розсинхрон годинників). Коли ця евристика підказує "remote newer" **і** локально є незбережені зміни, перед тим як показати користувачу попередження про конфлікт, `handleAutoSyncCheck()` довантажує реальний payload і перевіряє два додаткові сигнали:
 
-### 6.4. Zalecenia
+1. **Fingerprint reconciliation** (`reconcileSyncedFingerprint()`) — якщо дані насправді ідентичні (локальні зміни вже були завантажені раніше, просто fingerprint не встиг позначитись як synced), конфлікту немає.
+2. **Revision counter** (`getSyncRevision()` / `isRemoteAheadByRevision()`) — кожен payload несе монотонний лічильник `revision`, який інкрементується при кожному upload і зберігається локально при upload/download. Порівняння лічильників не залежить від годинників пристроїв взагалі. Якщо remote-версія за лічильником не випереджає те, що пристрій вже знає — mtime-евристика була хибним спрацюванням (clock skew), а не реальним конфліктом.
 
-- **Nie obiecuj użytkownikom "bezpiecznej synchronizacji z wielu urządzeń"**
-- Wymaga to znaczącej przebudowy (wersjonowanie, historia zmian, trzyustawowe scalanie)
-- Rozważ wersjonowanie plików w chmurze lub jaśniejsze ostrzeżenia o utracie danych
+Лише якщо жоден з цих двох сигналів не спростував конфлікт — показується `driveSyncConflictWarn`.
+
+### 6.4. Синхронізація з кількох пристроїв (офлайн-режим)
+
+Система і досі **не робить справжній merge/diff** змінених полів — це свідомий компроміс (не CRDT). Але завдяки (6.2)+(6.3):
+
+1. Кожен пристрій працює зі своєю копією в `localStorage`.
+2. Коли реального конфлікту немає (дані ідентичні або локальний пристрій просто відстає) — синхронізація відбувається автоматично й тихо.
+3. Коли конфлікт реальний (обидва пристрої дійсно змінили дані після спільної точки) — користувач отримує попередження і вирішує вручну через `syncWithDrive()` modal (Upload/Download).
+4. "Останній записаний файл перемагає" — і досі правда для випадку реального конфлікту; це не змінилось, змінилось лише те, що фальшиві конфлікти (найчастіша причина скарг користувачів) більше не виникають.
+
+### 6.5. Зауваження на майбутнє
+
+- Справжній трьохсторонній merge (base/local/remote по кожному полю) — велика архітектурна робота, окрема задача, не робити разом з баг-фіксами.
+- `revision` зараз читається лише з повністю довантаженого payload (`fetchDriveRemotePayload()`), а не з легкої Drive-метадати (`appProperties`) — простіше в реалізації, ціна: один додатковий network-запит лише в гілці "схоже на конфлікт", не на кожній перевірці.
 
 ## 7. CI/CD (GitHub Actions)
 

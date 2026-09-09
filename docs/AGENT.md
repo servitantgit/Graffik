@@ -68,7 +68,10 @@ Simple/Advanced UI mode toggle behavior;
 `.advanced-only` CSS class semantics;
 `prefs.uiMode` default detection logic;
 `sanitizePrefs()` schema validation logic in `js/core.js`;
-privacy auto-disable when switching Advanced → Simple.
+privacy auto-disable when switching Advanced → Simple;
+Drive silent token refresh flow (`ensureDriveToken`, `trySilentDriveRefresh`, `scheduleDriveTokenRefresh`) — do not reintroduce "no auto OAuth";
+`handleAutoSyncCheck()` conflict verification order (fingerprint reconcile, then revision compare, before warning the user);
+`revision` field in the Drive sync payload and `meta.revision` in `gillette_sync_meta` — only ever advances, never regress it.
 Local bug fixes inside these areas are allowed. Structural redesign is not.
 
 2. PROJECT OVERVIEW

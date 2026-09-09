@@ -26,6 +26,7 @@ const ICON_DRIVE = '<svg class="mi-svg mi-drive" viewBox="0 0 24 24" width="18" 
 
 let gDriveRemoteNewer = false;
 let gDriveRemoteCheckAt = 0;
+let gDriveCheckStale = false; // true when we could not verify Drive (e.g. token expired and silent refresh failed)
 
 let gDriveRefreshTimer = null;
 let gDriveTokenInflight = null; // Promise for concurrent refresh requests
@@ -113,12 +114,25 @@ async function checkDriveRemoteStatus(force = false) {
  * @returns {Promise<'idle'|'up-to-date'|'downloaded'|'conflict'|'error'>}
  */
 async function handleAutoSyncCheck() {
-  if (!isDriveLoggedIn() || !isDriveTokenValid()) {
+  if (!isDriveLoggedIn()) {
     return 'idle';
   }
+
+  // Try a silent (no popup) token refresh before giving up. An access token
+  // expires after ~1h; without this, a backgrounded phone that reopens after
+  // that window silently stops checking Drive at all — no error, no badge
+  // update — until the user manually logs out and back in.
+  if (!(await ensureDriveToken(false))) {
+    gDriveCheckStale = true;
+    updateMenuSyncStatus();
+    return 'idle';
+  }
+  gDriveCheckStale = false;
+
   try {
     const remoteNewer = await checkDriveRemoteStatus(true);
     if (!remoteNewer) {
+      updateMenuSyncStatus();
       return 'up-to-date';
     }
 
@@ -135,7 +149,39 @@ async function handleAutoSyncCheck() {
       return 'error';
     }
 
-    // Conflict: local changes + remote is newer
+    // Both local and remote look changed by the cheap mtime heuristic —
+    // before alarming the user, verify against the actual remote content.
+    // Two known false-positive causes:
+    //  1) local changes were already uploaded, but the fingerprint on this
+    //     device just hadn't been reconciled yet;
+    //  2) device clock skew made the mtime comparison wrong even though the
+    //     remote revision isn't actually ahead of what we already know.
+    const remotePayload = await fetchDriveRemotePayload();
+    if (remotePayload) {
+      if (
+        typeof reconcileSyncedFingerprint === 'function' &&
+        reconcileSyncedFingerprint(remotePayload)
+      ) {
+        gDriveRemoteNewer = false;
+        updateMenuSyncStatus();
+        return 'up-to-date';
+      }
+
+      if (typeof isRemoteAheadByRevision === 'function') {
+        const localRevision =
+          typeof getSyncRevision === 'function' ? getSyncRevision() : 0;
+        const aheadByRevision = isRemoteAheadByRevision(localRevision, remotePayload);
+        // false (not null) means the remote's own revision counter is not
+        // ahead of what this device already knows — trust that over the
+        // clock-based mtime guess.
+        if (aheadByRevision === false) {
+          updateMenuSyncStatus();
+          return 'up-to-date';
+        }
+      }
+    }
+
+    // Confirmed conflict: local changes + remote genuinely moved on.
     if (!window._syncConflictWarned) {
       window._syncConflictWarned = true;
       showToast('warn', '⚠️ ' + t('driveSyncConflictWarn'));
@@ -179,14 +225,31 @@ function persistDriveToken(accessToken, expiresInSec) {
   localStorage.setItem('grafik_drive_token', gDriveToken);
   localStorage.setItem('grafik_drive_token_expiry', String(gDriveTokenExpiry));
   markDriveSession();
+  scheduleDriveTokenRefresh();
 }
 
-/** Disabled: no background token refresh (user initiates sync/login only). */
+/**
+ * Schedules a silent (no popup) token refresh ~5 min before expiry while the
+ * app stays open, so a foregrounded session never runs out of a valid token.
+ * This is a best-effort background refresh only — it does not replace the
+ * on-demand silent refresh in ensureDriveToken(), which covers the far more
+ * common case of the app being backgrounded/closed past the ~1h expiry and
+ * reopened later (background timers don't fire reliably while suspended).
+ */
 function scheduleDriveTokenRefresh() {
   if (gDriveRefreshTimer) {
     clearTimeout(gDriveRefreshTimer);
     gDriveRefreshTimer = null;
   }
+  if (!gDriveTokenExpiry) return;
+  const delay = gDriveTokenExpiry - Date.now() - 5 * 60000;
+  if (delay <= 0) return; // already due — next ensureDriveToken() call covers it
+  gDriveRefreshTimer = setTimeout(() => {
+    gDriveRefreshTimer = null;
+    if (document.visibilityState === 'visible') {
+      requestDriveAccessToken({ interactive: false }).catch(() => {});
+    }
+  }, delay);
 }
 
 /**
@@ -338,20 +401,30 @@ function requestDriveAccessToken(opts) {
 }
 
 /**
- * No silent OAuth. Returns true only if access token is still valid in memory/LS.
- * Google popups only via loginDrive() / ensureDriveToken(true) on user action.
+ * Attempts a silent (no popup) token refresh via GIS prompt:''. Only makes
+ * sense if the user had a Drive session before — otherwise there is no
+ * grant to refresh and Google would silently fail anyway.
  */
 async function trySilentDriveRefresh() {
-  return isDriveTokenValid();
+  if (isDriveTokenValid()) return true;
+  if (!hadDriveSession()) return false;
+  return requestDriveAccessToken({ interactive: false });
 }
 
-/** Ensure valid token before Drive API calls. Interactive only when user started the action. */
+/**
+ * Ensure a valid token before Drive API calls.
+ * - interactiveFallback=true: show Google UI if needed (user-initiated action).
+ * - interactiveFallback=false: try a silent refresh first (prompt:''); never
+ *   shows a popup. This is what lets auto-sync checks recover after the
+ *   access token expires while the app was backgrounded, instead of doing
+ *   nothing until the user manually logs out and back in.
+ */
 async function ensureDriveToken(interactiveFallback) {
   if (isDriveTokenValid()) return true;
   if (interactiveFallback) {
     return requestDriveAccessToken({ interactive: true });
   }
-  return false;
+  return trySilentDriveRefresh();
 }
 
 /* === API WRAPPERS === */
@@ -369,6 +442,7 @@ async function driveFetch(url, options = {}, retry = true) {
     gDriveTokenExpiry = 0;
     localStorage.removeItem('grafik_drive_token');
     localStorage.removeItem('grafik_drive_token_expiry');
+    gDriveCheckStale = true;
     updateDriveUI();
   }
   return resp;
@@ -418,8 +492,11 @@ async function uploadToDrive(force = false) {
   }
 
 // Compact v4 payload: public factory data stays in the application.
+  const priorRevision = typeof getSyncRevision === 'function' ? getSyncRevision() : 0;
+  const nextRevision = priorRevision + 1;
   const payload = {
     version: 4,
+    revision: nextRevision,
     savedAt: new Date().toISOString(),
     prefs: prefs,
     shiftOverrides:
@@ -483,7 +560,7 @@ async function uploadToDrive(force = false) {
       }
     }
     showToast('success', `☁️ ${t('driveSaved')}`);
-    if (typeof updateLastSync === 'function') updateLastSync();
+    if (typeof updateLastSync === 'function') updateLastSync(nextRevision);
     gDriveRemoteNewer = false;
     // Refresh remote mtime so this device is not flagged as behind
     setStoredRemoteMtime(Date.now());
@@ -694,7 +771,9 @@ async function downloadFromDrive(confirmOverwrite = false) {
         showToast('success', `☁️ ${t('driveDownloaded')}`);
       }
       // Saves above bump lastModified — mark synced AFTER apply
-      if (typeof updateLastSync === 'function') updateLastSync();
+      if (typeof updateLastSync === 'function') {
+        updateLastSync(typeof data.revision === 'number' ? data.revision : undefined);
+      }
       gDriveRemoteNewer = false;
       setStoredRemoteMtime(Date.now());
       findDriveFile()
@@ -738,6 +817,7 @@ function updateMenuSyncStatus() {
   const logged = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : isDriveTokenValid();
   const unsynced = typeof hasUnsyncedChanges === 'function' && hasUnsyncedChanges();
   const remoteNewer = !!gDriveRemoteNewer;
+  const stale = !!gDriveCheckStale;
 
   const tr = (key, params, fallback) => (typeof t === 'function' ? t(key, params) : fallback);
 
@@ -770,19 +850,26 @@ function updateMenuSyncStatus() {
   const count = typeof getUnsyncedChangeCount === 'function'
     ? getUnsyncedChangeCount()
     : (unsynced ? 1 : 0);
-  const showWarn = unsynced || remoteNewer;
+  const staleOnly = stale && !unsynced && !remoteNewer;
+  const showWarn = unsynced || remoteNewer || stale;
 
   if (warnBlock) {
     warnBlock.style.display = showWarn ? 'flex' : 'none';
     if (showWarn && warnText) {
-      const n = Math.max(1, count);
-      warnText.textContent = n === 1
-        ? tr('driveCardWarningOne', null, '1 warning')
-        : tr('driveCardWarnings', { count: n }, `${n} warnings`);
+      if (staleOnly) {
+        warnText.textContent = tr('driveCardStaleWarn', null, 'Could not verify — tap to reconnect');
+      } else {
+        const n = Math.max(1, count);
+        warnText.textContent = n === 1
+          ? tr('driveCardWarningOne', null, '1 warning')
+          : tr('driveCardWarnings', { count: n }, `${n} warnings`);
+      }
     }
   }
 
-  if (showWarn) {
+  if (staleOnly) {
+    el.title = tr('syncStatusStale', null, 'Could not verify Google Drive — sign-in may have expired');
+  } else if (showWarn) {
     el.title = tr('syncStatusConflict', null, 'Local and Drive both changed — sync needed');
   } else {
     el.title = tr('syncStatusOk', { time: when }, `All changes synced · ${when}`);
@@ -1389,17 +1476,23 @@ function initSync() {
     }
     updateDriveUI();
     updateMenuSyncStatus();
-    // No auto OAuth / silent refresh. Token used only if still valid until user syncs again.
     if (isDriveTokenValid()) {
       fetchDriveUserEmail();
-      // Auto-check Drive on load (user may have pushed from another device)
+      scheduleDriveTokenRefresh();
+    }
+    // Auto-check Drive on load. handleAutoSyncCheck() attempts a silent
+    // (no popup) token refresh itself, so this also recovers a session
+    // whose access token expired while the app was closed.
+    if (isDriveLoggedIn()) {
       handleAutoSyncCheck();
     }
   });
 
-  // Auto-check Drive when user returns to the PWA (unlock phone, switch tab back, etc.)
+  // Auto-check Drive when user returns to the PWA (unlock phone, switch tab
+  // back, etc). handleAutoSyncCheck() silently refreshes the token itself,
+  // so this keeps working even after the access token has expired.
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && isDriveTokenValid()) {
+    if (document.visibilityState === 'visible' && isDriveLoggedIn()) {
       handleAutoSyncCheck();
     }
   });

@@ -758,6 +758,8 @@ window.translations.pl = {
   syncStatusRemoteNewerShort: '☁ Nowa wersja',
   syncStatusRemoteNewer: '☁ Na Google Drive jest nowsza wersja — pobierz',
   syncStatusConflict: '⚠ Zmiany lokalne i na Drive — zsynchronizuj',
+  syncStatusStale: 'Nie udało się zweryfikować Google Drive — zaloguj się ponownie',
+  driveCardStaleWarn: 'Nie udało się zweryfikować — dotknij, aby połączyć ponownie',
   driveAutoSynced: 'Zsynchronizowano z Drive',
   driveSyncConflictWarn: 'Konflikt synchronizacji — sprawdź menu Drive',
   syncStatusLogin: 'Zaloguj do Google Drive',

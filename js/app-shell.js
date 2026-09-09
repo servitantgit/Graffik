@@ -319,12 +319,15 @@
       }
     }
     if (
-      typeof checkDriveRemoteStatus === 'function' &&
+      typeof handleAutoSyncCheck === 'function' &&
       typeof isDriveLoggedIn === 'function' &&
       isDriveLoggedIn()
     ) {
       try {
-        Promise.resolve(checkDriveRemoteStatus(false)).catch(() => {});
+        // Also attempts a silent token refresh — otherwise an expired
+        // access token would leave the badge stuck showing stale info
+        // every time the menu is opened.
+        Promise.resolve(handleAutoSyncCheck()).catch(() => {});
       } catch (e) {
         /* ignore */
       }

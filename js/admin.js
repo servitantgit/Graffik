@@ -6,7 +6,10 @@
 /* === ADMIN EMAIL LIST ===
    Public in the code — safe.
    Knowing the email doesn't grant access — a Google login is still required. */
-const ADMIN_EMAILS = ['servitant@gmail.com'];
+const ADMIN_EMAILS = [
+  'servitant@gmail.com',
+  'kipkvz@gmail.com', // ← додай, або зміни тут email нового адміна
+];
 
 /* === ADMIN STATE CHECK === */
 

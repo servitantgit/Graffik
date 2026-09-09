@@ -756,6 +756,8 @@ window.translations.uk = {
   syncStatusRemoteNewerShort: '☁ Новіша',
   syncStatusRemoteNewer: '☁ На Google Drive є новіша версія — завантажте',
   syncStatusConflict: '⚠ Локально і на Drive є зміни — синхронізуйте',
+  syncStatusStale: 'Не вдалося перевірити Google Drive — увійдіть ще раз',
+  driveCardStaleWarn: 'Не вдалося перевірити — торкніться, щоб перепідключити',
   driveAutoSynced: 'Синхронізовано з Drive',
   driveSyncConflictWarn: 'Конфлікт синхронізації — перевірте меню Drive',
   syncStatusLogin: 'Увійти в Google Drive',

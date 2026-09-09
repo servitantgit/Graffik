@@ -434,7 +434,7 @@ function reconcileSyncedFingerprint(remotePayload) {
 function getSyncMeta() {
   try {
     const raw = localStorage.getItem(SYNC_META_KEY);
-    if (!raw) return { lastModified: 0, lastSync: 0, changeCount: 0 };
+    if (!raw) return { lastModified: 0, lastSync: 0, changeCount: 0, revision: 0 };
     const parsed = JSON.parse(raw);
     return {
       lastModified: parsed.lastModified || 0,
@@ -444,10 +444,11 @@ function getSyncMeta() {
         typeof parsed.syncedFingerprint === 'string' ? parsed.syncedFingerprint : '',
       lastKnownDiffCount:
         typeof parsed.lastKnownDiffCount === 'number' ? parsed.lastKnownDiffCount : null,
+      revision: typeof parsed.revision === 'number' ? parsed.revision : 0,
     };
   } catch (e) {
     console.warn('[sync-tracking] Failed to parse sync meta:', e);
-    return { lastModified: 0, lastSync: 0, changeCount: 0, lastKnownDiffCount: null };
+    return { lastModified: 0, lastSync: 0, changeCount: 0, lastKnownDiffCount: null, revision: 0 };
   }
 }
 
@@ -476,15 +477,53 @@ function updateLastModified() {
 
 /**
  * Updates lastSync timestamp to now.
- * Call this after successful uploadToDrive().
+ * Call this after successful uploadToDrive() / downloadFromDrive().
+ * @param {number} [revision] - the sync revision now known to be in effect
+ *   (the value just uploaded, or the value read from a downloaded payload).
+ *   Revision only ever advances — a lower/older value is ignored so a
+ *   stale caller can never roll it backwards.
  */
-function updateLastSync() {
+function updateLastSync(revision) {
   const meta = getSyncMeta();
   meta.lastSync = Date.now();
   meta.changeCount = 0;
   meta.lastKnownDiffCount = 0;
   meta.syncedFingerprint = getSyncFingerprint();
+  if (typeof revision === 'number' && Number.isFinite(revision)) {
+    meta.revision = Math.max(revision, meta.revision || 0);
+  }
   setSyncMeta(meta);
+}
+
+/**
+ * Last sync revision known to this device (monotonic counter carried in
+ * the Drive payload's `revision` field). Used instead of device clocks to
+ * decide who is "ahead", since wall-clock time can drift or differ across
+ * timezones between a phone and a laptop.
+ * @returns {number}
+ */
+function getSyncRevision() {
+  const meta = getSyncMeta();
+  return typeof meta.revision === 'number' ? meta.revision : 0;
+}
+
+/**
+ * Pure helper: is a downloaded remote payload's revision strictly ahead of
+ * what this device already knows about?
+ * @param {number} localRevision
+ * @param {object} remotePayload - parsed Drive JSON payload
+ * @returns {boolean|null} true/false when comparable; null when the remote
+ *   payload has no `revision` field (older app version) — callers should
+ *   fall back to fingerprint/mtime comparison in that case.
+ */
+function isRemoteAheadByRevision(localRevision, remotePayload) {
+  const remoteRevision =
+    remotePayload && typeof remotePayload.revision === 'number'
+      ? remotePayload.revision
+      : null;
+  if (remoteRevision === null) return null;
+  const safeLocal = Math.max(0, Number(localRevision) || 0);
+  return remoteRevision > safeLocal;
 }
 
 /**
@@ -591,6 +630,8 @@ if (typeof window !== 'undefined') {
   window.formatLastSyncDateTime = formatLastSyncDateTime;
   window.getSyncFingerprint = getSyncFingerprint;
   window.reconcileSyncedFingerprint = reconcileSyncedFingerprint;
+  window.getSyncRevision = getSyncRevision;
+  window.isRemoteAheadByRevision = isRemoteAheadByRevision;
   window.normalizeShiftOverrides = normalizeShiftOverrides;
   window.getPersonalShiftOverrides = getPersonalShiftOverrides;
   window.buildCustomScheduleFromShiftOverrides =
@@ -606,5 +647,6 @@ if (typeof module !== 'undefined' && module.exports) {
     getSyncFingerprint,
     hashSyncString,
     stableSyncSerialize,
+    isRemoteAheadByRevision,
   };
 }

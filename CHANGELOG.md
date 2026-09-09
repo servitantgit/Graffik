@@ -1,3 +1,37 @@
+# Unreleased — Drive Sync Reliability Fixes
+
+## Fixed
+- **Silent token expiry killed auto-sync** — access token (~1h) had no refresh
+  path at all. After the token expired (e.g. phone backgrounded), every
+  auto-sync check (page load, `visibilitychange`, opening the side menu)
+  silently did nothing — no error, no badge update — until the user manually
+  logged out and back in. `ensureDriveToken(false)` / `trySilentDriveRefresh()`
+  now attempt a real `prompt:''` silent refresh instead of giving up
+  immediately, and a proactive refresh is scheduled ~5 min before expiry
+  while the app is open (`scheduleDriveTokenRefresh()`).
+- **Misleading "all synced" when the check never ran** — when the token
+  couldn't be verified, the menu badge used to just show green "Active" as
+  if everything was fine. Now a distinct stale/unverified state
+  (`gDriveCheckStale`) is surfaced with its own warning text.
+- **False-positive sync conflicts** — `handleAutoSyncCheck()` used to warn
+  about a conflict purely from a device-clock-based `modifiedTime` heuristic.
+  It now double-checks against the actual remote payload before warning:
+  reconciles the fingerprint (catches "already uploaded, just not marked
+  synced yet") and compares a new monotonic `revision` counter carried in
+  the payload (catches false positives from clock skew between devices).
+
+## Added
+- `revision` field in the Drive sync payload, incremented on every
+  `uploadToDrive()`; stored locally as `meta.revision` in `gillette_sync_meta`.
+- `getSyncRevision()`, `isRemoteAheadByRevision()` in `js/personal/sync-tracking.js`
+  (pure function, unit-tested — 8 new test cases).
+- i18n keys `syncStatusStale` / `driveCardStaleWarn` (pl/en/uk).
+
+## Changed
+- Side-menu open now calls `handleAutoSyncCheck()` (self-healing, attempts
+  silent refresh) instead of a raw `checkDriveRemoteStatus(false)` that gave
+  up instantly on an expired token.
+
 # Unreleased — Post Simple/Advanced Fixes
 
 ## Fixed

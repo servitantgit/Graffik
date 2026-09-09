@@ -24,6 +24,7 @@ const assert = require('node:assert');
 const {
   normalizeShiftOverrides,
   buildCustomScheduleFromShiftOverrides,
+  isRemoteAheadByRevision,
 } = require('../js/personal/sync-tracking.js');
 
 // ============================================================
@@ -208,4 +209,47 @@ test('buildCustomScheduleFromShiftOverrides: returns object with correct nesting
   assert.strictEqual(typeof result[2026], 'object');
   assert.strictEqual(typeof result[2026][1], 'object');
   assert.ok(Array.isArray(result[2026][1].A));
+});
+
+// ============================================================
+// isRemoteAheadByRevision — revision-based ordering (clock-skew safe)
+//
+// Compares a device's last-known sync revision against a downloaded Drive
+// payload's own `revision` counter, instead of relying on device clocks
+// (which can drift or differ across timezones between a phone and laptop).
+// ============================================================
+
+test('isRemoteAheadByRevision: remote revision greater than local => true', () => {
+  assert.strictEqual(isRemoteAheadByRevision(3, { revision: 5 }), true);
+});
+
+test('isRemoteAheadByRevision: remote revision equal to local => false (not ahead)', () => {
+  assert.strictEqual(isRemoteAheadByRevision(5, { revision: 5 }), false);
+});
+
+test('isRemoteAheadByRevision: remote revision less than local => false', () => {
+  assert.strictEqual(isRemoteAheadByRevision(7, { revision: 2 }), false);
+});
+
+test('isRemoteAheadByRevision: missing revision field on payload => null (unknown, caller must fall back)', () => {
+  assert.strictEqual(isRemoteAheadByRevision(5, { version: 4 }), null);
+});
+
+test('isRemoteAheadByRevision: null payload => null', () => {
+  assert.strictEqual(isRemoteAheadByRevision(5, null), null);
+});
+
+test('isRemoteAheadByRevision: non-numeric revision field => null', () => {
+  assert.strictEqual(isRemoteAheadByRevision(5, { revision: 'five' }), null);
+});
+
+test('isRemoteAheadByRevision: missing/undefined local revision treated as 0', () => {
+  assert.strictEqual(isRemoteAheadByRevision(undefined, { revision: 1 }), true);
+  assert.strictEqual(isRemoteAheadByRevision(undefined, { revision: 0 }), false);
+});
+
+test('isRemoteAheadByRevision: negative or NaN local revision treated as 0', () => {
+  assert.strictEqual(isRemoteAheadByRevision(NaN, { revision: 1 }), true);
+  assert.strictEqual(isRemoteAheadByRevision(-3, { revision: 0 }), false);
+  assert.strictEqual(isRemoteAheadByRevision(-3, { revision: 1 }), true);
 });
