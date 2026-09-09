@@ -8,7 +8,7 @@
    Knowing the email doesn't grant access — a Google login is still required. */
 const ADMIN_EMAILS = [
   'servitant@gmail.com',
-  'kipkvzdsfdgsgf345435345rtgrdgdr@gmail.com', // ← додай тут email нового адміна
+  'kipkvz@gmail.com', // ← додай, або зміни тут email нового адміна
 ];
 
 /* === ADMIN STATE CHECK === */
