@@ -1,5 +1,7 @@
 # 📅 Grafik Gillette
 
+**Język / Language / Мова:** **Polski** · [English](./README.en.md) · [Українська](./README.uk.md)
+
 Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w systemie 3-zmianowym (Rano/Popołudnie/Noc). Zastępuje papierowy kalendarz w plakietce.
 
 **Demo:** [https://servitantgit.github.io/Graffik/](https://servitantgit.github.io/Graffik/)
@@ -142,69 +144,80 @@ npx http-server -p 8000
 
 Następnie otwórz: `http://localhost:8000`
 
+### Uruchamianie testów
+
+```bash
+node tests/run.js
+```
+
+Działa na każdym Node 18+. Forma `node --test "tests/*.test.js"` działa tylko od Node 21, bo dopiero od tej wersji Node sam rozwija glob w argumentach pozycyjnych `--test`.
+
 ### Struktura projektu
 
-    ```
-    Graffik/
-    ├── index.html          # HTML (bez inline CSS)
-    ├── manifest.json       # PWA manifest
-    ├── sw.js               # Service Worker (precache ASSETS)
-    ├── css/
-    │   ├── app-shell.css      # Shell aplikacji
-    │   ├── calendar.css       # Kalendarz miesiąca
-    │   ├── components.css     # Komponenty i widoczność Privacy Mode
-    │   ├── dashboard.css      # Dashboard
-    │   ├── layout.css         # Układ aplikacji
-    │   ├── overtime.css       # Nadgodziny
-    │   ├── print.css          # Druk
-    │   ├── responsive.css     # Responsywność
-    │   ├── smart-popup.css    # Popupy
-    │   ├── variables.css      # Zmienne motywu
-    │   └── views.css          # Widoki Rok i Tabela
-    ├── js/
-    │   ├── schedules/           # Modularna architektura danych (v3.7+)
-    │   │   ├── _core.js        # Stałe, helpers (monthNames, shiftHours…)
-    │   │   ├── _registry.js    # Registry + shouldShowPersonalData()
-    │   │   └── gillette/
-    │   │       ├── metadata.js # Metadane schedule (brygady, typy zmian)
-    │   │       └── 2026.js     # Dane roku 2026
-    │   ├── personal/
-    │   │   └── sync-tracking.js # lastModified / lastSync (unsynced state)
-    │   ├── overtime-logic.js    # Kategoryzacja nadgodzin +50%/100%/200%
-    │   ├── core.js              # Storage, getShiftAt, isUrlop, prefs…
-    │   ├── ui.js                # Toast, Modal, Confirm, motyw
-    │   ├── edit.js              # Natychmiastowa edycja zmian (applyEdit)
-    │   ├── dashboard.js         # Dashboard (gated by shouldShowPersonalData)
-    │   ├── calendar.js          # Kalendarz, popupy, nadgodziny
-    │   ├── views.js             # Rok, Tabela
-    │   ├── actions.js           # .ics, share, print, admin export
-    │   ├── pwa.js               # SW registration, powiadomienia
-    │   ├── sync.js              # Google Drive OAuth + upload/download
-    │   ├── admin.js             # Identyfikacja admina (ADMIN_EMAILS)
-    │   ├── admin-center.js      # Panel admina
-    │   ├── app-shell.js         # Shell UI
-    │   ├── personalization.js   # Style komórek, preferencje UI
-    │   ├── settings.js          # Ustawienia
-    │   ├── smart-popup.js       # Inteligentne popupy
-    │   ├── i18n/
-    │   │   ├── pl.js / en.js / uk.js
-    │   │   └── i18n.js          # t(), setLanguage(), renderFAQ()
-    │   └── main.js              # Stan, events, init
-    ├── icons/
-    │   ├── icon-192.png
-    │   ├── icon-512.png
-    │   └── icon-512-maskable.png
-    ├── screenshots/             # Zrzuty ekranu do README
-    │   └── 1.png … 8.png
-    ├── docs/                    # Dokumentacja techniczna
-    │   ├── AGENT.md             # Reguły dla AI / engineering rules
-    │   ├── PROJECT_DOCS.md      # Architektura, schema, edge cases
-    │   └── tests-README.md
-    ├── tools/                   # Dev helpers (check_js, generate_icons, export-code…)
-    ├── tests/                   # Testy jednostkowe
-    ├── CHANGELOG.md
-    └── README.md
-    ```
+```
+Graffik/
+├── index.html          # HTML (bez inline CSS)
+├── manifest.json       # PWA manifest
+├── sw.js               # Service Worker (precache ASSETS)
+├── css/
+│   ├── app-shell.css      # Shell aplikacji
+│   ├── calendar.css       # Kalendarz miesiąca
+│   ├── components.css     # Komponenty i widoczność Privacy Mode
+│   ├── dashboard.css      # Dashboard
+│   ├── layout.css         # Układ aplikacji
+│   ├── overtime.css       # Nadgodziny
+│   ├── print.css          # Druk
+│   ├── responsive.css     # Responsywność
+│   ├── smart-popup.css    # Popupy
+│   ├── variables.css      # Zmienne motywu
+│   └── views.css          # Widoki Rok i Tabela
+├── js/
+│   ├── schedules/           # Modularna architektura danych (v3.7+)
+│   │   ├── _core.js        # Stałe, helpers (monthNames, shiftHours…)
+│   │   ├── _registry.js    # Registry + shouldShowPersonalData()
+│   │   └── gillette/
+│   │       ├── metadata.js # Metadane schedule (brygady, typy zmian)
+│   │       └── 2026.js     # Dane roku 2026
+│   ├── personal/
+│   │   ├── sync-tracking.js  # lastModified / lastSync (unsynced state)
+│   │   └── notes-tracking.js # Notatki dzienne (dodawanie/edycja/usuwanie, liczenie)
+│   ├── overtime-logic.js    # Kategoryzacja nadgodzin +50%/100%/200%
+│   ├── core.js              # Storage, getShiftAt, isUrlop, prefs…
+│   ├── ui.js                # Toast, Modal, Confirm, motyw
+│   ├── edit.js              # Natychmiastowa edycja zmian (applyEdit)
+│   ├── dashboard.js         # Dashboard (gated by shouldShowPersonalData)
+│   ├── calendar.js          # Kalendarz, popupy, nadgodziny
+│   ├── views.js             # Rok, Tabela
+│   ├── actions.js           # .ics, share, print, admin export
+│   ├── pwa.js               # SW registration, powiadomienia
+│   ├── sync.js              # Google Drive OAuth + upload/download
+│   ├── admin.js             # Identyfikacja admina (ADMIN_EMAILS)
+│   ├── admin-center.js      # Panel admina
+│   ├── app-shell.js         # Shell UI
+│   ├── personalization.js   # Style komórek, preferencje UI
+│   ├── settings.js          # Ustawienia
+│   ├── smart-popup.js       # Inteligentne popupy
+│   ├── i18n/
+│   │   ├── pl.js / en.js / uk.js
+│   │   └── i18n.js          # t(), setLanguage(), renderFAQ()
+│   └── main.js              # Stan, events, init
+├── icons/
+│   ├── icon-192.png
+│   ├── icon-512.png
+│   └── icon-512-maskable.png
+├── screenshots/             # Zrzuty ekranu do README i manifestu
+│   └── 1.png … 8.png
+├── docs/                    # Dokumentacja techniczna
+│   ├── AGENT.md             # Reguły dla AI / engineering rules
+│   ├── PROJECT_DOCS.md      # Architektura, schema, edge cases
+│   └── tests-README.md
+├── tools/                   # Dev helpers (check_js, generate_icons, export-code…)
+├── tests/                   # Testy jednostkowe
+├── CHANGELOG.md
+├── README.md                # PL (domyślny)
+├── README.en.md             # EN
+└── README.uk.md             # UK
+```
 
 ## ⌨️ Skróty klawiszowe
 
@@ -250,6 +263,8 @@ Język jest automatycznie wykrywany z ustawień przeglądarki przy pierwszym uru
 1. Otwórz `js/i18n/pl.js` (lub en.js/uk.js) — dodaj nowy klucz z wartością
 2. **Ważne**: dodaj ten sam klucz w WSZYSTKICH 3 plikach
 3. W HTML używaj `data-i18n="klucz"` lub w JS: `t('klucz')` / `t('klucz', {param: 'wartość'})`
+
+Parzystość kluczy, placeholdery i prefiksy dynamiczne sprawdza `node tools/i18n-audit.js`. Sekcja „unused keys" w tym raporcie jest wyłącznie informacyjna: kluczy używanych pośrednio (`t(key)` ze zmiennej, mapy odwzorowań, nazwy budowane dynamicznie) analiza statyczna nie widzi, więc nie należy niczego usuwać wyłącznie na podstawie tej listy.
 
 ## 💾 Przechowywanie danych
 

@@ -28,6 +28,18 @@
   (`t(key)` from variables, `SECTION_TITLES` maps, the `sync*Ago` family) are
   invisible to static analysis, so nothing is deleted on its word.
 
+## Added
+- **README in three languages.** `README.md` stays Polish (GitHub's default
+  landing page); `README.en.md` and `README.uk.md` are full translations, and
+  each file opens with a `Polski · English · Українська` switcher row
+  (GitHub has no automatic language negotiation — plain links are the norm).
+  All three also gained a "Running tests" section, the missing
+  `js/personal/notes-tracking.js` entry in the project tree, and a note that
+  the i18n audit's "unused keys" list is informational only.
+- Fixed the project-structure code block in `README.md`: the fence was
+  indented by 4 spaces, so GitHub rendered the literal ``` markers as part of
+  an indented code block instead of a fenced one.
+
 ## Changed
 - `sw.js` fetch-handler comment said "network first" while the code is
   cache-first with background revalidation — comment corrected.
