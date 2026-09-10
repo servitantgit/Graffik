@@ -115,6 +115,7 @@ window.translations.pl = {
   infoNote: '📝 Notatka',
   infoNotePlaceholder: 'Dodaj notatkę...',
   infoNoteSaved: 'Notatka zapisana',
+  infoNoteEditHint: 'Kliknij, aby edytować',
   infoShift: 'Zmiana',
   infoPrevShift: '⬅️ Kto przekazał zmianę',
   infoNextShift: '➡️ Kto przejmie zmianę',

@@ -527,12 +527,12 @@ node tools/i18n-audit.js
 
 ### Архітектура
 - **Чиста логіка** (без DOM/localStorage) — `js/personal/notes-tracking.js`:
-  `addNoteEntry()`, `removeNoteEntry()`, `upsertNoteByTag()`,
+  `addNoteEntry()`, `removeNoteEntry()`, `updateNoteText()`, `upsertNoteByTag()`,
   `getNoteTextByTag()`, `noteEntryHasContent()`, `computeUnifiedNotesMigration()`.
-  Юніт-тести: `tests/notes-tracking.test.js` (24 тести).
+  Юніт-тести: `tests/notes-tracking.test.js` (32 тести).
 - **Обгортки зі станом** (localStorage-backed) — `js/core.js`:
-  `getDayNotes()`, `addDayNote()`, `removeDayNote()`, `upsertDayNoteByTag()`,
-  `removeDayNoteByTag()`, `getDayNoteTextByTag()`.
+  `getDayNotes()`, `addDayNote()`, `removeDayNote()`, `updateDayNote()`,
+  `upsertDayNoteByTag()`, `removeDayNoteByTag()`, `getDayNoteTextByTag()`.
 - **Підрахунок нотаток для sync-diff і Privacy-панелі** — `countNoteEntries()`
   в `notes-tracking.js` рахує загальну кількість нотаток по всіх днях, а не
   кількість day-keys з нотатками. Використовується і в `sync.js`
@@ -541,8 +541,11 @@ node tools/i18n-audit.js
   лічильник day-keys, і sync-бейдж/деталі показували "без змін".
 - **UI** — `js/calendar.js` `renderInfo()`: список нотаток з іконкою за тегом
   (📝 вільна / ⏱⬅ before / ⏱➡ after), кнопкою видалення (`data-remove-note`),
-  і полем додавання нової нотатки (Enter/blur → `addDayNote()`, поле завжди
-  лишається порожнім — можна додати другу, третю і т.д.).
+  клікабельним текстом для редагування на місці (`data-edit-note` → inline
+  `<input>`, Enter/клік поза полем — зберегти, Escape — скасувати; порожній
+  текст при збереженні НЕ видаляє нотатку — видалення лишається окремою дією
+  через ✕), і полем додавання нової нотатки (Enter/blur → `addDayNote()`,
+  поле завжди лишається порожнім — можна додати другу, третю і т.д.).
 - **Overtime modal** (`openOvertimeModal()`/`saveOvertimeFromModal()`) більше
   не зберігає `.note` всередині `overtimes[key]` — читає/пише через
   `getDayNoteTextByTag()`/`upsertDayNoteByTag()` з тегом `'before'`/`'after'`.

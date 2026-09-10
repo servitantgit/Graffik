@@ -726,7 +726,13 @@ function renderInfo() {
             : '';
           return `<div class="day-note-row" data-note-id="${escapeHtml(n.id)}">
               <span class="day-note-icon">${icon}</span>
-              <span class="day-note-text">${tagPrefix}${escapeHtml(n.text)}</span>
+              <span
+                class="day-note-text"
+                data-edit-note="${escapeHtml(n.id)}"
+                role="button"
+                tabindex="0"
+                title="${escapeHtml(t('infoNoteEditHint'))}"
+              >${tagPrefix}<span class="day-note-text-content">${escapeHtml(n.text)}</span></span>
               <button
                 type="button"
                 class="day-note-remove"
@@ -834,6 +840,57 @@ function renderInfo() {
           removeDayNote(currentYear, currentMonth, selectedDay, selectedShift, noteId);
           renderCalendar();
           renderInfo();
+        });
+      });
+
+      const startNoteEdit = (el) => {
+        if (el.querySelector('input')) return; // already editing
+        const noteId = el.getAttribute('data-edit-note');
+        const entry = dayNotes.find((n) => n.id === noteId);
+        if (!entry) return;
+
+        const tagPrefixHtml = entry.tag
+          ? `<strong>${escapeHtml(noteTagLabel[entry.tag] || '')}:</strong> `
+          : '';
+        el.innerHTML = `${tagPrefixHtml}<input type="text" class="day-note-edit-input" value="${escapeHtml(entry.text)}">`;
+        const input = el.querySelector('input');
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
+
+        let committed = false;
+        const commitEdit = () => {
+          if (committed) return;
+          committed = true;
+          const newText = input.value.trim();
+          // Editing to an empty value is a no-op (reverts on re-render) —
+          // deletion stays a deliberate action via the ✕ button only.
+          if (newText && newText !== entry.text) {
+            updateDayNote(currentYear, currentMonth, selectedDay, selectedShift, noteId, newText);
+          }
+          renderCalendar();
+          renderInfo();
+        };
+
+        input.addEventListener('blur', commitEdit);
+        input.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            input.blur();
+          } else if (event.key === 'Escape') {
+            committed = true; // suppress the blur commit triggered by re-render
+            renderInfo();
+          }
+        });
+      };
+
+      const noteEditTargets = panel.querySelectorAll('[data-edit-note]');
+      noteEditTargets.forEach((el) => {
+        el.addEventListener('click', () => startNoteEdit(el));
+        el.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            startNoteEdit(el);
+          }
         });
       });
 

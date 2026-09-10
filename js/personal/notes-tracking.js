@@ -41,6 +41,23 @@ function removeNoteEntry(list, noteId) {
 }
 
 /**
+ * Returns a new array with the text of the entry matching `noteId` replaced.
+ * Editing to an empty/whitespace value is a no-op (returns the list
+ * unchanged) — deletion stays a deliberate, separate action via
+ * removeNoteEntry(), not an accidental side effect of clearing a field.
+ */
+function updateNoteText(list, noteId, text) {
+  if (!Array.isArray(list)) return [];
+  const trimmed = String(text || '').trim();
+  if (!trimmed) return list.slice();
+  const idx = list.findIndex((n) => n && n.id === noteId);
+  if (idx < 0) return list.slice();
+  const next = list.slice();
+  next[idx] = { ...next[idx], text: trimmed };
+  return next;
+}
+
+/**
  * Returns a new array where the single entry carrying `tag` has its text
  * set to `text` (updated in place, not duplicated), or removed if `text`
  * is empty. Used so re-saving an overtime note updates its entry instead
@@ -155,6 +172,7 @@ if (typeof window !== 'undefined') {
   window.noteEntryHasContent = noteEntryHasContent;
   window.addNoteEntry = addNoteEntry;
   window.removeNoteEntry = removeNoteEntry;
+  window.updateNoteText = updateNoteText;
   window.upsertNoteByTag = upsertNoteByTag;
   window.getNoteTextByTag = getNoteTextByTag;
   window.countNoteEntries = countNoteEntries;
@@ -168,6 +186,7 @@ if (typeof module !== 'undefined' && module.exports) {
     noteEntryHasContent,
     addNoteEntry,
     removeNoteEntry,
+    updateNoteText,
     upsertNoteByTag,
     getNoteTextByTag,
     countNoteEntries,

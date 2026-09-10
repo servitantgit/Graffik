@@ -1269,6 +1269,28 @@ body.compact-cells .info-section {
   flex: 1 1 auto;
   min-width: 0;
   overflow-wrap: anywhere;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.day-note-text:hover {
+  background: var(--bg-hover);
+}
+
+.day-note-text:focus-visible {
+  outline: 2px solid var(--text-header);
+  outline-offset: 2px;
+}
+
+.day-note-edit-input {
+  width: 100%;
+  padding: 2px 4px;
+  border: 1px solid var(--border-cell);
+  border-radius: 6px;
+  background: var(--bg-container);
+  color: var(--text-main);
+  font-size: 13px;
+  font-family: inherit;
 }
 
 .day-note-text strong {

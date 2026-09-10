@@ -1,5 +1,12 @@
 # Unreleased — Unified Day Notes + Duplicate-UI Cleanup
 
+## Added (follow-up)
+- **Notes are now editable in place** — click/tap a note's text to turn it
+  into an inline input (Enter or click away to save, Escape to cancel).
+  Delete stays a separate, deliberate action via the existing ✕ button;
+  clearing the field to empty and blurring is a no-op (does not delete).
+  New pure `updateNoteText()` in `notes-tracking.js` (+8 unit tests).
+
 ## Fixed (follow-up)
 - **Sync change count ignored notes added to an already-noted day** —
   `countSyncPayloadStats()` counted *day-keys with notes*, not individual

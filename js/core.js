@@ -870,6 +870,14 @@ function removeDayNote(year, month, day, brigade, noteId) {
   saveNotes(notes);
 }
 
+/** Edits the text of an existing note entry in place (tag is preserved). */
+function updateDayNote(year, month, day, brigade, noteId, text) {
+  const k = noteKeyFor(year, month, day, brigade);
+  if (!Array.isArray(notes[k])) return;
+  notes[k] = updateNoteText(notes[k], noteId, text);
+  saveNotes(notes);
+}
+
 /**
  * Sets (or clears, when text is empty) the single note entry carrying a
  * given tag ('before'/'after'). Used by the overtime modal so re-saving

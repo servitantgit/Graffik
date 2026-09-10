@@ -116,6 +116,7 @@ window.translations.en = {
   infoNote: '📝 Note',
   infoNotePlaceholder: 'Add a note...',
   infoNoteSaved: 'Note saved',
+  infoNoteEditHint: 'Click to edit',
   infoShift: 'Shift',
   infoPrevShift: '⬅️ Who handed over the shift',
   infoNextShift: '➡️ Who will take over the shift',

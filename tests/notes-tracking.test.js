@@ -15,6 +15,7 @@ const {
   noteEntryHasContent,
   addNoteEntry,
   removeNoteEntry,
+  updateNoteText,
   upsertNoteByTag,
   getNoteTextByTag,
   countNoteEntries,
@@ -166,6 +167,64 @@ test('removeNoteEntry: unknown id is a no-op (same length)', () => {
 test('removeNoteEntry: non-array input returns empty array', () => {
   assert.deepStrictEqual(removeNoteEntry(undefined, 'a'), []);
   assert.deepStrictEqual(removeNoteEntry('not-an-array', 'a'), []);
+});
+
+// ============================================================
+// updateNoteText — inline editing of an existing entry (tag preserved)
+// ============================================================
+
+test('updateNoteText: replaces the text of the matching entry', () => {
+  const list = [{ id: 'a', tag: null, text: 'old text' }];
+  const next = updateNoteText(list, 'a', 'new text');
+  assert.strictEqual(next[0].text, 'new text');
+  assert.strictEqual(next[0].id, 'a');
+});
+
+test('updateNoteText: preserves the tag of the edited entry', () => {
+  const list = [{ id: 'a', tag: 'before', text: 'old' }];
+  const next = updateNoteText(list, 'a', 'edited');
+  assert.strictEqual(next[0].tag, 'before');
+  assert.strictEqual(next[0].text, 'edited');
+});
+
+test('updateNoteText: does not touch other entries', () => {
+  const list = [
+    { id: 'a', tag: null, text: 'first' },
+    { id: 'b', tag: 'after', text: 'second' },
+  ];
+  const next = updateNoteText(list, 'b', 'second edited');
+  assert.strictEqual(next[0].text, 'first');
+  assert.strictEqual(next[1].text, 'second edited');
+});
+
+test('updateNoteText: does not mutate the input array (returns a new one)', () => {
+  const original = [{ id: 'a', tag: null, text: 'old' }];
+  const next = updateNoteText(original, 'a', 'new');
+  assert.strictEqual(original[0].text, 'old');
+  assert.strictEqual(next[0].text, 'new');
+});
+
+test('updateNoteText: trims surrounding whitespace', () => {
+  const list = [{ id: 'a', tag: null, text: 'old' }];
+  const next = updateNoteText(list, 'a', '  padded  ');
+  assert.strictEqual(next[0].text, 'padded');
+});
+
+test('updateNoteText: empty/whitespace text is a no-op (does not delete the entry)', () => {
+  const list = [{ id: 'a', tag: null, text: 'keep me' }];
+  const next = updateNoteText(list, 'a', '   ');
+  assert.strictEqual(next.length, 1);
+  assert.strictEqual(next[0].text, 'keep me');
+});
+
+test('updateNoteText: unknown id is a no-op (list unchanged in content)', () => {
+  const list = [{ id: 'a', tag: null, text: 'x' }];
+  const next = updateNoteText(list, 'does-not-exist', 'new text');
+  assert.deepStrictEqual(next, list);
+});
+
+test('updateNoteText: non-array input returns empty array', () => {
+  assert.deepStrictEqual(updateNoteText(undefined, 'a', 'x'), []);
 });
 
 // ============================================================
