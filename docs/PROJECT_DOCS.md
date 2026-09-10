@@ -70,12 +70,32 @@ Przykład: `{ 2026: { 8: { A: ['R','R','P','P',...], B: ['P','P','N','N',...] } 
 
 ### notes (localStorage: `gillette_notes_v1`)
 
+Unified per-day notes list (2026-09 refactor — replaces three previously
+separate note stores: free-form day note string, `overtimes[key].przed.note`,
+`overtimes[key].po.note`). Each day/shift key holds an **array** of entries:
+
 ```javascript
 {
-  '2026-8-10-C': 'treść notatki',
-  '2026-8-15-A': 'inna notatka'
+  '2026-8-10-C': [
+    { id: 'note-abc123', tag: null,      text: 'вільна нотатка' },
+    { id: 'note-def456', tag: 'before',  text: 'запізнились з наладкою' },
+    { id: 'note-ghi789', tag: 'after',   text: 'здали зміну пізніше' }
+  ]
 }
 ```
+
+- `tag: null` — free-form note the user typed directly in the day info panel.
+- `tag: 'before'` / `'after'` — note attached to the overtime "przed"/"po"
+  record for that day (set from the overtime modal); kept in sync via
+  `upsertDayNoteByTag()` so re-saving updates the entry instead of duplicating it.
+- Multiple entries per day are supported (any number of free-form notes, plus
+  at most one `'before'` and one `'after'` entry, since those are singletons
+  tied 1:1 to an overtime record).
+- Pure list logic (add/remove/upsert-by-tag, legacy-data migration) lives in
+  `js/personal/notes-tracking.js` — unit-tested in `tests/notes-tracking.test.js`.
+- Legacy string values and legacy `overtimes[key].przed/po.note` fields are
+  migrated once by `migrateUnifiedNotes()` in `core.js` (flagged by
+  `prefs.notesUnifiedMigratedV1`).
 
 ### overtimes (localStorage: `gillette_overtimes_v1`)
 
@@ -83,11 +103,12 @@ Przykład: `{ 2026: { 8: { A: ['R','R','P','P',...], B: ['P','P','N','N',...] } 
 {
   // Klucz płaski: `${year}-${month}-${day}-${brigade}`, generowany przez otKey() w core.js
   '2026-8-10-C': {
-    przed: { hours: 2, note: 'przed zmianą' },  // ustawiane z UI (przycisk ⏱⬅ OT PRZED)
-    po: { hours: 3, note: 'po zmianie' },       // ustawiane z UI (przycisk ⏱➡ OT PO)
+    przed: { hours: 2 },   // ustawiane z UI (przycisk ⏱⬅ OT PRZED); note text now lives in `notes[key]` (tag:'before')
+    po: { hours: 3 },      // ustawiane z UI (przycisk ⏱➡ OT PO); note text now lives in `notes[key]` (tag:'after')
     weekend: { hours: 8, note: '...' }          // obsługiwane przez categorizeOvertime()
                                                  // i import (validateImportedData), ale
-                                                 // NIE jest jeszcze ustawiane z poziomu UI
+                                                 // NIE jest jeszcze ustawiane z poziomu UI —
+                                                 // NIE migrowane do notes[] (poza zakresem 2026-09 refactoru)
   }
 }
 ```
@@ -496,6 +517,40 @@ node tools/i18n-audit.js
 - `t('key')` / `t("key")` в JS
 - `tr('key')` в settings.js
 - `data-i18n="key"` / `data-i18n-title="key"` / `data-i18n-placeholder="key"` в HTML
+
+## 3.8. Unified Day Notes (2026-09)
+
+Раніше було три окремі, паралельні місця для нотаток одного дня: вільна
+нотатка (`notes[key]` рядок), нотатка "до зміни" (`overtimes[key].przed.note`),
+нотатка "після зміни" (`overtimes[key].po.note`) — з окремими UI-елементами,
+що дублювали один одного. Тепер це єдиний список `notes[key]` (масив, див. §2).
+
+### Архітектура
+- **Чиста логіка** (без DOM/localStorage) — `js/personal/notes-tracking.js`:
+  `addNoteEntry()`, `removeNoteEntry()`, `upsertNoteByTag()`,
+  `getNoteTextByTag()`, `noteEntryHasContent()`, `computeUnifiedNotesMigration()`.
+  Юніт-тести: `tests/notes-tracking.test.js` (24 тести).
+- **Обгортки зі станом** (localStorage-backed) — `js/core.js`:
+  `getDayNotes()`, `addDayNote()`, `removeDayNote()`, `upsertDayNoteByTag()`,
+  `removeDayNoteByTag()`, `getDayNoteTextByTag()`.
+- **UI** — `js/calendar.js` `renderInfo()`: список нотаток з іконкою за тегом
+  (📝 вільна / ⏱⬅ before / ⏱➡ after), кнопкою видалення (`data-remove-note`),
+  і полем додавання нової нотатки (Enter/blur → `addDayNote()`, поле завжди
+  лишається порожнім — можна додати другу, третю і т.д.).
+- **Overtime modal** (`openOvertimeModal()`/`saveOvertimeFromModal()`) більше
+  не зберігає `.note` всередині `overtimes[key]` — читає/пише через
+  `getDayNoteTextByTag()`/`upsertDayNoteByTag()` з тегом `'before'`/`'after'`.
+  Видалення overtime-запису (`removeOvertime()`) також прибирає прив'язану
+  тегом нотатку.
+
+### Міграція
+Одноразова (`migrateUnifiedNotes()` в `core.js`, прапорець
+`prefs.notesUnifiedMigratedV1`, викликається з `main.js` поруч з іншими
+one-shot міграціями): старі рядкові нотатки → запис з `tag: null`; старі
+`overtimes[key].przed/po.note` → запис з `tag: 'before'/'after'` і поле
+`.note` видаляється з overtime-запису (лишається тільки `.hours`).
+`overtimes[key].weekend.note` **не мігрується** — ця позиція ще не
+виставляється з UI, поза межами цього рефакторингу.
 
 ## 4. Ważne konwencje
 

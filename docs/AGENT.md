@@ -71,7 +71,8 @@ Simple/Advanced UI mode toggle behavior;
 privacy auto-disable when switching Advanced → Simple;
 Drive silent token refresh flow (`ensureDriveToken`, `trySilentDriveRefresh`, `scheduleDriveTokenRefresh`) — do not reintroduce "no auto OAuth";
 `handleAutoSyncCheck()` conflict verification order (fingerprint reconcile, then revision compare, before warning the user);
-`revision` field in the Drive sync payload and `meta.revision` in `gillette_sync_meta` — only ever advances, never regress it.
+`revision` field in the Drive sync payload and `meta.revision` in `gillette_sync_meta` — only ever advances, never regress it;
+unified `notes[key]` array format (`{id, tag, text}`, tag null/'before'/'after') — do not reintroduce separate per-position note fields on `overtimes[key]`.
 Local bug fixes inside these areas are allowed. Structural redesign is not.
 
 2. PROJECT OVERVIEW

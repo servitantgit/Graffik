@@ -134,6 +134,11 @@ function sanitizePrefs(raw) {
     false,
     'not boolean');
 
+  fix('notesUnifiedMigratedV1',
+    typeof p.notesUnifiedMigratedV1 === 'boolean',
+    false,
+    'not boolean');
+
   // === Accessibility ===
   fix('reduceMotion', typeof p.reduceMotion === 'boolean', false, 'not boolean');
   fix('largeText', typeof p.largeText === 'boolean', false, 'not boolean');
@@ -293,7 +298,7 @@ if (!prefs.uiMode) {
     Object.keys(customSchedule).length > 0 ||
     Object.values(urlops).some((arr) => Array.isArray(arr) && arr.length > 0) ||
     Object.keys(overtimes).length > 0 ||
-    Object.keys(notes).some((k) => notes[k] && String(notes[k]).trim());
+    Object.keys(notes).some((k) => noteEntryHasContent(notes[k]));
   prefs.uiMode = hasData ? 'advanced' : 'simple';
   savePrefs(prefs);
 
@@ -823,7 +828,97 @@ function setOvertime(year, month, day, brigade, position, data) {
 }
 function removeOvertime(year, month, day, brigade, position) {
   setOvertime(year, month, day, brigade, position, null);
+  removeDayNoteByTag(year, month, day, brigade, position === 'przed' ? 'before' : 'after');
 }
+
+/* === Unified day notes ===
+   notes[key] is an array of { id, tag, text } entries, keyed the same way
+   as overtimes (otKey/noteKeyFor share the same format). tag is null for a
+   free-form note, or 'before'/'after' when it is the note attached to an
+   overtime record. This replaces three previously separate note stores
+   (day note string, overtime.przed.note, overtime.po.note).
+   Pure list logic lives in js/personal/notes-tracking.js (loaded before
+   this file) so it can be unit-tested without core.js's DOM/localStorage
+   dependencies — the functions below are thin localStorage-backed wrappers
+   around it. */
+function noteKeyFor(year, month, day, brigade) {
+  return `${year}-${month}-${day}-${brigade}`;
+}
+
+/** Always returns an array (never undefined/string), even for stale data. */
+function getDayNotes(year, month, day, brigade) {
+  const v = notes[noteKeyFor(year, month, day, brigade)];
+  return Array.isArray(v) ? v : [];
+}
+
+/** Adds a new free-form or tagged note entry. Returns its id, or null if empty. */
+function addDayNote(year, month, day, brigade, text, tag) {
+  const k = noteKeyFor(year, month, day, brigade);
+  const { list, id } = addNoteEntry(notes[k], text, tag);
+  if (!id) return null;
+  notes[k] = list;
+  saveNotes(notes);
+  return id;
+}
+
+function removeDayNote(year, month, day, brigade, noteId) {
+  const k = noteKeyFor(year, month, day, brigade);
+  if (!Array.isArray(notes[k])) return;
+  const next = removeNoteEntry(notes[k], noteId);
+  if (next.length === 0) delete notes[k];
+  else notes[k] = next;
+  saveNotes(notes);
+}
+
+/**
+ * Sets (or clears, when text is empty) the single note entry carrying a
+ * given tag ('before'/'after'). Used by the overtime modal so re-saving
+ * an overtime note updates its entry in place instead of duplicating it.
+ */
+function upsertDayNoteByTag(year, month, day, brigade, tag, text) {
+  const k = noteKeyFor(year, month, day, brigade);
+  const next = upsertNoteByTag(notes[k], tag, text);
+  if (next.length === 0) delete notes[k];
+  else notes[k] = next;
+  saveNotes(notes);
+}
+
+function removeDayNoteByTag(year, month, day, brigade, tag) {
+  upsertDayNoteByTag(year, month, day, brigade, tag, '');
+}
+
+function getDayNoteTextByTag(year, month, day, brigade, tag) {
+  return getNoteTextByTag(getDayNotes(year, month, day, brigade), tag);
+}
+
+/**
+ * ONE-SHOT MIGRATION: unify the three previously separate note stores —
+ * free-form day note (string), overtime "przed" note, overtime "po" note —
+ * into a single notes[key] array of { id, tag, text } entries. Old overtime
+ * notes become tag:'before'/'after' entries; the old free-form string
+ * becomes a tag:null entry. Runs once (flagged by prefs.notesUnifiedMigratedV1).
+ * The actual transform (computeUnifiedNotesMigration) lives in
+ * js/personal/notes-tracking.js and is unit-tested there.
+ */
+function migrateUnifiedNotes() {
+  if (prefs.notesUnifiedMigratedV1 === true) return;
+  try {
+    const result = computeUnifiedNotesMigration(notes, overtimes);
+    Object.keys(notes).forEach((k) => delete notes[k]);
+    Object.assign(notes, result.notes);
+    Object.keys(overtimes).forEach((k) => delete overtimes[k]);
+    Object.assign(overtimes, result.overtimes);
+    saveNotes(notes);
+    saveOvertimes(overtimes);
+    console.log('[migration] Unified notes into a single per-day list.');
+  } catch (error) {
+    console.error('[migration] migrateUnifiedNotes failed:', error);
+  }
+  prefs.notesUnifiedMigratedV1 = true;
+  savePrefs(prefs);
+}
+
+window.migrateUnifiedNotes = migrateUnifiedNotes;
 
 function getActualWorkTime(year, month, day, brigade, shift) {
   if (isWolne(shift)) return null;
@@ -972,10 +1067,7 @@ window.cleanupCustomScheduleMirrors = cleanupCustomScheduleMirrors;
 
    function countNonEmptyNotes() {
      if (!notes || typeof notes !== 'object') return 0;
-     return Object.keys(notes).filter((k) => {
-       const v = notes[k];
-       return v != null && String(v).trim() !== '';
-     }).length;
+     return Object.keys(notes).filter((k) => noteEntryHasContent(notes[k])).length;
    }
 
    function clearLocalPersonalData() {

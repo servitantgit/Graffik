@@ -175,11 +175,12 @@ function renderCalendar(direction) {
     }
 
     const noteKey = `${currentYear}-${currentMonth}-${d}-${selectedShift}`;
-    if (!isFactoryPaintingMode && !hidePrivate && notes[noteKey]) {
+    const dayNoteList = Array.isArray(notes[noteKey]) ? notes[noteKey] : [];
+    if (!isFactoryPaintingMode && !hidePrivate && dayNoteList.length > 0) {
       const nEl = document.createElement('div');
       nEl.className = 'day-note';
       nEl.textContent = '📝';
-      nEl.title = notes[noteKey];
+      nEl.title = dayNoteList.map((n) => n.text).join(' · ');
       cell.appendChild(nEl);
     }
 
@@ -287,7 +288,13 @@ function openOvertimeModal(day, shift, position, existing) {
     <b>${t('infoPosition')}</b> ${posArrow} ${posLabel}
   `;
 
-  document.getElementById('otNote').value = existing ? existing.note || '' : '';
+  document.getElementById('otNote').value = getDayNoteTextByTag(
+    currentYear,
+    currentMonth,
+    day,
+    selectedShift,
+    position === 'przed' ? 'before' : 'after'
+  );
   document.getElementById('otCustomHours').value = '';
 
   document.querySelectorAll('.ot-qbtn').forEach((b) => b.classList.remove('active'));
@@ -376,7 +383,15 @@ function saveOvertimeFromModal() {
   }
   const note = document.getElementById('otNote').value.trim();
   const { day, position } = otModalContext;
-  setOvertime(currentYear, currentMonth, day, selectedShift, position, { hours, note });
+  setOvertime(currentYear, currentMonth, day, selectedShift, position, { hours });
+  upsertDayNoteByTag(
+    currentYear,
+    currentMonth,
+    day,
+    selectedShift,
+    position === 'przed' ? 'before' : 'after',
+    note
+  );
   document.getElementById('otOverlay').classList.remove('show');
   showToast('success', t('otSaved', { h: hours }));
   refreshViews();
@@ -515,7 +530,6 @@ function renderInfo() {
     const yHolidays = buildHolidays(currentYear);
     const holidayName = yHolidays[currentMonth + '-' + selectedDay];
     const holidayInfo = holidayName ? ` <span style="color:#c0392b;">🎉 ${holidayName}</span>` : '';
-    const noteKey = `${currentYear}-${currentMonth}-${selectedDay}-${selectedShift}`;
     const onUrlop = hidePrivate
       ? false
       : isUrlop(currentYear, currentMonth, selectedDay, selectedShift);
@@ -563,9 +577,10 @@ function renderInfo() {
       } else if (isWolne(shiftCode)) {
         statusCard = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoFree') || 'Wolne'}</div><div class="value">—</div></div>`;
       } else {
-        const [sh, eh] = shiftHours[shiftCode];
-        const shiftTimeStr = `${String(sh).padStart(2, '0')}:00-${String(eh % 24).padStart(2, '0')}:00`;
-        statusCard = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoWorking')}</div><div class="value">${shiftEmoji[shiftCode]} ${shiftCode} (${shiftTimeStr})</div></div>`;
+        // Working day: shift code + hours are already visible on the
+        // selected calendar cell and in the legend below the calendar —
+        // repeating them here was pure duplication.
+        statusCard = '';
       }
 
       // Timeline (only for working non-vacation day)
@@ -695,51 +710,42 @@ function renderInfo() {
               <span class="day-action-icon">⏱➡</span>
               <span class="day-action-label">${t('dayActionOvertimeAfter')}</span>
             </button>
-
-            <button
-              type="button"
-              class="day-action-btn advanced-only"
-              data-day-action="note"
-              aria-label="${escapeHtml(t('dayActionNote'))}"
-            >
-              <span class="day-action-icon">📝</span>
-              <span class="day-action-label">${t('dayActionNote')}</span>
-            </button>
           </div>
         </div>`;
 
-      // Notes card: overtime notes remain attached to their OT records,
-      // while the editable field remains the independent day note.
-      const overtimeNoteRows = [
-        existingOtAntes && existingOtAntes.note
-          ? `<div class="overtime-note-row">
-              <strong>${t('otBefore')}</strong>
-              <span>${escapeHtml(existingOtAntes.note)}</span>
-            </div>`
-          : '',
-        existingOtDespu && existingOtDespu.note
-          ? `<div class="overtime-note-row">
-              <strong>${t('otAfter')}</strong>
-              <span>${escapeHtml(existingOtDespu.note)}</span>
-            </div>`
-          : '',
-      ]
-        .filter(Boolean)
+      // Unified notes: a shared list of free-form + overtime-tagged notes
+      // for this day/shift (replaces the old separate note + OT-note fields).
+      const dayNotes = getDayNotes(currentYear, currentMonth, selectedDay, selectedShift);
+      const noteTagIcon = { before: '⏱⬅', after: '⏱➡' };
+      const noteTagLabel = { before: t('otPositionBefore'), after: t('otPositionAfter') };
+      const noteRows = dayNotes
+        .map((n) => {
+          const icon = n.tag ? noteTagIcon[n.tag] || '📝' : '📝';
+          const tagPrefix = n.tag
+            ? `<strong>${escapeHtml(noteTagLabel[n.tag] || '')}:</strong> `
+            : '';
+          return `<div class="day-note-row" data-note-id="${escapeHtml(n.id)}">
+              <span class="day-note-icon">${icon}</span>
+              <span class="day-note-text">${tagPrefix}${escapeHtml(n.text)}</span>
+              <button
+                type="button"
+                class="day-note-remove"
+                data-remove-note="${escapeHtml(n.id)}"
+                aria-label="${escapeHtml(t('delete'))}"
+                title="${escapeHtml(t('delete'))}"
+              >✕</button>
+            </div>`;
+        })
         .join('');
 
       const noteCard = `
         <div class="info-card info-section-note" style="grid-column:1/-1;">
           <div class="label">${t('infoNote')}</div>
-          ${
-            overtimeNoteRows
-              ? `<div class="overtime-note-list">${overtimeNoteRows}</div>`
-              : ''
-          }
+          ${noteRows ? `<div class="day-note-list">${noteRows}</div>` : ''}
           <div class="value">
             <input
               class="note-input"
               id="noteInput"
-              value="${escapeHtml(notes[noteKey] || '')}"
               placeholder="${t('infoNotePlaceholder')}"
             >
           </div>
@@ -821,44 +827,37 @@ function renderInfo() {
         });
       }
 
-      const noteInput = panel.querySelector('#noteInput');
-      const noteButton = panel.querySelector('[data-day-action="note"]');
-
-      if (noteButton && noteInput) {
-        noteButton.addEventListener('click', () => {
-          noteInput.focus();
-        });
-      }
-
-      if (noteInput) {
-        let savedNoteValue = String(notes[noteKey] || '').trim();
-        let saveInProgress = false;
-
-        const commitNote = () => {
-          if (saveInProgress) return;
-          const noteValue = noteInput.value.trim();
-          if (noteValue === savedNoteValue) return;
-
-          saveInProgress = true;
-
-          if (noteValue) {
-            notes[noteKey] = noteValue;
-          } else {
-            delete notes[noteKey];
-          }
-
-          savedNoteValue = noteValue;
-          saveNotes(notes);
+      const noteRemoveButtons = panel.querySelectorAll('[data-remove-note]');
+      noteRemoveButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const noteId = btn.getAttribute('data-remove-note');
+          removeDayNote(currentYear, currentMonth, selectedDay, selectedShift, noteId);
           renderCalendar();
+          renderInfo();
+        });
+      });
+
+      const noteInput = panel.querySelector('#noteInput');
+      if (noteInput) {
+        let addInProgress = false;
+
+        const commitNewNote = () => {
+          if (addInProgress) return;
+          const noteValue = noteInput.value.trim();
+          if (!noteValue) return;
+
+          addInProgress = true;
+          addDayNote(currentYear, currentMonth, selectedDay, selectedShift, noteValue, null);
+          renderCalendar();
+          renderInfo();
           showToast('success', t('infoNoteSaved'));
 
           setTimeout(() => {
-            saveInProgress = false;
+            addInProgress = false;
           }, 100);
         };
 
-        noteInput.addEventListener('change', commitNote);
-        noteInput.addEventListener('blur', commitNote);
+        noteInput.addEventListener('blur', commitNewNote);
         noteInput.addEventListener('keydown', (event) => {
           if (event.key === 'Enter') {
             event.preventDefault();

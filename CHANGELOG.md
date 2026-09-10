@@ -1,3 +1,40 @@
+# Unreleased — Unified Day Notes + Duplicate-UI Cleanup
+
+## Added
+- **Unified per-day notes** — the three previously separate note stores
+  (free-form day note, overtime "przed" note, overtime "po" note) are now a
+  single `notes[key]` list. Each day can hold multiple notes: any number of
+  free-form entries plus (at most) one entry tagged `before` and one tagged
+  `after`, each shown with its own icon and a remove button. Adding a note
+  no longer overwrites the previous one — the input field stays empty after
+  each add so a second, third, etc. note can be added right away.
+- New pure module `js/personal/notes-tracking.js` (mirrors the
+  `sync-tracking.js` pattern) holding the list logic (add/remove/upsert-by-tag)
+  and the legacy-data migration transform — unit-tested in isolation from
+  the DOM/localStorage (`tests/notes-tracking.test.js`, 24 new tests).
+- One-shot migration `migrateUnifiedNotes()` converts old string notes and
+  old `overtimes[key].przed/po.note` fields into the new unified list
+  (flag: `prefs.notesUnifiedMigratedV1`).
+
+## Fixed
+- **Duplicate overtime icon on the dashboard "today" card** — showed
+  "⏱ ⏱ Nadgodziny: ..." because both the hardcoded template and the
+  `infoOvertime` translation itself carried the ⏱ icon.
+- **Duplicate shift info in the day panel** — the "Zmiana 🌅 R (06:00-14:00)"
+  card repeated information already visible on the selected calendar cell and
+  in the legend below the calendar. Removed for working days (vacation/free
+  cards, which show distinct info, are unchanged).
+- **Duplicate note button** — the day-action-grid "Note" button just focused
+  a field that's already visible directly below it. Removed.
+
+## Changed
+- `openOvertimeModal()` / `saveOvertimeFromModal()` now read/write the
+  overtime note through `getDayNoteTextByTag()` / `upsertDayNoteByTag()`
+  instead of an embedded `overtimes[key].przed/po.note` field.
+- `removeOvertime()` also clears the tagged note attached to the removed
+  overtime record.
+- Removed unused i18n keys `infoWorking`, `dayActionNote` (pl/en/uk).
+
 # Unreleased — Drive Sync Reliability Fixes
 
 ## Fixed

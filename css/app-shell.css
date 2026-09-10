@@ -1234,15 +1234,16 @@ body.compact-cells .info-section {
   color: inherit;
 }
 
-/* OT notes stay separate from the editable general day note. */
-.overtime-note-list {
+/* Unified per-day notes list (free-form + before/after overtime notes),
+   rendered inside the day info panel's note card. */
+.day-note-list {
   display: flex;
   flex-direction: column;
   gap: 7px;
   margin: 10px 0 12px;
 }
 
-.overtime-note-row {
+.day-note-row {
   display: flex;
   align-items: flex-start;
   gap: 8px;
@@ -1258,16 +1259,40 @@ body.compact-cells .info-section {
   text-align: left;
 }
 
-.overtime-note-row strong {
+.day-note-icon {
   flex: 0 0 auto;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.day-note-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.day-note-text strong {
   color: var(--text-header);
   font-size: 12px;
 }
 
-.overtime-note-row span {
-  min-width: 0;
-  overflow-wrap: anywhere;
+.day-note-remove {
+  flex: 0 0 auto;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
 }
+
+.day-note-remove:hover {
+  color: var(--text-main);
+  background: var(--bg-hover);
+}
+
 .privacy-disable-btn {
   padding: 8px 16px;
   border: 1px solid var(--border-cell);

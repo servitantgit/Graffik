@@ -1,0 +1,254 @@
+/* ================================================================
+   Tests for js/personal/notes-tracking.js
+
+   Covers the pure, dependency-free logic behind the unified per-day
+   notes list: adding/removing entries, upserting a tagged (before/after
+   overtime) entry, and the one-shot legacy-data migration transform.
+   ================================================================ */
+
+'use strict';
+
+const test = require('node:test');
+const assert = require('node:assert');
+
+const {
+  noteEntryHasContent,
+  addNoteEntry,
+  removeNoteEntry,
+  upsertNoteByTag,
+  getNoteTextByTag,
+  computeUnifiedNotesMigration,
+} = require('../js/personal/notes-tracking.js');
+
+// ============================================================
+// noteEntryHasContent
+// ============================================================
+
+test('noteEntryHasContent: legacy non-empty string => true', () => {
+  assert.strictEqual(noteEntryHasContent('hello'), true);
+});
+
+test('noteEntryHasContent: legacy whitespace-only string => false', () => {
+  assert.strictEqual(noteEntryHasContent('   '), false);
+});
+
+test('noteEntryHasContent: null/undefined => false', () => {
+  assert.strictEqual(noteEntryHasContent(null), false);
+  assert.strictEqual(noteEntryHasContent(undefined), false);
+});
+
+test('noteEntryHasContent: array with at least one non-empty entry => true', () => {
+  assert.strictEqual(noteEntryHasContent([{ id: '1', tag: null, text: '  ' }, { id: '2', tag: 'before', text: 'x' }]), true);
+});
+
+test('noteEntryHasContent: array of only empty/whitespace entries => false', () => {
+  assert.strictEqual(noteEntryHasContent([{ id: '1', tag: null, text: '' }, { id: '2', tag: null, text: '   ' }]), false);
+});
+
+test('noteEntryHasContent: empty array => false', () => {
+  assert.strictEqual(noteEntryHasContent([]), false);
+});
+
+// ============================================================
+// addNoteEntry
+// ============================================================
+
+test('addNoteEntry: appends a new entry with a generated id and given tag', () => {
+  const { list, id } = addNoteEntry([], 'first note', null);
+  assert.strictEqual(list.length, 1);
+  assert.strictEqual(list[0].text, 'first note');
+  assert.strictEqual(list[0].tag, null);
+  assert.strictEqual(typeof id, 'string');
+  assert.strictEqual(list[0].id, id);
+});
+
+test('addNoteEntry: does not mutate the input array (returns a new one)', () => {
+  const original = [{ id: 'a', tag: null, text: 'existing' }];
+  const { list } = addNoteEntry(original, 'second', null);
+  assert.strictEqual(original.length, 1);
+  assert.strictEqual(list.length, 2);
+});
+
+test('addNoteEntry: multiple additions accumulate (several notes per day)', () => {
+  let { list } = addNoteEntry([], 'one', null);
+  ({ list } = addNoteEntry(list, 'two', null));
+  ({ list } = addNoteEntry(list, 'three', 'before'));
+  assert.strictEqual(list.length, 3);
+  assert.deepStrictEqual(list.map((n) => n.text), ['one', 'two', 'three']);
+});
+
+test('addNoteEntry: empty/whitespace text is a no-op, returns null id', () => {
+  const { list, id } = addNoteEntry([{ id: 'a', tag: null, text: 'x' }], '   ', null);
+  assert.strictEqual(id, null);
+  assert.strictEqual(list.length, 1);
+});
+
+test('addNoteEntry: trims surrounding whitespace from text', () => {
+  const { list } = addNoteEntry([], '  padded  ', null);
+  assert.strictEqual(list[0].text, 'padded');
+});
+
+// ============================================================
+// removeNoteEntry
+// ============================================================
+
+test('removeNoteEntry: removes only the matching id', () => {
+  const list = [
+    { id: 'a', tag: null, text: 'keep' },
+    { id: 'b', tag: null, text: 'remove me' },
+  ];
+  const next = removeNoteEntry(list, 'b');
+  assert.strictEqual(next.length, 1);
+  assert.strictEqual(next[0].id, 'a');
+});
+
+test('removeNoteEntry: unknown id is a no-op (same length)', () => {
+  const list = [{ id: 'a', tag: null, text: 'x' }];
+  const next = removeNoteEntry(list, 'does-not-exist');
+  assert.strictEqual(next.length, 1);
+});
+
+test('removeNoteEntry: non-array input returns empty array', () => {
+  assert.deepStrictEqual(removeNoteEntry(undefined, 'a'), []);
+  assert.deepStrictEqual(removeNoteEntry('not-an-array', 'a'), []);
+});
+
+// ============================================================
+// upsertNoteByTag — overtime "before"/"after" notes as a singleton per tag
+// ============================================================
+
+test('upsertNoteByTag: adds a new tagged entry when none exists', () => {
+  const next = upsertNoteByTag([], 'before', 'ran late setting up');
+  assert.strictEqual(next.length, 1);
+  assert.strictEqual(next[0].tag, 'before');
+  assert.strictEqual(next[0].text, 'ran late setting up');
+});
+
+test('upsertNoteByTag: updates the existing tagged entry in place (no duplicate)', () => {
+  const list = [{ id: 'ot1', tag: 'before', text: 'first version' }];
+  const next = upsertNoteByTag(list, 'before', 'edited version');
+  assert.strictEqual(next.length, 1);
+  assert.strictEqual(next[0].id, 'ot1'); // same entry, id preserved
+  assert.strictEqual(next[0].text, 'edited version');
+});
+
+test('upsertNoteByTag: does not touch entries with a different tag', () => {
+  const list = [
+    { id: 'ot1', tag: 'before', text: 'before text' },
+    { id: 'plain1', tag: null, text: 'free note' },
+  ];
+  const next = upsertNoteByTag(list, 'after', 'after text');
+  assert.strictEqual(next.length, 3);
+  assert.ok(next.some((n) => n.tag === 'before' && n.text === 'before text'));
+  assert.ok(next.some((n) => n.tag === null && n.text === 'free note'));
+  assert.ok(next.some((n) => n.tag === 'after' && n.text === 'after text'));
+});
+
+test('upsertNoteByTag: empty text removes the existing tagged entry', () => {
+  const list = [
+    { id: 'ot1', tag: 'before', text: 'something' },
+    { id: 'plain1', tag: null, text: 'keep me' },
+  ];
+  const next = upsertNoteByTag(list, 'before', '');
+  assert.strictEqual(next.length, 1);
+  assert.strictEqual(next[0].id, 'plain1');
+});
+
+test('upsertNoteByTag: empty text with no matching entry is a no-op', () => {
+  const list = [{ id: 'plain1', tag: null, text: 'keep me' }];
+  const next = upsertNoteByTag(list, 'after', '');
+  assert.strictEqual(next.length, 1);
+});
+
+// ============================================================
+// getNoteTextByTag
+// ============================================================
+
+test('getNoteTextByTag: returns text of the matching tag', () => {
+  const list = [{ id: 'a', tag: 'after', text: 'left early' }];
+  assert.strictEqual(getNoteTextByTag(list, 'after'), 'left early');
+});
+
+test('getNoteTextByTag: returns empty string when no match', () => {
+  assert.strictEqual(getNoteTextByTag([{ id: 'a', tag: 'before', text: 'x' }], 'after'), '');
+});
+
+test('getNoteTextByTag: returns empty string for non-array input', () => {
+  assert.strictEqual(getNoteTextByTag(undefined, 'before'), '');
+});
+
+// ============================================================
+// computeUnifiedNotesMigration — legacy data → unified array format
+// ============================================================
+
+test('computeUnifiedNotesMigration: converts a legacy string note to a tag:null entry', () => {
+  const result = computeUnifiedNotesMigration({ '2026-1-15-A': 'legacy note text' }, {});
+  const entries = result.notes['2026-1-15-A'];
+  assert.strictEqual(entries.length, 1);
+  assert.strictEqual(entries[0].tag, null);
+  assert.strictEqual(entries[0].text, 'legacy note text');
+});
+
+test('computeUnifiedNotesMigration: drops legacy empty/whitespace string notes', () => {
+  const result = computeUnifiedNotesMigration({ '2026-1-15-A': '   ' }, {});
+  assert.strictEqual(result.notes['2026-1-15-A'], undefined);
+});
+
+test('computeUnifiedNotesMigration: leaves already-migrated array notes untouched', () => {
+  const existing = [{ id: 'x1', tag: null, text: 'already unified' }];
+  const result = computeUnifiedNotesMigration({ '2026-1-15-A': existing }, {});
+  assert.deepStrictEqual(result.notes['2026-1-15-A'], existing);
+});
+
+test('computeUnifiedNotesMigration: moves overtime "przed" note into a tag:before entry and strips it from overtimes', () => {
+  const overtimes = { '2026-1-15-A': { przed: { hours: 2, note: 'started early' }, po: null } };
+  const result = computeUnifiedNotesMigration({}, overtimes);
+  const entries = result.notes['2026-1-15-A'];
+  assert.strictEqual(entries.length, 1);
+  assert.strictEqual(entries[0].tag, 'before');
+  assert.strictEqual(entries[0].text, 'started early');
+  assert.strictEqual(result.overtimes['2026-1-15-A'].przed.hours, 2);
+  assert.strictEqual('note' in result.overtimes['2026-1-15-A'].przed, false);
+});
+
+test('computeUnifiedNotesMigration: moves overtime "po" note into a tag:after entry', () => {
+  const overtimes = { '2026-1-15-A': { przed: null, po: { hours: 1.5, note: 'stayed late' } } };
+  const result = computeUnifiedNotesMigration({}, overtimes);
+  const entries = result.notes['2026-1-15-A'];
+  assert.strictEqual(entries.length, 1);
+  assert.strictEqual(entries[0].tag, 'after');
+  assert.strictEqual(entries[0].text, 'stayed late');
+});
+
+test('computeUnifiedNotesMigration: merges a legacy day note with przed/po notes on the same day into one array', () => {
+  const rawNotes = { '2026-1-15-A': 'free note' };
+  const overtimes = {
+    '2026-1-15-A': {
+      przed: { hours: 1, note: 'before note' },
+      po: { hours: 2, note: 'after note' },
+    },
+  };
+  const result = computeUnifiedNotesMigration(rawNotes, overtimes);
+  const entries = result.notes['2026-1-15-A'];
+  assert.strictEqual(entries.length, 3);
+  const tags = entries.map((n) => n.tag).sort();
+  assert.deepStrictEqual(tags, ['after', 'before', null]);
+});
+
+test('computeUnifiedNotesMigration: overtime entries without a note are left as-is (only .note stripped if present)', () => {
+  const overtimes = { '2026-1-15-A': { przed: { hours: 3 }, po: null } };
+  const result = computeUnifiedNotesMigration({}, overtimes);
+  assert.strictEqual(result.overtimes['2026-1-15-A'].przed.hours, 3);
+  assert.strictEqual(result.notes['2026-1-15-A'], undefined);
+});
+
+test('computeUnifiedNotesMigration: handles empty/undefined inputs gracefully', () => {
+  const result = computeUnifiedNotesMigration(undefined, undefined);
+  assert.deepStrictEqual(result.notes, {});
+  assert.deepStrictEqual(result.overtimes, {});
+});
+
+test('computeUnifiedNotesMigration: non-object overtime record is passed through unchanged', () => {
+  const result = computeUnifiedNotesMigration({}, { '2026-1-15-A': null });
+  assert.strictEqual(result.overtimes['2026-1-15-A'], null);
+});

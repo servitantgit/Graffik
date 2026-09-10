@@ -392,6 +392,15 @@ if (typeof cleanupCustomScheduleMirrors === 'function') {
   }
 }
 
+/* One-shot migration: unify day notes + overtime notes into one list (v1) */
+if (typeof migrateUnifiedNotes === 'function') {
+  try {
+    migrateUnifiedNotes();
+  } catch (e) {
+    console.warn('[main] migrateUnifiedNotes failed:', e);
+  }
+}
+
 if (typeof updateAppShellUI === 'function') updateAppShellUI();
 refreshViews();
 

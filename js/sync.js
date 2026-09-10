@@ -1021,6 +1021,7 @@ function countSyncPayloadStats(data) {
   if (data.notes && typeof data.notes === 'object') {
     notes = Object.keys(data.notes).filter((k) => {
       const v = data.notes[k];
+      if (Array.isArray(v)) return v.some((n) => n && String(n.text || '').trim());
       return v != null && String(v).trim() !== '';
     }).length;
   }
