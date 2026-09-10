@@ -3,12 +3,13 @@
    Test runner entry point.
 
    Usage:
-     node --test "tests/*.test.js"
-     node --test --test-reporter=spec "tests/*.test.js"
-     node tests/run.js  (fallback if node:test not available)
+     node tests/run.js                            (works on Node 18+)
+     node --test "tests/*.test.js"                (Node 21+ only)
+     node --test tests/overtime-logic.test.js     (single file)
 
-   This file exists as a convenience — actual test discovery is done
-   by node:test CLI. Manual runner below is fallback for older Node.
+   This script expands tests/*.test.js itself and hands explicit paths to
+   `node --test`, because Node's own glob expansion in --test arguments only
+   exists since Node 21 and the directory form breaks on Windows.
    ================================================================ */
 
 'use strict';
@@ -29,25 +30,45 @@ console.log('\x1b[36m═══════════════════�
 console.log('  Node: ' + process.version);
 console.log('');
 console.log('  Preferred usage:');
-console.log('    \x1b[33mnode --test "tests/*.test.js"\x1b[0m');
-console.log('    \x1b[33mnode --test --test-reporter=spec "tests/*.test.js"\x1b[0m');
+console.log('    \x1b[33mnode tests/run.js\x1b[0m');
+console.log('    \x1b[33mnode --test "tests/*.test.js"\x1b[0m \x1b[2m(Node 21+ only)\x1b[0m');
 console.log('');
 console.log('  Running all tests via child_process...');
 console.log('');
 
 const { spawnSync } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 
 // NOTE: Passing the tests/ directory directly to --test is unreliable on
-// Windows / Node 22+ (Node tries to load the directory as a module and
-// fails with MODULE_NOT_FOUND). Use a glob pattern instead — Node expands
-// glob patterns in --test positional args since v21.
-const testGlob = path.join(__dirname, '*.test.js').replace(/\\/g, '/');
+// Windows / Node 22+ (Node tries to load the directory as a module and fails
+// with MODULE_NOT_FOUND), while a glob pattern only works on Node 21+ — on
+// Node 18/20 it fails with "Could not find 'tests/*.test.js'".
+// Expanding the file list ourselves works identically on every Node 18+.
+const testFiles = fs
+  .readdirSync(__dirname)
+  .filter((f) => f.endsWith('.test.js'))
+  .sort()
+  .map((f) => path.join(__dirname, f).replace(/\\/g, '/'));
+
+if (testFiles.length === 0) {
+  console.error('\x1b[31m✖ No *.test.js files found in ' + __dirname + '\x1b[0m');
+  process.exit(1);
+}
+
+console.log('  Test files: ' + testFiles.length);
+console.log('');
 
 const result = spawnSync(
   process.execPath,
-  ['--test', '--test-reporter=spec', testGlob],
+  ['--test', '--test-reporter=spec', ...testFiles],
   { stdio: 'inherit' }
 );
 
-process.exit(result.status || 0);
+if (result.error) {
+  console.error('\x1b[31m✖ Could not start the test runner: ' + result.error.message + '\x1b[0m');
+  process.exit(1);
+}
+
+// Preserve the real exit status, including termination by signal.
+process.exit(result.status === null ? 1 : result.status);

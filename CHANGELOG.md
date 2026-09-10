@@ -1,3 +1,40 @@
+# Unreleased — Offline/Tooling Fixes
+
+## Fixed
+- **`js/personal/notes-tracking.js` was missing from the service worker
+  precache.** `index.html` loads 27 scripts, `sw.js` `ASSETS` listed 26.
+  Because `activate` deletes every older cache, the file was absent from the
+  cache after each deploy until an online fetch succeeded — so a first launch
+  in offline mode broke day notes. Added to `ASSETS` (27/27 now match).
+- **One bad URL silently blocked every service worker update.**
+  `cache.addAll(ASSETS)` is all-or-nothing: a single 404 or flaky request
+  rejected install, the new worker never activated, and the user stayed on
+  the old build with no error anywhere. The app shell (`./`, `./index.html`)
+  is still cached strictly; everything else is cached best-effort via
+  `Promise.allSettled` + `cache.add`, with failures logged as
+  `[SW] not precached (...)`.
+- **`node tests/run.js` failed on Node 18/20** with
+  `Could not find 'tests/*.test.js'` — passing a glob in `--test` positional
+  arguments only works from Node 21. The runner now expands `tests/*.test.js`
+  itself with `fs.readdirSync`, passes explicit paths, reports a spawn error
+  instead of masking it, and forwards the real exit code (129/129 pass on
+  Node 20). `tests/README.md` no longer recommends the version-dependent form.
+- **`tools/i18n-audit.js` reported a non-existent missing key `label`.**
+  The literal-usage regexes matched the prefix in `t('label' + factoryPaintMode)`
+  (`js/admin-center.js:167`), so a dynamic prefix was also counted as a static
+  key. They now require the string to be closed by `,` or `)`. The audit
+  reports "No missing keys" and no longer exits with "Critical issues found".
+  Unused-key output stays informational only — keys reached indirectly
+  (`t(key)` from variables, `SECTION_TITLES` maps, the `sync*Ago` family) are
+  invisible to static analysis, so nothing is deleted on its word.
+
+## Changed
+- `sw.js` fetch-handler comment said "network first" while the code is
+  cache-first with background revalidation — comment corrected.
+- `manifest.json` now declares the 8 existing `screenshots/*.png`
+  (1220×2576, `form_factor: "narrow"`), which install prompts on Android and
+  desktop Chrome use for a richer install card.
+
 # Unreleased — Fewer Google Login Prompts
 
 ## Fixed

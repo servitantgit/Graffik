@@ -94,20 +94,24 @@ function collectFiles(dir, extensions) {
  * Extract all key usages from a file.
  * Detects: t('key'), t("key"), data-i18n="key", data-i18n-title="key",
  *          data-i18n-placeholder="key"
+ *
+ * The literal patterns require the string to be closed by ',' or ')' so that a
+ * concatenated call like t('label' + shift) is NOT reported as a static usage
+ * of the key "label" (that case is handled by extractDynamicPrefixes()).
  */
 function extractKeyUsages(filePath) {
   const content = fs.readFileSync(filePath, 'utf8');
   const keys = new Set();
 
   // t('key') or t("key") — with optional params
-  const tCallRegex = /\bt\(\s*['"`]([a-zA-Z_][a-zA-Z0-9_]*)['"`]/g;
+  const tCallRegex = /\bt\(\s*['"`]([a-zA-Z_][a-zA-Z0-9_]*)['"`]\s*[,)]/g;
   let match;
   while ((match = tCallRegex.exec(content)) !== null) {
     keys.add(match[1]);
   }
 
   // tr('key') helper used in settings.js
-  const trCallRegex = /\btr\(\s*['"`]([a-zA-Z_][a-zA-Z0-9_]*)['"`]/g;
+  const trCallRegex = /\btr\(\s*['"`]([a-zA-Z_][a-zA-Z0-9_]*)['"`]\s*[,)]/g;
   while ((match = trCallRegex.exec(content)) !== null) {
     keys.add(match[1]);
   }
@@ -120,7 +124,7 @@ function extractKeyUsages(filePath) {
 
   // translate('key', ...) — helper used in js/schedules/_core.js
   // Signature: translate(key, fallback) with i18n resolution
-  const translateCallRegex = /\btranslate\(\s*['"`]([a-zA-Z_][a-zA-Z0-9_]*)['"`]/g;
+  const translateCallRegex = /\btranslate\(\s*['"`]([a-zA-Z_][a-zA-Z0-9_]*)['"`]\s*[,)]/g;
   while ((match = translateCallRegex.exec(content)) !== null) {
     keys.add(match[1]);
   }

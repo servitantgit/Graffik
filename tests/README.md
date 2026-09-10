@@ -3,34 +3,37 @@
 Zero-dependency unit tests using Node.js built-in `node:test`.
 
 **Requirements:**
-- Node 20+ (recommended for local development)
-- Node 22+ (used in CI, most reliable)
-- Node 18 works but has slower test discovery
+- Node 18+ (any version; the runner script expands the file list itself)
+- Node 22 is used in CI
 
 ## Run all tests
 
 ```bash
-# Recommended (cross-platform, works everywhere)
-node --test "tests/*.test.js"
-
-# Alternative (may fail on Windows/Node 22+, see below)
-node --test tests/
+# Recommended — works on every Node 18+ and on Windows
+node tests/run.js
 ```
 
-## Windows/Node 22+ compatibility
-
-The directory form `node --test tests/` may fail on Windows with Node 22+
-with error `MODULE_NOT_FOUND: Cannot find module 'tests\'`. Node treats
-the trailing separator as a module path instead of a directory glob.
-
-Always use glob form on Windows:
+## Why not the glob or directory form
 
 ```bash
-node --test "tests/*.test.js"
+node --test "tests/*.test.js"   # Node 21+ ONLY
+node --test tests/              # fails on Windows with Node 22+
 ```
 
-Linux/macOS work with both forms. CI (GitHub Actions on Ubuntu + Node 22)
-uses glob form for consistency.
+- The **quoted glob** is expanded by Node itself, and that support landed in
+  Node 21. On Node 18/20 it fails with `Could not find 'tests/*.test.js'`
+  and no tests run at all.
+- The **directory form** fails on Windows with
+  `MODULE_NOT_FOUND: Cannot find module 'tests\'`, because Node treats the
+  trailing separator as a module path.
+
+`node tests/run.js` avoids both problems: it reads `tests/*.test.js` with
+`fs.readdirSync` and passes explicit file paths to `node --test`, then
+forwards the real exit code.
+
+CI (GitHub Actions, Ubuntu + Node 22) passes the unquoted pattern
+`tests/*.test.js`, which the shell expands before Node sees it — that is why
+CI works regardless of Node's own glob support.
 
 ## Run a specific test file
 

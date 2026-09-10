@@ -23,6 +23,7 @@ const ASSETS = [
   './js/schedules/gillette/metadata.js',
   './js/schedules/gillette/2026.js',
   './js/personal/sync-tracking.js',
+  './js/personal/notes-tracking.js',
   './js/overtime-logic.js',
   './js/core.js',
   './js/ui.js',
@@ -49,12 +50,29 @@ const ASSETS = [
   './icons/icon-512-maskable.png',
 ];
 
-/* === INSTALL: cache'ujemy wszystkie zasoby === */
+/* === INSTALL: cache'ujemy wszystkie zasoby ===
+   cache.addAll() is all-or-nothing: a single 404 or flaky request rejects the
+   whole install, so the new service worker never activates and the user stays
+   on the old build with no visible error. We therefore cache the app shell
+   (index.html + './') strictly and everything else best-effort, logging what
+   failed instead of aborting the update. */
+const CRITICAL_ASSETS = ['./', './index.html'];
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => cache.addAll(ASSETS))
+      .then(async (cache) => {
+        await cache.addAll(CRITICAL_ASSETS);
+        const rest = ASSETS.filter((a) => !CRITICAL_ASSETS.includes(a));
+        const results = await Promise.allSettled(rest.map((a) => cache.add(a)));
+        const failed = results
+          .map((r, i) => (r.status === 'rejected' ? rest[i] : null))
+          .filter(Boolean);
+        if (failed.length) {
+          console.warn('[SW] not precached (will be fetched on demand):', failed);
+        }
+      })
       .then(() => self.skipWaiting())
   );
 });
@@ -71,7 +89,10 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-/* === FETCH: network first, then cache (stale-while-revalidate) === */
+/* === FETCH: cache first, revalidate in background (stale-while-revalidate) ===
+   A cached response is returned immediately (fast, offline-safe) while a fresh
+   copy is fetched and written to the cache for the NEXT load. Network is only
+   awaited when nothing is cached yet. */
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
