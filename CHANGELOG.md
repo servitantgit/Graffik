@@ -1,3 +1,44 @@
+# Unreleased — Fewer Google Login Prompts
+
+## Fixed
+- **Google login screen appeared far too often.** Root cause: `openid email`
+  was added to `DRIVE_SCOPE` in v3.6.2 (admin identification). Widening the
+  scope invalidates the previously granted OAuth consent, so every silent
+  (`prompt:''`) token refresh failed and Google fell back to a visible login
+  and a second "app wants your profile" screen.
+  - `DRIVE_SCOPE` is back to the narrow `drive.file` + `drive.appdata`.
+    `openid email` moved to a separate `IDENTITY_SCOPE`, appended by the new
+    `getRequestedScope()` **only until the e-mail has been cached once** in
+    `grafik_drive_user_email` (still consumed unchanged by `js/admin.js`).
+    Afterwards every request uses the narrow scope, which the existing wider
+    grant already covers — so silent refresh works again.
+  - `include_granted_scopes: true` on the token client, and scope is now set
+    per `requestAccessToken()` call instead of being frozen at init.
+  - `fetchDriveUserEmail()` returns early when the e-mail is already known and
+    gives up after 3 failed attempts (`grafik_drive_email_tries`), so a broken
+    `userinfo` call can no longer re-trigger consent on every login.
+- **User actions opened a login window instead of refreshing.**
+  `ensureDriveToken(true)` (upload / download / sync modal) now attempts a
+  silent refresh first and shows Google UI only if that genuinely fails.
+- **A single 401 dropped the session.** `driveFetch()` now tries one silent
+  refresh and replays the request before flagging the state as stale.
+- **Session marker was too easy to lose.** `hadDriveSession()` also checks a
+  1-year `grafik_drive_session` cookie, the stored granted scope and the Drive
+  file id; `markDriveSession()` requests `navigator.storage.persist()` so iOS
+  Safari's ~7-day storage eviction no longer forces a full interactive login.
+
+## Added
+- `hasGrantedDriveScopes()` — checks the granted scope string (via
+  `google.accounts.oauth2.hasGrantedAllScopes`, with a plain-string fallback)
+  and is persisted as `grafik_drive_token_scope` from Google's `resp.scope`.
+
+## Notes
+- Not fixable in code: an OAuth client with publishing status **"Testing"**
+  has its grants force-expired by Google every 7 days — switch the project to
+  "In production" in Google Cloud Console. Eliminating the ~1h token lifetime
+  entirely would require authorization code flow with a refresh token, i.e. a
+  small backend, which a static GitHub Pages deployment cannot provide.
+
 # Unreleased — Unified Day Notes + Duplicate-UI Cleanup
 
 ## Added (follow-up)

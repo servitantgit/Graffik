@@ -6,20 +6,38 @@
 const DRIVE_CLIENT_ID_KEY = 'grafik_drive_client_id';
 const DRIVE_FILE_NAME = 'grafik-gillette-data.json';
 const DRIVE_MIME = 'application/json';
+/**
+ * Narrow, stable scope used for every token request. Kept deliberately free of
+ * identity scopes: adding a scope invalidates the existing Google grant, which
+ * turns every silent (prompt:'') refresh into a visible login screen.
+ */
 const DRIVE_SCOPE =
-  'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.appdata openid email';
+  'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.appdata';
+/**
+ * Identity scope is appended ONLY until the user e-mail has been learned once
+ * (needed by js/admin.js). After it is cached, token requests go back to the
+ * narrow DRIVE_SCOPE and the already-granted superset keeps silent refresh
+ * working — so the "app wants your profile" screen appears at most once.
+ */
+const IDENTITY_SCOPE = 'openid email';
+const DRIVE_TOKEN_SCOPE_KEY = 'grafik_drive_token_scope';
+const DRIVE_EMAIL_TRIES_KEY = 'grafik_drive_email_tries';
+const DRIVE_EMAIL_MAX_TRIES = 3;
 
 let gDriveTokenClient = null;
 let gDriveToken = localStorage.getItem('grafik_drive_token') || null;
 let gDriveTokenExpiry = parseInt(localStorage.getItem('grafik_drive_token_expiry') || '0', 10);
 let gDriveFileId = localStorage.getItem('grafik_drive_file_id') || null;
 let driveUserEmail = localStorage.getItem('grafik_drive_user_email') || null;
+/** Scope string Google actually granted with the last token (persisted). */
+let gDriveGrantedScope = localStorage.getItem(DRIVE_TOKEN_SCOPE_KEY) || '';
 const DEFAULT_CLIENT_ID =
   '384517397558-agfoqvv4pv5nbkejhc9i7hbg86qs6her.apps.googleusercontent.com';
 let gDriveClientId = localStorage.getItem(DRIVE_CLIENT_ID_KEY) || DEFAULT_CLIENT_ID;
 
 /* === POMOCNICZE === */
 const DRIVE_SESSION_KEY = 'grafik_drive_had_session';
+const DRIVE_SESSION_COOKIE = 'grafik_drive_session';
 const DRIVE_REMOTE_MT_KEY = 'grafik_drive_remote_mtime';
 const ICON_GOOGLE_G = '<svg class="mi-svg mi-google" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>';
 const ICON_DRIVE = '<svg class="mi-svg mi-drive" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#1FA463" d="M8.5 3.5h7L22 15h-7z"/><path fill="#FFBA00" d="M2 15l3.5 6h13L15 15z"/><path fill="#4285F4" d="M8.5 3.5L2 15h7l6.5-11.5z"/></svg>';
@@ -35,12 +53,88 @@ function isDriveTokenValid() {
   return !!(gDriveToken && Date.now() < gDriveTokenExpiry - 60000);
 }
 
-/** User had a Drive session before (even if access token expired). */
+/** True when the e-mail is still unknown and worth asking Google for. */
+function needIdentityScope() {
+  if (driveUserEmail) return false;
+  const tries = parseInt(localStorage.getItem(DRIVE_EMAIL_TRIES_KEY) || '0', 10);
+  return !(tries >= DRIVE_EMAIL_MAX_TRIES);
+}
+
+/** Scope to request right now — narrow unless the e-mail is still missing. */
+function getRequestedScope() {
+  return needIdentityScope() ? DRIVE_SCOPE + ' ' + IDENTITY_SCOPE : DRIVE_SCOPE;
+}
+
+/**
+ * Whether Google already granted the Drive scopes we need. Lets us attempt a
+ * silent refresh (and skip the consent popup) instead of assuming the worst.
+ */
+function hasGrantedDriveScopes() {
+  if (!gDriveGrantedScope) return false;
+  const wanted = DRIVE_SCOPE.split(' ').filter(Boolean);
+  try {
+    if (
+      typeof google !== 'undefined' &&
+      google.accounts &&
+      google.accounts.oauth2 &&
+      typeof google.accounts.oauth2.hasGrantedAllScopes === 'function'
+    ) {
+      return google.accounts.oauth2.hasGrantedAllScopes(
+        { scope: gDriveGrantedScope },
+        ...wanted
+      );
+    }
+  } catch (_) {
+    /* fall through to the string check below */
+  }
+  const granted = gDriveGrantedScope.split(' ').filter(Boolean);
+  return wanted.every((s) => granted.includes(s));
+}
+
+/** Reads the long-lived session marker cookie (survives localStorage purges). */
+function readDriveSessionCookie() {
+  try {
+    return (document.cookie || '')
+      .split(';')
+      .some((c) => c.trim().startsWith(DRIVE_SESSION_COOKIE + '=1'));
+  } catch (_) {
+    return false;
+  }
+}
+
+/**
+ * Asks the browser to keep our storage from being evicted. Without this,
+ * iOS Safari drops localStorage for a site unused for ~7 days, which wipes the
+ * session marker and makes the app fall back to a full interactive login.
+ */
+function requestPersistentDriveStorage() {
+  try {
+    if (navigator.storage && navigator.storage.persist && navigator.storage.persisted) {
+      navigator.storage
+        .persisted()
+        .then((already) => {
+          if (!already) navigator.storage.persist().catch(() => {});
+        })
+        .catch(() => {});
+    }
+  } catch (_) {
+    /* not supported — nothing to do */
+  }
+}
+
+/**
+ * User had a Drive session before (even if access token expired). Deliberately
+ * checks several independent traces, so losing one storage key does not force
+ * a fresh login.
+ */
 function hadDriveSession() {
   return (
     localStorage.getItem(DRIVE_SESSION_KEY) === '1' ||
+    readDriveSessionCookie() ||
     !!driveUserEmail ||
-    !!localStorage.getItem('grafik_drive_token')
+    !!localStorage.getItem('grafik_drive_token') ||
+    !!gDriveGrantedScope ||
+    !!localStorage.getItem('grafik_drive_file_id')
   );
 }
 
@@ -54,10 +148,18 @@ function isDriveLoggedIn() {
 
 function markDriveSession() {
   localStorage.setItem(DRIVE_SESSION_KEY, '1');
+  try {
+    document.cookie =
+      DRIVE_SESSION_COOKIE + '=1; path=/; max-age=31536000; SameSite=Lax';
+  } catch (_) {}
+  requestPersistentDriveStorage();
 }
 
 function clearDriveSessionFlag() {
   localStorage.removeItem(DRIVE_SESSION_KEY);
+  try {
+    document.cookie = DRIVE_SESSION_COOKIE + '=; path=/; max-age=0; SameSite=Lax';
+  } catch (_) {}
 }
 
 function getStoredRemoteMtime() {
@@ -218,12 +320,16 @@ function refreshAfterDriveAuth() {
   }
 }
 
-function persistDriveToken(accessToken, expiresInSec) {
+function persistDriveToken(accessToken, expiresInSec, grantedScope) {
   gDriveToken = accessToken;
   const sec = Number(expiresInSec) > 0 ? Number(expiresInSec) : 3600;
   gDriveTokenExpiry = Date.now() + sec * 1000;
   localStorage.setItem('grafik_drive_token', gDriveToken);
   localStorage.setItem('grafik_drive_token_expiry', String(gDriveTokenExpiry));
+  if (grantedScope) {
+    gDriveGrantedScope = String(grantedScope);
+    localStorage.setItem(DRIVE_TOKEN_SCOPE_KEY, gDriveGrantedScope);
+  }
   markDriveSession();
   scheduleDriveTokenRefresh();
 }
@@ -259,22 +365,30 @@ function scheduleDriveTokenRefresh() {
  * Called after a successful login.
  */
 async function fetchDriveUserEmail() {
+  if (driveUserEmail) return driveUserEmail; // asked once, cached forever
   if (!gDriveToken) {
     console.warn('[SYNC] fetchDriveUserEmail: no token');
     return null;
   }
+  if (!needIdentityScope()) return null; // gave up after repeated failures
+  const bumpTries = () => {
+    const tries = parseInt(localStorage.getItem(DRIVE_EMAIL_TRIES_KEY) || '0', 10) + 1;
+    localStorage.setItem(DRIVE_EMAIL_TRIES_KEY, String(tries));
+  };
   try {
     const resp = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
       headers: { Authorization: 'Bearer ' + gDriveToken },
     });
     if (!resp.ok) {
       console.warn('[SYNC] fetchDriveUserEmail failed:', resp.status);
+      bumpTries();
       return null;
     }
     const data = await resp.json();
     if (data && data.email) {
       driveUserEmail = data.email.toLowerCase();
       localStorage.setItem('grafik_drive_user_email', driveUserEmail);
+      localStorage.removeItem(DRIVE_EMAIL_TRIES_KEY);
       if (typeof updateAdminUI === 'function') {
         updateAdminUI();
       }
@@ -282,7 +396,10 @@ async function fetchDriveUserEmail() {
     }
   } catch (e) {
     console.error('[SYNC] fetchDriveUserEmail error:', e);
+    bumpTries();
+    return null;
   }
+  bumpTries();
   return null;
 }
 
@@ -304,10 +421,14 @@ function initGDriveTokenClient() {
     // prompt is set per requestAccessToken call ('' = silent, consent = interactive)
     gDriveTokenClient = google.accounts.oauth2.initTokenClient({
       client_id: gDriveClientId,
-      scope: DRIVE_SCOPE,
+      // Narrow by default; getRequestedScope() widens it only for the very
+      // first login (until the e-mail is cached). include_granted_scopes keeps
+      // previously granted scopes attached instead of replacing the grant.
+      scope: getRequestedScope(),
+      include_granted_scopes: true,
       callback: (resp) => {
         if (resp && resp.access_token) {
-          persistDriveToken(resp.access_token, resp.expires_in);
+          persistDriveToken(resp.access_token, resp.expires_in, resp.scope);
           if (gDriveTokenInflight && gDriveTokenInflight._resolve) {
             gDriveTokenInflight._resolve(true);
             gDriveTokenInflight = null;
@@ -379,9 +500,11 @@ function requestDriveAccessToken(opts) {
   try {
     // Do NOT force prompt:'consent' on every login — that always shows the
     // second "app wants access / make sure you trust this app" screen.
-    // Empty options: Google only shows UI when account or grant is missing.
-    // prompt:'' is for non-interactive attempts (no UI if possible).
-    gDriveTokenClient.requestAccessToken(interactive ? {} : { prompt: '' });
+    // Scope is set per call so the identity scope disappears from every
+    // request once the e-mail is known; prompt:'' means "no UI if possible".
+    const cfg = { scope: getRequestedScope(), include_granted_scopes: true };
+    if (!interactive) cfg.prompt = '';
+    gDriveTokenClient.requestAccessToken(cfg);
   } catch (e) {
     console.warn('[SYNC] requestAccessToken:', e);
     resolveFn(false);
@@ -407,8 +530,10 @@ function requestDriveAccessToken(opts) {
  */
 async function trySilentDriveRefresh() {
   if (isDriveTokenValid()) return true;
-  if (!hadDriveSession()) return false;
-  return requestDriveAccessToken({ interactive: false });
+  if (!hadDriveSession() && !hasGrantedDriveScopes()) return false;
+  const ok = await requestDriveAccessToken({ interactive: false });
+  if (ok) gDriveCheckStale = false;
+  return ok;
 }
 
 /**
@@ -421,10 +546,14 @@ async function trySilentDriveRefresh() {
  */
 async function ensureDriveToken(interactiveFallback) {
   if (isDriveTokenValid()) return true;
+  // Always try silent first — even for user-initiated actions. A valid Google
+  // session usually renews the token with no UI at all, so upload/download
+  // after the ~1h expiry no longer means "log in again".
+  if (await trySilentDriveRefresh()) return true;
   if (interactiveFallback) {
     return requestDriveAccessToken({ interactive: true });
   }
-  return trySilentDriveRefresh();
+  return false;
 }
 
 /* === API WRAPPERS === */
@@ -437,11 +566,15 @@ async function driveFetch(url, options = {}, retry = true) {
   headers['Authorization'] = 'Bearer ' + gDriveToken;
   const resp = await fetch(url, { ...options, headers });
   if (resp.status === 401 && retry) {
-    // Token expired — clear so UI shows need to sign in again; no auto popup
+    // Token rejected — drop it, then try one silent (no popup) renewal and
+    // replay the request. Only if that fails do we surface the stale state.
     gDriveToken = null;
     gDriveTokenExpiry = 0;
     localStorage.removeItem('grafik_drive_token');
     localStorage.removeItem('grafik_drive_token_expiry');
+    if (await trySilentDriveRefresh()) {
+      return driveFetch(url, options, false);
+    }
     gDriveCheckStale = true;
     updateDriveUI();
   }
@@ -1395,6 +1528,9 @@ function performLogoutDrive() {
   localStorage.removeItem('grafik_drive_token_expiry');
   localStorage.removeItem('grafik_drive_file_id');
   localStorage.removeItem('grafik_drive_user_email');
+  localStorage.removeItem(DRIVE_TOKEN_SCOPE_KEY);
+  localStorage.removeItem(DRIVE_EMAIL_TRIES_KEY);
+  gDriveGrantedScope = '';
   clearDriveSessionFlag();
   showToast('info', `☁️ ${t('driveLoggedOut')}`);
   refreshAfterDriveAuth();

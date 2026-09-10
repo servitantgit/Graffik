@@ -661,6 +661,19 @@ Access token живе ~1 годину. Раніше не було жодного
 - `scheduleDriveTokenRefresh()` проактивно оновлює токен за ~5 хв до закінчення строку, поки вкладка видима (best-effort — не рятує довго-фонові вкладки, для цього і є (1)).
 - Якщо тихий refresh не вдався (реально протухла Google-сесія) — стан позначається як **stale** (`gDriveCheckStale`), а не мовчки "все ок": бейдж і `title` в меню показують окреме попередження (`syncStatusStale` / `driveCardStaleWarn`) замість зеленого "Active".
 
+### 6.2a. Зменшення частоти екрана входу Google (fix 2026-09-10)
+
+Причина частих логінів: implicit flow GIS не має refresh-токена, а будь-яке розширення scope анулює вже видану згоду.
+
+- **Вузький scope.** `DRIVE_SCOPE` = лише `drive.file` + `drive.appdata`. `openid email` (потрібен `js/admin.js` для визначення адміна) виїхав у окремий `IDENTITY_SCOPE` і додається `getRequestedScope()` **лише поки email не закешовано** в `grafik_drive_user_email`. Далі кожен запит токена вузький, а вже виданий (ширший) grant покриває його — тому `prompt:''` працює. `include_granted_scopes: true` не дає новому запиту звужувати grant.
+- **Лічильник спроб** `grafik_drive_email_tries` (макс. 3): якщо `userinfo` стабільно падає, застосунок припиняє просити identity-scope замість того щоб щоразу тригерити згоду.
+- **Перевірка виданих scope.** Google-відповідь `resp.scope` зберігається в `grafik_drive_token_scope`; `hasGrantedDriveScopes()` (через `google.accounts.oauth2.hasGrantedAllScopes`, з рядковим fallback) дозволяє пробувати тихий refresh навіть коли інші маркери сесії втрачені.
+- **Silent-first для дій користувача.** `ensureDriveToken(true)` тепер спершу робить тихий refresh і показує вікно Google **лише якщо той не вдався** (раніше upload/download/модалка синку після ~1г відразу відкривали логін).
+- **401 → тихий refresh + повтор.** `driveFetch()` при 401 пробує один тихий refresh і повторює запит, і лише потім позначає stale.
+- **Живучіший маркер сесії.** `hadDriveSession()` перевіряє localStorage-флаг, cookie `grafik_drive_session` (1 рік), email, токен, збережені scope і `file_id`. `markDriveSession()` додатково просить `navigator.storage.persist()` — інакше iOS Safari чистить сховище після ~7 днів невикористання і логін стає повним.
+
+**Не лікується кодом:** publishing status **"Testing"** в Google Cloud Console примусово вбиває доступ кожні 7 днів — потрібно перемкнути на "In production". Повна відсутність повторних входів вимагає authorization code flow з refresh-токеном, тобто мінімального бекенду (неможливо на статичному GitHub Pages).
+
 ### 6.3. Перевірка конфлікту (`handleAutoSyncCheck()`)
 
 `checkDriveRemoteStatus()` — дешева mtime-евристика (порівнює `modifiedTime` файлу з локальним `meta.lastSync`, 8с slack на розсинхрон годинників). Коли ця евристика підказує "remote newer" **і** локально є незбережені зміни, перед тим як показати користувачу попередження про конфлікт, `handleAutoSyncCheck()` довантажує реальний payload і перевіряє два додаткові сигнали:
