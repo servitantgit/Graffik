@@ -1066,8 +1066,8 @@ window.cleanupCustomScheduleMirrors = cleanupCustomScheduleMirrors;
    }
 
    function countNonEmptyNotes() {
-     if (!notes || typeof notes !== 'object') return 0;
-     return Object.keys(notes).filter((k) => noteEntryHasContent(notes[k])).length;
+     if (typeof countNoteEntries === 'function') return countNoteEntries(notes);
+     return 0;
    }
 
    function clearLocalPersonalData() {

@@ -1,5 +1,16 @@
 # Unreleased — Unified Day Notes + Duplicate-UI Cleanup
 
+## Fixed (follow-up)
+- **Sync change count ignored notes added to an already-noted day** —
+  `countSyncPayloadStats()` counted *day-keys with notes*, not individual
+  notes. Adding a 2nd/3rd note to a day that already had one didn't change
+  that count, so the sync badge under-reported changes and the sync modal's
+  detail log showed "no difference" for notes even when there was one.
+  Fixed by counting total note entries (new shared `countNoteEntries()` in
+  `js/personal/notes-tracking.js`, unit-tested — 7 new test cases); also
+  fixes the same undercount in the Settings → Privacy data-count display
+  (`countNonEmptyNotes()` in `core.js`).
+
 ## Added
 - **Unified per-day notes** — the three previously separate note stores
   (free-form day note, overtime "przed" note, overtime "po" note) are now a

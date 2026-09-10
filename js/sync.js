@@ -1019,11 +1019,11 @@ function countSyncPayloadStats(data) {
   }
   let notes = 0;
   if (data.notes && typeof data.notes === 'object') {
-    notes = Object.keys(data.notes).filter((k) => {
-      const v = data.notes[k];
-      if (Array.isArray(v)) return v.some((n) => n && String(n.text || '').trim());
-      return v != null && String(v).trim() !== '';
-    }).length;
+    // Count individual note entries, not the number of days that have
+    // notes — otherwise adding a 2nd/3rd note to a day that already had
+    // one note (unified multi-note list, 2026-09) doesn't change the
+    // per-day key count and the diff silently shows no change at all.
+    notes = typeof countNoteEntries === 'function' ? countNoteEntries(data.notes) : 0;
   }
   const personalOverrides =
     typeof getPersonalShiftOverrides === 'function'

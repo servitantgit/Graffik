@@ -17,6 +17,7 @@ const {
   removeNoteEntry,
   upsertNoteByTag,
   getNoteTextByTag,
+  countNoteEntries,
   computeUnifiedNotesMigration,
 } = require('../js/personal/notes-tracking.js');
 
@@ -47,6 +48,60 @@ test('noteEntryHasContent: array of only empty/whitespace entries => false', () 
 
 test('noteEntryHasContent: empty array => false', () => {
   assert.strictEqual(noteEntryHasContent([]), false);
+});
+
+// ============================================================
+// countNoteEntries — total entries across all days, not day-key count
+// (this was the actual bug: sync diff counted days-with-notes, so adding
+// a 2nd/3rd note to a day that already had one showed no change at all)
+// ============================================================
+
+test('countNoteEntries: counts individual entries, not day-keys', () => {
+  const notesMap = {
+    '2026-1-10-A': [
+      { id: 'a', tag: null, text: 'first' },
+      { id: 'b', tag: null, text: 'second' },
+      { id: 'c', tag: 'before', text: 'third' },
+    ],
+  };
+  // One day-key, but three separate notes — must count as 3, not 1.
+  assert.strictEqual(countNoteEntries(notesMap), 3);
+});
+
+test('countNoteEntries: sums across multiple days', () => {
+  const notesMap = {
+    '2026-1-10-A': [{ id: 'a', tag: null, text: 'x' }],
+    '2026-1-11-A': [
+      { id: 'b', tag: null, text: 'y' },
+      { id: 'c', tag: 'after', text: 'z' },
+    ],
+  };
+  assert.strictEqual(countNoteEntries(notesMap), 3);
+});
+
+test('countNoteEntries: ignores empty/whitespace-only entries', () => {
+  const notesMap = {
+    '2026-1-10-A': [
+      { id: 'a', tag: null, text: '   ' },
+      { id: 'b', tag: null, text: 'real note' },
+    ],
+  };
+  assert.strictEqual(countNoteEntries(notesMap), 1);
+});
+
+test('countNoteEntries: tolerates legacy string values (pre-migration data)', () => {
+  const notesMap = { '2026-1-10-A': 'legacy note' };
+  assert.strictEqual(countNoteEntries(notesMap), 1);
+});
+
+test('countNoteEntries: legacy whitespace-only string does not count', () => {
+  assert.strictEqual(countNoteEntries({ '2026-1-10-A': '   ' }), 0);
+});
+
+test('countNoteEntries: empty/undefined map => 0', () => {
+  assert.strictEqual(countNoteEntries({}), 0);
+  assert.strictEqual(countNoteEntries(undefined), 0);
+  assert.strictEqual(countNoteEntries(null), 0);
 });
 
 // ============================================================

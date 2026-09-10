@@ -533,6 +533,12 @@ node tools/i18n-audit.js
 - **Обгортки зі станом** (localStorage-backed) — `js/core.js`:
   `getDayNotes()`, `addDayNote()`, `removeDayNote()`, `upsertDayNoteByTag()`,
   `removeDayNoteByTag()`, `getDayNoteTextByTag()`.
+- **Підрахунок нотаток для sync-diff і Privacy-панелі** — `countNoteEntries()`
+  в `notes-tracking.js` рахує загальну кількість нотаток по всіх днях, а не
+  кількість day-keys з нотатками. Використовується і в `sync.js`
+  (`countSyncPayloadStats`), і в `core.js` (`countNonEmptyNotes`) — інакше
+  додавання другої/третьої нотатки до дня, де вже була одна, не змінювало
+  лічильник day-keys, і sync-бейдж/деталі показували "без змін".
 - **UI** — `js/calendar.js` `renderInfo()`: список нотаток з іконкою за тегом
   (📝 вільна / ⏱⬅ before / ⏱➡ after), кнопкою видалення (`data-remove-note`),
   і полем додавання нової нотатки (Enter/blur → `addDayNote()`, поле завжди

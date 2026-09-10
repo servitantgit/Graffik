@@ -69,6 +69,27 @@ function getNoteTextByTag(list, tag) {
 }
 
 /**
+ * Total number of non-empty note entries across a whole notes[] map (all
+ * days), counting each individual note — not the number of day-keys that
+ * have notes. A day can hold several notes since the unified-notes change,
+ * so counting by day-key silently hides added/removed notes whenever a day
+ * already had at least one (this was a real bug in the sync change-diff).
+ * Also tolerates legacy string values (pre-migration data).
+ * @param {object} notesMap - e.g. the `notes` global or a downloaded payload's `notes`
+ * @returns {number}
+ */
+function countNoteEntries(notesMap) {
+  if (!notesMap || typeof notesMap !== 'object') return 0;
+  return Object.keys(notesMap).reduce((total, k) => {
+    const v = notesMap[k];
+    if (Array.isArray(v)) {
+      return total + v.filter((n) => n && String(n.text || '').trim()).length;
+    }
+    return total + (v != null && String(v).trim() !== '' ? 1 : 0);
+  }, 0);
+}
+
+/**
  * Pure transform used by core.js's migrateUnifiedNotes(): given raw
  * notes/overtimes objects (any legacy shape — string notes, embedded
  * overtime .note fields, or already-migrated arrays), returns new
@@ -136,6 +157,7 @@ if (typeof window !== 'undefined') {
   window.removeNoteEntry = removeNoteEntry;
   window.upsertNoteByTag = upsertNoteByTag;
   window.getNoteTextByTag = getNoteTextByTag;
+  window.countNoteEntries = countNoteEntries;
   window.computeUnifiedNotesMigration = computeUnifiedNotesMigration;
 }
 
@@ -148,6 +170,7 @@ if (typeof module !== 'undefined' && module.exports) {
     removeNoteEntry,
     upsertNoteByTag,
     getNoteTextByTag,
+    countNoteEntries,
     computeUnifiedNotesMigration,
   };
 }
