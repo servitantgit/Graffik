@@ -8,8 +8,8 @@
 
 const DEFAULT_CELL_COLORS = {
   R: '#f1c40f',
-  P: '#82e0aa',
-  N: '#aed6f1',
+  P: '#27ae60',
+  N: '#3498db',
   U: '#14b8a6',
 };
 
