@@ -603,24 +603,15 @@ function privacyHtml() {
       const localFirstExplanation = tr('settingsPrivacyLocalFirstExplanation');
       const privacyModeLabel = tr('settingsPrivacyMode');
       const driveStateLabel = tr('settingsPrivacyDriveState');
-      const driveEnableLabel = tr('settingsPrivacyDriveEnable');
-      const driveEnableDesc = tr('settingsPrivacyDriveEnableDesc');
       const customShiftsLabel = tr('settingsPrivacyCustomShifts');
       const vacationsLabel = tr('settingsPrivacyVacations');
       const overtimeLabel = tr('settingsPrivacyOvertime');
       const notesLabel = tr('settingsPrivacyNotes');
       const clearLabel = tr('settingsPrivacyClear');
-      const policyLabel = tr('settingsPrivacyPolicyLink');
 
       const privacyModeEnabled = !!prefs.privacyMode;
-      const driveEnabled = !!prefs.driveEnabled;
-      const driveLoggedIn =
-        driveEnabled &&
-        (typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : false);
-      const driveEmail =
-        driveLoggedIn && typeof driveUserEmail !== 'undefined' && driveUserEmail
-          ? driveUserEmail
-          : null;
+      const driveLoggedIn = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : false;
+      const driveEmail = driveLoggedIn && driveUserEmail ? driveUserEmail : null;
 
       // Counts
       const customShiftsCount = typeof countPersonalCustomShifts === 'function' ? countPersonalCustomShifts() : 0;
@@ -637,25 +628,10 @@ function privacyHtml() {
         '<span class="st-row-label">' + privacyModeLabel + '</span>' +
         '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
         '</button></div>' +
-        '<div class="st-group"><div class="st-label">' + driveEnableLabel + '</div>' +
-        '<div class="st-label" style="font-weight:normal;opacity:0.85;margin-bottom:6px;">' +
-        driveEnableDesc +
-        '</div>' +
-        '<button type="button" class="st-row st-switch" id="stDriveEnabled" role="switch" aria-checked="' +
-        (driveEnabled ? 'true' : 'false') + '">' +
-        '<span class="st-row-label">' + driveEnableLabel + '</span>' +
-        '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
-        '</button>' +
+        '<div class="st-group"><div class="st-label">' + driveStateLabel + '</div>' +
         '<div class="st-row"><span class="st-row-label">' + tr('driveCardConnected') + '</span>' +
-        '<span class="st-mono">' +
-        (!driveEnabled
-          ? tr('driveFeatureOff')
-          : driveLoggedIn
-            ? driveEmail
-              ? driveEmail
-              : tr('driveLoggedIn')
-            : tr('driveNotLoggedIn')) +
-        '</span></div></div>' +
+        '<span class="st-mono">' + (driveLoggedIn ? (driveEmail ? driveEmail : tr('driveLoggedIn')) : tr('driveNotLoggedIn')) + '</span>' +
+        '</div></div>' +
         '<div class="st-group">' +
         '<div class="st-row"><span class="st-row-label">' + customShiftsLabel + '</span>' +
         '<span class="st-mono">' + customShiftsCount + '</span>' +
@@ -672,9 +648,6 @@ function privacyHtml() {
         '<button type="button" class="st-row" id="stClearPersonalData">' +
         '<span class="st-row-label">' + clearLabel + ' 🗑️</span>' +
         '</button>' +
-        '<a class="st-row" id="stPrivacyPolicyLink" href="privacy.html" target="_blank" rel="noopener">' +
-        '<span class="st-row-label">' + policyLabel + ' ↗</span>' +
-        '</a>' +
         '</div>' +
         '</div>'
       );
@@ -692,65 +665,6 @@ function bindPrivacy(body) {
           privacyModeBtn.setAttribute('aria-checked', next ? 'true' : 'false');
           // Refresh views to reflect any changes in data visibility
           refreshViewsSafe();
-          // Update the drawer switch if possible
-          if (typeof updateDrawerPrivacySwitch === 'function') {
-            try {
-              updateDrawerPrivacySwitch(next);
-            } catch (e) {
-              /* ignore */
-            }
-          }
-        });
-      }
-
-      const driveEnabledBtn = body.querySelector('#stDriveEnabled');
-      if (driveEnabledBtn) {
-        driveEnabledBtn.addEventListener('click', function () {
-          const next = driveEnabledBtn.getAttribute('aria-checked') !== 'true';
-          prefs.driveEnabled = next;
-          savePrefsSafe();
-          driveEnabledBtn.setAttribute('aria-checked', next ? 'true' : 'false');
-
-          if (!next) {
-            // Turning off: clear any Drive session so no more silent refreshes / popups
-            if (typeof performLogoutDrive === 'function') {
-              try {
-                performLogoutDrive();
-              } catch (e) {
-                /* ignore */
-              }
-            } else if (typeof logoutDrive === 'function') {
-              try {
-                logoutDrive();
-              } catch (e) {
-                /* ignore */
-              }
-            }
-            if (typeof updateMenuSyncStatus === 'function') updateMenuSyncStatus();
-            if (typeof updateDriveUI === 'function') updateDriveUI();
-            toast('info', 'driveFeatureDisabledToast');
-          } else {
-            // Turning on: load GIS and offer sign-in (user still must confirm login)
-            if (typeof loadGis === 'function') {
-              loadGis().then(function () {
-                if (typeof initGDriveTokenClient === 'function') {
-                  try {
-                    initGDriveTokenClient();
-                  } catch (e) {
-                    /* ignore */
-                  }
-                }
-                if (typeof updateMenuSyncStatus === 'function') updateMenuSyncStatus();
-                if (typeof updateDriveUI === 'function') updateDriveUI();
-                toast('success', 'driveFeatureEnabledToast');
-              });
-            } else {
-              if (typeof updateMenuSyncStatus === 'function') updateMenuSyncStatus();
-              toast('success', 'driveFeatureEnabledToast');
-            }
-          }
-          // Refresh this section so status line updates
-          renderSettingsSection('privacy', body);
         });
       }
 

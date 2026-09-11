@@ -266,15 +266,13 @@ Key parity, placeholders and dynamic prefixes are checked by `node tools/i18n-au
 
 ## 💾 Data storage
 
-The app stores data in three places:
+The app stores data in two places:
 
 1. **localStorage** (primary) — vacations, overtime, notes, settings, schedule edits
 2. **Google Drive** (optional, **off by default**) — backup and synchronisation across your devices. Enable the toggle in **Settings → Data & privacy**, then sign in from the menu.
-3. **JSON backup** — export/import of a file with a full copy of the data
-
 Opening the Drive sync menu (when backup is enabled and you are signed in) shows a **short diff log** (local counts of vacations / overtime / notes / custom shifts vs Drive) and the Cancel / Download / Upload buttons in a single row.
 
-**Note:** data in localStorage can be lost when browser storage is cleared. Make regular backups via 📥 JSON or ☁️ Google Drive (after enabling the option).
+**Note:** data in localStorage can be lost when browser storage is cleared. Back up via ☁️ Google Drive (enable in Settings → Privacy) or export the current view (ICS / print).
 
 ## 🔒 Privacy
 

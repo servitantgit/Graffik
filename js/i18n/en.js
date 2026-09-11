@@ -10,7 +10,7 @@ window.translations.en = {
   editMode: 'Edit mode (E)',
   editModeOn: 'Turn off edit mode (E)',
   editModeOff: 'Turn on edit mode (E)',
-  profile: 'Log in to Google Drive',
+  profile: 'Google Drive account',
   theme: 'Toggle theme',
   menu: 'Menu',
   language: 'Language',
@@ -344,7 +344,7 @@ window.translations.en = {
   faqFeaturesNotes: 'Notes for days — you can save additional information for specific dates.',
   faqFeaturesCompare: 'Brigade comparison — you can see when two brigades have the same shift.',
   faqFeaturesExport:
-    'ICS calendar export and link/QR sharing; backup sync via Google Drive.',
+    'ICS calendar export, print, and link/QR sharing; optional backup sync via Google Drive.',
   faqFeaturesPrint: 'Printing and sharing the selected view or a specific day.',
   faqFeaturesNote:
     'In practice, the application combines the functions of a schedule, planner, calendar and a simple analysis tool for shifts.',
@@ -412,7 +412,7 @@ window.translations.en = {
     'Full details: Privacy policy (menu Settings → Data & privacy, or privacy.html). No analytics; we do not run servers that store your data.',
   faqExportTitle: '📥 Can I export the schedule to other apps?',
   faqExportDesc:
-    'Yes. The menu offers .ics calendar export and JSON backup. The .ics file can be imported into Google Calendar, Outlook, iPhone and many other calendar apps.',
+    'Yes. Menu → Export offers .ics calendar export and print. The .ics file can be imported into Google Calendar, Outlook, iPhone and many other calendar apps. Cross-device backup of personal data is optional via Google Drive (Settings → Privacy).',
 
   // === FAQ SHARE APP & UPDATE (v3.6.0) ===
   faqShareAppTitle: '📱 How to share the app with others?',
@@ -457,7 +457,6 @@ window.translations.en = {
 
   // === MENU (items) ===
   menuDrive: 'Google Drive (log in)',
-  menuSyncNow: 'Sync now',
   menuDriveLogout: 'Log out of Google Drive',
   menuIcs: 'Export to calendar (.ics)',
   menuPrint: 'Print',
@@ -632,7 +631,7 @@ window.translations.en = {
   driveLoggedInHint: 'Logged in to Google Drive',
   loggedIn: 'logged in',
   logoutFromDrive: 'Log out from Google Drive',
-  login: 'sign in',
+  login: 'Google Drive — sign in',
   driveLoggedOutHint: 'Logged out from Google Drive',
   driveConfigTitle: 'Google Drive Configuration',
   driveConfigIntro: 'To use sync, configure the app in Google Cloud Console.',
@@ -785,7 +784,7 @@ window.translations.en = {
   menuShareCenter: 'Share',
   menuShareCenterDesc: 'Link and QR code for the schedule',
   menuExportCenter: 'Export',
-  menuExportCenterDesc: 'ICS calendar and year data',
+  menuExportCenterDesc: 'ICS calendar and print',
   menuAbout: 'About',
   menuAboutDesc: 'Version, updates and help',
 

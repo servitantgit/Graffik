@@ -1,3 +1,16 @@
+# Unreleased — UI/docs consistency cleanup
+
+## Removed
+- Dead `#menuSyncNow` handler and `menuSyncNow` i18n (auto-sync covers this; no menu button).
+- Dead `updateDrawerPrivacySwitch` call (drawer privacy switch removed in v4 shell).
+- User-facing **JSON backup** promises from README and FAQ (feature not in Export UI; optional Drive + ICS/print remain).
+
+## Changed
+- FAQ Start: Privacy Mode via **Settings → Data & privacy (Advanced)**, not a side-menu item.
+- FAQ Export / feature blurbs: ICS + print; Drive optional — no JSON file backup.
+- Top-bar account control titles: clearer **Google Drive** wording (`profile` / `login`).
+- `menuExportCenterDesc`: ICS and print (not “year data”).
+
 # Unreleased — Unit test coverage expansion
 
 ## Added

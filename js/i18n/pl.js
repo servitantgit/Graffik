@@ -10,7 +10,7 @@ window.translations.pl = {
   editMode: 'Tryb edycji (E)',
   editModeOn: 'Wyłącz tryb edycji (E)',
   editModeOff: 'Włącz tryb edycji (E)',
-  profile: 'Zaloguj do Google Drive',
+  profile: 'Konto Google Drive',
   theme: 'Przełącz motyw',
   menu: 'Menu',
   language: 'Język',
@@ -344,7 +344,7 @@ window.translations.pl = {
   faqFeaturesCompare:
     'Porównywanie brygad — można zobaczyć, kiedy dwie brygady mają tę samą zmianę.',
   faqFeaturesExport:
-    'Eksport do kalendarza ICS i udostępnianie linku / QR; kopia zapasowa przez Google Drive.',
+    'Eksport ICS, druk i udostępnianie linku / QR; opcjonalna synchronizacja przez Google Drive.',
   faqFeaturesPrint: 'Drukowanie i udostępnianie wybranego widoku albo konkretnego dnia.',
   faqFeaturesNote:
     'W praktyce aplikacja łączy funkcje grafiku, planera, kalendarza i prostego narzędzia do analizy zmian.',
@@ -413,7 +413,7 @@ window.translations.pl = {
     'Szczegóły: Polityka prywatności (Ustawienia → Dane i prywatność lub privacy.html). Bez analityki; nie prowadzimy serwerów z Twoimi danymi.',
   faqExportTitle: '📥 Czy można eksportować grafik do innych aplikacji?',
   faqExportDesc:
-    'Tak. W menu dostępny jest eksport .ics do kalendarza oraz backup JSON. Plik .ics można zaimportować do Google Calendar, Outlooka, iPhone’a i wielu innych aplikacji kalendarzowych.',
+    'Tak. Menu → Eksport: kalendarz .ics i druk. Plik .ics można zaimportować do Google Calendar, Outlooka, iPhone’a itd. Kopia zapasowa danych osobistych między urządzeniami — opcjonalnie przez Google Drive (Ustawienia → Prywatność).',
 
   // === FAQ SHARE APP & UPDATE (v3.6.0) ===
   faqShareAppTitle: '📱 Jak udostępnić aplikację innym?',
@@ -458,7 +458,6 @@ window.translations.pl = {
 
   // === MENU (items) ===
   menuDrive: 'Google Drive (zaloguj)',
-  menuSyncNow: 'Synchronizuj teraz',
   menuDriveLogout: 'Wyloguj z Google Drive',
   menuIcs: 'Eksport do kalendarza (.ics)',
   menuPrint: 'Drukuj',
@@ -633,7 +632,7 @@ window.translations.pl = {
   driveLoggedInHint: 'Zalogowano do Google Drive',
   loggedIn: 'zalogowano',
   logoutFromDrive: 'Wyloguj z Google Drive',
-  login: 'zaloguj',
+  login: 'Google Drive — zaloguj',
   driveLoggedOutHint: 'Wylogowano z Google Drive',
   driveConfigTitle: 'Konfiguracja Google Drive',
   driveConfigIntro: 'Aby korzystać z synchronizacji, skonfiguruj aplikację w Google Cloud Console.',
@@ -786,7 +785,7 @@ window.translations.pl = {
   menuShareCenter: 'Udostępnij',
   menuShareCenterDesc: 'Link i kod QR do grafiku',
   menuExportCenter: 'Eksport',
-  menuExportCenterDesc: 'Kalendarz ICS i dane roku',
+  menuExportCenterDesc: 'Kalendarz ICS i druk',
   menuAbout: 'O aplikacji',
   menuAboutDesc: 'Wersja, aktualizacje i pomoc',
 

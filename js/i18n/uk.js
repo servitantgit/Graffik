@@ -10,7 +10,7 @@ window.translations.uk = {
   editMode: 'Режим редагування (E)',
   editModeOn: 'Вимкнути режим редагування (E)',
   editModeOff: 'Увімкнути режим редагування (E)',
-  profile: 'Увійти в Google Drive',
+  profile: 'Акаунт Google Drive',
   theme: 'Перемкнути тему',
   menu: 'Меню',
   language: 'Мова',
@@ -342,7 +342,7 @@ window.translations.uk = {
   faqFeaturesNotes: 'Нотатки до днів — можна зберігати додаткову інформацію для конкретних дат.',
   faqFeaturesCompare: 'Порівняння бригад — можна побачити, коли дві бригади мають однакову зміну.',
   faqFeaturesExport:
-    'Експорт у календар ICS і шаринг посилання / QR; резервна синхронізація через Google Drive.',
+    'Експорт ICS, друк і шаринг посилання / QR; опційна синхронізація через Google Drive.',
   faqFeaturesPrint: 'Друк і обмін вибраним видом або конкретним днем.',
   faqFeaturesNote:
     'На практиці додаток поєднує функції графіка, планувальника, календаря і простого інструмента для аналізу змін.',
@@ -412,7 +412,7 @@ window.translations.uk = {
     'Подробиці: Політика конфіденційності (Налаштування → Дані та приватність або privacy.html). Без аналітики; ми не маємо серверів зі вашими даними.',
   faqExportTitle: '📥 Чи можна експортувати графік до інших додатків?',
   faqExportDesc:
-    'Так. У меню доступний експорт .ics до календаря і резервна копія JSON. Файл .ics можна імпортувати в Google Calendar, Outlook, iPhone і багато інших календарних додатків.',
+    'Так. Меню → Експорт: календар .ics і друк. Файл .ics можна імпортувати в Google Calendar, Outlook, iPhone тощо. Резервна копія персональних даних між пристроями — опційно через Google Drive (Налаштування → Приватність).',
 
   // === FAQ SHARE APP & UPDATE (v3.6.0) ===
   faqShareAppTitle: '📱 Як поділитися додатком з іншими?',
@@ -457,7 +457,6 @@ window.translations.uk = {
 
   // === MENU (items) ===
   menuDrive: 'Google Drive (увійти)',
-  menuSyncNow: 'Синхронізувати зараз',
   menuDriveLogout: 'Вийти з Google Drive',
   menuIcs: 'Експорт до календаря (.ics)',
   menuPrint: 'Друк',
@@ -633,7 +632,7 @@ window.translations.uk = {
   driveLoggedInHint: 'Увійшли в Google Drive',
   loggedIn: 'увійшли',
   logoutFromDrive: 'Вийти з Google Drive',
-  login: 'увійти',
+  login: 'Google Drive — увійти',
   driveLoggedOutHint: 'Вийшли з Google Drive',
   driveConfigTitle: 'Налаштування Google Drive',
   driveConfigIntro: 'Для використання синхронізації налаштуйте додаток у Google Cloud Console.',
@@ -786,7 +785,7 @@ window.translations.uk = {
   menuShareCenter: 'Поділитися',
   menuShareCenterDesc: 'Посилання та QR-код до графіка',
   menuExportCenter: 'Експорт',
-  menuExportCenterDesc: 'Календар ICS та дані року',
+  menuExportCenterDesc: 'Календар ICS і друк',
   menuAbout: 'Про додаток',
   menuAboutDesc: 'Версія, оновлення та довідка',
 

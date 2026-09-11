@@ -49,26 +49,6 @@ let gDriveCheckStale = false; // true when we could not verify Drive (e.g. token
 let gDriveRefreshTimer = null;
 let gDriveTokenInflight = null; // Promise for concurrent refresh requests
 
-/**
- * Google Drive backup is opt-in. When disabled (default), the app never
- * loads GIS, never requests tokens, and never shows login popups.
- */
-function isDriveFeatureEnabled() {
-  try {
-    if (typeof prefs !== 'undefined' && prefs && typeof prefs.driveEnabled === 'boolean') {
-      return !!prefs.driveEnabled;
-    }
-    // Fallback if prefs not yet loaded
-    const raw = localStorage.getItem('grafik_prefs');
-    if (raw) {
-      const p = JSON.parse(raw);
-      if (p && typeof p.driveEnabled === 'boolean') return !!p.driveEnabled;
-    }
-  } catch (_) {}
-  return false;
-}
-window.isDriveFeatureEnabled = isDriveFeatureEnabled;
-
 function isDriveTokenValid() {
   return !!(gDriveToken && Date.now() < gDriveTokenExpiry - 60000);
 }
@@ -236,9 +216,6 @@ async function checkDriveRemoteStatus(force = false) {
  * @returns {Promise<'idle'|'up-to-date'|'downloaded'|'conflict'|'error'>}
  */
 async function handleAutoSyncCheck() {
-  if (!isDriveFeatureEnabled()) {
-    return 'idle';
-  }
   if (!isDriveLoggedIn()) {
     return 'idle';
   }
@@ -366,13 +343,6 @@ function persistDriveToken(accessToken, expiresInSec, grantedScope) {
  * reopened later (background timers don't fire reliably while suspended).
  */
 function scheduleDriveTokenRefresh() {
-  if (!isDriveFeatureEnabled()) {
-    if (gDriveRefreshTimer) {
-      clearTimeout(gDriveRefreshTimer);
-      gDriveRefreshTimer = null;
-    }
-    return;
-  }
   if (gDriveRefreshTimer) {
     clearTimeout(gDriveRefreshTimer);
     gDriveRefreshTimer = null;
@@ -559,7 +529,6 @@ function requestDriveAccessToken(opts) {
  * grant to refresh and Google would silently fail anyway.
  */
 async function trySilentDriveRefresh() {
-  if (!isDriveFeatureEnabled()) return false;
   if (isDriveTokenValid()) return true;
   if (!hadDriveSession() && !hasGrantedDriveScopes()) return false;
   const ok = await requestDriveAccessToken({ interactive: false });
@@ -576,7 +545,6 @@ async function trySilentDriveRefresh() {
  *   nothing until the user manually logs out and back in.
  */
 async function ensureDriveToken(interactiveFallback) {
-  if (!isDriveFeatureEnabled()) return false;
   if (isDriveTokenValid()) return true;
   // Always try silent first — even for user-initiated actions. A valid Google
   // session usually renews the token with no UI at all, so upload/download
@@ -986,22 +954,7 @@ function updateMenuSyncStatus() {
 
   const tr = (key, params, fallback) => (typeof t === 'function' ? t(key, params) : fallback);
 
-  const featureOn = isDriveFeatureEnabled();
-  el.classList.toggle('logged-out', !logged || !featureOn);
-
-  // Feature disabled — no Google login prompts
-  if (!featureOn) {
-    if (icon) {
-      icon.classList.add('mi-icon-svg');
-      icon.innerHTML = ICON_GOOGLE_G;
-    }
-    text.textContent = tr('syncStatusDriveDisabled', null, 'Google Drive backup is off');
-    if (badgeLabel) badgeLabel.textContent = tr('driveCardInactive', null, 'Inactive');
-    if (badge) badge.classList.add('inactive');
-    if (warnBlock) warnBlock.style.display = 'none';
-    el.title = tr('syncStatusDriveDisabledHint', null, 'Enable in Settings → Privacy');
-    return;
-  }
+  el.classList.toggle('logged-out', !logged);
 
   // Not connected — prompt to sign in
   if (!logged) {
@@ -1058,13 +1011,6 @@ function updateMenuSyncStatus() {
 
 /** Status row click: login | download if remote newer | sync modal */
 function onMenuSyncStatusClick() {
-  if (!isDriveFeatureEnabled()) {
-    showToast(
-      'info',
-      typeof t === 'function' ? t('driveFeatureDisabledHint') : 'Enable Google Drive backup in Settings → Privacy first'
-    );
-    return;
-  }
   const logged = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : isDriveTokenValid();
   if (!logged) {
     loginDrive();
@@ -1164,10 +1110,6 @@ function askForClientId() {
 
 /* === LOGOWANIE === */
 function loginDrive() {
-  if (!isDriveFeatureEnabled()) {
-    showToast('info', `☁️ ${typeof t === 'function' ? t('driveFeatureDisabledHint') : 'Enable Google Drive backup in Settings → Privacy first'}`);
-    return;
-  }
   if (!gDriveClientId) {
     showToast('warn', `☁️ ${t('driveConfigureClientIdFirst')}`);
     askForClientId();
@@ -1609,12 +1551,6 @@ window.ensureDriveToken = ensureDriveToken;
 window.updateMenuSyncStatus = updateMenuSyncStatus;
 window.checkDriveRemoteStatus = checkDriveRemoteStatus;
 window.onMenuSyncStatusClick = onMenuSyncStatusClick;
-window.performLogoutDrive = performLogoutDrive;
-window.logoutDrive = logoutDrive;
-window.loginDrive = loginDrive;
-window.loadGis = loadGis;
-window.initGDriveTokenClient = initGDriveTokenClient;
-window.updateDriveUI = updateDriveUI;
 
 /* === INIT === */
 function initSync() {
@@ -1656,55 +1592,30 @@ function initSync() {
     };
   }
 
-  // Button in the action menu — sync only for logged-in users
-  const syncItem = document.getElementById('menuSyncNow');
-  if (syncItem) {
-    syncItem.onclick = () => {
-      closeSideMenu();
-      if (!isDriveLoggedIn()) {
-        showToast('warn', `☁️ ${t('driveLoginRequired')}`);
-        loginDrive();
-        return;
-      }
-      syncWithDrive();
-    };
-  }
-
-  // Only load Google Identity Services and auto-refresh when the user
-  // has explicitly enabled Drive backup in Settings → Privacy.
-  if (isDriveFeatureEnabled()) {
-    loadGis().then(() => {
-      if (gDriveClientId) initGDriveTokenClient();
-      if (localStorage.getItem('grafik_drive_token') || driveUserEmail) {
-        markDriveSession();
-      }
-      updateDriveUI();
-      updateMenuSyncStatus();
-      if (isDriveTokenValid()) {
-        fetchDriveUserEmail();
-        scheduleDriveTokenRefresh();
-      }
-      // Auto-check Drive on load. handleAutoSyncCheck() attempts a silent
-      // (no popup) token refresh itself, so this also recovers a session
-      // whose access token expired while the app was closed.
-      if (isDriveLoggedIn()) {
-        handleAutoSyncCheck();
-      }
-    });
-  } else {
+  loadGis().then(() => {
+    if (gDriveClientId) initGDriveTokenClient();
+    if (localStorage.getItem('grafik_drive_token') || driveUserEmail) {
+      markDriveSession();
+    }
     updateDriveUI();
     updateMenuSyncStatus();
-  }
+    if (isDriveTokenValid()) {
+      fetchDriveUserEmail();
+      scheduleDriveTokenRefresh();
+    }
+    // Auto-check Drive on load. handleAutoSyncCheck() attempts a silent
+    // (no popup) token refresh itself, so this also recovers a session
+    // whose access token expired while the app was closed.
+    if (isDriveLoggedIn()) {
+      handleAutoSyncCheck();
+    }
+  });
 
   // Auto-check Drive when user returns to the PWA (unlock phone, switch tab
   // back, etc). handleAutoSyncCheck() silently refreshes the token itself,
   // so this keeps working even after the access token has expired.
   document.addEventListener('visibilitychange', () => {
-    if (
-      document.visibilityState === 'visible' &&
-      isDriveFeatureEnabled() &&
-      isDriveLoggedIn()
-    ) {
+    if (document.visibilityState === 'visible' && isDriveLoggedIn()) {
       handleAutoSyncCheck();
     }
   });

@@ -268,15 +268,13 @@ Parzystość kluczy, placeholdery i prefiksy dynamiczne sprawdza `node tools/i18
 
 ## 💾 Przechowywanie danych
 
-Aplikacja przechowuje dane w trzech miejscach:
+Aplikacja przechowuje dane w dwóch miejscach:
 
 1. **localStorage** (podstawowe) — urlopy, nadgodziny, notatki, ustawienia, edycje grafiku
 2. **Google Drive** (opcjonalnie, **domyślnie wyłączone**) — backup i synchronizacja między Twoimi urządzeniami. Włącz przełącznik w **Ustawienia → Dane i prywatność**, potem zaloguj się z menu.
-3. **Backup JSON** — eksport/import pliku z całą kopią danych
-
 Przy otwarciu menu synchronizacji z Drive (gdy backup jest włączony i jesteś zalogowany) widać **krótki log różnic** (lokalne liczby urlopów / nadgodzin / notatek / własnych zmian vs Drive) oraz przyciski Anuluj / Pobierz / Wyślij w jednym rzędzie.
 
-**Uwaga:** Dane w localStorage można stracić przy wyczyszczeniu pamięci przeglądarki. Regularnie rób backup przez 📥 JSON lub ☁️ Google Drive (po włączeniu opcji).
+**Uwaga:** Dane w localStorage można stracić przy wyczyszczeniu pamięci przeglądarki. Rób backup przez ☁️ Google Drive (po włączeniu opcji w Ustawienia → Prywatność) lub eksportuj wybrany widok (ICS / druk).
 
 ## 🔒 Prywatność
 

@@ -68,13 +68,13 @@ function renderFAQ(container) {
                      <li>${t('faqStart2')}</li>
                      <li>${t('faqStart3')}</li>
                      <li>${t('menuSettings')} — ${t('menuSettingsDesc')}</li>
-                     <li>${t('menuPrivacyOn')} / ${t('menuPrivacyOff')} — ${t('settingsPrivacyDesc')}</li>
+                     <li>${t('settingsDataPrivacy')} (${t('uiModeAdvanced')}): ${t('settingsPrivacyDesc')}</li>
                      <li>${t('menuShareCenter')} — ${t('menuShareCenterDesc')}</li>
                  </ol>
                  <p>${t('faqStartNote')}</p>
                  <p><strong>${t('aboutOffline')}</strong>: ${t('aboutDescription')}</p>
                  <p><strong>${t('menuShareCenter')}</strong>: ${t('shareCenterTitle')} — ${t('shareCurrentView')}</p>
-                 <p><strong>Drive</strong>: ${t('driveLoggedInHint')} (${t('driveLoginRequired')} — ${t('aboutOffline')})</p>
+                 <p><strong>Google Drive</strong>: ${t('settingsPrivacyDriveEnableDesc')}</p>
              `,
     },
     {
