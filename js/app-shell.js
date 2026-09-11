@@ -249,8 +249,7 @@
         : new Date().getMonth() + 1;
     const isYear = yearMode === true;
     const localized = typeof t === 'function';
-    const monthLabel =
-      monthNames && monthNames[month - 1] ? monthNames[month - 1] : String(month);
+    const monthLabel = monthNames && monthNames[month - 1] ? monthNames[month - 1] : String(month);
 
     // 1) Active desktop navigation
     document.querySelectorAll('#primaryNav .primary-nav-btn').forEach((b) => {
@@ -438,7 +437,7 @@
           <div class="about-content">
             <p><strong>${t('appName')}</strong></p>
             <p>${t('aboutDescription')}</p>
-            <p><strong>${t('aboutVersion')}</strong>: <span id="about-version">2.0.0</span></p>
+            <p><strong>${t('aboutVersion')}</strong>: <span id="about-version">4.0.0</span></p>
             <p><strong>${t('menuGitHub')}</strong>: <a href="https://github.com/servitantgit/Graffik" target="_blank" rel="noopener noreferrer">github.com/servitantgit/Graffik</a></p>
             <p><strong>${t('aboutDeveloper')}</strong>: <a href="mailto:servitant@gmail.com">servitant@gmail.com</a></p>
             <button id="about-check-update" class="btn-primary">${t('aboutCheckUpdates')}</button>
@@ -452,11 +451,13 @@
             const manifestLink = document.querySelector('link[rel="manifest"]');
             if (manifestLink) {
               fetch(manifestLink.href)
-                .then(resp => resp.json())
-                .then(data => {
+                .then((resp) => resp.json())
+                .then((data) => {
                   if (data.version) versionEl.textContent = data.version;
                 })
-                .catch(() => {/* ignore */});
+                .catch(() => {
+                  /* ignore */
+                });
             }
           }
           // Check for updates button
@@ -466,7 +467,7 @@
               window.checkForAppUpdate();
             };
           }
-        }
+        },
       });
     });
     onBtn('menuAdminCenter', () => {
