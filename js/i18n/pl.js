@@ -400,16 +400,17 @@ window.translations.pl = {
     'Po zalogowaniu do Google Drive dane synchronizują się w jeden plik w chmurze. Bez logowania dane są tylko w localStorage przeglądarki.',
   faqSyncTitle: '☁️ Jak działa synchronizacja z Google Drive?',
   faqSyncDesc:
-    'Synchronizacja pozwala przenieść dane aplikacji między urządzeniami przez Google Drive.',
+    'Google Drive to opcjonalna kopia zapasowa. Domyślnie jest wyłączona, więc aplikacja nie prosi o konto Google, dopóki sam jej nie włączysz.',
   faqSync1:
-    'W menu wybierz Google Drive. Jeśli nie jesteś zalogowany, aplikacja poprosi o zalogowanie.',
-  faqSync2: 'Możesz wysłać dane do Drive lub pobrać zapisane dane z Drive.',
+    'Otwórz Ustawienia → Dane i prywatność i włącz „Kopia zapasowa Google Drive”. Dopiero potem możesz zalogować się z menu.',
+  faqSync2: 'Po zalogowaniu możesz wysłać dane do Drive lub pobrać zapisaną kopię z Drive.',
   faqSync3:
-    'Synchronizowane dane obejmują: ustawienia grafiku, urlopy, nadgodziny, notatki i limity urlopów.',
-  faqSync4: 'Przy pobieraniu danych aplikacja pyta o potwierdzenie nadpisania lokalnych danych.',
+    'Synchronizowane dane obejmują: ustawienia grafiku, urlopy, nadgodziny, notatki i limity urlopów. Plik trafia wyłącznie do Twojego folderu danych aplikacji Google Drive.',
+  faqSync4: 'Przy pobieraniu danych aplikacja prosi o potwierdzenie przed nadpisaniem lokalnych danych.',
   faqSync5:
-    'Przycisk synchronizacji widoczny jest tylko po zalogowaniu; po wylogowaniu dostępny jest tylko przycisk logowania.',
-  faqSyncNote: 'To nowy sposób na przechowywanie grafiku w chmurze bez ręcznego eksportu.',
+    'Wyłączenie opcji (lub wylogowanie) czyści lokalny token i zatrzymuje wszystkie prośby o logowanie do Google. Tryb prywatności (ukrywanie danych osobistych na ekranie) jest niezależny od logowania do Drive.',
+  faqSyncNote:
+    'Szczegóły: Polityka prywatności (Ustawienia → Dane i prywatność lub privacy.html). Bez analityki; nie prowadzimy serwerów z Twoimi danymi.',
   faqExportTitle: '📥 Czy można eksportować grafik do innych aplikacji?',
   faqExportDesc:
     'Tak. W menu dostępny jest eksport .ics do kalendarza oraz backup JSON. Plik .ics można zaimportować do Google Calendar, Outlooka, iPhone’a i wielu innych aplikacji kalendarzowych.',

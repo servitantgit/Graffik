@@ -70,6 +70,7 @@ Simple/Advanced UI mode toggle behavior;
 `sanitizePrefs()` schema validation logic in `js/core.js`;
 privacy auto-disable when switching Advanced → Simple;
 Drive silent token refresh flow (`ensureDriveToken`, `trySilentDriveRefresh`, `scheduleDriveTokenRefresh`) — do not reintroduce "no auto OAuth";
+`prefs.driveEnabled` opt-in gate (`isDriveFeatureEnabled()`): when false, do not load GIS, request tokens, or show Google login UI; default false for new users, true if an existing Drive session is detected;
 `handleAutoSyncCheck()` conflict verification order (fingerprint reconcile, then revision compare, before warning the user);
 `revision` field in the Drive sync payload and `meta.revision` in `gillette_sync_meta` — only ever advances, never regress it;
 unified `notes[key]` array format (`{id, tag, text}`, tag null/'before'/'after') — do not reintroduce separate per-position note fields on `overtimes[key]`.

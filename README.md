@@ -27,10 +27,9 @@ Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w system
 - 📱 **PWA** — instalacja na telefonie, tryb offline, powiadomienia
 - 📱 **Udostępnianie aplikacji** — link + kod QR + natywne udostępnianie (SMS, messengers)
 - 🔄 **Auto-update** — automatyczne powiadomienie o nowej wersji z jednym kliknięciem
-- ☁️ **Google Drive sync** — dane między urządzeniami
-- 🔗 **Kontekstowe udostępnianie** — link do dokładnie tego widoku
-- 📥 **Eksport .ics** do kalendarza, **drukowanie**
-- ☁️ **Google Drive** — opcjonalny backup i synchronizacja danych
+- 🔗 **Udostępnianie kontekstowe** — link dokładnie do widoku, który oglądasz
+- 📥 **Eksport .ics** do kalendarza, **druk**
+- ☁️ **Google Drive** — opcjonalny backup/synchronizacja (domyślnie wyłączone; włącz w Ustawienia → Prywatność)
 
 ## 📸 Zrzuty ekranu
 
@@ -157,6 +156,7 @@ Działa na każdym Node 18+. Forma `node --test "tests/*.test.js"` działa tylko
 ```
 Graffik/
 ├── index.html          # HTML (bez inline CSS)
+│   ├── privacy.html          # Privacy Policy (uk/en/pl)
 ├── manifest.json       # PWA manifest
 ├── sw.js               # Service Worker (precache ASSETS)
 ├── css/
@@ -271,23 +271,24 @@ Parzystość kluczy, placeholdery i prefiksy dynamiczne sprawdza `node tools/i18
 Aplikacja przechowuje dane w trzech miejscach:
 
 1. **localStorage** (podstawowe) — urlopy, nadgodziny, notatki, ustawienia, edycje grafiku
-2. **Google Drive** (opcjonalne) — ręczna synchronizacja między urządzeniami
+2. **Google Drive** (opcjonalnie, **domyślnie wyłączone**) — backup i synchronizacja między Twoimi urządzeniami. Włącz przełącznik w **Ustawienia → Dane i prywatność**, potem zaloguj się z menu.
 3. **Backup JSON** — eksport/import pliku z całą kopią danych
 
-Przy otwarciu menu synchronizacji z Drive widać **krótki log różnic** (lokalne liczby urlopów / nadgodzin / notatek / własnych zmian vs Drive) oraz przyciski Anuluj / Pobierz / Wyślij w jednym rzędzie.
+Przy otwarciu menu synchronizacji z Drive (gdy backup jest włączony i jesteś zalogowany) widać **krótki log różnic** (lokalne liczby urlopów / nadgodzin / notatek / własnych zmian vs Drive) oraz przyciski Anuluj / Pobierz / Wyślij w jednym rzędzie.
 
-**Uwaga:** Dane w localStorage można stracić przy wyczyszczeniu pamięci przeglądarki. Regularnie rób backup przez 📥 JSON lub ☁️ Google Drive.
+**Uwaga:** Dane w localStorage można stracić przy wyczyszczeniu pamięci przeglądarki. Regularnie rób backup przez 📥 JSON lub ☁️ Google Drive (po włączeniu opcji).
 
 ## 🔒 Prywatność
 
-Wszystkie dane przechowywane są lokalnie w przeglądarce użytkownika. Synchronizacja Google Drive używa własnego konta użytkownika — brak zewnętrznych serwerów. Aplikacja nie wysyła żadnych danych do innych serwisów.
+Wszystkie dane są przechowywane lokalnie w przeglądarce użytkownika. Aplikacja nie zbiera analityki i nie wysyła danych na nasze serwery. Pełny tekst: **[Polityka prywatności](./privacy.html)** (PL / EN / UK).
 
-**Widoczność danych osobistych** (urlopy, nadgodziny, notatki, własny grafik):
+**Tryb prywatności** (Ustawienia → Dane i prywatność lub przełącznik w menu) ukrywa dane osobiste na ekranie (urlopy, nadgodziny, notatki, własne zmiany) i pokazuje tylko oficjalny grafik fabryczny. Jest niezależny od logowania do Google.
 
-- **Zalogowany** do Google Drive → widać pełne dane osobiste
-- **Wylogowany** → tylko fabryczny grafik (bez urlopów / OT / notatek)
+**Google Drive** to wyłącznie opcjonalny backup:
 
-To zastępuje stary ręczny „Privacy Mode”. Logowanie = dostęp do personal data.
+- Domyślnie wyłączony — aplikacja nigdy nie prosi o konto Google.
+- Po włączeniu i zalogowaniu dane trafiają tylko do *Twojego* folderu danych aplikacji Google Drive (zakresy `drive.file` + `drive.appdata`).
+- Wylogowanie lub wyłączenie opcji czyści lokalny token; plik w Drive pozostaje, dopóki go nie usuniesz lub nie cofniesz dostępu w koncie Google.
 
 ## 🐛 Zgłaszanie błędów
 

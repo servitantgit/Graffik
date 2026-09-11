@@ -27,10 +27,9 @@ A PWA for managing shift schedules of 4 brigades working a 3-shift system (Morni
 - 📱 **PWA** — install on your phone, offline mode, notifications
 - 📱 **App sharing** — link + QR code + native sharing (SMS, messengers)
 - 🔄 **Auto-update** — automatic new-version notice, applied with one click
-- ☁️ **Google Drive sync** — data across devices
 - 🔗 **Contextual sharing** — a link to exactly the view you are looking at
 - 📥 **.ics export** to your calendar, **printing**
-- ☁️ **Google Drive** — optional backup and data synchronisation
+- ☁️ **Google Drive** — optional backup/sync (off by default; enable in Settings → Privacy)
 
 ## 📸 Screenshots
 
@@ -157,6 +156,7 @@ Works on any Node 18+. The `node --test "tests/*.test.js"` form only works on No
 ```
 Graffik/
 ├── index.html          # HTML (no inline CSS)
+│   ├── privacy.html          # Privacy Policy (uk/en/pl)
 ├── manifest.json       # PWA manifest
 ├── sw.js               # Service Worker (precached ASSETS)
 ├── css/
@@ -269,23 +269,24 @@ Key parity, placeholders and dynamic prefixes are checked by `node tools/i18n-au
 The app stores data in three places:
 
 1. **localStorage** (primary) — vacations, overtime, notes, settings, schedule edits
-2. **Google Drive** (optional) — manual synchronisation across devices
+2. **Google Drive** (optional, **off by default**) — backup and synchronisation across your devices. Enable the toggle in **Settings → Data & privacy**, then sign in from the menu.
 3. **JSON backup** — export/import of a file with a full copy of the data
 
-Opening the Drive sync menu shows a **short diff log** (local counts of vacations / overtime / notes / custom shifts vs Drive) and the Cancel / Download / Upload buttons in a single row.
+Opening the Drive sync menu (when backup is enabled and you are signed in) shows a **short diff log** (local counts of vacations / overtime / notes / custom shifts vs Drive) and the Cancel / Download / Upload buttons in a single row.
 
-**Note:** data in localStorage can be lost when browser storage is cleared. Make regular backups via 📥 JSON or ☁️ Google Drive.
+**Note:** data in localStorage can be lost when browser storage is cleared. Make regular backups via 📥 JSON or ☁️ Google Drive (after enabling the option).
 
 ## 🔒 Privacy
 
-All data is stored locally in the user's browser. Google Drive sync uses the user's own account — no third-party servers. The app sends no data to any other service.
+All data is stored locally in the user's browser. The app does not collect analytics and does not send data to any server of ours. Full text: **[Privacy Policy](./privacy.html)** (EN / UK / PL).
 
-**Visibility of personal data** (vacations, overtime, notes, custom schedule):
+**Privacy mode** (Settings → Data & privacy, or the menu switch) hides personal data on screen (vacations, overtime, notes, custom shifts) and shows only the official factory schedule. This is independent of Google login.
 
-- **Signed in** to Google Drive → full personal data is visible
-- **Signed out** → the official schedule only (no vacations / OT / notes)
+**Google Drive** is only an optional backup:
 
-This replaces the old manual "Privacy Mode". Signing in = access to personal data.
+- Off by default — the app never asks for a Google account.
+- When you enable it and sign in, data is stored only in *your* Google Drive application-data folder (`drive.file` + `drive.appdata` scopes).
+- Signing out or turning the option off clears the local token; your Drive file remains until you delete it in Google Drive or revoke access in your Google account.
 
 ## 🐛 Reporting bugs
 

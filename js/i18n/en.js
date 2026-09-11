@@ -398,16 +398,18 @@ window.translations.en = {
   faqSaveNote:
     'When signed in to Google Drive, data syncs as one file in the cloud. Without login, data stays only in the browser localStorage.',
   faqSyncTitle: '☁️ How does Google Drive sync work?',
-  faqSyncDesc: 'Sync allows you to transfer app data between devices via Google Drive.',
+  faqSyncDesc:
+    'Google Drive is an optional backup. It is off by default so the app never asks for a Google account until you enable it.',
   faqSync1:
-    'In the menu, select Google Drive. If you are not logged in, the app will ask you to log in.',
-  faqSync2: 'You can send data to Drive or download saved data from Drive.',
+    'Open Settings → Data & privacy and turn on “Google Drive backup”. Only then can you sign in from the menu.',
+  faqSync2: 'After signing in you can upload data to Drive or download a saved copy from Drive.',
   faqSync3:
-    'Synced data includes: schedule settings, vacations, overtime, notes and vacation limits.',
-  faqSync4: 'When downloading data, the app asks for confirmation to overwrite local data.',
+    'Synced data includes: schedule settings, vacations, overtime, notes and vacation limits. The file is stored only in your own Google Drive app-data folder.',
+  faqSync4: 'When downloading data, the app asks for confirmation before overwriting local data.',
   faqSync5:
-    'The sync button is visible only after logging in; after logging out, only the login button is available.',
-  faqSyncNote: 'This is a new way to store the schedule in the cloud without manual export.',
+    'Turning the option off (or signing out) clears the local token and stops all Google login prompts. Privacy mode (hide personal data on screen) is separate from Drive login.',
+  faqSyncNote:
+    'Full details: Privacy policy (menu Settings → Data & privacy, or privacy.html). No analytics; we do not run servers that store your data.',
   faqExportTitle: '📥 Can I export the schedule to other apps?',
   faqExportDesc:
     'Yes. The menu offers .ics calendar export and JSON backup. The .ics file can be imported into Google Calendar, Outlook, iPhone and many other calendar apps.',

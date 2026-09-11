@@ -40,6 +40,7 @@ Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą p
   uiMode: 'simple' | 'advanced', // Simple/Advanced UI mode (auto-detected on first run)
   uiModeToastShown: boolean,     // One-time toast flag для migrating users
   privacyMode: boolean,          // Приховати особисті дані на екрані
+  driveEnabled: boolean,         // Opt-in Google Drive backup (default false; true if existing session)
   personalDataMigratedV5: true   // One-shot migration flag (customSchedule cleanup)
 }
 ```
@@ -173,7 +174,7 @@ Na chwilę obecną zmienne stanu są globalne w `js/main.js`:
 - `factorySchedule`, `factoryMonthHours` — backward-compatible aliases
 - `registerSchedule({...})` — rejestruje nowy typ schedule
 - `registerYearData(scheduleId, year, {...}, {...})` — rejestruje dane roku
-- `shouldShowPersonalData()` — visibility control (login-based, replaces old privacyMode)
+- `shouldShowPersonalData()` — visibility control via `prefs.privacyMode` (independent of Google login; login is only for optional Drive backup)
 
 **js/schedules/gillette/metadata.js** — metadane Gillette schedule:
 
@@ -340,7 +341,10 @@ Brak bufora `pendingChanges` / undo-redo; zapis jest natychmiastowy, tak jak url
 
 ### js/sync.js — Moduł 10: Google Drive
 
-- Logowanie/wylogowanie (OAuth 2.0)
+- Public privacy policy: root `privacy.html` (UK/EN/PL) — required for Google OAuth consent screen.
+- **Opt-in:** `prefs.driveEnabled` (default `false`). When off, GIS is not loaded and no token requests / login popups run. Existing Drive sessions keep the flag `true` on upgrade.
+- `isDriveFeatureEnabled()` — gate for `ensureDriveToken`, `trySilentDriveRefresh`, `handleAutoSyncCheck`, `scheduleDriveTokenRefresh`, `loginDrive`, menu status.
+- Logowanie/wylogowanie (OAuth 2.0) only after the user enables backup
 - `findDriveFile()` — wyszukiwanie pliku w Drive (najnowszy po modifiedTime)
 - `downloadFromDrive()` — pobieranie i pełne zastąpienie lokalnych danych
 - `uploadToDrive()` — wysyłanie danych do Drive; przypisuje monotoniczny `revision`

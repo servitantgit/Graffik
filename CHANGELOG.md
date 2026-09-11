@@ -1,3 +1,18 @@
+# Unreleased — Privacy policy & optional Drive backup
+
+## Added
+- **`privacy.html`** — Privacy Policy in Ukrainian, English and Polish (no data collection; Drive is optional and user-controlled). Link from Settings → Data & privacy.
+- **`prefs.driveEnabled`** — opt-in Google Drive backup (default **off**). When off, the app does not load Google Identity Services and never shows account login popups. Users who already had a Drive session keep the option enabled after upgrade.
+- Settings → Data & privacy: toggle **Google Drive backup** plus status line; turning off runs logout and clears the token.
+
+## Changed
+- README (PL / EN / UK): corrected Privacy section (Privacy Mode is independent of Google login; Drive is optional backup only); link to `privacy.html`; feature list no longer implies Drive is always on.
+- In-app FAQ (`faqSync*`) in all three languages: enable toggle first, then sign in; clarifies scopes and no analytics.
+- `docs/PROJECT_DOCS.md` / `docs/AGENT.md`: document `driveEnabled`, `isDriveFeatureEnabled()`, and fix outdated note that personal-data visibility was login-based.
+
+## Fixed
+- Documentation that claimed “signed out = factory schedule only” — that was Privacy Mode, not Drive login.
+
 # Unreleased — Offline/Tooling Fixes
 
 ## Fixed
