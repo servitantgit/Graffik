@@ -401,7 +401,7 @@ window.translations.uk = {
   faqSyncDesc:
     'Google Drive — опційна резервна копія. За замовчуванням вимкнена, тож застосунок не запитує акаунт Google, доки ви самі її не увімкнете.',
   faqSync1:
-    'Відкрийте Налаштування → Дані та приватність і увімкніть «Резервна копія Google Drive». Лише після цього можна увійти з меню.',
+    'Відкрийте бічне меню → Google Drive і увімкніть «Резервна копія Google Drive». Потім натисніть Увійти. Той самий перемикач є в Налаштування → Приватність (Advanced).',
   faqSync2: 'Після входу можна надіслати дані в Drive або завантажити збережену копію з Drive.',
   faqSync3:
     'Синхронізуються: налаштування графіка, відпустки, надгодини, нотатки та ліміти відпусток. Файл зберігається лише у вашій папці даних застосунку Google Drive.',
@@ -900,11 +900,11 @@ window.translations.uk = {
     'Опційно. Коли вимкнено — застосунок ніколи не запитує акаунт Google. Коли увімкнено — можна увійти, щоб синхронізувати персональні дані у ваш Drive.',
   settingsPrivacyPolicyLink: 'Політика конфіденційності',
   driveFeatureOff: 'Вимкнено',
-  driveFeatureDisabledHint: 'Спочатку увімкніть резервну копію Google Drive у Налаштування → Приватність',
+  driveFeatureDisabledHint: 'Спочатку увімкніть «Резервна копія Google Drive» у блоці Drive в меню',
   driveFeatureEnabledToast: 'Резервну копію Google Drive увімкнено — можна увійти з меню',
   driveFeatureDisabledToast: 'Резервну копію Google Drive вимкнено',
   syncStatusDriveDisabled: 'Резервна копія Google Drive вимкнена',
-  syncStatusDriveDisabledHint: 'Увімкніть у Налаштування → Приватність',
+  syncStatusDriveDisabledHint: 'Увімкніть перемикач вище',
   clear: 'Очистити',
 
   // === ADMIN CENTER AND FACTORY DRAFTS ===

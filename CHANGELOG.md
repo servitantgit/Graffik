@@ -1,3 +1,12 @@
+# Unreleased — Drive switch in side menu
+
+## Added
+- **Drive card switch** at the top of the Google Drive block in the side menu (on/off). No need to dig into Settings → Privacy to enable backup.
+- Shared `setDriveFeatureEnabled()` keeps menu switch and Settings toggle in sync.
+
+## Changed
+- FAQ / hints point to the menu switch first.
+
 # Unreleased — Drive opt-in actually enforced
 
 ## Fixed

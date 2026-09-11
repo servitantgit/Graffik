@@ -401,7 +401,7 @@ window.translations.en = {
   faqSyncDesc:
     'Google Drive is an optional backup. It is off by default so the app never asks for a Google account until you enable it.',
   faqSync1:
-    'Open Settings → Data & privacy and turn on “Google Drive backup”. Only then can you sign in from the menu.',
+    'Open the side menu → Google Drive and turn on “Google Drive backup”. Then tap Sign in. The same switch is also in Settings → Privacy (Advanced).',
   faqSync2: 'After signing in you can upload data to Drive or download a saved copy from Drive.',
   faqSync3:
     'Synced data includes: schedule settings, vacations, overtime, notes and vacation limits. The file is stored only in your own Google Drive app-data folder.',
@@ -899,11 +899,11 @@ window.translations.en = {
     'Optional. When off, the app never asks for a Google account. When on, you can sign in so personal data can sync to your Drive.',
   settingsPrivacyPolicyLink: 'Privacy policy',
   driveFeatureOff: 'Disabled',
-  driveFeatureDisabledHint: 'Enable Google Drive backup in Settings → Privacy first',
+  driveFeatureDisabledHint: 'Turn on “Google Drive backup” at the top of the Drive menu first',
   driveFeatureEnabledToast: 'Google Drive backup enabled — you can sign in from the menu',
   driveFeatureDisabledToast: 'Google Drive backup disabled',
   syncStatusDriveDisabled: 'Google Drive backup is off',
-  syncStatusDriveDisabledHint: 'Enable in Settings → Privacy',
+  syncStatusDriveDisabledHint: 'Turn on the switch above',
   clear: 'Clear',
 
   // === ADMIN CENTER AND FACTORY DRAFTS ===

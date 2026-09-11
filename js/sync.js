@@ -54,6 +54,36 @@ function isDriveTokenValid() {
 }
 
 /** User opt-in for Google Drive (Settings → Privacy). When false, never load GIS / login / refresh. */
+
+/** Turn Drive backup on/off (menu switch + Settings share this). */
+function setDriveFeatureEnabled(on, opts) {
+  const next = !!on;
+  try {
+    if (typeof prefs !== 'undefined' && prefs) {
+      prefs.driveEnabled = next;
+      if (typeof savePrefs === 'function') savePrefs(prefs, true);
+      else if (typeof savePrefsSafe === 'function') savePrefsSafe();
+    }
+  } catch (e) {
+    console.warn('[SYNC] setDriveFeatureEnabled save failed', e);
+  }
+  if (!next && typeof scheduleDriveTokenRefresh === 'function') {
+    try { scheduleDriveTokenRefresh(); } catch (_) {}
+  }
+  const silent = opts && opts.silent;
+  if (!silent && typeof showToast === 'function' && typeof t === 'function') {
+    showToast('success', t(next ? 'driveFeatureEnabledToast' : 'driveFeatureDisabledToast'));
+  }
+  try { updateMenuSyncStatus(); } catch (_) {}
+  try { updateDriveUI(); } catch (_) {}
+  // Keep Settings panel switch in sync if open
+  try {
+    const stBtn = document.getElementById('stDriveEnabled');
+    if (stBtn) stBtn.setAttribute('aria-checked', next ? 'true' : 'false');
+  } catch (_) {}
+  return next;
+}
+
 function driveFeatureOn() {
   if (typeof isDriveFeatureEnabled === 'function') return isDriveFeatureEnabled();
   try {
@@ -963,7 +993,15 @@ function updateMenuSyncStatus() {
 
   const tr = (key, params, fallback) => (typeof t === 'function' ? t(key, params) : fallback);
 
-  // Feature off — no sign-in prompt (opt-in from Settings → Privacy)
+  // Keep menu enable switch + card state in sync
+  const enableBtn = document.getElementById('menuDriveEnable');
+  if (enableBtn) {
+    enableBtn.setAttribute('aria-checked', driveFeatureOn() ? 'true' : 'false');
+  }
+  const card = el.closest('.drive-card');
+  if (card) card.classList.toggle('is-drive-off', !driveFeatureOn());
+
+  // Feature off — no sign-in prompt (use the switch above)
   if (!driveFeatureOn()) {
     if (icon) {
       icon.classList.add('mi-icon-svg');
@@ -974,7 +1012,7 @@ function updateMenuSyncStatus() {
     if (badge) badge.classList.add('inactive');
     if (warnBlock) warnBlock.style.display = 'none';
     el.classList.add('logged-out');
-    el.title = tr('syncStatusDriveDisabledHint', null, 'Enable in Settings → Privacy');
+    el.title = tr('syncStatusDriveDisabledHint', null, 'Turn on the switch above');
     return;
   }
 
@@ -1595,6 +1633,16 @@ window.onMenuSyncStatusClick = onMenuSyncStatusClick;
 
 /* === INIT === */
 function initSync() {
+  const enableBtn = document.getElementById('menuDriveEnable');
+  if (enableBtn) {
+    enableBtn.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const next = enableBtn.getAttribute('aria-checked') !== 'true';
+      setDriveFeatureEnabled(next);
+    };
+  }
+
   const statusBtn = document.getElementById('menuSyncStatus');
   if (statusBtn) {
     statusBtn.onclick = () => {

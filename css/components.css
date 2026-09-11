@@ -918,6 +918,64 @@ a.menu-item {
   margin-bottom: 8px;
 }
 
+
+/* Enable switch at top of Drive card */
+button.drive-enable-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 6px 2px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  color: var(--text-main);
+}
+button.drive-enable-row:hover {
+  background: var(--bg-controls);
+}
+.drive-enable-row .de-label {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+}
+.drive-enable-row .de-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--bg-controls, #64748b);
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.drive-enable-row .de-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  transition: transform 0.15s;
+}
+.drive-enable-row[aria-checked="true"] .de-switch {
+  background: #27ae60;
+}
+.drive-enable-row[aria-checked="true"] .de-knob {
+  transform: translateX(20px);
+}
+.drive-card.is-drive-off .drive-status-row,
+.drive-card.is-drive-off .drive-account,
+.drive-card.is-drive-off .drive-warn,
+.drive-card.is-drive-off .drive-logout {
+  opacity: 0.55;
+}
+
 .drive-card {
   display: flex;
   flex-direction: column;

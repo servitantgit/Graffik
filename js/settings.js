@@ -683,20 +683,18 @@ function bindPrivacy(body) {
       if (driveEnabledBtn) {
         driveEnabledBtn.addEventListener('click', function () {
           const next = driveEnabledBtn.getAttribute('aria-checked') !== 'true';
-          prefs.driveEnabled = next;
-          savePrefsSafe();
-          driveEnabledBtn.setAttribute('aria-checked', next ? 'true' : 'false');
-          if (typeof showToast === 'function') {
-            showToast('success', tr(next ? 'driveFeatureEnabledToast' : 'driveFeatureDisabledToast'));
-          }
-          if (!next && typeof scheduleDriveTokenRefresh === 'function') {
-            try { scheduleDriveTokenRefresh(); } catch (e) { /* clears timer when off */ }
-          }
-          if (typeof updateMenuSyncStatus === 'function') {
-            try { updateMenuSyncStatus(); } catch (e) { /* ignore */ }
-          }
-          if (typeof updateDriveUI === 'function') {
-            try { updateDriveUI(); } catch (e) { /* ignore */ }
+          if (typeof setDriveFeatureEnabled === 'function') {
+            setDriveFeatureEnabled(next);
+          } else {
+            prefs.driveEnabled = next;
+            savePrefsSafe();
+            driveEnabledBtn.setAttribute('aria-checked', next ? 'true' : 'false');
+            if (typeof showToast === 'function') {
+              showToast('success', tr(next ? 'driveFeatureEnabledToast' : 'driveFeatureDisabledToast'));
+            }
+            if (typeof updateMenuSyncStatus === 'function') {
+              try { updateMenuSyncStatus(); } catch (e) { /* ignore */ }
+            }
           }
         });
       }
