@@ -129,3 +129,16 @@ No `npm install` — Node built-ins only.
 ```markdown
 [![Unit Tests](https://github.com/OWNER/REPO/actions/workflows/test.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/test.yml)
 ```
+
+## Coverage focus
+
+Pure modules only (no DOM / no Google API):
+
+| File | Module under test |
+|------|-------------------|
+| `notes-tracking.test.js` | `js/personal/notes-tracking.js` |
+| `overtime-logic.test.js` | `js/overtime-logic.js` |
+| `schedules-core.test.js` | `js/schedules/_core.js` |
+| `sync-tracking.test.js` | `js/personal/sync-tracking.js` (incl. fingerprint stability) |
+
+Run: `node tests/run.js` (Node 18+).

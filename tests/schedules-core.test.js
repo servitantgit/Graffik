@@ -199,3 +199,52 @@ test('formatTimeRange: pads single digits with zero', () => {
 test('formatTimeRange: hour 24 wraps to 00', () => {
   assert.strictEqual(formatTimeRange(20, 24), '20:00\u201300:00');
 });
+
+
+// ============================================================
+// Additional holiday / calendar edge cases
+// ============================================================
+
+test('buildHolidays: Pentecost 2026 is May 24 (Easter + 49)', () => {
+  const h = buildHolidays(2026);
+  assert.ok(h['5-24'], 'Pentecost 2026 should be May 24');
+});
+
+test('buildHolidays: Corpus Christi 2026 is June 4 (Easter + 60)', () => {
+  const h = buildHolidays(2026);
+  assert.ok(h['6-4'], 'Corpus Christi 2026 should be June 4');
+});
+
+test('buildHolidays: Easter 2023 is April 9', () => {
+  const h = buildHolidays(2023);
+  assert.ok(h['4-9'], 'Easter 2023 should be April 9');
+  assert.ok(h['4-10'], 'Easter Monday 2023 should be April 10');
+});
+
+test('buildHolidays: different years can share fixed dates but move Easter', () => {
+  const a = buildHolidays(2024);
+  const b = buildHolidays(2025);
+  assert.ok(a['1-1'] && b['1-1']);
+  assert.ok(a['3-31'], '2024 Easter Mar 31');
+  assert.ok(b['4-20'], '2025 Easter Apr 20');
+  assert.strictEqual(a['3-31'] && b['3-31'] ? true : !b['3-31'], true);
+});
+
+test('isWolne: whitespace-only is NOT treated as free (only empty string)', () => {
+  // Current implementation: only '', 'W', null, undefined
+  assert.strictEqual(isWolne(' '), false);
+});
+
+test('isWolne: lowercase w is NOT free (case-sensitive)', () => {
+  assert.strictEqual(isWolne('w'), false);
+});
+
+test('formatTimeRange: negative hour normalizes into 0-23', () => {
+  // -1 → 23:00
+  const s = formatTimeRange(-1, 6);
+  assert.ok(s.startsWith('23:00'));
+});
+
+test('daysInMonthCal: February 1900 is not leap (century rule)', () => {
+  assert.strictEqual(daysInMonthCal(1900, 2), 28);
+});

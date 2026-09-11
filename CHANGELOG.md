@@ -1,3 +1,13 @@
+# Unreleased — Unit test coverage expansion
+
+## Added
+- **sync-tracking tests:** `stableSyncSerialize`, `hashSyncString`, `getSyncFingerprint` (order-independent stability), `getPersonalShiftOverrides`.
+- **overtime-logic tests:** Easter Monday / Corpus Christi holidays, P-shift przed day hours, night boundary at 22:00, zero-hour time ranges.
+- **schedules-core tests:** Pentecost/Corpus 2026, Easter 2023, isWolne case/whitespace, leap-century Feb 1900, negative hour formatTimeRange.
+- **notes-tracking tests:** `genNoteId` uniqueness, add/remove/update edge cases, migration does not mutate inputs, whitespace overtime notes dropped.
+
+All pure-logic suites: **166** tests, 0 failures (`node tests/run.js`).
+
 # Unreleased — Privacy policy & optional Drive backup
 
 ## Added

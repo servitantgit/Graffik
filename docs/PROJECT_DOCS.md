@@ -640,7 +640,7 @@ Używany dla wszystkich przycisków w side menu i edit banner.
 
 - Zmienne stanu są globalne — potencjalne konflikty przy dużych zmianach
 - CSS jest podzielony na moduły według funkcji
-- Brak testów jednostkowych automatycznych (poza `test_core.js` dla obliczeń)
+- Unit tests: `node tests/run.js` (notes, overtime, schedules-core, sync-tracking; pure logic only)
 - Synchronizacja Google Drive: brak merge/diff — last-write-wins (patrz sekcja 6)
 - `goToMonth` musi być exposed na `window` (patrz `window.goToMonth = goToMonth`)
 - Klucze i18n są rozproszone po 3 plikach — brak central registry i validacji brakujących kluczy

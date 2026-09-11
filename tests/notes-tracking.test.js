@@ -12,6 +12,7 @@ const test = require('node:test');
 const assert = require('node:assert');
 
 const {
+  genNoteId,
   noteEntryHasContent,
   addNoteEntry,
   removeNoteEntry,
@@ -365,4 +366,71 @@ test('computeUnifiedNotesMigration: handles empty/undefined inputs gracefully', 
 test('computeUnifiedNotesMigration: non-object overtime record is passed through unchanged', () => {
   const result = computeUnifiedNotesMigration({}, { '2026-1-15-A': null });
   assert.strictEqual(result.overtimes['2026-1-15-A'], null);
+});
+
+
+// ============================================================
+// Additional edge cases
+// ============================================================
+
+test('genNoteId: returns non-empty string', () => {
+  const id = genNoteId();
+  assert.strictEqual(typeof id, 'string');
+  assert.ok(id.length > 0);
+});
+
+test('genNoteId: successive ids are unique (smoke 50)', () => {
+  const set = new Set();
+  for (let i = 0; i < 50; i++) set.add(genNoteId());
+  assert.strictEqual(set.size, 50);
+});
+
+test('removeNoteEntry: unknown id leaves list unchanged (new array)', () => {
+  const list = [{ id: 'a', tag: null, text: 'x' }];
+  const next = removeNoteEntry(list, 'missing');
+  assert.notStrictEqual(next, list);
+  assert.deepStrictEqual(next, list);
+});
+
+test('updateNoteText: unknown id leaves list unchanged', () => {
+  const list = [{ id: 'a', tag: null, text: 'x' }];
+  const next = updateNoteText(list, 'nope', 'y');
+  assert.deepStrictEqual(next, list);
+});
+
+test('addNoteEntry: trims text and assigns id', () => {
+  const result = addNoteEntry([], '  hello  ', null);
+  assert.strictEqual(result.list.length, 1);
+  assert.strictEqual(result.list[0].text, 'hello');
+  assert.strictEqual(result.list[0].tag, null);
+  assert.ok(result.id);
+  assert.strictEqual(result.list[0].id, result.id);
+});
+
+test('addNoteEntry: blank text is not added', () => {
+  const result = addNoteEntry([], '   ', null);
+  assert.strictEqual(result.list.length, 0);
+  assert.strictEqual(result.id, null);
+});
+
+test('computeUnifiedNotesMigration: does not mutate input objects', () => {
+  const rawNotes = { '2026-1-1-A': '  hi  ' };
+  const overtimes = {
+    '2026-1-1-A': { przed: { hours: 1, note: ' early ' }, po: null },
+  };
+  const notesCopy = JSON.parse(JSON.stringify(rawNotes));
+  const otCopy = JSON.parse(JSON.stringify(overtimes));
+  computeUnifiedNotesMigration(rawNotes, overtimes);
+  assert.deepStrictEqual(rawNotes, notesCopy);
+  assert.deepStrictEqual(overtimes, otCopy);
+});
+
+test('computeUnifiedNotesMigration: whitespace-only overtime note is dropped and stripped', () => {
+  const overtimes = {
+    '2026-1-1-A': { przed: { hours: 2, note: '  ' }, po: null },
+  };
+  const result = computeUnifiedNotesMigration({}, overtimes);
+  assert.strictEqual(result.notes['2026-1-1-A'], undefined);
+  assert.strictEqual('note' in result.overtimes['2026-1-1-A'].przed, false);
+  assert.strictEqual(result.overtimes['2026-1-1-A'].przed.hours, 2);
 });

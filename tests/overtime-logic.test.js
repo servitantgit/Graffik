@@ -226,3 +226,51 @@ test('categorizeOvertime: total hours equals input', () => {
       `Total ${total} !== input ${tc.h} for ${JSON.stringify(tc)}`);
   }
 });
+
+
+// ============================================================
+// Additional edge / boundary cases
+// ============================================================
+
+test('categorizeOvertime: Easter Monday 2026 is holiday (+200%)', () => {
+  // Easter 2026 = April 5, Monday = April 6
+  const result = categorizeOvertime(2026, 4, 6, 'R', 'po', 4);
+  assert.deepStrictEqual(result, { h50: 0, h100: 0, h200: 4 });
+});
+
+test('categorizeOvertime: Corpus Christi 2026 is holiday (+200%)', () => {
+  // Easter + 60 days: April 5 + 60 = June 4, 2026
+  const result = categorizeOvertime(2026, 6, 4, 'P', 'przed', 2);
+  assert.deepStrictEqual(result, { h50: 0, h100: 0, h200: 2 });
+});
+
+test('categorizeOvertime: P shift przed 2h is still day hours (12:00-14:00)', () => {
+  // P = 14:00-22:00, przed 2h = 12:00-14:00 → day → +50%
+  const result = categorizeOvertime(2026, 3, 4, 'P', 'przed', 2);
+  assert.deepStrictEqual(result, { h50: 2, h100: 0, h200: 0 });
+});
+
+test('categorizeOvertime: R po crossing into night boundary at 22:00', () => {
+  // R ends 14:00; po 8h = 14:00-22:00 — all day hours (22 not included as start of night in loop?
+  // loop: curHour = 14; hours 0..7 → 14,15,16,17,18,19,20,21 — all day
+  const result = categorizeOvertime(2026, 3, 4, 'R', 'po', 8);
+  assert.deepStrictEqual(result, { h50: 8, h100: 0, h200: 0 });
+});
+
+test('categorizeOvertime: R po 9h includes first night hour at 22:00', () => {
+  // hours 0..8 → 14..22 inclusive as start hours → 22 is night
+  const result = categorizeOvertime(2026, 3, 4, 'R', 'po', 9);
+  assert.deepStrictEqual(result, { h50: 8, h100: 1, h200: 0 });
+});
+
+test('calcOvertimeTime: przed P shift 2h → 12:00-14:00', () => {
+  assert.deepStrictEqual(calcOvertimeTime('P', 'przed', 2), { from: 12, to: 14 });
+});
+
+test('calcOvertimeTime: 0 hours przed keeps from===to at shift start', () => {
+  assert.deepStrictEqual(calcOvertimeTime('R', 'przed', 0), { from: 6, to: 6 });
+});
+
+test('calcOvertimeTime: 0 hours po keeps from===to at shift end (R end 14)', () => {
+  assert.deepStrictEqual(calcOvertimeTime('R', 'po', 0), { from: 14, to: 14 });
+});
