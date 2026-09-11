@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Privacy Policy — Graffik</title>
+  <meta name="description" content="Privacy Policy for Graffik schedule app. No data collection." />
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #1a2332;
+      --text: #e7ecf3;
+      --muted: #9aa8bc;
+      --accent: #3b82f6;
+      --border: #2a3548;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 24px 16px 48px;
+    }
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 1.75rem;
+      margin: 0 0 8px;
+      font-weight: 700;
+    }
+    .meta {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+    .lang-switch {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .lang-switch button {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .lang-switch button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .lang-block { display: none; }
+    .lang-block.active { display: block; }
+    h2 {
+      font-size: 1.15rem;
+      margin: 28px 0 10px;
+      font-weight: 600;
+    }
+    p, li { color: var(--text); margin: 0 0 12px; }
+    ul { padding-left: 1.25rem; margin: 0 0 16px; }
+    a { color: var(--accent); }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 22px;
+      margin-bottom: 16px;
+    }
+    .back {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+    .back:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="./">← Graffik</a>
+
+    <div class="lang-switch" role="tablist" aria-label="Language">
+      <button type="button" data-lang="uk" class="active" role="tab">Українська</button>
+      <button type="button" data-lang="en" role="tab">English</button>
+      <button type="button" data-lang="pl" role="tab">Polski</button>
+    </div>
+
+    <!-- UK -->
+    <div id="lang-uk" class="lang-block active" lang="uk">
+      <h1>Політика конфіденційності</h1>
+      <p class="meta">Graffik (графік змін) · Останнє оновлення: 11 вересня 2026</p>
+
+      <div class="card">
+        <p><strong>Коротко:</strong> застосунок не збирає, не передає і не продає ваші дані. Усе зберігається лише у вашому браузері. Google Drive — опційна резервна копія, яку ви вмикаєте самі.</p>
+      </div>
+
+      <h2>1. Хто ми</h2>
+      <p>Graffik — це веб-застосунок (PWA) для перегляду графіка змін. Він працює у вашому браузері. У нас немає серверів, які зберігають ваші особисті дані.</p>
+
+      <h2>2. Які дані обробляються</h2>
+      <ul>
+        <li><strong>Локально в браузері</strong> (localStorage): вибрана бригада, рік, персональні зміни, відпустки, понаднормові, нотатки, налаштування інтерфейсу. Ці дані не залишають ваш пристрій, поки ви самі не увімкнете синхронізацію.</li>
+        <li><strong>Google Drive (опційно)</strong>: якщо ви увімкнете резервне копіювання та увійдете в акаунт Google, застосунок зберігає файл із вашими персональними даними лише у <em>вашій</em> папці даних застосунку Google Drive (appDataFolder). Доступ маєте тільки ви та цей застосунок за вашою згодою.</li>
+      </ul>
+      <p>Ми <strong>не</strong> збираємо: електронну пошту (окрім тієї, що Google повертає вам під час входу, і вона зберігається лише локально), аналітику, рекламні ідентифікатори, дані про інших користувачів.</p>
+
+      <h2>3. Навіщо потрібен Google</h2>
+      <p>Єдине використання Google — опційна синхронізація вашого файлу даних між вашими пристроями через Google Drive API (області доступу <code>drive.file</code> та <code>drive.appdata</code>). Вхід у Google і синхронізація вмикаються лише за вашою явною дією (галочка / кнопка входу). Ви можете будь-коли вимкнути синхронізацію та вийти з акаунта — тоді токен і локальні посилання на Drive очищаються.</p>
+
+      <h2>4. Сторонні сервіси</h2>
+      <p>Окрім Google Identity Services / Google Drive (лише якщо ви увімкнули синхронізацію), застосунок не підключає сторонніх трекерів, аналітики чи реклами.</p>
+
+      <h2>5. Зберігання та безпека</h2>
+      <p>Дані в браузері залежать від політик вашого браузера (очищення сайту, приватний режим тощо). Файл у Google Drive захищений вашим акаунтом Google. Ми не маємо доступу до вашого Drive.</p>
+
+      <h2>6. Ваші права</h2>
+      <ul>
+        <li>Видалити локальні персональні дані — у налаштуваннях «Дані та приватність».</li>
+        <li>Вимкнути синхронізацію з Google Drive і вийти з акаунта.</li>
+        <li>Видалити файл застосунку з Google Drive вручну (або відкликати доступ у налаштуваннях акаунта Google).</li>
+      </ul>
+
+      <h2>7. Діти</h2>
+      <p>Застосунок не призначений для дітей і не збирає дані свідомо.</p>
+
+      <h2>8. Зміни</h2>
+      <p>Ми можемо оновлювати цю політику. Актуальна версія завжди доступна за цією адресою. Дата оновлення вказана на початку.</p>
+
+      <h2>9. Контакт</h2>
+      <p>Питання щодо конфіденційності: через репозиторій проєкту на GitHub (issues) або контакт, зазначений на сторінці застосунку.</p>
+    </div>
+
+    <!-- EN -->
+    <div id="lang-en" class="lang-block" lang="en">
+      <h1>Privacy Policy</h1>
+      <p class="meta">Graffik (shift schedule) · Last updated: 11 September 2026</p>
+
+      <div class="card">
+        <p><strong>In short:</strong> the app does not collect, transmit, or sell your data. Everything stays in your browser. Google Drive is an optional backup that you turn on yourself.</p>
+      </div>
+
+      <h2>1. Who we are</h2>
+      <p>Graffik is a web app (PWA) for viewing shift schedules. It runs in your browser. We do not operate servers that store your personal data.</p>
+
+      <h2>2. What data is processed</h2>
+      <ul>
+        <li><strong>Locally in the browser</strong> (localStorage): selected brigade, year, personal shift changes, vacations, overtime, notes, UI settings. This data does not leave your device unless you enable sync yourself.</li>
+        <li><strong>Google Drive (optional)</strong>: if you enable backup and sign in with Google, the app stores a file with your personal data only in <em>your</em> Google Drive application data folder (appDataFolder). Only you and this app (with your consent) can access it.</li>
+      </ul>
+      <p>We do <strong>not</strong> collect: email (except what Google returns to you on sign-in, stored only locally), analytics, advertising IDs, or other users’ data.</p>
+
+      <h2>3. Why Google is used</h2>
+      <p>Google is used solely for optional sync of your data file across your devices via the Google Drive API (scopes <code>drive.file</code> and <code>drive.appdata</code>). Sign-in and sync happen only after your explicit action (toggle / sign-in button). You can turn sync off and sign out at any time; the token and local Drive references are then cleared.</p>
+
+      <h2>4. Third-party services</h2>
+      <p>Apart from Google Identity Services / Google Drive (only if you enable sync), the app does not use third-party trackers, analytics, or ads.</p>
+
+      <h2>5. Storage and security</h2>
+      <p>Browser data depends on your browser’s policies (site data clearing, private mode, etc.). The file in Google Drive is protected by your Google account. We have no access to your Drive.</p>
+
+      <h2>6. Your rights</h2>
+      <ul>
+        <li>Delete local personal data — in Settings → Data &amp; privacy.</li>
+        <li>Disable Google Drive sync and sign out.</li>
+        <li>Delete the app’s file from Google Drive manually (or revoke access in your Google account settings).</li>
+      </ul>
+
+      <h2>7. Children</h2>
+      <p>The app is not directed at children and does not knowingly collect data from them.</p>
+
+      <h2>8. Changes</h2>
+      <p>We may update this policy. The current version is always available at this URL. The update date is shown at the top.</p>
+
+      <h2>9. Contact</h2>
+      <p>Privacy questions: via the project’s GitHub repository (issues) or the contact listed on the app page.</p>
+    </div>
+
+    <!-- PL -->
+    <div id="lang-pl" class="lang-block" lang="pl">
+      <h1>Polityka prywatności</h1>
+      <p class="meta">Graffik (grafik zmian) · Ostatnia aktualizacja: 11 września 2026</p>
+
+      <div class="card">
+        <p><strong>W skrócie:</strong> aplikacja nie zbiera, nie przekazuje i nie sprzedaje Twoich danych. Wszystko zostaje w przeglądarce. Google Drive to opcjonalna kopia zapasowa, którą włączasz samodzielnie.</p>
+      </div>
+
+      <h2>1. Kim jesteśmy</h2>
+      <p>Graffik to aplikacja webowa (PWA) do przeglądania grafiku zmian. Działa w Twojej przeglądarce. Nie prowadzimy serwerów przechowujących Twoje dane osobowe.</p>
+
+      <h2>2. Jakie dane są przetwarzane</h2>
+      <ul>
+        <li><strong>Lokalnie w przeglądarce</strong> (localStorage): wybrana brygada, rok, osobiste zmiany zmian, urlopy, nadgodziny, notatki, ustawienia interfejsu. Te dane nie opuszczają urządzenia, dopóki samodzielnie nie włączysz synchronizacji.</li>
+        <li><strong>Google Drive (opcjonalnie)</strong>: jeśli włączysz kopię zapasową i zalogujesz się kontem Google, aplikacja zapisuje plik z Twoimi danymi osobistymi wyłącznie w <em>Twoim</em> folderze danych aplikacji Google Drive (appDataFolder). Dostęp masz tylko Ty oraz ta aplikacja za Twoją zgodą.</li>
+      </ul>
+      <p><strong>Nie</strong> zbieramy: adresu e-mail (poza tym, co Google zwraca przy logowaniu — przechowywany tylko lokalnie), analityki, identyfikatorów reklamowych ani danych innych użytkowników.</p>
+
+      <h2>3. Po co używamy Google</h2>
+      <p>Google służy wyłącznie do opcjonalnej synchronizacji Twojego pliku danych między urządzeniami przez Google Drive API (zakresy <code>drive.file</code> i <code>drive.appdata</code>). Logowanie i synchronizacja następują tylko po Twojej wyraźnej akcji (przełącznik / przycisk logowania). W każdej chwili możesz wyłączyć synchronizację i wylogować się — token oraz lokalne odwołania do Drive zostaną wyczyszczone.</p>
+
+      <h2>4. Usługi zewnętrzne</h2>
+      <p>Poza Google Identity Services / Google Drive (tylko gdy włączysz synchronizację) aplikacja nie korzysta z trackerów, analityki ani reklam firm trzecich.</p>
+
+      <h2>5. Przechowywanie i bezpieczeństwo</h2>
+      <p>Dane w przeglądarce zależą od zasad Twojej przeglądarki (czyszczenie danych witryny, tryb prywatny itd.). Plik w Google Drive chroni Twoje konto Google. Nie mamy dostępu do Twojego Drive.</p>
+
+      <h2>6. Twoje prawa</h2>
+      <ul>
+        <li>Usunąć lokalne dane osobiste — w Ustawieniach → Dane i prywatność.</li>
+        <li>Wyłączyć synchronizację z Google Drive i wylogować się.</li>
+        <li>Usunąć plik aplikacji z Google Drive ręcznie (lub cofnąć dostęp w ustawieniach konta Google).</li>
+      </ul>
+
+      <h2>7. Dzieci</h2>
+      <p>Aplikacja nie jest skierowana do dzieci i świadomie nie zbiera ich danych.</p>
+
+      <h2>8. Zmiany</h2>
+      <p>Możemy aktualizować tę politykę. Aktualna wersja jest zawsze dostępna pod tym adresem. Data aktualizacji jest podana na początku.</p>
+
+      <h2>9. Kontakt</h2>
+      <p>Pytania o prywatność: przez repozytorium projektu na GitHub (issues) lub kontakt podany na stronie aplikacji.</p>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var buttons = document.querySelectorAll('.lang-switch button');
+      var blocks = {
+        uk: document.getElementById('lang-uk'),
+        en: document.getElementById('lang-en'),
+        pl: document.getElementById('lang-pl')
+      };
+      function setLang(lang) {
+        Object.keys(blocks).forEach(function (k) {
+          blocks[k].classList.toggle('active', k === lang);
+        });
+        buttons.forEach(function (btn) {
+          btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+        });
+        document.documentElement.lang = lang;
+        try {
+          localStorage.setItem('grafik_privacy_lang', lang);
+        } catch (e) {}
+        history.replaceState(null, '', '#' + lang);
+      }
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          setLang(btn.getAttribute('data-lang'));
+        });
+      });
+      var fromHash = (location.hash || '').replace('#', '');
+      var fromStore = null;
+      try { fromStore = localStorage.getItem('grafik_privacy_lang'); } catch (e) {}
+      var fromNav = (navigator.language || '').slice(0, 2).toLowerCase();
+      var initial = ['uk', 'en', 'pl'].indexOf(fromHash) >= 0 ? fromHash
+        : (['uk', 'en', 'pl'].indexOf(fromStore) >= 0 ? fromStore
+        : (fromNav === 'uk' || fromNav === 'ru' ? 'uk' : fromNav === 'pl' ? 'pl' : 'en'));
+      setLang(initial);
+    })();
+  </script>
+</body>
+</html>

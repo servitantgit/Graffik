@@ -893,6 +893,16 @@ window.translations.uk = {
     'Буде видалено особисті зміни, відпустки, надгодини та нотатки, збережені в цьому браузері. Налаштування, вхід у Google Drive, публічний заводський графік і чернетки адміністратора залишаться без змін.',
   settingsPrivacyClearSuccess: 'Локальні персональні дані очищено',
   driveNotLoggedIn: 'Не виконано вхід',
+  settingsPrivacyDriveEnable: 'Резервна копія Google Drive',
+  settingsPrivacyDriveEnableDesc:
+    'Опційно. Коли вимкнено — застосунок ніколи не запитує акаунт Google. Коли увімкнено — можна увійти, щоб синхронізувати персональні дані у ваш Drive.',
+  settingsPrivacyPolicyLink: 'Політика конфіденційності',
+  driveFeatureOff: 'Вимкнено',
+  driveFeatureDisabledHint: 'Спочатку увімкніть резервну копію Google Drive у Налаштування → Приватність',
+  driveFeatureEnabledToast: 'Резервну копію Google Drive увімкнено — можна увійти з меню',
+  driveFeatureDisabledToast: 'Резервну копію Google Drive вимкнено',
+  syncStatusDriveDisabled: 'Резервна копія Google Drive вимкнена',
+  syncStatusDriveDisabledHint: 'Увімкніть у Налаштування → Приватність',
   clear: 'Очистити',
 
   // === ADMIN CENTER AND FACTORY DRAFTS ===

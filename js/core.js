@@ -118,6 +118,25 @@ function sanitizePrefs(raw) {
     false,
     'not boolean');
 
+  // Optional Google Drive backup/sync. Off by default so the app never
+  // prompts for Google login unless the user explicitly enables it.
+  // Exception: users who already have a Drive token/session keep it enabled
+  // so an update does not silently disconnect them.
+  let driveDefault = false;
+  try {
+    if (
+      localStorage.getItem('grafik_drive_token') ||
+      localStorage.getItem('grafik_drive_user_email') ||
+      localStorage.getItem('grafik_drive_had_session') === '1'
+    ) {
+      driveDefault = true;
+    }
+  } catch (_) {}
+  fix('driveEnabled',
+    typeof p.driveEnabled === 'boolean',
+    driveDefault,
+    'not boolean');
+
   // === Onboarding flags ===
   fix('welcomed',
     typeof p.welcomed === 'boolean',

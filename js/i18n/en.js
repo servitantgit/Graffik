@@ -893,6 +893,16 @@ window.translations.en = {
     'Personal shift changes, vacations, overtime and notes stored in this browser will be removed. Settings, Google Drive login, the public factory schedule and administrator drafts will remain unchanged.',
   settingsPrivacyClearSuccess: 'Local personal data has been cleared',
   driveNotLoggedIn: 'Not signed in',
+  settingsPrivacyDriveEnable: 'Google Drive backup',
+  settingsPrivacyDriveEnableDesc:
+    'Optional. When off, the app never asks for a Google account. When on, you can sign in so personal data can sync to your Drive.',
+  settingsPrivacyPolicyLink: 'Privacy policy',
+  driveFeatureOff: 'Disabled',
+  driveFeatureDisabledHint: 'Enable Google Drive backup in Settings → Privacy first',
+  driveFeatureEnabledToast: 'Google Drive backup enabled — you can sign in from the menu',
+  driveFeatureDisabledToast: 'Google Drive backup disabled',
+  syncStatusDriveDisabled: 'Google Drive backup is off',
+  syncStatusDriveDisabledHint: 'Enable in Settings → Privacy',
   clear: 'Clear',
 
   // === ADMIN CENTER AND FACTORY DRAFTS ===

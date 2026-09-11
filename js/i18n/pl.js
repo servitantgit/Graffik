@@ -895,6 +895,16 @@ window.translations.pl = {
     'Zostaną usunięte własne zmiany, urlopy, nadgodziny i notatki zapisane w tej przeglądarce. Ustawienia, logowanie Google Drive, publiczny grafik fabryczny i szkice administratora pozostaną bez zmian.',
   settingsPrivacyClearSuccess: 'Lokalne dane osobiste zostały wyczyszczone',
   driveNotLoggedIn: 'Nie zalogowano',
+  settingsPrivacyDriveEnable: 'Kopia zapasowa Google Drive',
+  settingsPrivacyDriveEnableDesc:
+    'Opcjonalnie. Gdy wyłączone — aplikacja nigdy nie prosi o konto Google. Gdy włączone — możesz się zalogować, aby synchronizować dane osobiste z Twoim Drive.',
+  settingsPrivacyPolicyLink: 'Polityka prywatności',
+  driveFeatureOff: 'Wyłączone',
+  driveFeatureDisabledHint: 'Najpierw włącz kopię zapasową Google Drive w Ustawienia → Prywatność',
+  driveFeatureEnabledToast: 'Kopia zapasowa Google Drive włączona — możesz zalogować się z menu',
+  driveFeatureDisabledToast: 'Kopia zapasowa Google Drive wyłączona',
+  syncStatusDriveDisabled: 'Kopia zapasowa Google Drive jest wyłączona',
+  syncStatusDriveDisabledHint: 'Włącz w Ustawienia → Prywatność',
   clear: 'Wyczyść',
 
   // === ADMIN CENTER AND FACTORY DRAFTS ===
