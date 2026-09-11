@@ -53,6 +53,17 @@ function isDriveTokenValid() {
   return !!(gDriveToken && Date.now() < gDriveTokenExpiry - 60000);
 }
 
+/** User opt-in for Google Drive (Settings → Privacy). When false, never load GIS / login / refresh. */
+function driveFeatureOn() {
+  if (typeof isDriveFeatureEnabled === 'function') return isDriveFeatureEnabled();
+  try {
+    if (typeof prefs !== 'undefined' && prefs && typeof prefs.driveEnabled === 'boolean') {
+      return prefs.driveEnabled === true;
+    }
+  } catch (_) {}
+  return false;
+}
+
 /** True when the e-mail is still unknown and worth asking Google for. */
 function needIdentityScope() {
   if (driveUserEmail) return false;
@@ -347,6 +358,7 @@ function scheduleDriveTokenRefresh() {
     clearTimeout(gDriveRefreshTimer);
     gDriveRefreshTimer = null;
   }
+  if (!driveFeatureOn()) return;
   if (!gDriveTokenExpiry) return;
   const delay = gDriveTokenExpiry - Date.now() - 5 * 60000;
   if (delay <= 0) return; // already due — next ensureDriveToken() call covers it
@@ -529,6 +541,7 @@ function requestDriveAccessToken(opts) {
  * grant to refresh and Google would silently fail anyway.
  */
 async function trySilentDriveRefresh() {
+  if (!driveFeatureOn()) return false;
   if (isDriveTokenValid()) return true;
   if (!hadDriveSession() && !hasGrantedDriveScopes()) return false;
   const ok = await requestDriveAccessToken({ interactive: false });
@@ -545,6 +558,7 @@ async function trySilentDriveRefresh() {
  *   nothing until the user manually logs out and back in.
  */
 async function ensureDriveToken(interactiveFallback) {
+  if (!driveFeatureOn()) return false;
   if (isDriveTokenValid()) return true;
   // Always try silent first — even for user-initiated actions. A valid Google
   // session usually renews the token with no UI at all, so upload/download
@@ -947,12 +961,27 @@ function updateMenuSyncStatus() {
   const warnText = document.getElementById('menuDriveWarnText');
   if (!el || !text) return;
 
+  const tr = (key, params, fallback) => (typeof t === 'function' ? t(key, params) : fallback);
+
+  // Feature off — no sign-in prompt (opt-in from Settings → Privacy)
+  if (!driveFeatureOn()) {
+    if (icon) {
+      icon.classList.add('mi-icon-svg');
+      icon.innerHTML = ICON_GOOGLE_G;
+    }
+    text.textContent = tr('syncStatusDriveDisabled', null, 'Google Drive backup is off');
+    if (badgeLabel) badgeLabel.textContent = tr('driveFeatureOff', null, 'Disabled');
+    if (badge) badge.classList.add('inactive');
+    if (warnBlock) warnBlock.style.display = 'none';
+    el.classList.add('logged-out');
+    el.title = tr('syncStatusDriveDisabledHint', null, 'Enable in Settings → Privacy');
+    return;
+  }
+
   const logged = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : isDriveTokenValid();
   const unsynced = typeof hasUnsyncedChanges === 'function' && hasUnsyncedChanges();
   const remoteNewer = !!gDriveRemoteNewer;
   const stale = !!gDriveCheckStale;
-
-  const tr = (key, params, fallback) => (typeof t === 'function' ? t(key, params) : fallback);
 
   el.classList.toggle('logged-out', !logged);
 
@@ -1011,6 +1040,10 @@ function updateMenuSyncStatus() {
 
 /** Status row click: login | download if remote newer | sync modal */
 function onMenuSyncStatusClick() {
+  if (!driveFeatureOn()) {
+    showToast('warn', `☁️ ${typeof t === 'function' ? t('driveFeatureDisabledHint') : 'Enable Google Drive in Settings → Privacy first'}`);
+    return;
+  }
   const logged = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : isDriveTokenValid();
   if (!logged) {
     loginDrive();
@@ -1110,6 +1143,10 @@ function askForClientId() {
 
 /* === LOGOWANIE === */
 function loginDrive() {
+  if (!driveFeatureOn()) {
+    showToast('warn', `☁️ ${typeof t === 'function' ? t('driveFeatureDisabledHint') : 'Enable Google Drive in Settings → Privacy first'}`);
+    return;
+  }
   if (!gDriveClientId) {
     showToast('warn', `☁️ ${t('driveConfigureClientIdFirst')}`);
     askForClientId();
@@ -1324,6 +1361,10 @@ async function fetchDriveRemotePayload() {
 
 /* === MAIN MENU: sync === */
 async function syncWithDrive() {
+  if (!driveFeatureOn()) {
+    showToast('warn', `☁️ ${typeof t === 'function' ? t('driveFeatureDisabledHint') : 'Enable Google Drive in Settings → Privacy first'}`);
+    return;
+  }
   if (!(await ensureDriveToken(true))) {
     showToast('warn', `☁️ ${t('driveLoginRequired')}`);
     loginDrive();
@@ -1592,6 +1633,15 @@ function initSync() {
     };
   }
 
+  // Always paint Drive UI; only touch Google when the feature is enabled.
+  updateDriveUI();
+  updateMenuSyncStatus();
+
+  if (!driveFeatureOn()) {
+    // Opt-out: no GIS load, no silent refresh, no auto-sync — no login popups.
+    return;
+  }
+
   loadGis().then(() => {
     if (gDriveClientId) initGDriveTokenClient();
     if (localStorage.getItem('grafik_drive_token') || driveUserEmail) {
@@ -1615,7 +1665,7 @@ function initSync() {
   // back, etc). handleAutoSyncCheck() silently refreshes the token itself,
   // so this keeps working even after the access token has expired.
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && isDriveLoggedIn()) {
+    if (document.visibilityState === 'visible' && driveFeatureOn() && isDriveLoggedIn()) {
       handleAutoSyncCheck();
     }
   });

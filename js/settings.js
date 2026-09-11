@@ -689,6 +689,9 @@ function bindPrivacy(body) {
           if (typeof showToast === 'function') {
             showToast('success', tr(next ? 'driveFeatureEnabledToast' : 'driveFeatureDisabledToast'));
           }
+          if (!next && typeof scheduleDriveTokenRefresh === 'function') {
+            try { scheduleDriveTokenRefresh(); } catch (e) { /* clears timer when off */ }
+          }
           if (typeof updateMenuSyncStatus === 'function') {
             try { updateMenuSyncStatus(); } catch (e) { /* ignore */ }
           }

@@ -1,3 +1,9 @@
+# Unreleased — Drive opt-in actually enforced
+
+## Fixed
+- **`prefs.driveEnabled` now gates Google OAuth.** When off: no GIS load, no silent token refresh, no login from menu/top bar, no auto-sync. Menu shows “backup is off”. When on: previous login/sync behaviour.
+- Settings toggle cancels scheduled token refresh on disable.
+
 # Unreleased — UI/docs consistency cleanup
 
 ## Removed
