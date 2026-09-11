@@ -610,8 +610,11 @@ function privacyHtml() {
       const clearLabel = tr('settingsPrivacyClear');
 
       const privacyModeEnabled = !!prefs.privacyMode;
+      const driveEnabled = typeof isDriveFeatureEnabled === 'function'
+        ? isDriveFeatureEnabled()
+        : !!(prefs && prefs.driveEnabled);
       const driveLoggedIn = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : false;
-      const driveEmail = driveLoggedIn && driveUserEmail ? driveUserEmail : null;
+      const driveEmail = driveLoggedIn && typeof driveUserEmail !== 'undefined' && driveUserEmail ? driveUserEmail : null;
 
       // Counts
       const customShiftsCount = typeof countPersonalCustomShifts === 'function' ? countPersonalCustomShifts() : 0;
@@ -628,6 +631,14 @@ function privacyHtml() {
         '<span class="st-row-label">' + privacyModeLabel + '</span>' +
         '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
         '</button></div>' +
+        '<div class="st-group"><div class="st-label">' + tr('settingsPrivacyDriveEnable') + '</div>' +
+        '<button type="button" class="st-row st-switch" id="stDriveEnabled" role="switch" aria-checked="' +
+        (driveEnabled ? 'true' : 'false') + '">' +
+        '<span class="st-row-label">' + tr('settingsPrivacyDriveEnable') + '</span>' +
+        '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
+        '</button>' +
+        '<p class="st-hint">' + tr('settingsPrivacyDriveEnableDesc') + '</p>' +
+        '</div>' +
         '<div class="st-group"><div class="st-label">' + driveStateLabel + '</div>' +
         '<div class="st-row"><span class="st-row-label">' + tr('driveCardConnected') + '</span>' +
         '<span class="st-mono">' + (driveLoggedIn ? (driveEmail ? driveEmail : tr('driveLoggedIn')) : tr('driveNotLoggedIn')) + '</span>' +
@@ -665,6 +676,25 @@ function bindPrivacy(body) {
           privacyModeBtn.setAttribute('aria-checked', next ? 'true' : 'false');
           // Refresh views to reflect any changes in data visibility
           refreshViewsSafe();
+        });
+      }
+
+      const driveEnabledBtn = body.querySelector('#stDriveEnabled');
+      if (driveEnabledBtn) {
+        driveEnabledBtn.addEventListener('click', function () {
+          const next = driveEnabledBtn.getAttribute('aria-checked') !== 'true';
+          prefs.driveEnabled = next;
+          savePrefsSafe();
+          driveEnabledBtn.setAttribute('aria-checked', next ? 'true' : 'false');
+          if (typeof showToast === 'function') {
+            showToast('success', tr(next ? 'driveFeatureEnabledToast' : 'driveFeatureDisabledToast'));
+          }
+          if (typeof updateMenuSyncStatus === 'function') {
+            try { updateMenuSyncStatus(); } catch (e) { /* ignore */ }
+          }
+          if (typeof updateDriveUI === 'function') {
+            try { updateDriveUI(); } catch (e) { /* ignore */ }
+          }
         });
       }
 

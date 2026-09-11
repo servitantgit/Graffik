@@ -1168,4 +1168,17 @@ window.cleanupCustomScheduleMirrors = cleanupCustomScheduleMirrors;
     window.copyPersonalYearToFactoryDraft = copyPersonalYearToFactoryDraft;
     window.countFactoryDraftChanges = countFactoryDraftChanges;
     window.clearLocalPersonalData = clearLocalPersonalData;
+
+/** Optional Drive backup gate (prefs.driveEnabled). Default off unless legacy session. */
+function isDriveFeatureEnabled() {
+  try {
+    if (typeof prefs !== 'undefined' && prefs && typeof prefs.driveEnabled === 'boolean') {
+      return prefs.driveEnabled === true;
+    }
+  } catch (_) {}
+  return false;
+}
+window.isDriveFeatureEnabled = isDriveFeatureEnabled;
+
+
     window.factoryDrafts = factoryDrafts;
