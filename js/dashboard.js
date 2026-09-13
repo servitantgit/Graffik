@@ -169,7 +169,12 @@ function renderDashboard() {
         type: 'self',
         brig: String(activeContext.activeDay),
         shift: shiftCode,
-        label: typeof t === 'function' ? t('tlToday') : 'сьогодні',
+        label:
+          typeof t === 'function'
+            ? t(activeContext.isPreviousDayNight ? 'tlYesterday' : 'tlToday')
+            : activeContext.isPreviousDayNight
+              ? 'вчора'
+              : 'сьогодні',
         isSelf: true,
       })
     );
@@ -389,24 +394,30 @@ function getLiveTimer(shift, y, m, d) {
   if (now.getFullYear() !== y || now.getMonth() + 1 !== m || now.getDate() !== d) return null;
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
-  // === SPECIAL CASE: night shift past midnight ===
-  if (nowMinutes < 6 * 60) {
-    const yesterday = new Date(now);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yY = yesterday.getFullYear();
-    const yM = yesterday.getMonth() + 1;
-    const yD = yesterday.getDate();
-    const yShift = getShiftAt(yY, yM, yD, selectedShift);
+  // === SPECIAL CASE: night shift continuing after midnight ===
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yY = yesterday.getFullYear();
+  const yM = yesterday.getMonth() + 1;
+  const yD = yesterday.getDate();
+  const yShift = getShiftAt(yY, yM, yD, selectedShift);
 
-    if (yShift === 'N' && !isUrlop(yY, yM, yD, selectedShift)) {
-      const yOT = getOvertimes(yY, yM, yD, selectedShift);
-      let yEndMin = 6 * 60; // 06:00
-      if (yOT.po) yEndMin += yOT.po.hours * 60;
+  if (yShift === 'N' && !isUrlop(yY, yM, yD, selectedShift)) {
+    const yOT = getOvertimes(yY, yM, yD, selectedShift);
+    let yEndMin = 6 * 60;
 
-      if (nowMinutes < yEndMin) {
-        const rem = yEndMin - nowMinutes;
-        return t('timerNightEndsIn', { h: Math.floor(rem / 60), m: rem % 60 });
-      }
+    if (
+      yOT.po &&
+      typeof yOT.po.hours === 'number' &&
+      Number.isFinite(yOT.po.hours) &&
+      yOT.po.hours > 0
+    ) {
+      yEndMin += yOT.po.hours * 60;
+    }
+
+    if (nowMinutes < yEndMin) {
+      const rem = yEndMin - nowMinutes;
+      return t('timerNightEndsIn', { h: Math.floor(rem / 60), m: rem % 60 });
     }
   }
 
