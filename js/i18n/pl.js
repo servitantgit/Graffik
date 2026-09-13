@@ -900,6 +900,10 @@ window.translations.pl = {
   settingsPrivacyDriveEnable: 'Kopia zapasowa Google Drive',
   settingsPrivacyDriveEnableDesc:
     'Opcjonalnie. Gdy wyłączone — aplikacja nigdy nie prosi o konto Google. Gdy włączone — możesz się zalogować, aby synchronizować dane osobiste z Twoim Drive.',
+  settingsPrivacyDriveAutoSync: 'Automatyczna synchronizacja Google Drive',
+  settingsPrivacyDriveAutoSyncDesc:
+    'Automatyczna synchronizacja może okresowo sprawdzać Drive i odnawiać dostęp. Wyłącz ją, aby używać Drive tylko ręcznie po wybraniu Pobierz lub Wyślij.',
+  settingsPrivacyDriveAutoSyncDisabledHint: 'Najpierw włącz kopię zapasową Google Drive.',
   settingsPrivacyPolicyLink: 'Polityka prywatności',
   driveFeatureOff: 'Wyłączone',
   driveFeatureDisabledHint: 'Najpierw włącz „Kopia zapasowa Google Drive” w bloku Drive w menu',

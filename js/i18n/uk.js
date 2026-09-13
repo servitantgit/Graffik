@@ -900,6 +900,10 @@ window.translations.uk = {
   settingsPrivacyDriveEnable: 'Резервна копія Google Drive',
   settingsPrivacyDriveEnableDesc:
     'Опційно. Коли вимкнено — застосунок ніколи не запитує акаунт Google. Коли увімкнено — можна увійти, щоб синхронізувати персональні дані у ваш Drive.',
+  settingsPrivacyDriveAutoSync: 'Автоматична синхронізація Google Drive',
+  settingsPrivacyDriveAutoSyncDesc:
+    'Автоматична синхронізація може періодично перевіряти Drive та оновлювати доступ. Вимкніть її, щоб користуватися Drive лише вручну після вибору Завантажити або Надіслати.',
+  settingsPrivacyDriveAutoSyncDisabledHint: 'Спочатку увімкніть резервну копію Google Drive.',
   settingsPrivacyPolicyLink: 'Політика конфіденційності',
   driveFeatureOff: 'Вимкнено',
   driveFeatureDisabledHint: 'Спочатку увімкніть «Резервна копія Google Drive» у блоці Drive в меню',

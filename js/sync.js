@@ -94,6 +94,17 @@ function driveFeatureOn() {
   return false;
 }
 
+/**
+ * Whether automatic Google Drive synchronization is enabled.
+ * True only when Drive backup is ON and the manual-only preference is OFF.
+ * Gates background Drive checks and token refresh; manual Upload/Download and
+ * explicit login are never affected.
+ */
+function isDriveAutoSyncEnabled() {
+  return driveFeatureOn() && prefs.driveAutoSync === true;
+}
+window.isDriveAutoSyncEnabled = isDriveAutoSyncEnabled;
+
 /** True when the e-mail is still unknown and worth asking Google for. */
 function needIdentityScope() {
   if (driveUserEmail) return false;
@@ -257,6 +268,12 @@ async function checkDriveRemoteStatus(force = false) {
  * @returns {Promise<'idle'|'up-to-date'|'downloaded'|'conflict'|'error'>}
  */
 async function handleAutoSyncCheck() {
+  // Manual-only mode: no background Drive checks and no silent token refresh.
+  // Manual syncWithDrive()/Upload/Download/login never go through this gate.
+  if (!isDriveAutoSyncEnabled()) {
+    return 'idle';
+  }
+
   if (!isDriveLoggedIn()) {
     return 'idle';
   }
@@ -388,6 +405,8 @@ function scheduleDriveTokenRefresh() {
     clearTimeout(gDriveRefreshTimer);
     gDriveRefreshTimer = null;
   }
+  // Manual-only mode: never schedule a background token refresh.
+  if (!isDriveAutoSyncEnabled()) return;
   if (!driveFeatureOn()) return;
   if (!gDriveTokenExpiry) return;
   const delay = gDriveTokenExpiry - Date.now() - 5 * 60000;
@@ -1701,10 +1720,9 @@ function initSync() {
       fetchDriveUserEmail();
       scheduleDriveTokenRefresh();
     }
-    // Auto-check Drive on load. handleAutoSyncCheck() attempts a silent
-    // (no popup) token refresh itself, so this also recovers a session
-    // whose access token expired while the app was closed.
-    if (isDriveLoggedIn()) {
+    // Auto-check Drive on load — only in automatic mode. In manual-only mode
+    // there are no background Drive checks or silent token refresh on startup.
+    if (isDriveAutoSyncEnabled() && isDriveLoggedIn()) {
       handleAutoSyncCheck();
     }
   });
@@ -1713,7 +1731,11 @@ function initSync() {
   // back, etc). handleAutoSyncCheck() silently refreshes the token itself,
   // so this keeps working even after the access token has expired.
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && driveFeatureOn() && isDriveLoggedIn()) {
+    if (
+      document.visibilityState === 'visible' &&
+      isDriveAutoSyncEnabled() &&
+      isDriveLoggedIn()
+    ) {
       handleAutoSyncCheck();
     }
   });

@@ -632,6 +632,7 @@ function privacyHtml() {
         : !!(prefs && prefs.driveEnabled);
       const driveLoggedIn = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : false;
       const driveEmail = driveLoggedIn && typeof driveUserEmail !== 'undefined' && driveUserEmail ? driveUserEmail : null;
+      const driveAutoSync = driveEnabled && prefs.driveAutoSync === true;
 
       // Counts
       const customShiftsCount = typeof countPersonalCustomShifts === 'function' ? countPersonalCustomShifts() : 0;
@@ -655,6 +656,20 @@ function privacyHtml() {
         '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
         '</button>' +
         '<p class="st-hint">' + tr('settingsPrivacyDriveEnableDesc') + '</p>' +
+        '</div>' +
+        '<div class="st-group"><div class="st-label">' + tr('settingsPrivacyDriveAutoSync') + '</div>' +
+        '<button type="button" class="st-row st-switch" id="stDriveAutoSync" role="switch"' +
+        (driveEnabled ? '' : ' disabled') +
+        ' aria-checked="' + (driveAutoSync ? 'true' : 'false') + '"' +
+        (driveEnabled ? '' : ' aria-disabled="true"') + '>' +
+        '<span class="st-row-label">' + tr('settingsPrivacyDriveAutoSync') + '</span>' +
+        '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
+        '</button>' +
+        '<p class="st-hint">' +
+        (driveEnabled
+          ? tr('settingsPrivacyDriveAutoSyncDesc')
+          : tr('settingsPrivacyDriveAutoSyncDisabledHint')) +
+        '</p>' +
         '</div>' +
         '<div class="st-group"><div class="st-label">' + driveStateLabel + '</div>' +
         '<div class="st-row"><span class="st-row-label">' + tr('driveCardConnected') + '</span>' +
@@ -712,6 +727,25 @@ function bindPrivacy(body) {
             if (typeof updateMenuSyncStatus === 'function') {
               try { updateMenuSyncStatus(); } catch (e) { /* ignore */ }
             }
+          }
+          // Re-render the privacy section so the automatic-sync switch's
+          // enabled/disabled state stays accurate after this Drive toggle.
+          renderSettingsSection('privacy', body);
+        });
+      }
+
+      const driveAutoSyncBtn = body.querySelector('#stDriveAutoSync');
+      if (driveAutoSyncBtn) {
+        driveAutoSyncBtn.addEventListener('click', function () {
+          const next = driveAutoSyncBtn.getAttribute('aria-checked') !== 'true';
+          prefs.driveAutoSync = next;
+          savePrefsSafe();
+          driveAutoSyncBtn.setAttribute('aria-checked', next ? 'true' : 'false');
+          // Disabling: clears any already scheduled background token refresh.
+          // Enabling: schedules a refresh when a valid expiry exists. Never
+          // forces login and never triggers a Drive request right here.
+          if (typeof scheduleDriveTokenRefresh === 'function') {
+            try { scheduleDriveTokenRefresh(); } catch (e) { /* ignore */ }
           }
         });
       }

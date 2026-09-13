@@ -899,6 +899,10 @@ window.translations.en = {
   settingsPrivacyDriveEnable: 'Google Drive backup',
   settingsPrivacyDriveEnableDesc:
     'Optional. When off, the app never asks for a Google account. When on, you can sign in so personal data can sync to your Drive.',
+  settingsPrivacyDriveAutoSync: 'Automatic Google Drive sync',
+  settingsPrivacyDriveAutoSyncDesc:
+    'Automatic sync may periodically check Drive and renew access. Turn it off to use Drive only manually after choosing Download or Upload.',
+  settingsPrivacyDriveAutoSyncDisabledHint: 'Enable Google Drive backup first.',
   settingsPrivacyPolicyLink: 'Privacy policy',
   driveFeatureOff: 'Disabled',
   driveFeatureDisabledHint: 'Turn on “Google Drive backup” at the top of the Drive menu first',

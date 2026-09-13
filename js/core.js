@@ -145,6 +145,15 @@ function sanitizePrefs(raw) {
     driveDefault,
     'not boolean');
 
+  // Automatic Drive sync: controls background Drive checks and token refresh,
+  // NOT manual Upload/Download which always remain available. Default off.
+  fix(
+    'driveAutoSync',
+    typeof p.driveAutoSync === 'boolean',
+    false,
+    'not boolean'
+  );
+
   // === Onboarding flags ===
   fix('welcomed',
     typeof p.welcomed === 'boolean',
