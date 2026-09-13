@@ -118,6 +118,14 @@ function sanitizePrefs(raw) {
     false,
     'not boolean');
 
+  // Night shift date display on Dashboard: controls ONLY the date shown for
+  // an ongoing previous-day N shift after midnight. It never changes which
+  // shift is treated as active — only the date shown on the Dashboard card.
+  fix('nightShiftDisplayPreviousDay',
+    typeof p.nightShiftDisplayPreviousDay === 'boolean',
+    true,
+    'not boolean');
+
   // Optional Google Drive backup/sync. Off by default so the app never
   // prompts for Google login unless the user explicitly enables it.
   // Exception: users who already have a Drive token/session keep it enabled

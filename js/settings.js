@@ -120,6 +120,7 @@ const SECTION_TITLES = {
     const startView = prefs.startView || 'dashboard';
     const brigade = prefs.shift || 'A';
     const restore = prefs.restoreLastView !== false;
+    const nightShiftDisplayPreviousDay = prefs.nightShiftDisplayPreviousDay !== false;
     return (
       '<div class="settings-section">' +
       '<div class="st-group"><div class="st-label">' + tr('settingsLanguage') + '</div>' +
@@ -146,6 +147,12 @@ const SECTION_TITLES = {
       '<span class="st-row-label">' + tr('settingsRestoreLastView') + '</span>' +
       '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
       '</button>' +
+      '<button type="button" class="st-row st-switch" id="stNightShiftDisplayPreviousDay" role="switch" aria-checked="' +
+      (nightShiftDisplayPreviousDay ? 'true' : 'false') + '">' +
+      '<span class="st-row-label">' + tr('settingsNightShiftDisplayPreviousDay') + '</span>' +
+      '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
+      '</button>' +
+      '<p class="st-hint">' + tr('settingsNightShiftDisplayPreviousDayDesc') + '</p>' +
       '</div>'
     );
   }
@@ -197,6 +204,16 @@ const SECTION_TITLES = {
         prefs.restoreLastView = !(prefs.restoreLastView !== false);
         savePrefsSafe();
         restoreBtn.setAttribute('aria-checked', prefs.restoreLastView ? 'true' : 'false');
+      });
+    }
+
+    const nightShiftBtn = body.querySelector('#stNightShiftDisplayPreviousDay');
+    if (nightShiftBtn) {
+      nightShiftBtn.addEventListener('click', function () {
+        prefs.nightShiftDisplayPreviousDay = !(prefs.nightShiftDisplayPreviousDay !== false);
+        savePrefsSafe();
+        nightShiftBtn.setAttribute('aria-checked', prefs.nightShiftDisplayPreviousDay ? 'true' : 'false');
+        refreshViewsSafe();
       });
     }
   }

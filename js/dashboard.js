@@ -2,17 +2,38 @@
    GRAFIK GILLETTE — Module 5: DASHBOARD
    ================================================================ */
 
-function renderDashboard() {
-  const dv = document.getElementById('dashboardView');
-  const today = new Date();
-  const y = today.getFullYear(),
-    m = today.getMonth() + 1,
-    d = today.getDate();
-  const limit = getVacationLimit(selectedShift);
-  const yHolidays = buildHolidays(y);
+/**
+ * Resolves the shift context that is actually active right now on the
+ * Dashboard. After midnight, when yesterday's N shift is still running
+ * (normally until 06:00, later when personal "po" overtime exists and
+ * Privacy Mode is off), the active context stays on yesterday's N so the
+ * Dashboard card and handoff flow do not switch to today's scheduled shift
+ * before the previous N shift actually ends.
+ *
+ * The preference `prefs.nightShiftDisplayPreviousDay` controls only the
+ * DATE shown on the card for that ongoing N shift — it never changes which
+ * shift is treated as active.
+ *
+ * Note: getLiveTimer() is intentionally not called here — renderDashboard()
+ * keeps its real-current-date timer call (based on y/m/d) so the existing
+ * overnight timer handling keeps working unchanged.
+ *
+ * @param {Date} [nowArg] - optional "now" (used for tests/manual mocking)
+ * @returns {{
+ *   activeYear: number, activeMonth: number, activeDay: number,
+ *   activeShift: string, activeOnUrlop: boolean, isPreviousDayNight: boolean,
+ *   displayYear: number, displayMonth: number, displayDay: number
+ * }}
+ */
+function getActiveDashboardShiftContext(nowArg) {
+  const now = nowArg || new Date();
+  const y = now.getFullYear(),
+    m = now.getMonth() + 1,
+    d = now.getDate();
   const hidePrivate = !shouldShowPersonalData();
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
-  // When not logged in — use pure factory schedule, no personal overrides
+  // Read today's shift with exactly the same privacy logic as the Dashboard.
   let shiftCode, onUrlop;
   if (hidePrivate) {
     shiftCode =
@@ -25,13 +46,105 @@ function renderDashboard() {
     onUrlop = isUrlop(y, m, d, selectedShift);
   }
 
-  const dayName = dayNamesFull[today.getDay()];
+  // Default context: real current date, today's shift, no night override.
+  let activeYear = y,
+    activeMonth = m,
+    activeDay = d;
+  let activeShift = shiftCode;
+  let activeOnUrlop = onUrlop;
+  let isPreviousDayNight = false;
+  let displayYear = y,
+    displayMonth = m,
+    displayDay = d;
+
+  // Detect an ongoing previous-day N shift (after midnight, before its end).
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yY = yesterday.getFullYear(),
+    yM = yesterday.getMonth() + 1,
+    yD = yesterday.getDate();
+
+  let yShift;
+  if (hidePrivate) {
+    yShift =
+      factorySchedule[yY] && factorySchedule[yY][yM] && factorySchedule[yY][yM][selectedShift]
+        ? factorySchedule[yY][yM][selectedShift][yD - 1]
+        : '';
+  } else {
+    yShift = getShiftAtWithPending(yY, yM, yD, selectedShift);
+  }
+
+  let yVacation = false;
+  if (!hidePrivate) yVacation = isUrlop(yY, yM, yD, selectedShift);
+
+  if (yShift === 'N' && !yVacation) {
+    let yEndMin = 6 * 60; // base end 06:00
+    if (!hidePrivate) {
+      // Personal "po" overtime extends the active N only outside Privacy Mode.
+      const yOT = getOvertimes(yY, yM, yD, selectedShift);
+      if (yOT && yOT.po && typeof yOT.po.hours === 'number' && isFinite(yOT.po.hours) && yOT.po.hours > 0) {
+        yEndMin += yOT.po.hours * 60;
+      }
+    }
+
+    if (nowMinutes < yEndMin) {
+      activeYear = yY;
+      activeMonth = yM;
+      activeDay = yD;
+      activeShift = 'N';
+      activeOnUrlop = false;
+      isPreviousDayNight = true;
+
+      // The preference changes only the date shown, never the active shift.
+      if (prefs.nightShiftDisplayPreviousDay !== false) {
+        displayYear = yY;
+        displayMonth = yM;
+        displayDay = yD;
+      }
+    }
+  }
+
+  return {
+    activeYear,
+    activeMonth,
+    activeDay,
+    activeShift,
+    activeOnUrlop,
+    isPreviousDayNight,
+    displayYear,
+    displayMonth,
+    displayDay,
+  };
+}
+
+function renderDashboard() {
+  const dv = document.getElementById('dashboardView');
+  const today = new Date();
+  const y = today.getFullYear(),
+    m = today.getMonth() + 1,
+    d = today.getDate();
+  const limit = getVacationLimit(selectedShift);
+  const yHolidays = buildHolidays(y);
+  const hidePrivate = !shouldShowPersonalData();
+
+  // Active shift context — after midnight this stays on yesterday's still
+  // running N shift for the card and the handoff flow.
+  const activeContext = getActiveDashboardShiftContext(today);
+  const shiftCode = activeContext.activeShift;
+  const onUrlop = activeContext.activeOnUrlop;
+
+  // Date text shown on the current-shift card. Only this follows the
+  // nightShiftDisplayPreviousDay preference — the active shift is never
+  // affected by it.
+  const displayDate = new Date(activeContext.displayYear, activeContext.displayMonth - 1, activeContext.displayDay);
+  const displayDayName = dayNamesFull[displayDate.getDay()];
+
   const holidayName = yHolidays[m + '-' + d];
 
   // === Compact flow: prev → today → next → tomorrow (no full cycle) ===
   let reliefFlowCard = '';
   if (!isWolne(shiftCode) && !onUrlop && typeof tlRenderNode === 'function') {
-    const info = getRelief(y, m, d, selectedShift, shiftCode);
+    const info = getRelief(activeContext.activeYear, activeContext.activeMonth, activeContext.activeDay, selectedShift, shiftCode);
     const nodes = [];
     // 1) Who we take over from
     if (info && info.prevBrig) {
@@ -54,7 +167,7 @@ function renderDashboard() {
     nodes.push(
       tlRenderNode({
         type: 'self',
-        brig: String(d),
+        brig: String(activeContext.activeDay),
         shift: shiftCode,
         label: typeof t === 'function' ? t('tlToday') : 'сьогодні',
         isSelf: true,
@@ -121,14 +234,14 @@ function renderDashboard() {
   if (onUrlop) {
     cardCls = 'card-U';
     todayCard = `
-      <div class="dtc-meta">${dayName}, ${d} ${monthNamesGenitive[m - 1]} ${y} · ${t('brigade')} ${selectedShift}</div>
+      <div class="dtc-meta">${displayDayName}, ${activeContext.displayDay} ${monthNamesGenitive[activeContext.displayMonth - 1]} ${activeContext.displayYear} · ${t('brigade')} ${selectedShift}</div>
       <div class="dtc-label">${t('todayLabel')}</div>
       <div class="dtc-shift">${t('infoUrlop')}</div>
     `;
   } else if (isWolne(shiftCode)) {
     cardCls = 'card-W';
     todayCard = `
-    <div class="dtc-meta">${dayName}, ${d} ${monthNamesGenitive[m - 1]} ${y} · ${t('brigade')} ${selectedShift}</div>
+    <div class="dtc-meta">${displayDayName}, ${activeContext.displayDay} ${monthNamesGenitive[activeContext.displayMonth - 1]} ${activeContext.displayYear} · ${t('brigade')} ${selectedShift}</div>
     <div class="dtc-label">${t('todayLabel')}</div>
     <div class="dtc-shift">${t('infoFree')}</div>
   `;
@@ -137,31 +250,33 @@ function renderDashboard() {
     const [sh, eh] = shiftHours[shiftCode];
     let startTxt = `${String(sh).padStart(2, '0')}:00`;
     let endTxt = `${String(eh % 24).padStart(2, '0')}:00`;
+    // Live timer keeps the real current calendar date (y, m, d) so its
+    // existing overnight previous-N handling continues to work unchanged.
     const timer = hidePrivate ? null : getLiveTimer(shiftCode, y, m, d);
 
-    // Nadgodziny - tylko gdy zalogowany
+    // Nadgodziny - tylko gdy zalogowany; brane z faktycznie aktywnej zmiany
     let otInfo = '';
     if (!hidePrivate) {
-      const otToday = getOvertimes(y, m, d, selectedShift);
-      if (otToday.przed || otToday.po) {
-        const actualTime = getActualWorkTime(y, m, d, selectedShift, shiftCode);
+      const otActive = getOvertimes(activeContext.activeYear, activeContext.activeMonth, activeContext.activeDay, selectedShift);
+      if (otActive.przed || otActive.po) {
+        const actualTime = getActualWorkTime(activeContext.activeYear, activeContext.activeMonth, activeContext.activeDay, selectedShift, shiftCode);
         const parts = [];
-        if (otToday.przed) {
-          const cat = categorizeOvertime(y, m, d, shiftCode, 'przed', otToday.przed.hours);
+        if (otActive.przed) {
+          const cat = categorizeOvertime(activeContext.activeYear, activeContext.activeMonth, activeContext.activeDay, shiftCode, 'przed', otActive.przed.hours);
           const dom = cat.h200 > 0 ? '+200%' : cat.h100 > 0 ? '+100%' : '+50%';
-          parts.push(`⬅ ${otToday.przed.hours}h ${dom}`);
+          parts.push(`⬅ ${otActive.przed.hours}h ${dom}`);
         }
-        if (otToday.po) {
-          const cat = categorizeOvertime(y, m, d, shiftCode, 'po', otToday.po.hours);
+        if (otActive.po) {
+          const cat = categorizeOvertime(activeContext.activeYear, activeContext.activeMonth, activeContext.activeDay, shiftCode, 'po', otActive.po.hours);
           const dom = cat.h200 > 0 ? '+200%' : cat.h100 > 0 ? '+100%' : '+50%';
-          parts.push(`${otToday.po.hours}h ${dom} ➡`);
+          parts.push(`${otActive.po.hours}h ${dom} ➡`);
         }
         otInfo = `<div class="advanced-only" style="margin-top:8px; padding:8px 12px; background:rgba(0,0,0,0.35); border-radius:8px; font-size:13px; font-weight:600; color:#fff;">${t('infoOvertime')}: ${parts.join(' · ')}<br><span style="font-size:12px; font-weight:700; color:#fff;">${t('infoTime')} ${actualTime}</span></div>`;
       }
     }
 
     todayCard = `
-      <div class="dtc-meta">${dayName}, ${d} ${monthNamesGenitive[m - 1]} ${y} · ${t('brigade')} ${selectedShift}</div>
+      <div class="dtc-meta">${displayDayName}, ${activeContext.displayDay} ${monthNamesGenitive[activeContext.displayMonth - 1]} ${activeContext.displayYear} · ${t('brigade')} ${selectedShift}</div>
       <div class="dtc-label">${t('todayLabel')} ${holidayName ? '· 🎉 ' + holidayName : ''}</div>
       <div class="dtc-shift">${shiftEmoji[shiftCode]} ${shiftFullName[shiftCode].split(' ')[0]}</div>
       <div class="dtc-time">${startTxt} – ${endTxt}</div>

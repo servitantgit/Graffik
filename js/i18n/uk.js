@@ -852,6 +852,8 @@ window.translations.uk = {
   settingsStartView: 'Початковий вигляд',
   settingsRestoreLastView: 'Відновлювати останній вигляд',
   settingsDefaultBrigade: 'Бригада за замовчуванням',
+  settingsNightShiftDisplayPreviousDay: 'Нічна зміна: показувати дату початку',
+  settingsNightShiftDisplayPreviousDayDesc: 'Після опівночі активна зміна N може показувати дату попереднього дня.',
   themeSystem: 'Системна',
   themeLight: 'Світла',
   themeDark: 'Темна',

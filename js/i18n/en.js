@@ -851,6 +851,8 @@ window.translations.en = {
   settingsStartView: 'Start view',
   settingsRestoreLastView: 'Restore last view',
   settingsDefaultBrigade: 'Default brigade',
+  settingsNightShiftDisplayPreviousDay: 'Night shift: show start date',
+  settingsNightShiftDisplayPreviousDayDesc: 'After midnight, an ongoing N shift can show its previous-day start date.',
   themeSystem: 'System',
   themeLight: 'Light',
   themeDark: 'Dark',

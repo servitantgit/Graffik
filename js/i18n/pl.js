@@ -852,6 +852,8 @@ window.translations.pl = {
   settingsStartView: 'Widok startowy',
   settingsRestoreLastView: 'Przywracaj ostatni widok',
   settingsDefaultBrigade: 'Brygada domyślna',
+  settingsNightShiftDisplayPreviousDay: 'Nocna zmiana: pokazuj datę rozpoczęcia',
+  settingsNightShiftDisplayPreviousDayDesc: 'Po północy trwająca zmiana N może pokazywać datę poprzedniego dnia.',
   themeSystem: 'Systemowy',
   themeLight: 'Jasny',
   themeDark: 'Ciemny',
