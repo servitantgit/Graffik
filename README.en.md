@@ -51,7 +51,7 @@ A PWA for managing shift schedules of 4 brigades working a 3-shift system (Morni
 
 1. Open [https://servitantgit.github.io/Graffik/](https://servitantgit.github.io/Graffik/)
 2. Pick a brigade (A/B/C/D) and a year
-3. The Dashboard shows today's shift with a timer
+3. The Dashboard shows today's shift with a timer (an ongoing previous-day N shift stays active after midnight; `po` overtime can extend it — date option in Settings → General)
 4. Switch views from the top menu
 
 **Cell styles:** Personalisation offers three variants: full fill, subtle bar, and coloured border. In the last one, the colour of the cell border and of the ring around the date reflects the shift.
@@ -271,6 +271,8 @@ The app stores data in two places:
 1. **localStorage** (primary) — vacations, overtime, notes, settings, schedule edits
 2. **Google Drive** (optional, **off by default**) — backup and synchronisation across your devices. Enable the toggle in **Settings → Data & privacy**, then sign in from the menu.
 Opening the Drive sync menu (when backup is enabled and you are signed in) shows a **short diff log** (local counts of vacations / overtime / notes / custom shifts vs Drive) and the Cancel / Download / Upload buttons in a single row.
+
+Google Drive backup and automatic sync are separate options. Automatic sync is off by default (switch in Settings → Data & privacy). When it is off, Drive is used only after you manually choose Download or Upload, without periodic background checks or access refresh attempts. Google access tokens have a limited lifetime, so a manual Drive action may still require sign-in.
 
 **Note:** data in localStorage can be lost when browser storage is cleared. Back up via ☁️ Google Drive (enable in Settings → Privacy) or export the current view (ICS / print).
 

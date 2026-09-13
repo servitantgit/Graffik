@@ -51,7 +51,7 @@ Aplikacja PWA do zarządzania grafikami zmian dla 4 brygad pracujących w system
 
 1. Otwórz [https://servitantgit.github.io/Graffik/](https://servitantgit.github.io/Graffik/)
 2. Wybierz brygadę (A/B/C/D) i rok
-3. Dashboard pokaże dzisiejszą zmianę z timerem
+3. Dashboard pokaże dzisiejszą zmianę z timerem (trwająca po północy zmiana N poprzedniego dnia pozostaje aktywna; nadgodziny `po` mogą ją wydłużyć — opcja daty w Ustawienia → Ogólne)
 4. Przełączaj widoki górnym menu
 
 **Style komórek:** w Personalizacji dostępne są trzy warianty: pełne wypełnienie, spokojny pasek oraz kolorowe obramowanie. W ostatnim wariancie kolor obramowania komórki i okręgu wokół daty odpowiada zmianie.
@@ -273,6 +273,8 @@ Aplikacja przechowuje dane w dwóch miejscach:
 1. **localStorage** (podstawowe) — urlopy, nadgodziny, notatki, ustawienia, edycje grafiku
 2. **Google Drive** (opcjonalnie, **domyślnie wyłączone**) — backup i synchronizacja między Twoimi urządzeniami. Włącz przełącznik w **Ustawienia → Dane i prywatność**, potem zaloguj się z menu.
 Przy otwarciu menu synchronizacji z Drive (gdy backup jest włączony i jesteś zalogowany) widać **krótki log różnic** (lokalne liczby urlopów / nadgodzin / notatek / własnych zmian vs Drive) oraz przyciski Anuluj / Pobierz / Wyślij w jednym rzędzie.
+
+Kopia Google Drive i automatyczna synchronizacja są osobnymi opcjami. Automatyczna synchronizacja jest domyślnie wyłączona (przełącznik w Ustawienia → Dane i prywatność). Gdy jest wyłączona, Drive działa tylko po ręcznym wyborze Pobierz lub Wyślij, bez okresowych kontroli i odświeżania dostępu w tle. Tokeny dostępu Google mają ograniczony czas życia, więc przy ręcznej operacji Drive aplikacja może poprosić o ponowne logowanie.
 
 **Uwaga:** Dane w localStorage można stracić przy wyczyszczeniu pamięci przeglądarki. Rób backup przez ☁️ Google Drive (po włączeniu opcji w Ustawienia → Prywatność) lub eksportuj wybrany widok (ICS / druk).
 

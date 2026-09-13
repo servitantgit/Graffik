@@ -321,7 +321,7 @@ window.translations.pl = {
   faqViewsTitle: '📋 Jakie są główne zakładki i co każda z nich pokazuje?',
   faqViewsDesc: 'Aplikacja ma kilka głównych widoków, które służą do różnych zadań:',
   faqViewsDashboard:
-    '🏠 Dashboard — ekran startowy. Pokazuje dzisiejszą zmianę, najbliższe dni, status urlopów i szybkie przejścia do innych widoków.',
+    '🏠 Dashboard — ekran startowy. Pokazuje dzisiejszą zmianę, najbliższe dni, status urlopów i szybkie przejścia do innych widoków. Trwająca po północy zmiana N poprzedniego dnia pozostaje aktywna (nadgodziny po zmianie mogą ją wydłużyć); opcja daty jest w Ustawienia → Ogólne.',
   faqViewsMonth:
     '📅 Miesiąc — główny kalendarz. Tutaj widać zmiany, dni wolne, urlopy, notatki, nadgodziny i dodatkowe popupy z informacją o poprzedniej i następnej zmianie.',
   faqViewsTable:
@@ -400,15 +400,15 @@ window.translations.pl = {
     'Po zalogowaniu do Google Drive dane synchronizują się w jeden plik w chmurze. Bez logowania dane są tylko w localStorage przeglądarki.',
   faqSyncTitle: '☁️ Jak działa synchronizacja z Google Drive?',
   faqSyncDesc:
-    'Google Drive to opcjonalna kopia zapasowa. Domyślnie jest wyłączona, więc aplikacja nie prosi o konto Google, dopóki sam jej nie włączysz.',
+    'Google Drive to opcjonalna kopia zapasowa. Domyślnie jest wyłączona, więc aplikacja nie prosi o konto Google, dopóki sam jej nie włączysz. Kopia zapasowa i automatyczna synchronizacja to osobne opcje: automatyczna synchronizacja jest osobną opcją w Ustawienia → Dane i prywatność i domyślnie jest wyłączona. Gdy jest wyłączona, aplikacja nie sprawdza Drive ani nie odnawia dostępu w tle; Drive używasz ręcznie przez Pobierz / Wyślij. Tokeny dostępu Google mają ograniczony czas życia, więc Google może poprosić o logowanie, gdy ręcznie wybierzesz operację Drive.',
   faqSync1:
-    'Otwórz menu boczne → Google Drive i włącz „Kopia zapasowa Google Drive”. Potem wybierz Zaloguj. Ten sam przełącznik jest też w Ustawienia → Prywatność (Advanced).',
+    'Otwórz menu boczne → Google Drive i włącz „Kopia zapasowa Google Drive”. Potem wybierz Zaloguj. Ten sam przełącznik jest też w Ustawienia → Dane i prywatność. Automatyczną synchronizację włączysz osobnym przełącznikiem w Ustawienia → Dane i prywatność (domyślnie wyłączona).',
   faqSync2: 'Po zalogowaniu możesz wysłać dane do Drive lub pobrać zapisaną kopię z Drive.',
   faqSync3:
     'Synchronizowane dane obejmują: ustawienia grafiku, urlopy, nadgodziny, notatki i limity urlopów. Plik trafia wyłącznie do Twojego folderu danych aplikacji Google Drive.',
   faqSync4: 'Przy pobieraniu danych aplikacja prosi o potwierdzenie przed nadpisaniem lokalnych danych.',
   faqSync5:
-    'Wyłączenie przełącznika w menu Drive (lub wylogowanie) zatrzymuje prośby o logowanie do Google. Tryb prywatności na ekranie jest niezależny od Drive.',
+    'Wyłączenie kopii zapasowej Drive (lub wylogowanie) zatrzymuje prośby o logowanie do Google — kopia wyłączona oznacza brak funkcji Drive, jak wcześniej. Wyłączenie samej automatycznej synchronizacji też zatrzymuje kontrole i odświeżanie dostępu w tle, ale ręczne Pobierz / Wyślij nadal działają. Tryb prywatności na ekranie jest niezależny od Drive.',
   faqSyncNote:
     'Szczegóły: Polityka prywatności (Ustawienia → Dane i prywatność lub privacy.html). Bez analityki; nie prowadzimy serwerów z Twoimi danymi.',
   faqExportTitle: '📥 Czy można eksportować grafik do innych aplikacji?',

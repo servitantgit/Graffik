@@ -322,7 +322,7 @@ window.translations.en = {
   faqViewsTitle: '📋 What are the main tabs and what does each show?',
   faqViewsDesc: 'The application has several main views, each serving different purposes:',
   faqViewsDashboard:
-    "🏠 Dashboard — start screen. Shows today's shift, upcoming days, vacation status and quick links to other views.",
+    "🏠 Dashboard — start screen. Shows today's shift, upcoming days, vacation status and quick links to other views. An ongoing previous-day N shift stays active after midnight (after-shift overtime can extend it); the date option is in Settings → General.",
   faqViewsMonth:
     '📅 Month — main calendar. Here you can see shifts, days off, vacations, notes, overtime and additional popups with information about the previous and next shift.',
   faqViewsTable:
@@ -399,15 +399,15 @@ window.translations.en = {
     'When signed in to Google Drive, data syncs as one file in the cloud. Without login, data stays only in the browser localStorage.',
   faqSyncTitle: '☁️ How does Google Drive sync work?',
   faqSyncDesc:
-    'Google Drive is an optional backup. It is off by default so the app never asks for a Google account until you enable it.',
+    'Google Drive is an optional backup. It is off by default so the app never asks for a Google account until you enable it. Backup and automatic sync are separate options: automatic sync is a separate option in Settings → Data & privacy and is off by default. When it is off, the app does not check Drive or refresh access in the background; you use Drive manually through Download / Upload. Google access tokens have a limited lifetime, so Google may ask you to sign in when you manually request a Drive operation.',
   faqSync1:
-    'Open the side menu → Google Drive and turn on “Google Drive backup”. Then tap Sign in. The same switch is also in Settings → Privacy (Advanced).',
+    'Open the side menu → Google Drive and turn on “Google Drive backup”. Then tap Sign in. The same switch is also in Settings → Data & privacy. Automatic sync has its own switch in Settings → Data & privacy (off by default).',
   faqSync2: 'After signing in you can upload data to Drive or download a saved copy from Drive.',
   faqSync3:
     'Synced data includes: schedule settings, vacations, overtime, notes and vacation limits. The file is stored only in your own Google Drive app-data folder.',
   faqSync4: 'When downloading data, the app asks for confirmation before overwriting local data.',
   faqSync5:
-    'Turning the option off (or signing out) clears the local token and stops all Google login prompts. Privacy mode (hide personal data on screen) is separate from Drive login.',
+    'Turning Drive backup off (or signing out) stops Google login prompts — backup off still disables the Drive feature entirely, as before. Turning off only automatic sync also stops background checks and access refresh, while manual Download / Upload keep working. Privacy mode (hide personal data on screen) is separate from Drive login.',
   faqSyncNote:
     'Full details: Privacy policy (menu Settings → Data & privacy, or privacy.html). No analytics; we do not run servers that store your data.',
   faqExportTitle: '📥 Can I export the schedule to other apps?',

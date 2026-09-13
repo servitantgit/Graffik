@@ -1,3 +1,23 @@
+# Unreleased — Manual Google Drive sync option
+
+## Added
+- `prefs.driveAutoSync` switch in Settings → Data & privacy. It defaults to off, so Drive backup can stay enabled without automatic Drive checks or token refresh.
+
+## Changed
+- With automatic sync off, Drive is used only after an explicit user action such as Upload, Download, or sign-in.
+
+## Notes
+- Google access tokens have a limited lifetime. Manual mode avoids background refresh attempts; a sign-in may still be needed when the user explicitly requests a Drive operation.
+
+# Unreleased — Ongoing night shift after midnight
+
+## Fixed
+- Dashboard card and handoff flow now keep the previous-day N shift active after midnight until it actually ends.
+- Post-shift `po` overtime extends the active-night context and remaining-time timer past 06:00.
+
+## Added
+- Settings → General option to show an ongoing N shift under its start date (default) or the current calendar date. This changes display date only.
+
 # Unreleased — Drive switch in side menu
 
 ## Added

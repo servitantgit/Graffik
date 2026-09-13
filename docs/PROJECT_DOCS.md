@@ -39,8 +39,10 @@ Ten dokument służy do szybkiego zapoznania się z architekturą i strukturą p
   driveTokenExpiry: null,        // Wygaśnięcie tokenu Drive (jeśli sync)
   uiMode: 'simple' | 'advanced', // Simple/Advanced UI mode (auto-detected on first run)
   uiModeToastShown: boolean,     // One-time toast flag для migrating users
-  privacyMode: boolean,          // Приховати особисті дані на екрані
-  driveEnabled: boolean,         // Opt-in Google Drive backup (default false; true if existing session)
+  privacyMode: boolean,                // Приховати особисті дані на екрані
+  nightShiftDisplayPreviousDay: boolean, // Dashboard: show active previous-day N under its start date (default true)
+  driveEnabled: boolean,               // Opt-in Google Drive backup (default false; true if existing session)
+  driveAutoSync: boolean,              // Automatic Drive checks/token refresh (default false; manual Upload/Download still work)
   personalDataMigratedV5: true   // One-shot migration flag (customSchedule cleanup)
 }
 ```
@@ -274,6 +276,7 @@ Brak bufora `pendingChanges` / undo-redo; zapis jest natychmiastowy, tak jak url
   - tylko fabryczny grafik (bez urlopów / OT / notatek / live-timera)
   - ukryte karty: wykorzystane urlopy, miesięczny overtime
   - tryb jest niezależny od logowania Google i służy jako opcjonalny tryb prezentacyjny
+- `getActiveDashboardShiftContext()` — poprzednia N pozostaje aktywna po północy aż do faktycznego końca (06:00, dłużej przy `po`); preferencja daty nie zmienia wyboru aktywnej zmiany.
 
 ### js/calendar.js — Moduł 6: Widok Miesiąc
 
@@ -358,6 +361,7 @@ Brak bufora `pendingChanges` / undo-redo; zapis jest natychmiastowy, tak jak url
   — liczby urlopów / nadgodzin / notatek / własnych zmian / limitów urlopów
   oraz ostatni czas sync przy `hasUnsyncedChanges()`; przyciski w jednym rzędzie
   (klasa `modal-footer-single-row` na `#modalFooter`)
+- `prefs.driveAutoSync` (default `false`) — tryb manual-only blokuje `handleAutoSyncCheck()` i proaktywny refresh tokenu; ręczne Upload/Download używają normalnego pozyskiwania tokenu; auto sync domyślnie wyłączony.
 
 ### Wygląd (UI skins + tabela)
 
@@ -677,6 +681,12 @@ Access token живе ~1 годину. Раніше не було жодного
 - **Живучіший маркер сесії.** `hadDriveSession()` перевіряє localStorage-флаг, cookie `grafik_drive_session` (1 рік), email, токен, збережені scope і `file_id`. `markDriveSession()` додатково просить `navigator.storage.persist()` — інакше iOS Safari чистить сховище після ~7 днів невикористання і логін стає повним.
 
 **Не лікується кодом:** publishing status **"Testing"** в Google Cloud Console примусово вбиває доступ кожні 7 днів — потрібно перемкнути на "In production". Повна відсутність повторних входів вимагає authorization code flow з refresh-токеном, тобто мінімального бекенду (неможливо на статичному GitHub Pages).
+
+### 6.2b. Manual-only Drive mode
+
+`prefs.driveAutoSync` defaults to `false`. When Drive backup is enabled but automatic sync is off, the app does not run background Drive checks, `visibilitychange` checks, proactive token refresh, or automatic download. Drive is used only after an explicit Upload, Download, or sign-in action.
+
+This is a user-experience choice for a static browser-only application: Google access tokens have a limited lifetime, and a manual Drive action may still require interaction if silent refresh is unavailable. A custom domain or paid hosting does not remove the normal Google access-token lifetime.
 
 ### 6.3. Перевірка конфлікту (`handleAutoSyncCheck()`)
 
