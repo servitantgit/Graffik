@@ -477,6 +477,37 @@ When both local and remote data truly changed, the user resolves the conflict
 through the sync modal by choosing Upload or Download. This is effectively
 last-write-wins after user confirmation.
 
+### 6.5 Drive UX — Single Entry Point (v4.1+)
+
+All Google Drive management is consolidated in the Drive card in the side menu. Do not add Drive controls anywhere else.
+
+Drive card structure (top to bottom):
+
+1. **Backup switch** — turns `prefs.driveEnabled` on/off. When off, no GIS load, no login prompts, no background activity.
+2. **Account row** — visible only when logged in: avatar letter + email + optional admin badge.
+3. **Warning row** — clickable button, visible only when there are unsynced changes or a stale/conflict state. Opens the Sync Options panel.
+4. **Sync options button** (`#menuDriveSyncOptions`) — primary button, visible only when logged in. Opens the Sync Options panel.
+5. **Logout button** — secondary/outline style, visible only when logged in.
+
+The Sync Options panel is a full-screen `app-panel` opened by `openDriveSyncOptionsPanel()` in `js/sync.js`. Contents:
+
+- **Sync mode selector** — Auto / Manual radio rows. Writes `prefs.driveAutoSync` directly. MUST NOT trigger any Drive request or token refresh on toggle (avoids accidental Google popups on misclick).
+- **Actions row** — Upload (primary) and Download (secondary) buttons. Both close the panel and delegate to existing `uploadToDrive(true)` / `downloadFromDrive(true)`.
+- **Changes table** — local-vs-remote diff fetched asynchronously via `fetchDriveRemotePayload()`. Shows counts per category (vacations, overtime, notes, custom shifts, factory drafts, vacation limits) with 📱 +N / ☁ +N indicators for deltas. Reconciles the local fingerprint if remote matches, updates the badge count.
+
+Rules:
+
+- Settings → Data & privacy must not contain any Drive control. It only owns Privacy Mode, local data counts, and the "Clear local personal data" button.
+- The old ad-hoc `syncWithDrive()` modal is retired. The function name is kept for backward compatibility with existing callers (like `handleAutoSyncCheck()` conflict path) — it now just opens the new panel.
+- The old `#menuSyncStatus` row, `#menuDriveWarnMore` "Details →" button, and `#stDriveEnabled` / `#stDriveAutoSync` switches from Settings are gone. Do not reintroduce them.
+- The warning row itself (`#menuDriveWarn`, now a `<button>`) is the click target for opening the panel from a warning state. It uses `preventDefault()` to avoid accidental form-like behavior.
+
+Related helpers (all in `js/sync.js`):
+
+- `openDriveSyncOptionsPanel()` — public, exposed on `window.*`.
+- `bindDriveSyncOptionsPanel(body)` — file-local, wires up mode radios, action buttons, and kicks off async diff.
+- `renderDriveSyncOptionsDiff(container, localStats, remoteStats, state)` — file-local, renders the diff table (or loading/error state).
+
 7. Admin Publishing Workflow
 The public factory schedule is stored in:
 

@@ -73,7 +73,10 @@ Drive silent token refresh flow (`ensureDriveToken`, `trySilentDriveRefresh`, `s
 `prefs.driveEnabled` opt-in gate (`isDriveFeatureEnabled()`): when false, do not load GIS, request tokens, or show Google login UI; default false for new users, true if an existing Drive session is detected;
 `handleAutoSyncCheck()` conflict verification order (fingerprint reconcile, then revision compare, before warning the user);
 `revision` field in the Drive sync payload and `meta.revision` in `gillette_sync_meta` — only ever advances, never regress it;
-unified `notes[key]` array format (`{id, tag, text}`, tag null/'before'/'after') — do not reintroduce separate per-position note fields on `overtimes[key]`.
+unified `notes[key]` array format (`{id, tag, text}`, tag null/'before'/'after') — do not reintroduce separate per-position note fields on `overtimes[key]`;
+`openDriveSyncOptionsPanel()`, `bindDriveSyncOptionsPanel()`, `renderDriveSyncOptionsDiff()` in `js/sync.js` — the single Drive management UI; do not add duplicate Drive controls elsewhere;
+Drive card in the side menu is the only Drive entry point: enable/disable switch, account display, warning row (opens the panel), Sync options button (opens the panel), logout button. Do not scatter Drive controls into Settings or other panels;
+mode toggle (Auto/Manual) in the Sync Options panel writes `prefs.driveAutoSync` directly and MUST NOT trigger any Drive request or token refresh — avoids accidental Google popups on misclick.
 Local bug fixes inside these areas are allowed. Structural redesign is not.
 
 2. PROJECT OVERVIEW
