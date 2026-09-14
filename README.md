@@ -271,12 +271,14 @@ Parzystość kluczy, placeholdery i prefiksy dynamiczne sprawdza `node tools/i18
 Aplikacja przechowuje dane w dwóch miejscach:
 
 1. **localStorage** (podstawowe) — urlopy, nadgodziny, notatki, ustawienia, edycje grafiku
-2. **Google Drive** (opcjonalnie, **domyślnie wyłączone**) — backup i synchronizacja między Twoimi urządzeniami. Włącz przełącznik w **Ustawienia → Dane i prywatność**, potem zaloguj się z menu.
-Przy otwarciu menu synchronizacji z Drive (gdy backup jest włączony i jesteś zalogowany) widać **krótki log różnic** (lokalne liczby urlopów / nadgodzin / notatek / własnych zmian vs Drive) oraz przyciski Anuluj / Pobierz / Wyślij w jednym rzędzie.
+2. **Google Drive** (opcjonalnie, **domyślnie wyłączone**) — backup i synchronizacja między Twoimi urządzeniami. Włącz przełącznik w Drive card w bocznym menu, potem zaloguj się.
 
-Kopia Google Drive i automatyczna synchronizacja są osobnymi opcjami. Automatyczna synchronizacja jest domyślnie wyłączona (przełącznik w Ustawienia → Dane i prywatność). Gdy jest wyłączona, Drive działa tylko po ręcznym wyborze Pobierz lub Wyślij, bez okresowych kontroli i odświeżania dostępu w tle. Tokeny dostępu Google mają ograniczony czas życia, więc przy ręcznej operacji Drive aplikacja może poprosić o ponowne logowanie.
+Wszystkie ustawienia synchronizacji znajdują się w jednym miejscu: **⚙ Opcje synchronizacji** w bocznym menu → karta Google Drive. Panel zawiera:
+- **Tryb synchronizacji** — Automatyczna (fonowe sprawdzania) lub Tylko ręcznie (bez okien logowania Google w tle — zalecane).
+- **Zmiany** — porównanie lokalnych danych z Drive (urlopy, nadgodziny, notatki, własne zmiany).
+- **Akcje** — Wyślij / Pobierz.
 
-**Uwaga:** Dane w localStorage można stracić przy wyczyszczeniu pamięci przeglądarki. Rób backup przez ☁️ Google Drive (po włączeniu opcji w Ustawienia → Prywatność) lub eksportuj wybrany widok (ICS / druk).
+**Uwaga:** Dane w localStorage można stracić przy wyczyszczeniu pamięci przeglądarki. Rób backup przez ☁️ Google Drive lub eksportuj wybrany widok (ICS / druk).
 
 ## 🔒 Prywatność
 

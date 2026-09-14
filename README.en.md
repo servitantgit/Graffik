@@ -269,12 +269,14 @@ Key parity, placeholders and dynamic prefixes are checked by `node tools/i18n-au
 The app stores data in two places:
 
 1. **localStorage** (primary) — vacations, overtime, notes, settings, schedule edits
-2. **Google Drive** (optional, **off by default**) — backup and synchronisation across your devices. Enable the toggle in **Settings → Data & privacy**, then sign in from the menu.
-Opening the Drive sync menu (when backup is enabled and you are signed in) shows a **short diff log** (local counts of vacations / overtime / notes / custom shifts vs Drive) and the Cancel / Download / Upload buttons in a single row.
+2. **Google Drive** (optional, **off by default**) — backup and synchronisation across your devices. Enable the switch in the Drive card in the side menu, then sign in.
 
-Google Drive backup and automatic sync are separate options. Automatic sync is off by default (switch in Settings → Data & privacy). When it is off, Drive is used only after you manually choose Download or Upload, without periodic background checks or access refresh attempts. Google access tokens have a limited lifetime, so a manual Drive action may still require sign-in.
+All sync settings are in one place: **⚙ Sync options** in the side menu → Google Drive card. The panel contains:
+- **Sync mode** — Automatic (background checks) or Manual only (no background Google login windows — recommended).
+- **Changes** — local vs Drive comparison (vacations, overtime, notes, custom shifts).
+- **Actions** — Upload / Download.
 
-**Note:** data in localStorage can be lost when browser storage is cleared. Back up via ☁️ Google Drive (enable in Settings → Privacy) or export the current view (ICS / print).
+**Note:** data in localStorage can be lost when browser storage is cleared. Back up via ☁️ Google Drive or export the current view (ICS / print).
 
 ## 🔒 Privacy
 
