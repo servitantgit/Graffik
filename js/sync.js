@@ -1064,23 +1064,7 @@ function updateMenuSyncStatus() {
   }
 }
 
-/** Status row click: login | download if remote newer | sync modal */
-function onMenuSyncStatusClick() {
-  if (!driveFeatureOn()) {
-    showToast('warn', `☁️ ${typeof t === 'function' ? t('driveFeatureDisabledHint') : 'Enable Google Drive in Settings → Privacy first'}`);
-    return;
-  }
-  const logged = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : isDriveTokenValid();
-  if (!logged) {
-    loginDrive();
-    return;
-  }
-  if (gDriveRemoteNewer && !(typeof hasUnsyncedChanges === 'function' && hasUnsyncedChanges())) {
-    downloadFromDrive(true);
-    return;
-  }
-  syncWithDrive();
-}
+
 
 function updateDriveUI() {
   updateMenuSyncStatus();
@@ -1850,7 +1834,6 @@ window.hadDriveSession = hadDriveSession;
 window.ensureDriveToken = ensureDriveToken;
 window.updateMenuSyncStatus = updateMenuSyncStatus;
 window.checkDriveRemoteStatus = checkDriveRemoteStatus;
-window.onMenuSyncStatusClick = onMenuSyncStatusClick;
 
 /* === INIT === */
 function initSync() {
@@ -1864,13 +1847,7 @@ function initSync() {
     };
   }
 
-  const statusBtn = document.getElementById('menuSyncStatus');
-  if (statusBtn) {
-    statusBtn.onclick = () => {
-      closeSideMenu();
-      onMenuSyncStatusClick();
-    };
-  }
+
 
   const authBtn = document.getElementById('userAuthBtn');
   if (authBtn) {
