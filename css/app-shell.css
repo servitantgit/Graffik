@@ -1675,3 +1675,207 @@ body.factory-editor-active {
 body.ui-mode-simple .advanced-only {
   display: none !important;
 }
+
+/* === DRIVE SYNC OPTIONS PANEL (v4.1) ===
+   Styles for the panel opened by openDriveSyncOptionsPanel() in js/sync.js.
+   Consolidates: sync mode toggle (auto/manual), local/remote diff table,
+   Upload/Download actions. Rendered inside the standard app-panel body. */
+
+.drive-sync-options-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.dso-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dso-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* --- Mode selector (radio-styled rows) --- */
+.dso-mode-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dso-mode-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--bg-controls);
+  border: 1px solid var(--border-cell);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.dso-mode-row:hover {
+  border-color: var(--text-header);
+}
+
+.dso-mode-row.active {
+  border-color: var(--text-header);
+  background: var(--bg-info-card);
+}
+
+.dso-mode-row input[type='radio'] {
+  margin-top: 2px;
+  accent-color: var(--text-header);
+  cursor: pointer;
+}
+
+.dso-mode-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.dso-mode-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.dso-mode-desc {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+/* --- Actions row (Upload / Download) --- */
+.dso-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dso-actions .modal-btn {
+  flex: 1 1 0;
+  min-width: 120px;
+  min-height: 44px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* --- Diff table --- */
+.dso-diff {
+  background: var(--bg-cell);
+  border: 1px solid var(--border-cell);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.dso-diff-loading,
+.dso-diff-error {
+  padding: 8px 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.dso-diff-error {
+  color: #c0392b;
+}
+
+.dso-diff-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.dso-diff-table thead th {
+  padding: 6px 8px;
+  text-align: right;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border-cell);
+}
+
+.dso-diff-table thead th:first-child {
+  text-align: left;
+}
+
+.dso-diff-table tbody td {
+  padding: 8px;
+  text-align: right;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border-cell);
+}
+
+.dso-diff-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.dso-diff-table tbody td:first-child {
+  text-align: left;
+  font-weight: 600;
+}
+
+.dso-diff-eq {
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.dso-diff-local {
+  color: #e67e22;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.dso-diff-remote {
+  color: #3498db;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.dso-diff-meta {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-cell);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.dso-diff-meta b {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .dso-mode-row {
+    padding: 10px 12px;
+  }
+  .dso-mode-title {
+    font-size: 13px;
+  }
+  .dso-mode-desc {
+    font-size: 11px;
+  }
+  .dso-diff-table {
+    font-size: 12px;
+  }
+  .dso-diff-table thead th,
+  .dso-diff-table tbody td {
+    padding: 6px 4px;
+  }
+}
