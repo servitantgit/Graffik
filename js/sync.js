@@ -76,11 +76,6 @@ function setDriveFeatureEnabled(on, opts) {
   }
   try { updateMenuSyncStatus(); } catch (_) {}
   try { updateDriveUI(); } catch (_) {}
-  // Keep Settings panel switch in sync if open
-  try {
-    const stBtn = document.getElementById('stDriveEnabled');
-    if (stBtn) stBtn.setAttribute('aria-checked', next ? 'true' : 'false');
-  } catch (_) {}
   return next;
 }
 
@@ -1867,17 +1862,6 @@ function initSync() {
     logoutBtn.onclick = () => {
       closeSideMenu();
       logoutDrive();
-    };
-  }
-
-  // "Details" button inside the Drive card — opens the sync modal
-  // (element removed in drive-card refactor; getElementById returns null,
-  // null-check keeps this safe. Left for a moment; harmless dead branch.)
-  const warnMoreBtn = document.getElementById('menuDriveWarnMore');
-  if (warnMoreBtn) {
-    warnMoreBtn.onclick = () => {
-      closeSideMenu();
-      syncWithDrive();
     };
   }
 

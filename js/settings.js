@@ -619,7 +619,6 @@ const SECTION_TITLES = {
 function privacyHtml() {
       const localFirstExplanation = tr('settingsPrivacyLocalFirstExplanation');
       const privacyModeLabel = tr('settingsPrivacyMode');
-      const driveStateLabel = tr('settingsPrivacyDriveState');
       const customShiftsLabel = tr('settingsPrivacyCustomShifts');
       const vacationsLabel = tr('settingsPrivacyVacations');
       const overtimeLabel = tr('settingsPrivacyOvertime');

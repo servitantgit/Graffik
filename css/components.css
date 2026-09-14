@@ -969,7 +969,6 @@ button.drive-enable-row:hover {
 .drive-enable-row[aria-checked="true"] .de-knob {
   transform: translateX(20px);
 }
-.drive-card.is-drive-off .drive-status-row,
 .drive-card.is-drive-off .drive-account,
 .drive-card.is-drive-off .drive-warn,
 .drive-card.is-drive-off .drive-logout {
@@ -987,63 +986,7 @@ button.drive-enable-row:hover {
   background: var(--bg-info-card);
 }
 
-/* a) Connection status row */
-button.drive-status-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 4px 2px;
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font: inherit;
-  text-align: left;
-  transition: all 0.15s;
-}
-button.drive-status-row:hover {
-  background: var(--bg-controls);
-}
-.drive-status-row .mi-icon {
-  font-size: 16px;
-  flex-shrink: 0;
-}
-.drive-status-row .ds-text {
-  flex: 1;
-  min-width: 0;
-  font-size: 13px;
-  font-weight: 600;
-}
 
-/* Status badge — green dot + label */
-.ds-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 9px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1.5;
-  color: #27ae60;
-  background: rgba(39, 174, 96, 0.14);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.ds-badge-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #27ae60;
-}
-.ds-badge.inactive {
-  color: var(--text-muted);
-  background: var(--bg-controls, rgba(127, 140, 141, 0.14));
-}
-.ds-badge.inactive .ds-badge-dot {
-  background: #95a5a6;
-}
 
 /* b) Divider */
 .drive-divider {
@@ -1128,20 +1071,7 @@ button.drive-warn:hover {
   flex: 1;
   min-width: 0;
 }
-.drive-warn .dw-more {
-  background: transparent;
-  border: none;
-  color: inherit;
-  font: inherit;
-  font-weight: 700;
-  font-size: 12px;
-  cursor: pointer;
-  padding: 4px 6px;
-  border-radius: 6px;
-}
-.drive-warn .dw-more:hover {
-  text-decoration: underline;
-}
+
 
 /* e0) Sync options button — primary entry point to Drive Sync Options panel */
 button.drive-sync-options {
