@@ -1098,18 +1098,27 @@ button.drive-status-row:hover {
   flex-shrink: 0;
 }
 
-/* d) Warnings block */
-.drive-warn {
+/* d) Warnings block — now a <button>, whole row is clickable */
+button.drive-warn {
   display: none;
   align-items: center;
   gap: 8px;
+  width: 100%;
   padding: 8px 10px;
   border-radius: 10px;
+  font: inherit;
   font-size: 12px;
   font-weight: 600;
   color: #f39c12;
   background: rgba(243, 156, 18, 0.12);
   border: 1px solid rgba(243, 156, 18, 0.35);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s;
+}
+button.drive-warn:hover {
+  background: rgba(243, 156, 18, 0.2);
+  border-color: rgba(243, 156, 18, 0.5);
 }
 .drive-warn .dw-icon {
   font-size: 14px;
@@ -1132,6 +1141,35 @@ button.drive-status-row:hover {
 }
 .drive-warn .dw-more:hover {
   text-decoration: underline;
+}
+
+/* e0) Sync options button — primary entry point to Drive Sync Options panel */
+button.drive-sync-options {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--text-header);
+  border: 1px solid var(--text-header);
+  border-radius: 8px;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.15s;
+}
+button.drive-sync-options:hover {
+  filter: brightness(1.1);
+}
+button.drive-sync-options:active {
+  transform: scale(0.98);
+}
+button.drive-sync-options .mi-icon {
+  font-size: 16px;
+  line-height: 1;
 }
 
 /* e) Logout button — secondary/outline */
