@@ -999,39 +999,29 @@ async function downloadFromDrive(confirmOverwrite = false) {
   }
 }
 
-/* === UI === */
+/* === UI ===
+   The old #menuSyncStatus row (connection status + badge) was removed
+   in commit "refactor(drive-card): simplify...". Login state is now
+   communicated by the visible account email; unsynced changes by the
+   clickable warning row; the primary action is the "Sync options" button. */
 function updateMenuSyncStatus() {
-  const el = document.getElementById('menuSyncStatus');
-  const text = document.getElementById('menuSyncStatusText');
-  const icon = document.getElementById('menuSyncStatusIcon');
-  const badge = document.getElementById('menuSyncStatusBadge');
-  const badgeLabel = document.getElementById('menuSyncStatusBadgeLabel');
   const warnBlock = document.getElementById('menuDriveWarn');
   const warnText = document.getElementById('menuDriveWarnText');
-  if (!el || !text) return;
-
+  const syncOptionsBtn = document.getElementById('menuDriveSyncOptions');
+  const enableBtn = document.getElementById('menuDriveEnable');
+  const card = document.querySelector('.drive-card');
   const tr = (key, params, fallback) => (typeof t === 'function' ? t(key, params) : fallback);
 
-  // Keep menu enable switch + card state in sync
-  const enableBtn = document.getElementById('menuDriveEnable');
+  // Keep enable switch + card visual state in sync with pref
   if (enableBtn) {
     enableBtn.setAttribute('aria-checked', driveFeatureOn() ? 'true' : 'false');
   }
-  const card = el.closest('.drive-card');
   if (card) card.classList.toggle('is-drive-off', !driveFeatureOn());
 
-  // Feature off — no sign-in prompt (use the switch above)
+  // Feature off — hide everything except the enable switch itself
   if (!driveFeatureOn()) {
-    if (icon) {
-      icon.classList.add('mi-icon-svg');
-      icon.innerHTML = ICON_GOOGLE_G;
-    }
-    text.textContent = tr('syncStatusDriveDisabled', null, 'Google Drive backup is off');
-    if (badgeLabel) badgeLabel.textContent = tr('driveFeatureOff', null, 'Disabled');
-    if (badge) badge.classList.add('inactive');
     if (warnBlock) warnBlock.style.display = 'none';
-    el.classList.add('logged-out');
-    el.title = tr('syncStatusDriveDisabledHint', null, 'Turn on the switch above');
+    if (syncOptionsBtn) syncOptionsBtn.style.display = 'none';
     return;
   }
 
@@ -1040,32 +1030,18 @@ function updateMenuSyncStatus() {
   const remoteNewer = !!gDriveRemoteNewer;
   const stale = !!gDriveCheckStale;
 
-  el.classList.toggle('logged-out', !logged);
+  // Sync options button — shown only when logged in (needs auth to do anything useful)
+  if (syncOptionsBtn) {
+    syncOptionsBtn.style.display = logged ? 'flex' : 'none';
+  }
 
-  // Not connected — prompt to sign in
+  // Not connected — warning off, account block (updated by updateDriveUI) will prompt sign-in
   if (!logged) {
-    if (icon) {
-      icon.classList.add('mi-icon-svg');
-      icon.innerHTML = ICON_GOOGLE_G;
-    }
-    text.textContent = tr('syncStatusLogin', null, 'Sign in to Google Drive');
-    if (badgeLabel) badgeLabel.textContent = tr('driveCardInactive', null, 'Inactive');
-    if (badge) badge.classList.add('inactive');
     if (warnBlock) warnBlock.style.display = 'none';
-    el.title = '';
     return;
   }
 
-  // Connected
-  if (icon) {
-    icon.classList.add('mi-icon-svg');
-    icon.innerHTML = ICON_DRIVE;
-  }
-  text.textContent = tr('driveCardConnected', null, 'Connected to Google Drive');
-  if (badgeLabel) badgeLabel.textContent = tr('driveCardActive', null, 'Active');
-  if (badge) badge.classList.remove('inactive');
-
-  const when = typeof timeSinceLastSync === 'function' ? timeSinceLastSync() : '';
+  // Connected — show warning row when there is something to communicate
   const count = typeof getUnsyncedChangeCount === 'function'
     ? getUnsyncedChangeCount()
     : (unsynced ? 1 : 0);
@@ -1079,19 +1055,12 @@ function updateMenuSyncStatus() {
         warnText.textContent = tr('driveCardStaleWarn', null, 'Could not verify — tap to reconnect');
       } else {
         const n = Math.max(1, count);
-        warnText.textContent = n === 1
-          ? tr('driveCardWarningOne', null, '1 warning')
-          : tr('driveCardWarnings', { count: n }, `${n} warnings`);
+        warnText.textContent = tr('driveSyncUnsyncedShort', { count: n }, `${n} unsynced changes`);
       }
+      warnBlock.title = staleOnly
+        ? tr('syncStatusStale', null, 'Could not verify Google Drive — sign-in may have expired')
+        : tr('syncStatusConflict', null, 'Local and Drive both changed — sync needed');
     }
-  }
-
-  if (staleOnly) {
-    el.title = tr('syncStatusStale', null, 'Could not verify Google Drive — sign-in may have expired');
-  } else if (showWarn) {
-    el.title = tr('syncStatusConflict', null, 'Local and Drive both changed — sync needed');
-  } else {
-    el.title = tr('syncStatusOk', { time: when }, `All changes synced · ${when}`);
   }
 }
 
@@ -1416,8 +1385,17 @@ async function fetchDriveRemotePayload() {
   }
 }
 
-/* === MAIN MENU: sync === */
+/* === MAIN MENU: sync ===
+   Kept for backward compatibility with existing callers (onMenuSyncStatusClick,
+   handleAutoSyncCheck conflict path, etc). Now just opens the unified
+   Sync Options panel — the old ad-hoc modal is retired. */
 async function syncWithDrive() {
+  if (typeof openDriveSyncOptionsPanel === 'function') {
+    openDriveSyncOptionsPanel();
+    return;
+  }
+  // Fallback: only runs if this function is somehow called before the panel
+  // helper is defined (shouldn't happen — both live in this file).
   if (!driveFeatureOn()) {
     showToast('warn', `☁️ ${typeof t === 'function' ? t('driveFeatureDisabledHint') : 'Enable Google Drive in Settings → Privacy first'}`);
     return;
@@ -1526,6 +1504,230 @@ async function syncWithDrive() {
     console.warn('[SYNC] syncWithDrive remote diff', e);
   }
 }
+
+/* === DRIVE SYNC OPTIONS PANEL ===
+   Full-screen app-panel that consolidates: sync mode toggle (auto/manual),
+   local-vs-remote diff table, and Upload/Download actions. Single entry
+   point from the Drive card in the side menu — replaces the ad-hoc modal
+   and scattered switches in Settings. */
+async function openDriveSyncOptionsPanel() {
+  if (typeof openAppPanel !== 'function') {
+    console.error('[sync-options]', 'openAppPanel not available');
+    return;
+  }
+  if (!driveFeatureOn()) {
+    showToast('warn', `☁️ ${typeof t === 'function' ? t('driveFeatureDisabledHint') : 'Enable Google Drive backup first'}`);
+    return;
+  }
+  if (!(await ensureDriveToken(true))) {
+    showToast('warn', `☁️ ${t('driveLoginRequired')}`);
+    loginDrive();
+    return;
+  }
+  if (typeof closeSideMenu === 'function') {
+    try { closeSideMenu(); } catch (e) { /* ignore */ }
+  }
+
+  const tr = (key, params, fallback) => (typeof t === 'function' ? t(key, params) : fallback);
+  const mode = isDriveAutoSyncEnabled() ? 'auto' : 'manual';
+
+  const html = `
+    <div class="drive-sync-options-panel">
+      <div class="dso-section">
+        <div class="dso-section-title">${tr('driveSyncOptionsSection', null, 'Sync mode')}</div>
+        <div class="dso-mode-list">
+          <label class="dso-mode-row${mode === 'auto' ? ' active' : ''}" data-dso-mode="auto">
+            <input type="radio" name="dso-mode" value="auto"${mode === 'auto' ? ' checked' : ''}>
+            <span class="dso-mode-body">
+              <span class="dso-mode-title">${tr('driveSyncModeAuto', null, 'Automatic')}</span>
+              <span class="dso-mode-desc">${tr('driveSyncModeAutoDesc', null, 'Background checks and token refresh. Google may show sign-in windows.')}</span>
+            </span>
+          </label>
+          <label class="dso-mode-row${mode === 'manual' ? ' active' : ''}" data-dso-mode="manual">
+            <input type="radio" name="dso-mode" value="manual"${mode === 'manual' ? ' checked' : ''}>
+            <span class="dso-mode-body">
+              <span class="dso-mode-title">${tr('driveSyncModeManual', null, 'Manual only')}</span>
+              <span class="dso-mode-desc">${tr('driveSyncModeManualDesc', null, 'Used only when you press Upload or Download. No background checks.')}</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="dso-section">
+        <div class="dso-section-title">${tr('driveSyncActionsSection', null, 'Actions')}</div>
+        <div class="dso-actions">
+          <button type="button" class="modal-btn primary" data-dso-action="upload">
+            ↑ ${tr('driveSyncUpload', null, 'Upload')}
+          </button>
+          <button type="button" class="modal-btn secondary" data-dso-action="download">
+            ↓ ${tr('driveSyncDownload', null, 'Download')}
+          </button>
+        </div>
+      </div>
+
+      <div class="dso-section">
+        <div class="dso-section-title">${tr('driveSyncChangesSection', null, 'Changes')}</div>
+        <div class="dso-diff" data-dso-diff>
+          <div class="dso-diff-loading">${tr('driveDiffLoading', null, 'Comparing with Drive…')}</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  openAppPanel({
+    id: 'drive-sync-options',
+    title: tr('driveSyncOptionsTitle', null, 'Sync options'),
+    html: html,
+    onMount: function (body) {
+      bindDriveSyncOptionsPanel(body);
+    },
+  });
+}
+
+/* Renders the local/remote diff table inside the panel body.
+   Uses the same helpers as the old modal (countSyncPayloadStats,
+   buildLocalSyncPayload, fetchDriveRemotePayload) — those stay untouched. */
+function renderDriveSyncOptionsDiff(container, localStats, remoteStats, state) {
+  if (!container) return;
+  const tr = (key, params, fallback) => (typeof t === 'function' ? t(key, params) : fallback);
+
+  if (state === 'loading') {
+    container.innerHTML = `<div class="dso-diff-loading">${tr('driveDiffLoading', null, 'Comparing with Drive…')}</div>`;
+    return;
+  }
+  if (state === 'error' || !remoteStats) {
+    container.innerHTML = `<div class="dso-diff-error">${tr('driveDiffNoRemote', null, 'Could not load Drive version for comparison.')}</div>`;
+    return;
+  }
+
+  const rows = [
+    { label: tr('driveDiffUrlops', null, 'Vacations'), local: localStats.urlops, remote: remoteStats.urlops },
+    { label: tr('driveDiffOvertimes', null, 'Overtime'), local: localStats.overtimes, remote: remoteStats.overtimes },
+    { label: tr('driveDiffNotes', null, 'Notes'), local: localStats.notes, remote: remoteStats.notes },
+    { label: tr('driveDiffCustom', null, 'Custom shifts'), local: localStats.customShifts, remote: remoteStats.customShifts },
+    { label: tr('syncDiffFactoryDrafts', null, 'Factory drafts'), local: localStats.factoryDraftChanges, remote: remoteStats.factoryDraftChanges },
+    { label: tr('driveDiffLimits', null, 'Vacation limits'), local: localStats.vacationLimits, remote: remoteStats.vacationLimits },
+  ];
+
+  const lastSyncText = typeof timeSinceLastSync === 'function' ? timeSinceLastSync() : '';
+  const lastSyncDetail = typeof formatLastSyncDateTime === 'function' ? formatLastSyncDateTime() : '';
+  const lastSyncCombined = lastSyncDetail
+    ? (lastSyncText ? `${lastSyncDetail} (${lastSyncText})` : lastSyncDetail)
+    : lastSyncText || '—';
+
+  container.innerHTML = `
+    <table class="dso-diff-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>${tr('driveSyncColumnLocal', null, 'Local')}</th>
+          <th>${tr('driveSyncColumnRemote', null, 'Drive')}</th>
+          <th>${tr('driveSyncColumnDiff', null, 'Diff')}</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(function (r) {
+          const d = r.local - r.remote;
+          let diffCell = '<span class="dso-diff-eq">✓</span>';
+          if (d > 0) diffCell = `<span class="dso-diff-local">📱 +${d}</span>`;
+          else if (d < 0) diffCell = `<span class="dso-diff-remote">☁ +${Math.abs(d)}</span>`;
+          return `<tr><td>${r.label}</td><td>${r.local}</td><td>${r.remote}</td><td>${diffCell}</td></tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    <div class="dso-diff-meta">
+      <div><b>${tr('driveDiffLastSync', null, 'Last sync')}:</b> ${lastSyncCombined}</div>
+    </div>
+  `;
+}
+
+/* Wires up the panel: mode radios, action buttons, and kicks off the
+   async remote diff fetch. Called from openAppPanel onMount. */
+function bindDriveSyncOptionsPanel(body) {
+  if (!body) return;
+  const tr = (key, params, fallback) => (typeof t === 'function' ? t(key, params) : fallback);
+
+  // Mode radios: switch prefs.driveAutoSync. Do NOT trigger sync on switch
+  // (per user requirement — avoid extra Google popups if user toggled by mistake).
+  body.querySelectorAll('[data-dso-mode]').forEach(function (row) {
+    row.addEventListener('click', function () {
+      const nextMode = row.getAttribute('data-dso-mode');
+      const nextAuto = nextMode === 'auto';
+      if (typeof prefs !== 'undefined' && prefs) {
+        prefs.driveAutoSync = nextAuto;
+        if (typeof savePrefs === 'function') savePrefs(prefs);
+      }
+      body.querySelectorAll('[data-dso-mode]').forEach(function (r) {
+        const isActive = r.getAttribute('data-dso-mode') === nextMode;
+        r.classList.toggle('active', isActive);
+        const input = r.querySelector('input[type="radio"]');
+        if (input) input.checked = isActive;
+      });
+    });
+  });
+
+  // Upload button (primary — most frequent action)
+  const uploadBtn = body.querySelector('[data-dso-action="upload"]');
+  if (uploadBtn) {
+    uploadBtn.addEventListener('click', function () {
+      if (typeof closeAppPanel === 'function') closeAppPanel();
+      uploadToDrive(true);
+    });
+  }
+
+  // Download button (secondary)
+  const downloadBtn = body.querySelector('[data-dso-action="download"]');
+  if (downloadBtn) {
+    downloadBtn.addEventListener('click', function () {
+      if (typeof closeAppPanel === 'function') closeAppPanel();
+      downloadFromDrive(true);
+    });
+  }
+
+  // Async remote diff: fetch remote payload, render table
+  const diffContainer = body.querySelector('[data-dso-diff]');
+  const localPayload = typeof buildLocalSyncPayload === 'function' ? buildLocalSyncPayload() : null;
+  const localStats = localPayload && typeof countSyncPayloadStats === 'function'
+    ? countSyncPayloadStats(localPayload)
+    : null;
+
+  if (!localStats || !diffContainer) return;
+
+  fetchDriveRemotePayload()
+    .then(function (remote) {
+      if (!remote) {
+        renderDriveSyncOptionsDiff(diffContainer, localStats, null, 'error');
+        return;
+      }
+      const remoteStats = countSyncPayloadStats(remote);
+      // Reconcile: if remote is byte-identical, mark synced (same logic as old modal)
+      if (typeof reconcileSyncedFingerprint === 'function' && reconcileSyncedFingerprint(remote)) {
+        gDriveRemoteNewer = false;
+        try { updateMenuSyncStatus(); } catch (e) { /* ignore */ }
+      }
+      // Update badge-count meta (same logic as old modal — keeps side-menu badge accurate)
+      if (typeof getSyncMeta === 'function' && typeof setSyncMeta === 'function') {
+        const totalDiff =
+          Math.abs(localStats.urlops - remoteStats.urlops) +
+          Math.abs(localStats.overtimes - remoteStats.overtimes) +
+          Math.abs(localStats.notes - remoteStats.notes) +
+          Math.abs(localStats.customShifts - remoteStats.customShifts) +
+          Math.abs(localStats.factoryDraftChanges - remoteStats.factoryDraftChanges) +
+          Math.abs(localStats.vacationLimits - remoteStats.vacationLimits);
+        const meta = getSyncMeta();
+        meta.lastKnownDiffCount = totalDiff;
+        setSyncMeta(meta);
+        try { updateMenuSyncStatus(); } catch (e) { /* ignore */ }
+      }
+      renderDriveSyncOptionsDiff(diffContainer, localStats, remoteStats, 'ready');
+    })
+    .catch(function (error) {
+      console.warn('[sync-options]', 'diff fetch failed', error);
+      renderDriveSyncOptionsDiff(diffContainer, localStats, null, 'error');
+    });
+}
+
+window.openDriveSyncOptionsPanel = openDriveSyncOptionsPanel;
 
 /* === LOGOUT === */
 /**
@@ -1692,11 +1894,33 @@ function initSync() {
   }
 
   // "Details" button inside the Drive card — opens the sync modal
+  // (element removed in drive-card refactor; getElementById returns null,
+  // null-check keeps this safe. Left for a moment; harmless dead branch.)
   const warnMoreBtn = document.getElementById('menuDriveWarnMore');
   if (warnMoreBtn) {
     warnMoreBtn.onclick = () => {
       closeSideMenu();
       syncWithDrive();
+    };
+  }
+
+  // Warning row itself is now a <button> — clicking anywhere on it opens
+  // the Sync Options panel (which shows the diff and offers Upload/Download).
+  const warnBtn = document.getElementById('menuDriveWarn');
+  if (warnBtn) {
+    warnBtn.onclick = (e) => {
+      e.preventDefault();
+      closeSideMenu();
+      openDriveSyncOptionsPanel();
+    };
+  }
+
+  // Primary "Sync options" entry point — same target as the warning row.
+  const syncOptionsBtn = document.getElementById('menuDriveSyncOptions');
+  if (syncOptionsBtn) {
+    syncOptionsBtn.onclick = () => {
+      closeSideMenu();
+      openDriveSyncOptionsPanel();
     };
   }
 
