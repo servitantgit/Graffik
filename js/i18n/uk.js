@@ -789,6 +789,20 @@ window.translations.uk = {
   menuAbout: 'Про додаток',
   menuAboutDesc: 'Версія, оновлення та довідка',
 
+  // === DRIVE SYNC OPTIONS PANEL (v4.1) ===
+  driveSyncOptionsTitle: 'Опції синхронізації',
+  driveSyncOptionsSection: 'Режим синхронізації',
+  driveSyncModeAuto: 'Автоматична',
+  driveSyncModeAutoDesc: 'Фонові перевірки й оновлення токена. Google може показувати вікна логування.',
+  driveSyncModeManual: 'Тільки вручну',
+  driveSyncModeManualDesc: 'Використовується лише при натисканні Надіслати або Завантажити. Без фонових перевірок.',
+  driveSyncChangesSection: 'Зміни',
+  driveSyncActionsSection: 'Дії',
+  driveSyncColumnLocal: 'Локально',
+  driveSyncColumnRemote: 'Drive',
+  driveSyncColumnDiff: 'Різниця',
+  driveSyncUnsyncedShort: '{count} незсинхронізованих змін',
+
   // === SHARE AND EXPORT ===
   shareCenterTitle: 'Поширення',
   shareCurrentView: 'Поточний вигляд',

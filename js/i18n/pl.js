@@ -789,6 +789,20 @@ window.translations.pl = {
   menuAbout: 'O aplikacji',
   menuAboutDesc: 'Wersja, aktualizacje i pomoc',
 
+  // === DRIVE SYNC OPTIONS PANEL (v4.1) ===
+  driveSyncOptionsTitle: 'Opcje synchronizacji',
+  driveSyncOptionsSection: 'Tryb synchronizacji',
+  driveSyncModeAuto: 'Automatyczna',
+  driveSyncModeAutoDesc: 'Kontrole w tle i odnawianie tokena. Google może pokazywać okna logowania.',
+  driveSyncModeManual: 'Tylko ręcznie',
+  driveSyncModeManualDesc: 'Używana tylko przy naciśnięciu Wyślij lub Pobierz. Bez kontroli w tle.',
+  driveSyncChangesSection: 'Zmiany',
+  driveSyncActionsSection: 'Akcje',
+  driveSyncColumnLocal: 'Lokalnie',
+  driveSyncColumnRemote: 'Drive',
+  driveSyncColumnDiff: 'Różnica',
+  driveSyncUnsyncedShort: '{count} niezsynchronizowanych zmian',
+
   // === SHARE AND EXPORT ===
   shareCenterTitle: 'Udostępnianie',
   shareCurrentView: 'Bieżący widok',

@@ -788,6 +788,20 @@ window.translations.en = {
   menuAbout: 'About',
   menuAboutDesc: 'Version, updates and help',
 
+  // === DRIVE SYNC OPTIONS PANEL (v4.1) ===
+  driveSyncOptionsTitle: 'Sync options',
+  driveSyncOptionsSection: 'Sync mode',
+  driveSyncModeAuto: 'Automatic',
+  driveSyncModeAutoDesc: 'Background checks and token refresh. Google may show sign-in windows.',
+  driveSyncModeManual: 'Manual only',
+  driveSyncModeManualDesc: 'Used only when you press Upload or Download. No background checks.',
+  driveSyncChangesSection: 'Changes',
+  driveSyncActionsSection: 'Actions',
+  driveSyncColumnLocal: 'Local',
+  driveSyncColumnRemote: 'Drive',
+  driveSyncColumnDiff: 'Diff',
+  driveSyncUnsyncedShort: '{count} unsynced changes',
+
   // === SHARE AND EXPORT ===
   shareCenterTitle: 'Share',
   shareCurrentView: 'Current view',
