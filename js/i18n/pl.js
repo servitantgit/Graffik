@@ -400,17 +400,19 @@ window.translations.pl = {
     'Po zalogowaniu do Google Drive dane synchronizują się w jeden plik w chmurze. Bez logowania dane są tylko w localStorage przeglądarki.',
   faqSyncTitle: '☁️ Jak działa synchronizacja z Google Drive?',
   faqSyncDesc:
-    'Google Drive to opcjonalna kopia zapasowa. Domyślnie jest wyłączona, więc aplikacja nie prosi o konto Google, dopóki sam jej nie włączysz. Kopia zapasowa i automatyczna synchronizacja to osobne opcje: automatyczna synchronizacja jest osobną opcją w Ustawienia → Dane i prywatność i domyślnie jest wyłączona. Gdy jest wyłączona, aplikacja nie sprawdza Drive ani nie odnawia dostępu w tle; Drive używasz ręcznie przez Pobierz / Wyślij. Tokeny dostępu Google mają ograniczony czas życia, więc Google może poprosić o logowanie, gdy ręcznie wybierzesz operację Drive.',
+    'Google Drive to opcjonalna kopia zapasowa Twoich danych osobistych (urlopów, nadgodzin, notatek, własnych zmian). Domyślnie jest wyłączona — aplikacja nie prosi o konto Google, dopóki sam jej nie włączysz.',
   faqSync1:
-    'Otwórz menu boczne → Google Drive i włącz „Kopia zapasowa Google Drive”. Potem wybierz Zaloguj. Ten sam przełącznik jest też w Ustawienia → Dane i prywatność. Automatyczną synchronizację włączysz osobnym przełącznikiem w Ustawienia → Dane i prywatność (domyślnie wyłączona).',
-  faqSync2: 'Po zalogowaniu możesz wysłać dane do Drive lub pobrać zapisaną kopię z Drive.',
+    'W bocznym menu → karta Google Drive → włącz przełącznik „Kopia zapasowa Google Drive” i zaloguj się.',
+  faqSync2:
+    'Wszystkie ustawienia synchronizacji są w jednym miejscu: kliknij ⚙ Opcje synchronizacji w tej samej karcie. Otworzy się panel z trybem synchronizacji, porównaniem zmian i przyciskami Wyślij / Pobierz.',
   faqSync3:
-    'Synchronizowane dane obejmują: ustawienia grafiku, urlopy, nadgodziny, notatki i limity urlopów. Plik trafia wyłącznie do Twojego folderu danych aplikacji Google Drive.',
-  faqSync4: 'Przy pobieraniu danych aplikacja prosi o potwierdzenie przed nadpisaniem lokalnych danych.',
+    'Wybierz tryb: Automatyczna (fonowe sprawdzania co jakiś czas — może pokazywać okna logowania Google) lub Tylko ręcznie (używana tylko gdy naciśniesz Wyślij lub Pobierz — bez okien Google w tle). Zalecany jest tryb ręczny.',
+  faqSync4:
+    'Gdy pojawi się warning ⚠ w Drive card — kliknij go, aby otworzyć panel i zobaczyć różnice między urządzeniem a Drive.',
   faqSync5:
-    'Wyłączenie kopii zapasowej Drive (lub wylogowanie) zatrzymuje prośby o logowanie do Google — kopia wyłączona oznacza brak funkcji Drive, jak wcześniej. Wyłączenie samej automatycznej synchronizacji też zatrzymuje kontrole i odświeżanie dostępu w tle, ale ręczne Pobierz / Wyślij nadal działają. Tryb prywatności na ekranie jest niezależny od Drive.',
+    'Wylogowanie lub wyłączenie kopii zapasowej: dane pozostają w tej przeglądarce, ale nie są już synchronizowane. Plik na Drive zostaje — możesz go usunąć w ustawieniach konta Google.',
   faqSyncNote:
-    'Szczegóły: Polityka prywatności (Ustawienia → Dane i prywatność lub privacy.html). Bez analityki; nie prowadzimy serwerów z Twoimi danymi.',
+    'Synchronizowane dane: urlopy, nadgodziny, notatki, własne zmiany, limity urlopów. Plik trafia wyłącznie do Twojego prywatnego folderu danych aplikacji Google Drive. Pełne szczegóły — Polityka prywatności (privacy.html).',
   faqExportTitle: '📥 Czy można eksportować grafik do innych aplikacji?',
   faqExportDesc:
     'Tak. Menu → Eksport: kalendarz .ics i druk. Plik .ics można zaimportować do Google Calendar, Outlooka, iPhone’a itd. Kopia zapasowa danych osobistych między urządzeniami — opcjonalnie przez Google Drive (Ustawienia → Prywatność).',

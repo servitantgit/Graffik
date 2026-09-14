@@ -399,17 +399,19 @@ window.translations.en = {
     'When signed in to Google Drive, data syncs as one file in the cloud. Without login, data stays only in the browser localStorage.',
   faqSyncTitle: '☁️ How does Google Drive sync work?',
   faqSyncDesc:
-    'Google Drive is an optional backup. It is off by default so the app never asks for a Google account until you enable it. Backup and automatic sync are separate options: automatic sync is a separate option in Settings → Data & privacy and is off by default. When it is off, the app does not check Drive or refresh access in the background; you use Drive manually through Download / Upload. Google access tokens have a limited lifetime, so Google may ask you to sign in when you manually request a Drive operation.',
+    'Google Drive is an optional backup of your personal data (vacations, overtime, notes, custom shifts). Off by default — the app never asks for a Google account until you enable it yourself.',
   faqSync1:
-    'Open the side menu → Google Drive and turn on “Google Drive backup”. Then tap Sign in. The same switch is also in Settings → Data & privacy. Automatic sync has its own switch in Settings → Data & privacy (off by default).',
-  faqSync2: 'After signing in you can upload data to Drive or download a saved copy from Drive.',
+    'In the side menu → Google Drive card → turn on the "Google Drive backup" switch and sign in.',
+  faqSync2:
+    'All sync settings are in one place: click ⚙ Sync options in the same card. A panel opens with sync mode, change comparison, and Upload / Download buttons.',
   faqSync3:
-    'Synced data includes: schedule settings, vacations, overtime, notes and vacation limits. The file is stored only in your own Google Drive app-data folder.',
-  faqSync4: 'When downloading data, the app asks for confirmation before overwriting local data.',
+    'Choose a mode: Automatic (background checks periodically — may show Google sign-in windows) or Manual only (used only when you press Upload or Download — no background Google windows). Manual mode is recommended.',
+  faqSync4:
+    'When a ⚠ warning appears in the Drive card, click it to open the panel and see the differences between your device and Drive.',
   faqSync5:
-    'Turning Drive backup off (or signing out) stops Google login prompts — backup off still disables the Drive feature entirely, as before. Turning off only automatic sync also stops background checks and access refresh, while manual Download / Upload keep working. Privacy mode (hide personal data on screen) is separate from Drive login.',
+    'Signing out or turning off backup: data stays in this browser but is no longer synced. The file on Drive remains — you can delete it in Google account settings.',
   faqSyncNote:
-    'Full details: Privacy policy (menu Settings → Data & privacy, or privacy.html). No analytics; we do not run servers that store your data.',
+    'Synchronised data: vacations, overtime, notes, custom shifts, vacation limits. The file goes only to your private Google Drive application-data folder. Full details — Privacy Policy (privacy.html).',
   faqExportTitle: '📥 Can I export the schedule to other apps?',
   faqExportDesc:
     'Yes. Menu → Export offers .ics calendar export and print. The .ics file can be imported into Google Calendar, Outlook, iPhone and many other calendar apps. Cross-device backup of personal data is optional via Google Drive (Settings → Privacy).',
