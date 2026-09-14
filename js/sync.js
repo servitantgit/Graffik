@@ -1370,9 +1370,9 @@ async function fetchDriveRemotePayload() {
 }
 
 /* === MAIN MENU: sync ===
-   Kept for backward compatibility with existing callers (onMenuSyncStatusClick,
-   handleAutoSyncCheck conflict path, etc). Now just opens the unified
-   Sync Options panel — the old ad-hoc modal is retired. */
+   Kept for backward compatibility with existing callers (handleAutoSyncCheck
+   conflict path, etc). Now just opens the unified Sync Options panel —
+   the old ad-hoc modal is retired. */
 async function syncWithDrive() {
   if (typeof openDriveSyncOptionsPanel === 'function') {
     openDriveSyncOptionsPanel();

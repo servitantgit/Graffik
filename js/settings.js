@@ -627,12 +627,6 @@ function privacyHtml() {
       const clearLabel = tr('settingsPrivacyClear');
 
       const privacyModeEnabled = !!prefs.privacyMode;
-      const driveEnabled = typeof isDriveFeatureEnabled === 'function'
-        ? isDriveFeatureEnabled()
-        : !!(prefs && prefs.driveEnabled);
-      const driveLoggedIn = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : false;
-      const driveEmail = driveLoggedIn && typeof driveUserEmail !== 'undefined' && driveUserEmail ? driveUserEmail : null;
-      const driveAutoSync = driveEnabled && prefs.driveAutoSync === true;
 
       // Counts
       const customShiftsCount = typeof countPersonalCustomShifts === 'function' ? countPersonalCustomShifts() : 0;
@@ -649,32 +643,6 @@ function privacyHtml() {
         '<span class="st-row-label">' + privacyModeLabel + '</span>' +
         '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
         '</button></div>' +
-        '<div class="st-group"><div class="st-label">' + tr('settingsPrivacyDriveEnable') + '</div>' +
-        '<button type="button" class="st-row st-switch" id="stDriveEnabled" role="switch" aria-checked="' +
-        (driveEnabled ? 'true' : 'false') + '">' +
-        '<span class="st-row-label">' + tr('settingsPrivacyDriveEnable') + '</span>' +
-        '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
-        '</button>' +
-        '<p class="st-hint">' + tr('settingsPrivacyDriveEnableDesc') + '</p>' +
-        '</div>' +
-        '<div class="st-group"><div class="st-label">' + tr('settingsPrivacyDriveAutoSync') + '</div>' +
-        '<button type="button" class="st-row st-switch" id="stDriveAutoSync" role="switch"' +
-        (driveEnabled ? '' : ' disabled') +
-        ' aria-checked="' + (driveAutoSync ? 'true' : 'false') + '"' +
-        (driveEnabled ? '' : ' aria-disabled="true"') + '>' +
-        '<span class="st-row-label">' + tr('settingsPrivacyDriveAutoSync') + '</span>' +
-        '<span class="ui-switch" aria-hidden="true"><span class="ui-switch-knob"></span></span>' +
-        '</button>' +
-        '<p class="st-hint">' +
-        (driveEnabled
-          ? tr('settingsPrivacyDriveAutoSyncDesc')
-          : tr('settingsPrivacyDriveAutoSyncDisabledHint')) +
-        '</p>' +
-        '</div>' +
-        '<div class="st-group"><div class="st-label">' + driveStateLabel + '</div>' +
-        '<div class="st-row"><span class="st-row-label">' + tr('driveCardConnected') + '</span>' +
-        '<span class="st-mono">' + (driveLoggedIn ? (driveEmail ? driveEmail : tr('driveLoggedIn')) : tr('driveNotLoggedIn')) + '</span>' +
-        '</div></div>' +
         '<div class="st-group">' +
         '<div class="st-row"><span class="st-row-label">' + customShiftsLabel + '</span>' +
         '<span class="st-mono">' + customShiftsCount + '</span>' +
@@ -708,45 +676,6 @@ function bindPrivacy(body) {
           privacyModeBtn.setAttribute('aria-checked', next ? 'true' : 'false');
           // Refresh views to reflect any changes in data visibility
           refreshViewsSafe();
-        });
-      }
-
-      const driveEnabledBtn = body.querySelector('#stDriveEnabled');
-      if (driveEnabledBtn) {
-        driveEnabledBtn.addEventListener('click', function () {
-          const next = driveEnabledBtn.getAttribute('aria-checked') !== 'true';
-          if (typeof setDriveFeatureEnabled === 'function') {
-            setDriveFeatureEnabled(next);
-          } else {
-            prefs.driveEnabled = next;
-            savePrefsSafe();
-            driveEnabledBtn.setAttribute('aria-checked', next ? 'true' : 'false');
-            if (typeof showToast === 'function') {
-              showToast('success', tr(next ? 'driveFeatureEnabledToast' : 'driveFeatureDisabledToast'));
-            }
-            if (typeof updateMenuSyncStatus === 'function') {
-              try { updateMenuSyncStatus(); } catch (e) { /* ignore */ }
-            }
-          }
-          // Re-render the privacy section so the automatic-sync switch's
-          // enabled/disabled state stays accurate after this Drive toggle.
-          renderSettingsSection('privacy', body);
-        });
-      }
-
-      const driveAutoSyncBtn = body.querySelector('#stDriveAutoSync');
-      if (driveAutoSyncBtn) {
-        driveAutoSyncBtn.addEventListener('click', function () {
-          const next = driveAutoSyncBtn.getAttribute('aria-checked') !== 'true';
-          prefs.driveAutoSync = next;
-          savePrefsSafe();
-          driveAutoSyncBtn.setAttribute('aria-checked', next ? 'true' : 'false');
-          // Disabling: clears any already scheduled background token refresh.
-          // Enabling: schedules a refresh when a valid expiry exists. Never
-          // forces login and never triggers a Drive request right here.
-          if (typeof scheduleDriveTokenRefresh === 'function') {
-            try { scheduleDriveTokenRefresh(); } catch (e) { /* ignore */ }
-          }
         });
       }
 
