@@ -837,29 +837,25 @@ Stop if the current handler differs from the supplied source or if another modul
 Vague tasks are prohibited.
 
 15. RESPONSE FORMAT FOR THIS PROJECT
-When working from code.json, follow its ai_response_contract exactly.
+Code changes are applied via Cline (VS Code extension) which executes edits through its own tools.
 
-A patch response must:
+When writing task descriptions for Cline / DeepSeek Flash V4:
 
-start with ### OP 1:;
-contain no preamble;
-use exact relative paths;
-use only supported actions;
-use exact byte-matching LOCATE blocks;
-use exactly three ASCII backticks;
-contain no smart quotes;
-contain no zero-width characters;
-preserve literal UTF-8;
-include a short summary after operations.
-Whole-file replacement
-Avoid whole-file replacement for large production files.
+- Use natural English prose, not OP/LOCATE/REPLACE syntax
+- Reference file paths and describe what to change and where
+- List forbidden actions explicitly (agent must not improvise)
+- Include verification steps (grep counts, syntax checks, manual tests)
+- Include rollback plan (git commands)
 
-For a focused bug fix, use small unique REPLACE blocks with enough context.
+When writing focused refactors for Sonnet 4.5:
 
-Deleting and recreating a file
-Delete + Create for the same path is allowed only when intentionally replacing a documentation or configuration file and the apply script executes operations sequentially.
+- Provide project as zip attachment in chat
+- Describe scope precisely
+- Sonnet returns full modified files or clear diffs
+- User applies manually via editor
 
-Do not use this technique for production JavaScript or CSS during stabilization.
+Do not use markdown formats like ### OP N: with LOCATE/REPLACE blocks -
+they were an artifact of a discontinued apply-update.ps1 workflow.
 
 16. MANUAL REGRESSION GATES
 Every JavaScript repair
