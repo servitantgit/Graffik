@@ -1065,4 +1065,6 @@ window.translations.pl = {
   notesJumpToDay: 'Przejdź do dnia',
   notesDeleteConfirmTitle: 'Usunąć notatkę?',
   notesDeleteConfirmBody: 'Ta akcja jest nieodwracalna.',
+  notesAdvancedSearch: 'Rozszerzone wyszukiwanie',
+  notesHideAdvanced: 'Ukryj filtry',
 };

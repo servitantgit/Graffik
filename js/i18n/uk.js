@@ -1065,4 +1065,6 @@ window.translations.uk = {
   notesJumpToDay: 'Перейти до дня',
   notesDeleteConfirmTitle: 'Видалити нотатку?',
   notesDeleteConfirmBody: 'Цю дію неможливо скасувати.',
+  notesAdvancedSearch: 'Розширений пошук',
+  notesHideAdvanced: 'Сховати фільтри',
 };

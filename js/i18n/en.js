@@ -1064,4 +1064,6 @@ window.translations.en = {
   notesJumpToDay: 'Jump to day',
   notesDeleteConfirmTitle: 'Delete note?',
   notesDeleteConfirmBody: 'This action cannot be undone.',
+  notesAdvancedSearch: 'Advanced search',
+  notesHideAdvanced: 'Hide filters',
 };

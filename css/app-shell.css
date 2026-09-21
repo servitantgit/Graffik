@@ -1915,7 +1915,7 @@ body.ui-mode-simple .advanced-only {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 12px;
+  padding: 10px 12px;
   background: var(--bg-controls);
   border: 1px solid var(--border-cell);
   border-radius: 10px;
@@ -1924,8 +1924,15 @@ body.ui-mode-simple .advanced-only {
   z-index: 10;
 }
 
+.notes-filter-topline {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
 .notes-filter-search {
-  width: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
   padding: 10px 12px;
   border: 1px solid var(--border-cell);
   border-radius: 8px;
@@ -1933,6 +1940,57 @@ body.ui-mode-simple .advanced-only {
   color: var(--text-main);
   font-size: 14px;
   font-family: inherit;
+}
+
+.notes-advanced-toggle {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 56px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-cell);
+  border-radius: 8px;
+  background: var(--bg-container);
+  color: var(--text-main);
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.notes-advanced-toggle:hover {
+  border-color: var(--text-header);
+  background: var(--bg-info);
+}
+
+.notes-advanced-toggle.has-active {
+  border-color: var(--accent);
+  background: rgba(255, 87, 34, 0.08);
+}
+
+.notes-advanced-toggle .nat-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.notes-advanced-toggle .nat-caret {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.notes-filter-advanced {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-cell);
+  animation: notesFilterExpand 0.15s ease-out;
+}
+
+@keyframes notesFilterExpand {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .notes-filter-row {

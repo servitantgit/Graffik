@@ -26,6 +26,7 @@
     dateTo: null, // 'YYYY-MM-DD' or null
   };
   let notesDisplayMode = 'recent'; // 'recent' | 'all'
+  let notesAdvancedOpen = false; // toggle for advanced filters block
 
   /* ---------- PURE HELPERS ---------- */
 
@@ -167,41 +168,70 @@
       `<option value="after"${notesFilter.tag === 'after' ? ' selected' : ''}>${escapeHtml(t('notesFilterTagAfter'))}</option>`,
     ];
 
+    const advancedLabel = notesAdvancedOpen
+      ? t('notesHideAdvanced')
+      : t('notesAdvancedSearch');
+    const advancedCaret = notesAdvancedOpen ? '▲' : '▼';
+
+    // Highlight toggle button when any advanced filter has non-default value
+    const hasActiveAdvanced =
+      notesFilter.month !== null ||
+      notesFilter.brigade !== null ||
+      notesFilter.tag !== null ||
+      notesFilter.dateFrom ||
+      notesFilter.dateTo;
+
     return `
       <div class="notes-filter-bar">
-        <input
-          type="search"
-          class="notes-filter-search"
-          data-notes-filter="search"
-          placeholder="${escapeHtml(t('notesSearchPlaceholder'))}"
-          value="${escapeHtml(notesFilter.search)}"
-        >
-        <div class="notes-filter-row">
-          <label class="notes-filter-item">
-            <span class="notes-filter-label">${escapeHtml(t('notesFilterMonth'))}</span>
-            <select data-notes-filter="month">${monthOptions.join('')}</select>
-          </label>
-          <label class="notes-filter-item">
-            <span class="notes-filter-label">${escapeHtml(t('notesFilterBrigade'))}</span>
-            <select data-notes-filter="brigade">${brigadeOptions.join('')}</select>
-          </label>
+        <div class="notes-filter-topline">
+          <input
+            type="search"
+            class="notes-filter-search"
+            data-notes-filter="search"
+            placeholder="${escapeHtml(t('notesSearchPlaceholder'))}"
+            value="${escapeHtml(notesFilter.search)}"
+          >
+          <button
+            type="button"
+            class="notes-advanced-toggle${hasActiveAdvanced ? ' has-active' : ''}"
+            data-notes-action="toggle-advanced"
+            aria-expanded="${notesAdvancedOpen ? 'true' : 'false'}"
+            title="${escapeHtml(advancedLabel)}"
+          >
+            <span class="nat-icon">🔍</span>
+            <span class="nat-caret">${advancedCaret}</span>
+          </button>
         </div>
-        <div class="notes-filter-row advanced-only">
-          <label class="notes-filter-item">
-            <span class="notes-filter-label">${escapeHtml(t('notesFilterTag'))}</span>
-            <select data-notes-filter="tag">${tagOptions.join('')}</select>
-          </label>
+        ${notesAdvancedOpen ? `
+        <div class="notes-filter-advanced">
+          <div class="notes-filter-row">
+            <label class="notes-filter-item">
+              <span class="notes-filter-label">${escapeHtml(t('notesFilterMonth'))}</span>
+              <select data-notes-filter="month">${monthOptions.join('')}</select>
+            </label>
+            <label class="notes-filter-item">
+              <span class="notes-filter-label">${escapeHtml(t('notesFilterBrigade'))}</span>
+              <select data-notes-filter="brigade">${brigadeOptions.join('')}</select>
+            </label>
+          </div>
+          <div class="notes-filter-row advanced-only">
+            <label class="notes-filter-item">
+              <span class="notes-filter-label">${escapeHtml(t('notesFilterTag'))}</span>
+              <select data-notes-filter="tag">${tagOptions.join('')}</select>
+            </label>
+          </div>
+          <div class="notes-filter-row advanced-only">
+            <label class="notes-filter-item">
+              <span class="notes-filter-label">${escapeHtml(t('notesFilterDateFrom'))}</span>
+              <input type="date" data-notes-filter="dateFrom" value="${escapeHtml(notesFilter.dateFrom || '')}">
+            </label>
+            <label class="notes-filter-item">
+              <span class="notes-filter-label">${escapeHtml(t('notesFilterDateTo'))}</span>
+              <input type="date" data-notes-filter="dateTo" value="${escapeHtml(notesFilter.dateTo || '')}">
+            </label>
+          </div>
         </div>
-        <div class="notes-filter-row advanced-only">
-          <label class="notes-filter-item">
-            <span class="notes-filter-label">${escapeHtml(t('notesFilterDateFrom'))}</span>
-            <input type="date" data-notes-filter="dateFrom" value="${escapeHtml(notesFilter.dateFrom || '')}">
-          </label>
-          <label class="notes-filter-item">
-            <span class="notes-filter-label">${escapeHtml(t('notesFilterDateTo'))}</span>
-            <input type="date" data-notes-filter="dateTo" value="${escapeHtml(notesFilter.dateTo || '')}">
-          </label>
-        </div>
+        ` : ''}
       </div>
     `;
   }
@@ -362,7 +392,7 @@
       });
     });
 
-    // Display mode toggle
+    // Display mode toggle + advanced filters toggle
     body.querySelectorAll('[data-notes-action]').forEach((btn) => {
       const action = btn.getAttribute('data-notes-action');
       if (action === 'show-all') {
@@ -373,6 +403,11 @@
       } else if (action === 'show-recent') {
         btn.addEventListener('click', () => {
           notesDisplayMode = 'recent';
+          renderNotesList(body);
+        });
+      } else if (action === 'toggle-advanced') {
+        btn.addEventListener('click', () => {
+          notesAdvancedOpen = !notesAdvancedOpen;
           renderNotesList(body);
         });
       }
