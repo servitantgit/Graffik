@@ -44,6 +44,7 @@ const ASSETS = [
   './js/app-shell.js',
   './js/settings.js',
   './js/admin-center.js',
+  './js/notes-view.js',
   './js/main.js',
   './icons/icon-192.png',
   './icons/icon-512.png',

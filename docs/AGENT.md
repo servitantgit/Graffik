@@ -837,15 +837,19 @@ Stop if the current handler differs from the supplied source or if another modul
 Vague tasks are prohibited.
 
 15. RESPONSE FORMAT FOR THIS PROJECT
+
 Code changes are applied via Cline (VS Code extension) which executes edits through its own tools.
 
 When writing task descriptions for Cline / DeepSeek Flash V4:
 
-- Use natural English prose, not OP/LOCATE/REPLACE syntax
-- Reference file paths and describe what to change and where
+- Use natural English prose for instructions
+- LOCATE / REPLACE / ACTION blocks ARE allowed and encouraged for byte-precise specifications
+  (they serve as exact byte-range specs for the agent to find and modify)
+- Reference file paths explicitly
 - List forbidden actions explicitly (agent must not improvise)
 - Include verification steps (grep counts, syntax checks, manual tests)
-- Include rollback plan (git commands)
+- Include rollback plan (git commands FOR USER to run — agent must NOT execute git)
+- Use STEP N: structure for multi-file changes with individual VERIFY gates
 
 When writing focused refactors for Sonnet 4.5:
 
@@ -854,8 +858,12 @@ When writing focused refactors for Sonnet 4.5:
 - Sonnet returns full modified files or clear diffs
 - User applies manually via editor
 
-Do not use markdown formats like ### OP N: with LOCATE/REPLACE blocks -
-they were an artifact of a discontinued apply-update.ps1 workflow.
+Do NOT use ### OP N: with structured metadata like "FILE:" and "ACTION:" as top-level
+document structure — this was the parser format for the discontinued apply-update.ps1
+workflow. Use STEP N: or similar natural structure instead.
+
+Cline reads task descriptions, uses its own read_file / write_to_file / apply_diff tools
+to make changes, and shows a diff for each edit before applying.
 
 16. MANUAL REGRESSION GATES
 Every JavaScript repair
