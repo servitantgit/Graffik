@@ -241,7 +241,10 @@ function openAddShiftModal(day) {
       ? factorySchedule[currentYear][currentMonth][selectedShift][day - 1]
       : '';
   const isFactoryFree = isWolne(factoryShift);
-  const showHoursOnly = isFactoryFree && (isHoliday || isSunday || isSaturday);
+  // Show hours-only section on ANY day where factory has no shift for this brigade.
+  // Rate is categorized by categorizeOvertime('weekend', ...): holiday=+200%, Sunday=+100%,
+  // other days off (Saturday or any weekday off) = +100%.
+  const showHoursOnly = isFactoryFree;
 
   // Existing weekend hours (if any) — for pre-filling input and showing Delete button
   const existingOt = getOvertimes(currentYear, currentMonth, day, selectedShift);
