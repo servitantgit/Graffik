@@ -229,6 +229,67 @@ test('categorizeOvertime: total hours equals input', () => {
 
 
 // ============================================================
+// Weekend position — Sub-task 4a coverage
+// (Weekend Hours feature: recording N hours on any factory-free day)
+// ============================================================
+
+test('categorizeOvertime: weekend on Wednesday (weekday day-off) → +100%', () => {
+  // 4 March 2026 = Wednesday, not holiday. Real use case from Sub-task 2b-fix:
+  // brigade has 'W' (free) by factory, user worked 5 hours as overtime.
+  const result = categorizeOvertime(2026, 3, 4, null, 'weekend', 5);
+  assert.deepStrictEqual(result, { h50: 0, h100: 5, h200: 0 });
+});
+
+test('categorizeOvertime: weekend on Thursday (weekday day-off) → +100%', () => {
+  // 5 March 2026 = Thursday. Another weekday day-off scenario.
+  const result = categorizeOvertime(2026, 3, 5, null, 'weekend', 3.5);
+  assert.deepStrictEqual(result, { h50: 0, h100: 3.5, h200: 0 });
+});
+
+test('categorizeOvertime: weekend 0.5 hours minimum → +100%', () => {
+  // Edge case: minimum allowed hours (0.5) — used as UI input min value.
+  const result = categorizeOvertime(2026, 1, 3, null, 'weekend', 0.5);
+  assert.deepStrictEqual(result, { h50: 0, h100: 0.5, h200: 0 });
+});
+
+test('categorizeOvertime: weekend full 8h shift on holiday → +200%', () => {
+  // Full-day work on holiday — same rate as adding R shift + weekend type.
+  const result = categorizeOvertime(2026, 5, 1, null, 'weekend', 8);
+  assert.deepStrictEqual(result, { h50: 0, h100: 0, h200: 8 });
+});
+
+test('categorizeOvertime: weekend hours parameter accepts null shift', () => {
+  // Weekend branch must NOT dereference shiftHours[shift] — shift is null.
+  // This is why Sub-task 2b/3 could pass shift=null in categorizeOvertime calls.
+  const runs = () => categorizeOvertime(2026, 1, 4, null, 'weekend', 5);
+  assert.doesNotThrow(runs, 'weekend branch must not read shiftHours[null]');
+});
+
+test('categorizeOvertime: weekend total hours preserved (sum == input)', () => {
+  // Regression: for any weekend hours input, h50+h100+h200 must equal input.
+  const testCases = [
+    { y: 2026, m: 1, d: 3, h: 5 },     // Saturday
+    { y: 2026, m: 1, d: 4, h: 8 },     // Sunday
+    { y: 2026, m: 5, d: 1, h: 12 },    // Holiday
+    { y: 2026, m: 3, d: 4, h: 6.5 },   // Wednesday day-off
+    { y: 2026, m: 11, d: 1, h: 0.5 },  // All Saints (edge)
+  ];
+  for (const tc of testCases) {
+    const r = categorizeOvertime(tc.y, tc.m, tc.d, null, 'weekend', tc.h);
+    const total = r.h50 + r.h100 + r.h200;
+    assert.strictEqual(total, tc.h,
+      `Total ${total} !== input ${tc.h} for weekend on ${tc.y}-${tc.m}-${tc.d}`);
+  }
+});
+
+test('categorizeOvertime: weekend on holiday takes precedence over Sunday', () => {
+  // Sanity: 1 January 2026 = Thursday + New Year holiday. Holiday rule wins → +200%.
+  // (Not Sunday-vs-holiday collision, but verifies holiday branch executes first.)
+  const result = categorizeOvertime(2026, 1, 1, null, 'weekend', 4);
+  assert.deepStrictEqual(result, { h50: 0, h100: 0, h200: 4 });
+});
+
+// ============================================================
 // Additional edge / boundary cases
 // ============================================================
 
