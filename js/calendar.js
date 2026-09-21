@@ -219,6 +219,7 @@ function openAddShiftModal(day) {
   const isHoliday = !!yHolidays[currentMonth + '-' + day];
   const dowLocal = new Date(currentYear, currentMonth - 1, day).getDay();
   const isSunday = dowLocal === 0;
+  const isSaturday = dowLocal === 6;
   const rateInfo = isHoliday
     ? `+200% (${t('labelHoliday')})`
     : isSunday
@@ -231,6 +232,51 @@ function openAddShiftModal(day) {
   // Check if day already has a custom shift (for showing/highlighting Empty button)
   const existingShift = getShiftAtWithPending(currentYear, currentMonth, day, selectedShift);
   const hasExistingShift = !isWolne(existingShift);
+
+  // Check factory shift — hours-only section shows ONLY when factory has no shift AND day is holiday/Sunday/Saturday
+  const factoryShift =
+    factorySchedule[currentYear] &&
+    factorySchedule[currentYear][currentMonth] &&
+    factorySchedule[currentYear][currentMonth][selectedShift]
+      ? factorySchedule[currentYear][currentMonth][selectedShift][day - 1]
+      : '';
+  const isFactoryFree = isWolne(factoryShift);
+  const showHoursOnly = isFactoryFree && (isHoliday || isSunday || isSaturday);
+
+  // Existing weekend hours (if any) — for pre-filling input and showing Delete button
+  const existingOt = getOvertimes(currentYear, currentMonth, day, selectedShift);
+  const existingWeekend = existingOt && existingOt.weekend ? existingOt.weekend : null;
+  const existingHours = existingWeekend ? existingWeekend.hours : '';
+  const existingNote =
+    typeof getDayNoteTextByTag === 'function'
+      ? getDayNoteTextByTag(currentYear, currentMonth, day, selectedShift, 'weekend')
+      : '';
+
+  const hoursOnlyHtml = showHoursOnly
+    ? `
+    <div style="margin-top:20px; padding-top:15px; border-top:1px solid var(--border-cell);">
+      <div style="font-weight:600; margin-bottom:10px;">${t('addShiftHoursSection')}:</div>
+      <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+        <label style="font-size:13px; color:var(--text-muted); flex-shrink:0;">${t('addShiftHoursLabel')}</label>
+        <input type="number" id="addShiftHoursInput" min="0.5" max="24" step="0.5"
+          placeholder="${t('addShiftHoursPlaceholder')}"
+          value="${existingHours}"
+          style="flex:1; padding:8px 10px; border:1px solid var(--border-cell); border-radius:6px; background:var(--bg-container); color:var(--text-main); font-size:14px;">
+      </div>
+      <div id="addShiftHoursPreview" style="padding:10px; background:var(--bg-info); border-radius:8px; font-size:13px; margin-bottom:10px; display:none;"></div>
+      <div style="margin-bottom:10px;">
+        <label style="font-size:13px; color:var(--text-muted); display:block; margin-bottom:4px;">${t('otNote')}</label>
+        <input type="text" id="addShiftHoursNote" class="note-input"
+          placeholder="${t('otNotePlaceholder')}"
+          value="${escapeHtml(existingNote)}">
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button id="addShiftHoursSaveBtn" class="modal-btn success" style="flex:1;">💾 ${t('addShiftHoursSave')}</button>
+        ${existingWeekend ? `<button id="addShiftHoursDeleteBtn" class="modal-btn danger" style="flex:0 0 auto;">🗑 ${t('addShiftHoursDelete')}</button>` : ''}
+      </div>
+    </div>
+    `
+    : '';
 
   const body = `
     <div style="padding:10px 14px; background:var(--bg-cell); border-radius:10px; margin-bottom:15px; font-size:13px;">
@@ -245,6 +291,7 @@ function openAddShiftModal(day) {
       <button class="add-shift-modal-btn" data-shift="N" style="flex:1; min-width:90px; padding:14px 8px; border:none; background:var(--color-N); color:#fff; border-radius:10px; cursor:pointer; font-size:15px; font-weight:700;">🌙 N<br><small style="opacity:0.85; font-weight:500;">22:00-6:00</small></button>
       <button class="add-shift-modal-btn" data-shift="" style="flex:1; min-width:90px; padding:14px 8px; border:none; background:linear-gradient(135deg, #7f8c8d, #5d6d6e); color:#fff; border-radius:10px; cursor:pointer; font-size:15px; font-weight:700;" title="${t('addShiftEraseTitle') || 'Clear shift'}">🏖️ —<br><small style="opacity:0.85; font-weight:500;">${t('addShiftEraseLabel') || 'Free'}</small></button>
     </div>
+    ${hoursOnlyHtml}
   `;
 
   showModal({
@@ -253,17 +300,87 @@ function openAddShiftModal(day) {
     buttons: [{ text: t('otCancelBtn'), class: 'secondary' }],
   });
 
+  // Helper: live preview for hours input
+  function updateHoursPreview() {
+    const input = document.getElementById('addShiftHoursInput');
+    const preview = document.getElementById('addShiftHoursPreview');
+    if (!input || !preview) return;
+    const hours = parseFloat(input.value);
+    if (!hours || hours <= 0 || hours > 24) {
+      preview.style.display = 'none';
+      return;
+    }
+    const cat = categorizeOvertime(currentYear, currentMonth, day, null, 'weekend', hours);
+    const paid = cat.h50 * 1.5 + cat.h100 * 2 + cat.h200 * 3;
+    preview.style.display = 'block';
+    preview.innerHTML = `
+      <div style="font-weight:700; margin-bottom:4px;">${t('addShiftHoursPreview')}:</div>
+      <div>${hours}h × ${cat.h200 > 0 ? '+200%' : cat.h100 > 0 ? '+100%' : '+50%'}</div>
+      <div style="margin-top:4px; font-weight:700;">💰 ${paid}h ${t('infoPaid')}</div>
+    `;
+  }
+
   // Attach handlers after modal is shown
   setTimeout(() => {
+    // Shift buttons (R/P/N/free) — same as before + clear weekend hours if any
     document.querySelectorAll('.add-shift-modal-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         const shiftType = btn.dataset.shift;
+        // Mutual exclusion: picking a shift clears weekend hours
+        if (existingWeekend) {
+          removeOvertime(currentYear, currentMonth, day, selectedShift, 'weekend');
+        }
         applyEdit(currentYear, currentMonth, day, selectedShift, shiftType);
         showToast('success', t('addShiftAdded', { s: shiftType }));
         hideModal();
         refreshViews();
       });
     });
+
+    // Hours input live preview
+    const hoursInput = document.getElementById('addShiftHoursInput');
+    if (hoursInput) {
+      hoursInput.addEventListener('input', updateHoursPreview);
+      // Show preview immediately if pre-filled
+      if (hoursInput.value) updateHoursPreview();
+    }
+
+    // Save hours button
+    const saveBtn = document.getElementById('addShiftHoursSaveBtn');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', () => {
+        const input = document.getElementById('addShiftHoursInput');
+        const noteInput = document.getElementById('addShiftHoursNote');
+        const hours = parseFloat(input.value);
+        if (!hours || hours < 0.5 || hours > 24) {
+          showToast('error', t('addShiftHoursInvalid'));
+          return;
+        }
+        // Mutual exclusion: saving hours clears any existing R/P/N shift
+        if (hasExistingShift) {
+          applyEdit(currentYear, currentMonth, day, selectedShift, '');
+        }
+        setOvertime(currentYear, currentMonth, day, selectedShift, 'weekend', { hours });
+        const noteText = noteInput ? noteInput.value.trim() : '';
+        if (typeof upsertDayNoteByTag === 'function') {
+          upsertDayNoteByTag(currentYear, currentMonth, day, selectedShift, 'weekend', noteText);
+        }
+        showToast('success', t('addShiftHoursSaved', { h: hours }));
+        hideModal();
+        refreshViews();
+      });
+    }
+
+    // Delete hours button
+    const deleteBtn = document.getElementById('addShiftHoursDeleteBtn');
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', () => {
+        removeOvertime(currentYear, currentMonth, day, selectedShift, 'weekend');
+        showToast('success', t('addShiftHoursRemoved'));
+        hideModal();
+        refreshViews();
+      });
+    }
   }, 50);
 }
 
