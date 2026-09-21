@@ -52,8 +52,7 @@ function renderCalendar(direction) {
     const cell = document.createElement('div');
     let shiftCode = getShiftAtWithPending(currentYear, currentMonth, d, selectedShift);
     let onUrlop = isUrlop(currentYear, currentMonth, d, selectedShift);
-    
-    
+
     // Factory painting mode override - show factory drafts when active
     const isFactoryPaintingMode =
       factoryEditorIsActive &&
@@ -93,14 +92,12 @@ function renderCalendar(direction) {
     )
       cell.classList.add('today');
     if (selectedDay === d) cell.classList.add('selected');
-    
 
     if (cycleRange && cycleRange.length > 1 && d >= cycleRange.start && d <= cycleRange.end) {
       if (d === cycleRange.start) cell.classList.add('cycle-start');
       else if (d === cycleRange.end) cell.classList.add('cycle-end');
       else cell.classList.add('cycle-middle');
     }
-
 
     const numEl = document.createElement('div');
     numEl.className = 'day-num';
@@ -126,12 +123,7 @@ function renderCalendar(direction) {
     cell.appendChild(shiftEl);
 
     // OVERTIME: colored ⏱ marker (detail in info-panel)
-    if (
-      !isFactoryPaintingMode &&
-      !hidePrivate &&
-      !isWolne(shiftCode) &&
-      !onUrlop
-    ) {
+    if (!isFactoryPaintingMode && !hidePrivate && !isWolne(shiftCode) && !onUrlop) {
       const ot = getOvertimes(currentYear, currentMonth, d, selectedShift);
       if (ot.przed || ot.po) {
         cell.classList.add('has-ot');
@@ -186,19 +178,21 @@ function renderCalendar(direction) {
 
     // Relief handoff popups removed — functionality lives in info-panel timeline widget
 
-cell.addEventListener('click', () => {
+    cell.addEventListener('click', () => {
       // Factory painting mode: apply direct shift replacement (admin factory editing)
       // Free day is stored as '' internally ('W' is only its display/CSS representation).
-      if (factoryPaintActive && 
-          factoryPaintYear === currentYear && 
-          factoryPaintMonth === currentMonth) {
+      if (
+        factoryPaintActive &&
+        factoryPaintYear === currentYear &&
+        factoryPaintMonth === currentMonth
+      ) {
         const val = factoryPaintMode === 'W' ? '' : factoryPaintMode;
         window.handleFactoryPaintDayClick(currentYear, currentMonth, d, selectedShift, val);
         selectedDay = d;
         refreshViews();
         return;
       }
-      
+
       selectedDay = selectedDay === d ? null : d;
       renderCalendar();
       renderInfo();
@@ -206,7 +200,6 @@ cell.addEventListener('click', () => {
 
     cal.appendChild(cell);
   }
-
 
   renderMonthOvertimeSummary();
 }
@@ -233,7 +226,7 @@ function openAddShiftModal(day) {
   const existingShift = getShiftAtWithPending(currentYear, currentMonth, day, selectedShift);
   const hasExistingShift = !isWolne(existingShift);
 
-  // Check factory shift — hours-only section shows ONLY when factory has no shift AND day is holiday/Sunday/Saturday
+  // Check factory shift for this day/brigade — needed to decide whether to show hours-only section
   const factoryShift =
     factorySchedule[currentYear] &&
     factorySchedule[currentYear][currentMonth] &&
@@ -620,55 +613,61 @@ function renderProgress() {
 
 /* === INFO PANEL === */
 function renderInfo() {
-    const panel = document.getElementById('infoPanel');
-    const factoryEditorIsActive =
-      (typeof factoryPaintActive !== 'undefined' && factoryPaintActive) ||
-      window.factoryPaintActive === true;
+  const panel = document.getElementById('infoPanel');
+  const factoryEditorIsActive =
+    (typeof factoryPaintActive !== 'undefined' && factoryPaintActive) ||
+    window.factoryPaintActive === true;
 
-    if (factoryEditorIsActive) {
-      panel.innerHTML = '';
-      return;
-    }
+  if (factoryEditorIsActive) {
+    panel.innerHTML = '';
+    return;
+  }
 
-    if (!selectedDay) {
-      panel.innerHTML = `<h3>${t('infoPanelTitle')}</h3><p>${t('infoPanelHint')}</p>`;
-      return;
-    }
-    const hidePrivate = !shouldShowPersonalData();
-    let shiftCode = getShiftAtWithPending(currentYear, currentMonth, selectedDay, selectedShift);
-    if (hidePrivate) {
-      shiftCode =
-        factorySchedule[currentYear] &&
-        factorySchedule[currentYear][currentMonth] &&
-        factorySchedule[currentYear][currentMonth][selectedShift]
-          ? factorySchedule[currentYear][currentMonth][selectedShift][selectedDay - 1]
-          : '';
-    }
-    const dateStr = `${selectedDay} ${monthNamesGenitive[currentMonth - 1]} ${currentYear}`;
-    const dowIdx = new Date(currentYear, currentMonth - 1, selectedDay).getDay();
-    const dow = dayNamesFull[dowIdx];
-    const yHolidays = buildHolidays(currentYear);
-    const holidayName = yHolidays[currentMonth + '-' + selectedDay];
-    const holidayInfo = holidayName ? ` <span style="color:#c0392b;">🎉 ${holidayName}</span>` : '';
-    const onUrlop = hidePrivate
-      ? false
-      : isUrlop(currentYear, currentMonth, selectedDay, selectedShift);
+  if (!selectedDay) {
+    panel.innerHTML = `<h3>${t('infoPanelTitle')}</h3><p>${t('infoPanelHint')}</p>`;
+    return;
+  }
+  const hidePrivate = !shouldShowPersonalData();
+  let shiftCode = getShiftAtWithPending(currentYear, currentMonth, selectedDay, selectedShift);
+  if (hidePrivate) {
+    shiftCode =
+      factorySchedule[currentYear] &&
+      factorySchedule[currentYear][currentMonth] &&
+      factorySchedule[currentYear][currentMonth][selectedShift]
+        ? factorySchedule[currentYear][currentMonth][selectedShift][selectedDay - 1]
+        : '';
+  }
+  const dateStr = `${selectedDay} ${monthNamesGenitive[currentMonth - 1]} ${currentYear}`;
+  const dowIdx = new Date(currentYear, currentMonth - 1, selectedDay).getDay();
+  const dow = dayNamesFull[dowIdx];
+  const yHolidays = buildHolidays(currentYear);
+  const holidayName = yHolidays[currentMonth + '-' + selectedDay];
+  const holidayInfo = holidayName ? ` <span style="color:#c0392b;">🎉 ${holidayName}</span>` : '';
+  const onUrlop = hidePrivate
+    ? false
+    : isUrlop(currentYear, currentMonth, selectedDay, selectedShift);
 
-    // Factory shift for determining if extra shift is enabled
-    let factoryShift = '';
-    if (factorySchedule[currentYear] && factorySchedule[currentYear][currentMonth] && factorySchedule[currentYear][currentMonth][selectedShift]) {
-      factoryShift = factorySchedule[currentYear][currentMonth][selectedShift][selectedDay - 1];
-    }
-    const isFactoryFree = isWolne(factoryShift) || factoryShift === '';
+  // Factory shift for determining if extra shift is enabled
+  let factoryShift = '';
+  if (
+    factorySchedule[currentYear] &&
+    factorySchedule[currentYear][currentMonth] &&
+    factorySchedule[currentYear][currentMonth][selectedShift]
+  ) {
+    factoryShift = factorySchedule[currentYear][currentMonth][selectedShift][selectedDay - 1];
+  }
+  const isFactoryFree = isWolne(factoryShift) || factoryShift === '';
 
-    // Existing OT for edit/delete
-    const otRaw = !hidePrivate ? getOvertimes(currentYear, currentMonth, selectedDay, selectedShift) : null;
-    const existingOtAntes = otRaw ? otRaw.przed : null;
-    const existingOtDespu = otRaw ? otRaw.po : null;
+  // Existing OT for edit/delete
+  const otRaw = !hidePrivate
+    ? getOvertimes(currentYear, currentMonth, selectedDay, selectedShift)
+    : null;
+  const existingOtAntes = otRaw ? otRaw.przed : null;
+  const existingOtDespu = otRaw ? otRaw.po : null;
 
-    if (hidePrivate) {
-      // Privacy mode: show factory data only, hide personal data
-      panel.innerHTML = `
+  if (hidePrivate) {
+    // Privacy mode: show factory data only, hide personal data
+    panel.innerHTML = `
         <h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
         <div class="info-grid">
           <div class="info-card" style="grid-column:1/-1;">
@@ -678,110 +677,108 @@ function renderInfo() {
             </div>
           </div>
         </div>`;
-      // Bind privacy disable button
-      setTimeout(() => {
-        const btn = document.getElementById('privacyDisableBtn');
-        if (btn) {
-          btn.addEventListener('click', () => {
-            setPrivacyMode(false);
-            renderInfo(); // Re-render to show personal data
-          });
-        }
-      }, 0);
+    // Bind privacy disable button
+    setTimeout(() => {
+      const btn = document.getElementById('privacyDisableBtn');
+      if (btn) {
+        btn.addEventListener('click', () => {
+          setPrivacyMode(false);
+          renderInfo(); // Re-render to show personal data
+        });
+      }
+    }, 0);
+  } else {
+    // Non-privacy mode: show full details
+    // Status card
+    let statusCard = '';
+    if (onUrlop) {
+      statusCard = `<div class="info-card" style="grid-column:1/-1;"><div class="label">🌴 ${t('vacation')}</div><div class="value">${t('infoUrlop')}</div></div>`;
+    } else if (isWolne(shiftCode)) {
+      statusCard = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoFree') || 'Wolne'}</div><div class="value">—</div></div>`;
     } else {
-      // Non-privacy mode: show full details
-      // Status card
-      let statusCard = '';
-      if (onUrlop) {
-        statusCard = `<div class="info-card" style="grid-column:1/-1;"><div class="label">🌴 ${t('vacation')}</div><div class="value">${t('infoUrlop')}</div></div>`;
-      } else if (isWolne(shiftCode)) {
-        statusCard = `<div class="info-card" style="grid-column:1/-1;"><div class="label">${t('infoFree') || 'Wolne'}</div><div class="value">—</div></div>`;
-      } else {
-        // Working day: shift code + hours are already visible on the
-        // selected calendar cell and in the legend below the calendar —
-        // repeating them here was pure duplication.
-        statusCard = '';
+      // Working day: shift code + hours are already visible on the
+      // selected calendar cell and in the legend below the calendar —
+      // repeating them here was pure duplication.
+      statusCard = '';
+    }
+
+    // Timeline (only for working non-vacation day)
+    let timelineCard = '';
+    if (!onUrlop && !isWolne(shiftCode)) {
+      // Relief handoff flow
+      let reliefCard = '';
+      const info = getRelief(currentYear, currentMonth, selectedDay, selectedShift, shiftCode);
+      function formatWhen(y, m, d) {
+        if (y === currentYear && m === currentMonth && d === selectedDay) return '';
+        if (y === currentYear && m === currentMonth && d === selectedDay - 1)
+          return ', ' + t('dayBefore');
+        if (y === currentYear && m === currentMonth && d === selectedDay + 1)
+          return ', ' + t('dayAfter');
+        return `, ${d} ${monthNamesGenitive[m - 1]}${y !== currentYear ? ' ' + y : ''}`;
       }
 
-      // Timeline (only for working non-vacation day)
-      let timelineCard = '';
-      if (!onUrlop && !isWolne(shiftCode)) {
-        // Relief handoff flow
-        let reliefCard = '';
-        const info = getRelief(currentYear, currentMonth, selectedDay, selectedShift, shiftCode);
-        function formatWhen(y, m, d) {
-          if (y === currentYear && m === currentMonth && d === selectedDay) return '';
-          if (y === currentYear && m === currentMonth && d === selectedDay - 1)
-            return ', ' + t('dayBefore');
-          if (y === currentYear && m === currentMonth && d === selectedDay + 1)
-            return ', ' + t('dayAfter');
-          return `, ${d} ${monthNamesGenitive[m - 1]}${y !== currentYear ? ' ' + y : ''}`;
-        }
+      // Timeline OT: przed before self, po after self
+      let timelineOt = null;
+      const otRaw = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
+      const mk = (pos) => {
+        if (!otRaw[pos]) return null;
+        const cat = categorizeOvertime(
+          currentYear,
+          currentMonth,
+          selectedDay,
+          shiftCode,
+          pos,
+          otRaw[pos].hours
+        );
+        const percent = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
+        return { hours: otRaw[pos].hours, percent };
+      };
+      const before = mk('przed');
+      const after = mk('po');
+      if (before || after) timelineOt = { before, after };
 
-        // Timeline OT: przed before self, po after self
-        let timelineOt = null;
-        const otRaw = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
-        const mk = (pos) => {
-          if (!otRaw[pos]) return null;
-          const cat = categorizeOvertime(
-            currentYear,
-            currentMonth,
-            selectedDay,
-            shiftCode,
-            pos,
-            otRaw[pos].hours
-          );
-          const percent = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
-          return { hours: otRaw[pos].hours, percent };
-        };
-        const before = mk('przed');
-        const after = mk('po');
-        if (before || after) timelineOt = { before, after };
-
-        if (typeof renderReliefTimeline === 'function') {
-          const timelineHtml = renderReliefTimeline(
-            info,
-            currentYear,
-            currentMonth,
-            selectedDay,
-            shiftCode,
-            selectedShift,
-            timelineOt
-          );
-          reliefCard = `
+      if (typeof renderReliefTimeline === 'function') {
+        const timelineHtml = renderReliefTimeline(
+          info,
+          currentYear,
+          currentMonth,
+          selectedDay,
+          shiftCode,
+          selectedShift,
+          timelineOt
+        );
+        reliefCard = `
           <div class="info-card" style="grid-column:1/-1;">
             <div class="label">🔄 ${t('reliefFlowTitle')}</div>
             <div class="value">${timelineHtml}</div>
           </div>`;
-        }
-
-        timelineCard = reliefCard;
       }
 
-      // Day action grid
-      const canAddExtraShift = isFactoryFree && !onUrlop;
-      const canAddOvertime =
-        !onUrlop &&
-        !isWolne(shiftCode) &&
-        (shiftCode === 'R' || shiftCode === 'P' || shiftCode === 'N');
+      timelineCard = reliefCard;
+    }
 
-      const extraShiftDisabledReason = onUrlop
-        ? t('dayActionUnavailableVacation')
-        : !isFactoryFree
-          ? t('dayActionUnavailableFactoryShift')
-          : '';
+    // Day action grid
+    const canAddExtraShift = isFactoryFree && !onUrlop;
+    const canAddOvertime =
+      !onUrlop &&
+      !isWolne(shiftCode) &&
+      (shiftCode === 'R' || shiftCode === 'P' || shiftCode === 'N');
 
-      const overtimeDisabledReason = onUrlop
-        ? t('dayActionUnavailableVacation')
-        : !canAddOvertime
-          ? t('dayActionUnavailableNoShift')
-          : '';
+    const extraShiftDisabledReason = onUrlop
+      ? t('dayActionUnavailableVacation')
+      : !isFactoryFree
+        ? t('dayActionUnavailableFactoryShift')
+        : '';
 
-      const vacationActionLabel = onUrlop
-        ? t('dayActionVacationRemove')
-        : t('dayActionVacationAdd');
+    const overtimeDisabledReason = onUrlop
+      ? t('dayActionUnavailableVacation')
+      : !canAddOvertime
+        ? t('dayActionUnavailableNoShift')
+        : '';
 
-      const actionCard = `
+    const vacationActionLabel = onUrlop ? t('dayActionVacationRemove') : t('dayActionVacationAdd');
+
+    const actionCard = `
         <div class="info-card" style="grid-column:1/-1;">
           <div class="label">${t('dayActionsTitle')}</div>
           <div class="day-action-grid">
@@ -833,18 +830,18 @@ function renderInfo() {
           </div>
         </div>`;
 
-      // Unified notes: a shared list of free-form + overtime-tagged notes
-      // for this day/shift (replaces the old separate note + OT-note fields).
-      const dayNotes = getDayNotes(currentYear, currentMonth, selectedDay, selectedShift);
-      const noteTagIcon = { before: '⏱⬅', after: '⏱➡' };
-      const noteTagLabel = { before: t('otPositionBefore'), after: t('otPositionAfter') };
-      const noteRows = dayNotes
-        .map((n) => {
-          const icon = n.tag ? noteTagIcon[n.tag] || '📝' : '📝';
-          const tagPrefix = n.tag
-            ? `<strong>${escapeHtml(noteTagLabel[n.tag] || '')}:</strong> `
-            : '';
-          return `<div class="day-note-row" data-note-id="${escapeHtml(n.id)}">
+    // Unified notes: a shared list of free-form + overtime-tagged notes
+    // for this day/shift (replaces the old separate note + OT-note fields).
+    const dayNotes = getDayNotes(currentYear, currentMonth, selectedDay, selectedShift);
+    const noteTagIcon = { before: '⏱⬅', after: '⏱➡' };
+    const noteTagLabel = { before: t('otPositionBefore'), after: t('otPositionAfter') };
+    const noteRows = dayNotes
+      .map((n) => {
+        const icon = n.tag ? noteTagIcon[n.tag] || '📝' : '📝';
+        const tagPrefix = n.tag
+          ? `<strong>${escapeHtml(noteTagLabel[n.tag] || '')}:</strong> `
+          : '';
+        return `<div class="day-note-row" data-note-id="${escapeHtml(n.id)}">
               <span class="day-note-icon">${icon}</span>
               <span
                 class="day-note-text"
@@ -861,10 +858,10 @@ function renderInfo() {
                 title="${escapeHtml(t('delete'))}"
               >✕</button>
             </div>`;
-        })
-        .join('');
+      })
+      .join('');
 
-      const noteCard = `
+    const noteCard = `
         <div class="info-card info-section-note" style="grid-column:1/-1;">
           <div class="label">${t('infoNote')}</div>
           ${noteRows ? `<div class="day-note-list">${noteRows}</div>` : ''}
@@ -877,18 +874,21 @@ function renderInfo() {
           </div>
         </div>`;
 
-      // Vacation summary
-      const usedUrlop = typeof getTotalUsedVacation === 'function' ? getTotalUsedVacation(currentYear, selectedShift) : countWorkingUrlops(currentYear, selectedShift);
-      const limit = getVacationLimit(selectedShift);
-      const remainingUrlop = Math.max(0, limit - usedUrlop);
-      const vacationCard = `
+    // Vacation summary
+    const usedUrlop =
+      typeof getTotalUsedVacation === 'function'
+        ? getTotalUsedVacation(currentYear, selectedShift)
+        : countWorkingUrlops(currentYear, selectedShift);
+    const limit = getVacationLimit(selectedShift);
+    const remainingUrlop = Math.max(0, limit - usedUrlop);
+    const vacationCard = `
         <div class="info-card" style="grid-column:1/-1;">
           <div class="label">🌴 ${t('vacation')} ${currentYear}</div>
           <div class="value">${t('vacationStatsFormat', { left: remainingUrlop, used: usedUrlop, limit: limit })}</div>
         </div>`;
 
-      // Build the info-grid
-      panel.innerHTML = `
+    // Build the info-grid
+    panel.innerHTML = `
         <h3>📅 ${dateStr} (${dow})${holidayInfo} — <span class="badge ${selectedShift}">${selectedShift}</span></h3>
         <div class="info-grid">
           ${statusCard}
@@ -898,149 +898,127 @@ function renderInfo() {
           ${vacationCard}
         </div>`;
 
-      // Bind selected-day actions after rendering the panel.
-      const vacationButton = panel.querySelector('[data-day-action="vacation"]');
-      if (vacationButton) {
-        vacationButton.addEventListener('click', () => {
-          toggleUrlop(currentYear, currentMonth, selectedDay, selectedShift);
-          const vacationIsNowActive = isUrlop(
-            currentYear,
-            currentMonth,
-            selectedDay,
-            selectedShift
-          );
-          showToast(
-            'success',
-            vacationIsNowActive ? t('urlopAdded') : t('urlopRemoved')
-          );
-          renderCalendar();
-          renderInfo();
-        });
-      }
-
-      const extraShiftButton = panel.querySelector('[data-day-action="extra-shift"]');
-      if (extraShiftButton) {
-        extraShiftButton.addEventListener('click', () => {
-          openAddShiftModal(selectedDay);
-        });
-      }
-
-      const overtimeBeforeButton = panel.querySelector(
-        '[data-day-action="overtime-before"]'
-      );
-      if (overtimeBeforeButton) {
-        overtimeBeforeButton.addEventListener('click', () => {
-          openOvertimeModal(
-            selectedDay,
-            shiftCode,
-            'przed',
-            existingOtAntes
-          );
-        });
-      }
-
-      const overtimeAfterButton = panel.querySelector(
-        '[data-day-action="overtime-after"]'
-      );
-      if (overtimeAfterButton) {
-        overtimeAfterButton.addEventListener('click', () => {
-          openOvertimeModal(
-            selectedDay,
-            shiftCode,
-            'po',
-            existingOtDespu
-          );
-        });
-      }
-
-      const noteRemoveButtons = panel.querySelectorAll('[data-remove-note]');
-      noteRemoveButtons.forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const noteId = btn.getAttribute('data-remove-note');
-          removeDayNote(currentYear, currentMonth, selectedDay, selectedShift, noteId);
-          renderCalendar();
-          renderInfo();
-        });
+    // Bind selected-day actions after rendering the panel.
+    const vacationButton = panel.querySelector('[data-day-action="vacation"]');
+    if (vacationButton) {
+      vacationButton.addEventListener('click', () => {
+        toggleUrlop(currentYear, currentMonth, selectedDay, selectedShift);
+        const vacationIsNowActive = isUrlop(currentYear, currentMonth, selectedDay, selectedShift);
+        showToast('success', vacationIsNowActive ? t('urlopAdded') : t('urlopRemoved'));
+        renderCalendar();
+        renderInfo();
       });
+    }
 
-      const startNoteEdit = (el) => {
-        if (el.querySelector('input')) return; // already editing
-        const noteId = el.getAttribute('data-edit-note');
-        const entry = dayNotes.find((n) => n.id === noteId);
-        if (!entry) return;
+    const extraShiftButton = panel.querySelector('[data-day-action="extra-shift"]');
+    if (extraShiftButton) {
+      extraShiftButton.addEventListener('click', () => {
+        openAddShiftModal(selectedDay);
+      });
+    }
 
-        const tagPrefixHtml = entry.tag
-          ? `<strong>${escapeHtml(noteTagLabel[entry.tag] || '')}:</strong> `
-          : '';
-        el.innerHTML = `${tagPrefixHtml}<input type="text" class="day-note-edit-input" value="${escapeHtml(entry.text)}">`;
-        const input = el.querySelector('input');
-        input.focus();
-        input.setSelectionRange(input.value.length, input.value.length);
+    const overtimeBeforeButton = panel.querySelector('[data-day-action="overtime-before"]');
+    if (overtimeBeforeButton) {
+      overtimeBeforeButton.addEventListener('click', () => {
+        openOvertimeModal(selectedDay, shiftCode, 'przed', existingOtAntes);
+      });
+    }
 
-        let committed = false;
-        const commitEdit = () => {
-          if (committed) return;
-          committed = true;
-          const newText = input.value.trim();
-          // Editing to an empty value is a no-op (reverts on re-render) —
-          // deletion stays a deliberate action via the ✕ button only.
-          if (newText && newText !== entry.text) {
-            updateDayNote(currentYear, currentMonth, selectedDay, selectedShift, noteId, newText);
-          }
-          renderCalendar();
-          renderInfo();
-        };
+    const overtimeAfterButton = panel.querySelector('[data-day-action="overtime-after"]');
+    if (overtimeAfterButton) {
+      overtimeAfterButton.addEventListener('click', () => {
+        openOvertimeModal(selectedDay, shiftCode, 'po', existingOtDespu);
+      });
+    }
 
-        input.addEventListener('blur', commitEdit);
-        input.addEventListener('keydown', (event) => {
-          if (event.key === 'Enter') {
-            event.preventDefault();
-            input.blur();
-          } else if (event.key === 'Escape') {
-            committed = true; // suppress the blur commit triggered by re-render
-            renderInfo();
-          }
-        });
+    const noteRemoveButtons = panel.querySelectorAll('[data-remove-note]');
+    noteRemoveButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const noteId = btn.getAttribute('data-remove-note');
+        removeDayNote(currentYear, currentMonth, selectedDay, selectedShift, noteId);
+        renderCalendar();
+        renderInfo();
+      });
+    });
+
+    const startNoteEdit = (el) => {
+      if (el.querySelector('input')) return; // already editing
+      const noteId = el.getAttribute('data-edit-note');
+      const entry = dayNotes.find((n) => n.id === noteId);
+      if (!entry) return;
+
+      const tagPrefixHtml = entry.tag
+        ? `<strong>${escapeHtml(noteTagLabel[entry.tag] || '')}:</strong> `
+        : '';
+      el.innerHTML = `${tagPrefixHtml}<input type="text" class="day-note-edit-input" value="${escapeHtml(entry.text)}">`;
+      const input = el.querySelector('input');
+      input.focus();
+      input.setSelectionRange(input.value.length, input.value.length);
+
+      let committed = false;
+      const commitEdit = () => {
+        if (committed) return;
+        committed = true;
+        const newText = input.value.trim();
+        // Editing to an empty value is a no-op (reverts on re-render) —
+        // deletion stays a deliberate action via the ✕ button only.
+        if (newText && newText !== entry.text) {
+          updateDayNote(currentYear, currentMonth, selectedDay, selectedShift, noteId, newText);
+        }
+        renderCalendar();
+        renderInfo();
       };
 
-      const noteEditTargets = panel.querySelectorAll('[data-edit-note]');
-      noteEditTargets.forEach((el) => {
-        el.addEventListener('click', () => startNoteEdit(el));
-        el.addEventListener('keydown', (event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            startNoteEdit(el);
-          }
-        });
-      });
-
-      const noteInput = panel.querySelector('#noteInput');
-      if (noteInput) {
-        let addInProgress = false;
-
-        const commitNewNote = () => {
-          if (addInProgress) return;
-          const noteValue = noteInput.value.trim();
-          if (!noteValue) return;
-
-          addInProgress = true;
-          addDayNote(currentYear, currentMonth, selectedDay, selectedShift, noteValue, null);
-          renderCalendar();
+      input.addEventListener('blur', commitEdit);
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          input.blur();
+        } else if (event.key === 'Escape') {
+          committed = true; // suppress the blur commit triggered by re-render
           renderInfo();
-          showToast('success', t('infoNoteSaved'));
+        }
+      });
+    };
 
-          setTimeout(() => {
-            addInProgress = false;
-          }, 100);
-        };
+    const noteEditTargets = panel.querySelectorAll('[data-edit-note]');
+    noteEditTargets.forEach((el) => {
+      el.addEventListener('click', () => startNoteEdit(el));
+      el.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          startNoteEdit(el);
+        }
+      });
+    });
 
-        noteInput.addEventListener('blur', commitNewNote);
-        noteInput.addEventListener('keydown', (event) => {
-          if (event.key === 'Enter') {
-            event.preventDefault();
-            noteInput.blur();
-          }
-        });
-      }
+    const noteInput = panel.querySelector('#noteInput');
+    if (noteInput) {
+      let addInProgress = false;
+
+      const commitNewNote = () => {
+        if (addInProgress) return;
+        const noteValue = noteInput.value.trim();
+        if (!noteValue) return;
+
+        addInProgress = true;
+        addDayNote(currentYear, currentMonth, selectedDay, selectedShift, noteValue, null);
+        renderCalendar();
+        renderInfo();
+        showToast('success', t('infoNoteSaved'));
+
+        setTimeout(() => {
+          addInProgress = false;
+        }, 100);
+      };
+
+      noteInput.addEventListener('blur', commitNewNote);
+      noteInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          noteInput.blur();
+        }
+      });
     }
   }
+}
