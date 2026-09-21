@@ -114,9 +114,22 @@ body:not(.theme-dark) .day-header.weekend {
   cursor: default;
 }
 
+/* === DZIŚ (widok Miesiąc) — obwódka w kolorze kontrastującym z KOLOREM KOMÓRKI ===
+   Ramka to dwa pierścienie po 2px, oba w granicach komórki (nie wystają poza
+   przerwę siatki, więc sąsiad ich nie zasłania i nie ruszamy z-index):
+     --today-ring     → inset box-shadow, kontrast wobec tła KOMÓRKI,
+     var(--text-main) → outline, kontrast wobec tła STRONY.
+   --today-ring bierze się z tokenu tekstu komórki (--color-*-text), który
+   js/personalization.js przelicza z realnego koloru komórki (_textOn() po
+   każdej zmianie palety prefs.cellColors). Dlatego żółta komórka R dostaje
+   ciemny pierścień, a ciemna komórka P/N/U jasny — znacznik "dziś" jest
+   widoczny przy każdej palecie, motywie (light/dark) i skinie komórek. */
 .day-cell.today {
   /* Usuń ozdobną kropkę; zamiast tego użyj kontrastującego obramowania */
-  box-shadow: none;
+  --today-ring: var(--text-main);
+  box-shadow: inset 0 0 0 2px var(--today-ring);
+  outline: 2px solid var(--text-main);
+  outline-offset: 0;
 }
 
 /* Ukryj poprzedni znacznik kropki, jeśli jest obecny */
@@ -124,17 +137,35 @@ body:not(.theme-dark) .day-header.weekend {
   display: none;
 }
 
-/* Kontrastujące obramowanie: stały, jasny żółty (#f1c40f) widoczny na każdej
-   temacie — zarówno na ciemnym, jak i na jasnym tle zmian (R,P,N,W,U) */
-.day-cell.cell-R.today,
-.day-cell.cell-P.today,
-.day-cell.cell-N.today,
-.day-cell.cell-W.today,
-.day-cell.urlop.today,
-.day-cell.today:not([class*='cell-']) {
-  outline: 3px solid #f1c40f;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(241, 196, 15, 0.4);
+/* Te same deklaracje dla komórek ze zmianą i urlopem. Selektor ma kwalifikator
+   `body`, bo skiny UI nadają komórkom własny box-shadow z wyższą
+   specyficznością (np. `body.ui-skin-neon .day-cell.cell-R`) — bez tego
+   pierścień "dziś" znikałby w neonie. Kolejność w pliku nadal rozstrzyga
+   o pierwszeństwie: skiny strip/quiet (niżej) i tryb edycji fabryki
+   (body.edit-active, niżej) zachowują priorytet. */
+body .day-cell.cell-R.today,
+body .day-cell.cell-P.today,
+body .day-cell.cell-N.today,
+body .day-cell.cell-W.today,
+body .day-cell.urlop.today,
+body .day-cell.today:not([class*='cell-']) {
+  box-shadow: inset 0 0 0 2px var(--today-ring);
+  outline: 2px solid var(--text-main);
+  outline-offset: 0;
+}
+
+/* Pierścień wewnętrzny = kolor tekstu komórki (auto-kontrast palety) */
+.day-cell.cell-R.today {
+  --today-ring: var(--color-R-text, #1a1a1a);
+}
+.day-cell.cell-P.today {
+  --today-ring: var(--color-P-text, #ffffff);
+}
+.day-cell.cell-N.today {
+  --today-ring: var(--color-N-text, #ffffff);
+}
+.day-cell.urlop.today {
+  --today-ring: var(--color-U-text, #ffffff);
 }
 
 .day-cell.selected {
@@ -769,4 +800,17 @@ body.skin-quiet .day-cell.urlop .day-num {
 }
 body.skin-quiet .day-cell.urlop .day-shift {
   color: var(--text-main) !important;
+}
+
+/* === DZIŚ w skinach z neutralnym tłem komórek (strip/quiet) ===
+   W tych skinach kolor zmiany jest tylko paskiem albo obramowaniem, a tło
+   komórki pozostaje neutralne (--bg-cell), więc pierścień "dziś" musi iść
+   w tonie motywu, a nie w kolorze zmiany. Reguła stoi po blokach skinów,
+   bo to one zerują box-shadow komórek (także komórki "dziś"). */
+body.skin-strip .day-cell.today,
+body.skin-quiet .day-cell.today,
+body.skin-strip .day-cell.urlop.today,
+body.skin-quiet .day-cell.urlop.today {
+  --today-ring: var(--text-main);
+  box-shadow: inset 0 0 0 2px var(--today-ring);
 }

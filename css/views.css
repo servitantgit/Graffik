@@ -82,9 +82,26 @@
   transform: none;
   box-shadow: none;
 }
+/* === DZIŚ (widok Rok) — pierścień kontrastujący z KOLOREM mini-komórki ===
+   --today-ring = token tekstu komórki (auto-kontrast palety), jak w kalendarzu
+   miesięcznym. 2px w całości wewnątrz mini-komórki (offset -2px), bo
+   .mini-day ma overflow: hidden. */
 .mini-day.mToday {
-  outline: 2px solid #f1c40f;
-  outline-offset: -1px;
+  --today-ring: var(--text-main);
+  outline: 2px solid var(--today-ring);
+  outline-offset: -2px;
+}
+.mini-day.mR.mToday {
+  --today-ring: var(--color-R-text, #1a1a1a);
+}
+.mini-day.mP.mToday {
+  --today-ring: var(--color-P-text, #ffffff);
+}
+.mini-day.mN.mToday {
+  --today-ring: var(--color-N-text, #ffffff);
+}
+.mini-day.mU.mToday {
+  --today-ring: var(--color-U-text, #ffffff);
 }
 .mini-day.mHoliday {
   box-shadow: inset 0 0 0 2px #c0392b;
@@ -292,9 +309,6 @@ body.edit-active .brigade-table td.tc:hover {
   position: relative;
   font-size: 14px;
 }
-.brigade-table td.today-col {
-  box-shadow: inset 0 0 0 2px #f1c40f;
-}
 /* D: weekend column tint */
 .brigade-table td.weekend-col {
   box-shadow: inset 0 0 0 1px rgba(192, 57, 43, 0.35);
@@ -472,4 +486,31 @@ body.table-density-comfortable .table-scroll {
   body.table-density-comfortable .brigade-table td.tc {
     font-size: 13px;
   }
+}
+
+/* === DZIŚ (widok Tabela) — pierścień wewnątrz komórki w kolorze
+   kontrastującym z KOLOREM KOMÓRKI ===
+   Inset, bo td.today-col to kolumna dnia: pierścień nie wystaje poza komórkę
+   (td ma overflow: hidden) i nie koliduje z tintem weekendu.
+   --today-ring = token tekstu komórki (auto-kontrast palety z prefs.cellColors),
+   dlatego żółta komórka R dostaje ciemny pierścień, a ciemna P/N/U jasny.
+   !important: gęstość "comfortable" (body.table-density-comfortable ...
+   td.tc) i cieniowanie hover nadpisują box-shadow komórki własną, wyższą
+   specyficznością — bez tego znacznik "dziś" zniknąłby w tym trybie.
+   Outline zostaje wolny dla .my-brigade (obwódka brygady). */
+.brigade-table td.today-col {
+  --today-ring: var(--text-main);
+  box-shadow: inset 0 0 0 3px var(--today-ring) !important;
+}
+.brigade-table td.tc-R.today-col {
+  --today-ring: var(--color-R-text, #1a1a1a);
+}
+.brigade-table td.tc-P.today-col {
+  --today-ring: var(--color-P-text, #ffffff);
+}
+.brigade-table td.tc-N.today-col {
+  --today-ring: var(--color-N-text, #ffffff);
+}
+.brigade-table td.tc-U.today-col {
+  --today-ring: var(--color-U-text, #ffffff);
 }
