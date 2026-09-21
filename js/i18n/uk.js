@@ -1067,4 +1067,15 @@ window.translations.uk = {
   notesDeleteConfirmBody: 'Цю дію неможливо скасувати.',
   notesAdvancedSearch: 'Розширений пошук',
   notesHideAdvanced: 'Сховати фільтри',
+
+  // === ADD SHIFT: HOURS-ONLY SECTION ===
+  addShiftHoursSection: 'Або робота без повної зміни',
+  addShiftHoursLabel: 'Скільки годин?',
+  addShiftHoursPlaceholder: 'напр. 5',
+  addShiftHoursSave: 'Зберегти години',
+  addShiftHoursDelete: 'Видалити запис годин',
+  addShiftHoursPreview: 'Попередній розрахунок оплати',
+  addShiftHoursInvalid: 'Введіть кількість годин від 0.5 до 24',
+  addShiftHoursSaved: 'Збережено {h}год',
+  addShiftHoursRemoved: 'Запис годин видалено',
 };

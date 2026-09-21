@@ -1066,4 +1066,15 @@ window.translations.en = {
   notesDeleteConfirmBody: 'This action cannot be undone.',
   notesAdvancedSearch: 'Advanced search',
   notesHideAdvanced: 'Hide filters',
+
+  // === ADD SHIFT: HOURS-ONLY SECTION ===
+  addShiftHoursSection: 'Or work without full shift',
+  addShiftHoursLabel: 'How many hours?',
+  addShiftHoursPlaceholder: 'e.g. 5',
+  addShiftHoursSave: 'Save hours',
+  addShiftHoursDelete: 'Delete hours entry',
+  addShiftHoursPreview: 'Payment preview',
+  addShiftHoursInvalid: 'Enter hours between 0.5 and 24',
+  addShiftHoursSaved: 'Saved {h}h',
+  addShiftHoursRemoved: 'Hours entry removed',
 };

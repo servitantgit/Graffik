@@ -1067,4 +1067,15 @@ window.translations.pl = {
   notesDeleteConfirmBody: 'Ta akcja jest nieodwracalna.',
   notesAdvancedSearch: 'Rozszerzone wyszukiwanie',
   notesHideAdvanced: 'Ukryj filtry',
+
+  // === ADD SHIFT: HOURS-ONLY SECTION ===
+  addShiftHoursSection: 'Lub praca bez pełnej zmiany',
+  addShiftHoursLabel: 'Ile godzin?',
+  addShiftHoursPlaceholder: 'np. 5',
+  addShiftHoursSave: 'Zapisz godziny',
+  addShiftHoursDelete: 'Usuń zapis godzin',
+  addShiftHoursPreview: 'Podgląd wypłaty',
+  addShiftHoursInvalid: 'Wprowadź liczbę godzin od 0.5 do 24',
+  addShiftHoursSaved: 'Zapisano {h}h',
+  addShiftHoursRemoved: 'Zapis godzin usunięto',
 };
