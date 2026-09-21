@@ -178,17 +178,33 @@ pre-used vacation days are stored in prefs.
 Overtime uses a flat key:
 
 `${year}-${month}-${day}-${brigade}`
+
 Example:
 
 {
   '2026-9-13-A': {
     przed: { hours: 2 },
-    po: { hours: 1.5 }
+    po: { hours: 1.5 },
+    weekend: null
+  },
+  '2026-11-1-A': {
+    przed: null,
+    po: null,
+    weekend: { hours: 5 }
   }
 }
-przed: overtime before a shift
-po: overtime after a shift
-weekend: legacy-compatible work-on-day-off record
+
+Three position slots:
+- `przed` — overtime BEFORE a scheduled shift (requires the day to have a shift)
+- `po` — overtime AFTER a scheduled shift (requires the day to have a shift)
+- `weekend` — N hours of work on a day WITHOUT a factory shift for this brigade (0.5-24 hours, no shift required). Categorized as +200% (holiday), +100% (Sunday/Saturday/weekday day-off). UI provides mutually exclusive choice between adding a full R/P/N shift and recording weekend hours.
+
+Overtime notes are stored in the unified notes[] list with tags:
+- `before` — note attached to overtime.przed
+- `after` — note attached to overtime.po
+- `weekend` — note attached to overtime.weekend
+
+Records where all three slots are null/absent are deleted from storage (see `setOvertime()` in js/core.js).
 Overtime notes are not stored inside overtimes.przed or overtimes.po.
 They belong in unified notes with before or after tags.
 

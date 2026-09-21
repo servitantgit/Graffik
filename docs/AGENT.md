@@ -77,6 +77,9 @@ unified `notes[key]` array format (`{id, tag, text}`, tag null/'before'/'after')
 `openDriveSyncOptionsPanel()`, `bindDriveSyncOptionsPanel()`, `renderDriveSyncOptionsDiff()` in `js/sync.js` — the single Drive management UI; do not add duplicate Drive controls elsewhere;
 Drive card in the side menu is the only Drive entry point: enable/disable switch, account display, warning row (opens the panel), Sync options button (opens the panel), logout button. Do not scatter Drive controls into Settings or other panels;
 mode toggle (Auto/Manual) in the Sync Options panel writes `prefs.driveAutoSync` directly and MUST NOT trigger any Drive request or token refresh — avoids accidental Google popups on misclick.
+`overtimes[key].weekend` slot in js/core.js — third position alongside `przed`/`po` for hours-only overtime; do not remove or rename without updating overtime-logic.js and js/calendar.js display code;
+Weekend hours UI mutual exclusion in `openAddShiftModal()` (js/calendar.js) — picking R/P/N clears weekend slot, saving weekend hours clears custom shift; do not allow both simultaneously;
+Variant C safeguard in `getMonthOvertimeSummary()` (js/core.js) — `if (isAddedShift && !hasWeekendHours)` prevents double-counting when both slots exist through corrupted data;
 Local bug fixes inside these areas are allowed. Structural redesign is not.
 
 2. PROJECT OVERVIEW

@@ -8,6 +8,7 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 
 ### Changed
 
+- **Overtime data model** — `overtimes[key]` now has 3 slots (`przed`, `po`, `weekend`) instead of 2. Existing records without `weekend` field still work (backward compatible). Sync payload includes weekend automatically (structural serialization).
 - **Google Drive UX — single entry point via ⚙ Sync options panel.** All Drive controls (mode selector, diff table, Upload/Download) consolidated into one full-screen panel opened from the Drive card in the side menu. Scattered switches removed from Settings → Data & privacy.
 - **Warning row in Drive card is now clickable** — tap opens the Sync options panel with the diff. Replaces the previous separate "Details →" button.
 - **Manual sync mode surfaced.** The Auto/Manual toggle (previously hidden inside Settings) is now the first section of the Sync options panel. Manual mode is recommended for users who don't want periodic Google login prompts.
@@ -15,6 +16,7 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 
 ### Added
 
+- **Weekend hours slot for overtime** — new overtime position `weekend` alongside existing `przed`/`po`. Records N hours (0.5-24) on any factory-free day for the user's brigade: holidays (+200%), Sundays (+100%), Saturdays and weekday days-off (+100%). UI: new "Or work without full shift" section appears in the Add Extra Shift modal whenever the day has no shift by factory. Save/Delete + optional note (tagged `weekend` in unified notes list). Mutually exclusive with picking R/P/N — choosing one clears the other. Weekend hours visible via `⏱` cell marker (color reflects rate), in the monthly overtime summary, and as a dedicated info-card in the day panel. Variant C safeguard in `getMonthOvertimeSummary` prevents double-count if both shift and weekend hours ever coexist. 7 new unit tests in `tests/overtime-logic.test.js`.
 - New `openDriveSyncOptionsPanel()` in `js/sync.js` — full-screen `app-panel` with:
   - Mode selector (Auto / Manual only) as radio-styled rows
   - Local-vs-remote diff table (fetched async, shows 📱 +N / ☁ +N indicators)
