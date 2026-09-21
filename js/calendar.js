@@ -123,37 +123,55 @@ function renderCalendar(direction) {
     cell.appendChild(shiftEl);
 
     // OVERTIME: colored ⏱ marker (detail in info-panel)
-    if (!isFactoryPaintingMode && !hidePrivate && !isWolne(shiftCode) && !onUrlop) {
+    // Shows for przed/po (day with shift) AND weekend hours (day without shift).
+    if (!isFactoryPaintingMode && !hidePrivate && !onUrlop) {
       const ot = getOvertimes(currentYear, currentMonth, d, selectedShift);
-      if (ot.przed || ot.po) {
+      const hasPrzedPo = (ot.przed || ot.po) && !isWolne(shiftCode);
+      const hasWeekend = ot.weekend && typeof ot.weekend.hours === 'number' && ot.weekend.hours > 0;
+      if (hasPrzedPo || hasWeekend) {
         cell.classList.add('has-ot');
         let maxRate = 50;
         const parts = [];
-        if (ot.przed) {
-          const cat = categorizeOvertime(
-            currentYear,
-            currentMonth,
-            d,
-            shiftCode,
-            'przed',
-            ot.przed.hours
-          );
-          const r = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
-          if (r > maxRate) maxRate = r;
-          parts.push(`${t('otBefore') || 'przed'}: ${ot.przed.hours}h +${r}%`);
+        if (hasPrzedPo) {
+          if (ot.przed) {
+            const cat = categorizeOvertime(
+              currentYear,
+              currentMonth,
+              d,
+              shiftCode,
+              'przed',
+              ot.przed.hours
+            );
+            const r = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
+            if (r > maxRate) maxRate = r;
+            parts.push(`${t('otBefore') || 'przed'}: ${ot.przed.hours}h +${r}%`);
+          }
+          if (ot.po) {
+            const cat = categorizeOvertime(
+              currentYear,
+              currentMonth,
+              d,
+              shiftCode,
+              'po',
+              ot.po.hours
+            );
+            const r = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
+            if (r > maxRate) maxRate = r;
+            parts.push(`${t('otAfter') || 'po'}: ${ot.po.hours}h +${r}%`);
+          }
         }
-        if (ot.po) {
+        if (hasWeekend) {
           const cat = categorizeOvertime(
             currentYear,
             currentMonth,
             d,
-            shiftCode,
-            'po',
-            ot.po.hours
+            null,
+            'weekend',
+            ot.weekend.hours
           );
           const r = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
           if (r > maxRate) maxRate = r;
-          parts.push(`${t('otAfter') || 'po'}: ${ot.po.hours}h +${r}%`);
+          parts.push(`${ot.weekend.hours}h +${r}%`);
         }
 
         // Corner clock — palette colors: 50 gray, 100 purple, 200 red
@@ -757,6 +775,43 @@ function renderInfo() {
       timelineCard = reliefCard;
     }
 
+    // Weekend hours info-card (if user recorded custom hours on this day)
+    const otForCard = getOvertimes(currentYear, currentMonth, selectedDay, selectedShift);
+    let weekendCard = '';
+    if (
+      otForCard.weekend &&
+      typeof otForCard.weekend.hours === 'number' &&
+      otForCard.weekend.hours > 0
+    ) {
+      const weekendHours = otForCard.weekend.hours;
+      const weekendCat = categorizeOvertime(
+        currentYear,
+        currentMonth,
+        selectedDay,
+        null,
+        'weekend',
+        weekendHours
+      );
+      const weekendRate = weekendCat.h200 > 0 ? '+200%' : weekendCat.h100 > 0 ? '+100%' : '+50%';
+      const weekendPaid = weekendCat.h50 * 1.5 + weekendCat.h100 * 2 + weekendCat.h200 * 3;
+      const weekendNoteText = getDayNoteTextByTag(
+        currentYear,
+        currentMonth,
+        selectedDay,
+        selectedShift,
+        'weekend'
+      );
+      weekendCard = `
+        <div class="info-card" style="grid-column:1/-1;">
+          <div class="label">⏱ ${escapeHtml(t('addShiftHoursSection'))}</div>
+          <div class="value">
+            <div style="font-weight:700; font-size:15px;">${weekendHours}h × ${weekendRate}</div>
+            <div style="margin-top:4px; color:var(--text-muted);">💰 ${escapeHtml(t('otPayment'))}: ${weekendPaid}h</div>
+            ${weekendNoteText ? `<div style="margin-top:6px; padding:6px 10px; background:var(--bg-cell); border-radius:6px; font-size:13px;">📝 ${escapeHtml(weekendNoteText)}</div>` : ''}
+          </div>
+        </div>`;
+    }
+
     // Day action grid
     const canAddExtraShift = isFactoryFree && !onUrlop;
     const canAddOvertime =
@@ -893,6 +948,7 @@ function renderInfo() {
         <div class="info-grid">
           ${statusCard}
           ${timelineCard}
+          ${weekendCard}
           ${actionCard}
           ${noteCard}
           ${vacationCard}

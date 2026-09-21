@@ -1004,7 +1004,20 @@ function getMonthOvertimeSummary(year, month, brigade) {
       }
     });
 
-    // 2. Added shift on holiday/Sunday (Variant A: only if not in factory schedule)
+    // 2. Weekend hours (custom N hours on factory-free day, no full shift)
+    const hasWeekendHours =
+      ot.weekend && typeof ot.weekend.hours === 'number' && ot.weekend.hours > 0;
+    if (hasWeekendHours && !isUrlop(year, month, d, brigade)) {
+      const cat = categorizeOvertime(year, month, d, null, 'weekend', ot.weekend.hours);
+      total.h50 += cat.h50;
+      total.h100 += cat.h100;
+      total.h200 += cat.h200;
+      total.count++;
+    }
+
+    // 3. Added shift on holiday/Sunday (Variant A: only if not in factory schedule)
+    // Variant C safeguard: skip auto 8h count if user recorded custom weekend hours
+    // (should be impossible via UI mutual exclusion, but protects against corrupted data)
     // Skip if not a working shift or if it's a vacation day
     if (shift === 'R' || shift === 'P' || shift === 'N') {
       if (!isUrlop(year, month, d, brigade)) {
@@ -1021,7 +1034,7 @@ function getMonthOvertimeSummary(year, month, brigade) {
         const wasFactoryFree = isWolne(factoryShift);
         const isAddedShift = wasFactoryFree && (shift === 'R' || shift === 'P' || shift === 'N');
 
-        if (isAddedShift) {
+        if (isAddedShift && !hasWeekendHours) {
           const isHoliday = !!yHolidays[month + '-' + d];
           const dow = new Date(year, month - 1, d).getDay();
           const isSunday = dow === 0;
