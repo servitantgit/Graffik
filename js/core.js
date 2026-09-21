@@ -853,18 +853,23 @@ function otKey(year, month, day, brigade) {
   return `${year}-${month}-${day}-${brigade}`;
 }
 function getOvertimes(year, month, day, brigade) {
-  return overtimes[otKey(year, month, day, brigade)] || { przed: null, po: null };
+  return overtimes[otKey(year, month, day, brigade)] || { przed: null, po: null, weekend: null };
 }
 function setOvertime(year, month, day, brigade, position, data) {
   const k = otKey(year, month, day, brigade);
-  if (!overtimes[k]) overtimes[k] = { przed: null, po: null };
+  if (!overtimes[k]) overtimes[k] = { przed: null, po: null, weekend: null };
   overtimes[k][position] = data;
-  if (!overtimes[k].przed && !overtimes[k].po) delete overtimes[k];
+  if (!overtimes[k].przed && !overtimes[k].po && !overtimes[k].weekend) delete overtimes[k];
   saveOvertimes(overtimes);
 }
 function removeOvertime(year, month, day, brigade, position) {
   setOvertime(year, month, day, brigade, position, null);
-  removeDayNoteByTag(year, month, day, brigade, position === 'przed' ? 'before' : 'after');
+  const noteTag =
+    position === 'przed' ? 'before' :
+    position === 'po' ? 'after' :
+    position === 'weekend' ? 'weekend' :
+    null;
+  if (noteTag) removeDayNoteByTag(year, month, day, brigade, noteTag);
 }
 
 /* === Unified day notes ===
