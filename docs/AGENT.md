@@ -1144,7 +1144,7 @@ Before a new chat:
 
 - finish or roll back the current patch;
 - verify working tree intentionally;
-- regenerate `code.json` via `.\tools\export-code.ps1`;
+- regenerate `code.json` via `.\tools\export-code.ps1` (or a smaller profile like `code`/`ui`/`docs` — see `.\tools\export-code.ps1 -h`);
 - upload the new file.
 
 ---
