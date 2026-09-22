@@ -1078,4 +1078,15 @@ window.translations.uk = {
   addShiftHoursInvalid: 'Введіть кількість годин від 0.5 до 24',
   addShiftHoursSaved: 'Збережено {h}год',
   addShiftHoursRemoved: 'Запис годин видалено',
+
+  // === UPLOAD REGRESSION WARNING (Session 1) ===
+  uploadWarningTitle: 'Ризик втрати даних',
+  uploadWarningBody: 'Версія, яку надсилаєте, містить значно менше даних, ніж поточна копія на Google Drive. Продовження призведе до безповоротної втрати:',
+  uploadWarningCategory: 'Категорія',
+  uploadWarningLocal: 'Локально',
+  uploadWarningRemote: 'Drive',
+  uploadWarningLoss: 'Втрата',
+  uploadWarningHint: 'Якщо це не навмисно — скасуйте й спочатку завантажте дані з Drive.',
+  uploadWarningProceed: 'Надіслати попри це',
+  driveUploadCancelled: 'Надсилання скасовано',
 };

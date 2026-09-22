@@ -1078,4 +1078,15 @@ window.translations.pl = {
   addShiftHoursInvalid: 'Wprowadź liczbę godzin od 0.5 do 24',
   addShiftHoursSaved: 'Zapisano {h}h',
   addShiftHoursRemoved: 'Zapis godzin usunięto',
+
+  // === UPLOAD REGRESSION WARNING (Session 1) ===
+  uploadWarningTitle: 'Ryzyko utraty danych',
+  uploadWarningBody: 'Wysyłana wersja zawiera znacznie mniej danych niż aktualna kopia na Google Drive. Kontynuacja spowoduje trwałą utratę:',
+  uploadWarningCategory: 'Kategoria',
+  uploadWarningLocal: 'Lokalnie',
+  uploadWarningRemote: 'Drive',
+  uploadWarningLoss: 'Strata',
+  uploadWarningHint: 'Jeśli to nie jest zamierzone — anuluj i najpierw pobierz dane z Drive.',
+  uploadWarningProceed: 'Wyślij mimo to',
+  driveUploadCancelled: 'Wysyłka anulowana',
 };

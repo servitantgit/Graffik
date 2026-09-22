@@ -675,11 +675,113 @@ async function findDriveFile() {
   return newest;
 }
 
+/* === PRE-UPLOAD REGRESSION CHECK (Session 1) ===
+   Guards uploadToDrive() against accidentally overwriting a richer Drive
+   copy with a stale local payload. Compares local vs remote entry counts
+   per category; if any category loses >20% AND remote had >0 entries,
+   returns a report so the caller can show a confirmation modal.
+   Returns null when: no remote file exists yet, network fails, or no
+   category regressed enough — in all those cases upload proceeds silently.
+   Reuses buildLocalSyncPayload / countSyncPayloadStats / fetchDriveRemotePayload
+   which already exist and are used by the Sync Options panel diff table. */
+async function detectUploadRegression() {
+  const localPayload = buildLocalSyncPayload();
+  const localStats = countSyncPayloadStats(localPayload);
+  let remotePayload;
+  try {
+    remotePayload = await fetchDriveRemotePayload();
+  } catch (e) {
+    console.warn('[sync]', 'Pre-upload check failed, allowing upload', e);
+    return null;
+  }
+  if (!remotePayload) return null;
+  const remoteStats = countSyncPayloadStats(remotePayload);
+
+  const categories = [
+    { key: 'urlops', labelKey: 'driveDiffUrlops' },
+    { key: 'overtimes', labelKey: 'driveDiffOvertimes' },
+    { key: 'notes', labelKey: 'driveDiffNotes' },
+    { key: 'customShifts', labelKey: 'driveDiffCustom' },
+    { key: 'factoryDraftChanges', labelKey: 'syncDiffFactoryDrafts' },
+    { key: 'vacationLimits', labelKey: 'driveDiffLimits' },
+  ];
+
+  const lost = [];
+  categories.forEach((cat) => {
+    const local = localStats[cat.key] || 0;
+    const remote = remoteStats[cat.key] || 0;
+    if (remote === 0) return;
+    if (local >= remote) return;
+    const lostCount = remote - local;
+    const lostPct = (lostCount / remote) * 100;
+    if (lostPct > 20) {
+      lost.push({ category: cat.labelKey, local, remote, lostCount, lostPct });
+    }
+  });
+
+  return lost.length > 0 ? { lost } : null;
+}
+
+/* Shows the regression warning modal. Resolves with true if user confirmed
+   the upload anyway, false if cancelled. */
+function showUploadRegressionWarning(regression) {
+  return new Promise((resolve) => {
+    const rows = regression.lost.map((item) => {
+      const label = escapeHtml(t(item.category));
+      return '<tr>' +
+        '<td style="padding:6px;">' + label + '</td>' +
+        '<td style="text-align:right; padding:6px;">' + item.local + '</td>' +
+        '<td style="text-align:right; padding:6px;">' + item.remote + '</td>' +
+        '<td style="text-align:right; padding:6px; color:#c0392b; font-weight:700;">' +
+        '−' + item.lostCount + ' (' + Math.round(item.lostPct) + '%)' +
+        '</td>' +
+        '</tr>';
+    }).join('');
+
+    const body =
+      '<p>' + t('uploadWarningBody') + '</p>' +
+      '<table style="width:100%; border-collapse:collapse; margin:12px 0; font-size:13px;">' +
+      '<thead><tr style="border-bottom:1px solid var(--border-cell);">' +
+      '<th style="text-align:left; padding:6px;">' + t('uploadWarningCategory') + '</th>' +
+      '<th style="text-align:right; padding:6px;">' + t('uploadWarningLocal') + '</th>' +
+      '<th style="text-align:right; padding:6px;">' + t('uploadWarningRemote') + '</th>' +
+      '<th style="text-align:right; padding:6px;">' + t('uploadWarningLoss') + '</th>' +
+      '</tr></thead>' +
+      '<tbody>' + rows + '</tbody>' +
+      '</table>' +
+      '<p style="padding:10px; background:rgba(192,57,43,0.1); border-radius:8px; margin-top:12px; font-size:13px;">' +
+      '⚠️ ' + t('uploadWarningHint') +
+      '</p>';
+
+    showModal({
+      title: '⚠️ ' + t('uploadWarningTitle'),
+      body: body,
+      buttons: [
+        { text: t('cancel'), class: 'secondary', onClick: () => resolve(false) },
+        { text: t('uploadWarningProceed'), class: 'danger', onClick: () => resolve(true) },
+      ],
+    });
+  });
+}
+
 /* === ZAPIS (create lub update) === */
 async function uploadToDrive(force = false) {
   if (!(await ensureDriveToken(true))) {
     showToast('warn', `☁️ ${t('driveLoginRequired')}`);
     return false;
+  }
+
+  // Pre-upload regression check (Session 1): if the local payload has
+  // significantly fewer entries than the current Drive copy, ask for
+  // confirmation before overwriting. Runs after token is valid so the
+  // remote fetch does not itself trigger a login popup mid-check.
+  const regression = await detectUploadRegression();
+  if (regression) {
+    const confirmed = await showUploadRegressionWarning(regression);
+    if (!confirmed) {
+      showToast('info', t('driveUploadCancelled'));
+      return false;
+    }
   }
 
 // Compact v4 payload: public factory data stays in the application.

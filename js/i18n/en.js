@@ -1077,4 +1077,15 @@ window.translations.en = {
   addShiftHoursInvalid: 'Enter hours between 0.5 and 24',
   addShiftHoursSaved: 'Saved {h}h',
   addShiftHoursRemoved: 'Hours entry removed',
+
+  // === UPLOAD REGRESSION WARNING (Session 1) ===
+  uploadWarningTitle: 'Data loss risk',
+  uploadWarningBody: 'The version being uploaded contains significantly less data than the current copy on Google Drive. Continuing will permanently lose:',
+  uploadWarningCategory: 'Category',
+  uploadWarningLocal: 'Local',
+  uploadWarningRemote: 'Drive',
+  uploadWarningLoss: 'Loss',
+  uploadWarningHint: 'If this is not intentional — cancel and download from Drive first.',
+  uploadWarningProceed: 'Upload anyway',
+  driveUploadCancelled: 'Upload cancelled',
 };
