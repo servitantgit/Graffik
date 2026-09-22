@@ -1088,4 +1088,15 @@ window.translations.en = {
   uploadWarningHint: 'If this is not intentional — cancel and download from Drive first.',
   uploadWarningProceed: 'Upload anyway',
   driveUploadCancelled: 'Upload cancelled',
+
+  // === ROLLING BACKUPS (Session 2) ===
+  backupSectionTitle: 'Backups',
+  backupRestoreBtn: 'Restore from backup',
+  backupModalTitle: 'Select a backup',
+  backupEmpty: 'No backups yet. The first backup will be created on the next sync.',
+  backupItemFormat: '{date} · rev {rev}',
+  backupItemFormatNoRev: '{date}',
+  backupRestoreConfirmTitle: 'Restore from backup?',
+  backupRestoreConfirmBody: 'This will replace current local data with the backup from {label}.',
+  backupRestored: 'Restored from backup from {label}',
 };

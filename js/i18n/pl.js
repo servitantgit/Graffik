@@ -1089,4 +1089,15 @@ window.translations.pl = {
   uploadWarningHint: 'Jeśli to nie jest zamierzone — anuluj i najpierw pobierz dane z Drive.',
   uploadWarningProceed: 'Wyślij mimo to',
   driveUploadCancelled: 'Wysyłka anulowana',
+
+  // === ROLLING BACKUPS (Session 2) ===
+  backupSectionTitle: 'Kopie zapasowe',
+  backupRestoreBtn: 'Przywróć z kopii zapasowej',
+  backupModalTitle: 'Wybierz kopię zapasową',
+  backupEmpty: 'Brak kopii zapasowych. Pierwsza kopia zostanie utworzona przy następnej synchronizacji.',
+  backupItemFormat: '{date} · rev {rev}',
+  backupItemFormatNoRev: '{date}',
+  backupRestoreConfirmTitle: 'Przywrócić z kopii zapasowej?',
+  backupRestoreConfirmBody: 'Zastąpi to bieżące dane lokalne kopią z {label}.',
+  backupRestored: 'Przywrócono z kopii zapasowej z {label}',
 };

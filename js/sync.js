@@ -764,6 +764,319 @@ function showUploadRegressionWarning(regression) {
   });
 }
 
+/* === ROLLING BACKUPS (Session 2) ===
+   3 rolling backup copies on appDataFolder alongside the main file.
+   Rotation happens after each successful upload: previous main becomes
+   new backup-1; existing backup-1→2, backup-2→3, backup-3 is deleted.
+   Rotation is best-effort — never throws, never blocks upload. Failures
+   are logged to console; next successful upload heals the state. */
+
+const BACKUP_FILE_NAMES = [
+  'grafik-gillette-data.backup-1.json',
+  'grafik-gillette-data.backup-2.json',
+  'grafik-gillette-data.backup-3.json',
+];
+
+/**
+ * Finds main file + all 3 backup files on Drive. Returns metadata for each
+ * (id, name, modifiedTime). Uses driveFetch so silent token refresh works.
+ * Handles concurrent-upload edge case: if multiple files exist with same name
+ * (2 devices uploaded simultaneously), keeps newest and deletes older ones
+ * — same pattern as findDriveFile().
+ * @returns {Promise<{main: object|null, backups: Array<object|null>}>}
+ *   backups array is always length 3 (index 0 = backup-1, 1 = backup-2, 2 = backup-3).
+ *   null entries mean that backup slot doesn't exist yet.
+ */
+async function findAllDriveFiles() {
+  const allNames = [DRIVE_FILE_NAME, ...BACKUP_FILE_NAMES];
+  const queryParts = allNames.map((n) => "name='" + n + "'").join(' or ');
+  const query = '(' + queryParts + ') and trashed=false';
+  const url =
+    'https://www.googleapis.com/drive/v3/files?spaces=appDataFolder' +
+    '&q=' + encodeURIComponent(query) +
+    '&fields=files(id,name,modifiedTime)' +
+    '&orderBy=modifiedTime desc';
+  const resp = await driveFetch(url);
+  if (!resp.ok) {
+    console.warn('[sync]', 'findAllDriveFiles failed:', resp.status);
+    return { main: null, backups: [null, null, null] };
+  }
+
+  const data = await resp.json();
+  const files = data.files || [];
+
+  // Group by name, keep newest per name, delete duplicates (concurrent-upload safety)
+  const byName = {};
+  files.forEach((f) => {
+    if (!byName[f.name]) {
+      byName[f.name] = f;
+    } else {
+      // Duplicate — delete older one (files sorted by modifiedTime desc, so this is older)
+      driveFetch('https://www.googleapis.com/drive/v3/files/' + f.id, { method: 'DELETE' })
+        // Best-effort cleanup: the newest copy is already selected above, so a
+        // failed duplicate delete is harmless and heals on the next upload.
+        .catch(() => {});
+    }
+  });
+
+  return {
+    main: byName[DRIVE_FILE_NAME] || null,
+    backups: BACKUP_FILE_NAMES.map((name) => byName[name] || null),
+  };
+}
+
+/**
+ * Rotates backup files after a successful upload.
+ * Order: delete backup-3, rename backup-2→3, backup-1→2, create new backup-1
+ * from previousMainContent (raw JSON string of what main was BEFORE the upload).
+ * NEVER THROWS — all failures logged to console. If rotation partially fails,
+ * next successful upload heals the state.
+ * @param {string} previousMainContent - JSON string of main file BEFORE upload
+ */
+async function rotateBackups(previousMainContent) {
+  if (typeof previousMainContent !== 'string' || !previousMainContent) {
+    // No previous main (first upload) — nothing to rotate
+    return;
+  }
+  try {
+    const all = await findAllDriveFiles();
+    const [b1, b2, b3] = all.backups;
+
+    // 1. Delete backup-3 if exists
+    if (b3 && b3.id) {
+      try {
+        await driveFetch('https://www.googleapis.com/drive/v3/files/' + b3.id, {
+          method: 'DELETE',
+        });
+      } catch (e) {
+        console.warn('[sync]', 'rotateBackups: delete backup-3 failed', e);
+      }
+    }
+
+    // 2. Rename backup-2 → backup-3
+    if (b2 && b2.id) {
+      try {
+        await driveFetch(
+          'https://www.googleapis.com/drive/v3/files/' + b2.id,
+          {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: BACKUP_FILE_NAMES[2] }),
+          }
+        );
+      } catch (e) {
+        console.warn('[sync]', 'rotateBackups: rename backup-2 failed', e);
+      }
+    }
+
+    // 3. Rename backup-1 → backup-2
+    if (b1 && b1.id) {
+      try {
+        await driveFetch(
+          'https://www.googleapis.com/drive/v3/files/' + b1.id,
+          {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: BACKUP_FILE_NAMES[1] }),
+          }
+        );
+      } catch (e) {
+        console.warn('[sync]', 'rotateBackups: rename backup-1 failed', e);
+      }
+    }
+
+    // 4. Create new backup-1 from previousMainContent
+    try {
+      const metadata = {
+        name: BACKUP_FILE_NAMES[0],
+        mimeType: DRIVE_MIME,
+        parents: ['appDataFolder'],
+      };
+      const form = new FormData();
+      form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+      form.append('file', new Blob([previousMainContent], { type: DRIVE_MIME }));
+      await driveFetch(
+        'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
+        { method: 'POST', body: form }
+      );
+    } catch (e) {
+      console.warn('[sync]', 'rotateBackups: create backup-1 failed', e);
+    }
+  } catch (e) {
+    console.warn('[sync]', 'rotateBackups: unexpected error', e);
+  }
+}
+
+/**
+ * Fetches content of a specific backup file. Used to show revision in restore modal.
+ * @param {string} fileId - Drive file id
+ * @returns {Promise<object|null>} - parsed payload or null on error
+ */
+async function fetchBackupPayload(fileId) {
+  if (!fileId) return null;
+  try {
+    const resp = await driveFetch(
+      'https://www.googleapis.com/drive/v3/files/' + fileId + '?alt=media'
+    );
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    if (!data || typeof data !== 'object') return null;
+    return data;
+  } catch (e) {
+    console.warn('[sync]', 'fetchBackupPayload failed', e);
+    return null;
+  }
+}
+
+/**
+ * Opens modal with list of available backups. User picks one → confirm →
+ * downloadFromDrive-style restore with the specific fileId.
+ */
+async function openRestoreBackupModal() {
+  if (!(await ensureDriveToken(true))) {
+    showToast('warn', '☁️ ' + t('driveLoginRequired'));
+    return;
+  }
+
+  // Show loading modal first
+  showModal({
+    title: '💾 ' + t('backupModalTitle'),
+    body: '<p style="text-align:center; color:var(--text-muted);">' + t('driveDiffLoading') + '</p>',
+    buttons: [{ text: t('cancel'), class: 'secondary' }],
+  });
+
+  const all = await findAllDriveFiles();
+  const availableBackups = all.backups
+    .map((b, idx) => (b ? { ...b, slot: idx + 1 } : null))
+    .filter(Boolean);
+
+  if (availableBackups.length === 0) {
+    // Empty state
+    const emptyBody =
+      '<p style="padding:20px; text-align:center; color:var(--text-muted);">' +
+      escapeHtml(t('backupEmpty')) +
+      '</p>';
+    showModal({
+      title: '💾 ' + t('backupModalTitle'),
+      body: emptyBody,
+      buttons: [{ text: t('close'), class: 'primary' }],
+    });
+    return;
+  }
+
+  // Fetch revision for each backup in parallel
+  const withRevisions = await Promise.all(
+    availableBackups.map(async (b) => {
+      const payload = await fetchBackupPayload(b.id);
+      const revision =
+        payload && typeof payload.revision === 'number' ? payload.revision : null;
+      return { ...b, revision };
+    })
+  );
+
+  // Format list
+  const rows = withRevisions
+    .map((b) => {
+      const dateObj = new Date(b.modifiedTime);
+      let dateStr;
+      try {
+        let locale = 'pl-PL';
+        if (typeof currentLang === 'string' && currentLang === 'uk') locale = 'uk-UA';
+        else if (typeof currentLang === 'string' && currentLang === 'en') locale = 'en-US';
+        dateStr = dateObj.toLocaleString(locale, {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+      } catch (e) {
+        dateStr = dateObj.toLocaleString();
+      }
+      const label =
+        b.revision !== null
+          ? t('backupItemFormat', { date: dateStr, rev: b.revision })
+          : t('backupItemFormatNoRev', { date: dateStr });
+      return (
+        '<button type="button" class="modal-btn secondary" data-backup-id="' +
+        escapeHtml(b.id) +
+        '" data-backup-label="' +
+        escapeHtml(label) +
+        '" style="width:100%; text-align:left; margin:4px 0; padding:12px 14px;">' +
+        escapeHtml(label) +
+        '</button>'
+      );
+    })
+    .join('');
+
+  const body = '<div>' + rows + '</div>';
+
+  showModal({
+    title: '💾 ' + t('backupModalTitle'),
+    body: body,
+    buttons: [{ text: t('cancel'), class: 'secondary' }],
+  });
+
+  // Attach handlers to backup buttons
+  setTimeout(() => {
+    document.querySelectorAll('[data-backup-id]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const fileId = btn.getAttribute('data-backup-id');
+        const label = btn.getAttribute('data-backup-label');
+        hideModal();
+        restoreFromBackup(fileId, label);
+      });
+    });
+  }, 50);
+}
+
+/**
+ * Restores from a specific backup file. Shows confirm modal, then downloads
+ * that file's content and applies it (same logic as downloadFromDrive with
+ * confirmOverwrite=true).
+ * @param {string} fileId - Drive file id of the backup
+ * @param {string} backupLabel - human-readable label (date + revision)
+ */
+async function restoreFromBackup(fileId, backupLabel) {
+  if (!fileId) return;
+  showConfirm(
+    '💾 ' + t('backupRestoreConfirmTitle'),
+    t('backupRestoreConfirmBody', { label: backupLabel }),
+    async () => {
+      if (!(await ensureDriveToken(true))) {
+        showToast('warn', '☁️ ' + t('driveLoginRequired'));
+        return;
+      }
+
+      // Temporarily override gDriveFileId to point to backup, download, restore original
+      const originalFileId = gDriveFileId;
+      gDriveFileId = fileId;
+
+      try {
+        const success = await downloadFromDrive(false);
+        if (success) {
+          showToast('success', '💾 ' + t('backupRestored', { label: backupLabel }));
+        }
+      } catch (e) {
+        console.error('[sync]', 'restoreFromBackup failed', e);
+        showToast('error', '☁️ ' + t('driveDownloadError'));
+      } finally {
+        // Restore original main file id (backup restore shouldn't change main pointer)
+        gDriveFileId = originalFileId;
+        localStorage.setItem('grafik_drive_file_id', gDriveFileId || '');
+      }
+    },
+    { primaryText: t('backupRestoreBtn'), primaryClass: 'primary' }
+  );
+}
+
+// Expose to window (per AGENT.md — cross-module access via window.*)
+window.findAllDriveFiles = findAllDriveFiles;
+window.rotateBackups = rotateBackups;
+window.fetchBackupPayload = fetchBackupPayload;
+window.openRestoreBackupModal = openRestoreBackupModal;
+window.restoreFromBackup = restoreFromBackup;
+
 /* === ZAPIS (create lub update) === */
 async function uploadToDrive(force = false) {
   if (!(await ensureDriveToken(true))) {
@@ -782,6 +1095,33 @@ async function uploadToDrive(force = false) {
       showToast('info', t('driveUploadCancelled'));
       return false;
     }
+  }
+
+  // Capture current main file content BEFORE overwriting (Session 2: rolling backups).
+  // Used by rotateBackups() after successful upload. Best-effort — if fetch fails,
+  // previousMainContent stays null and rotation is skipped for this cycle.
+  // Stale-device fallback (Session 2 hotfix): when localStorage was cleared
+  // (private mode, cache wipe, iOS 7-day storage eviction) gDriveFileId is null
+  // even though a main file exists on Drive. Without fallback, the accidental
+  // overwrite would take no backup — the exact scenario backups exist to guard
+  // against. One extra Drive lookup only for the no-id case.
+  let previousMainContent = null;
+  try {
+    let idForCapture = gDriveFileId;
+    if (!idForCapture) {
+      const found = await findDriveFile();
+      if (found && found.id) idForCapture = found.id;
+    }
+    if (idForCapture) {
+      const prevResp = await driveFetch(
+        'https://www.googleapis.com/drive/v3/files/' + idForCapture + '?alt=media'
+      );
+      if (prevResp.ok) {
+        previousMainContent = await prevResp.text();
+      }
+    }
+  } catch (e) {
+    console.warn('[sync]', 'Failed to capture previous main content for backup', e);
   }
 
 // Compact v4 payload: public factory data stays in the application.
@@ -863,6 +1203,15 @@ async function uploadToDrive(force = false) {
     } catch (_) {}
     updateDriveUI();
     updateMenuSyncStatus();
+
+    // Rolling backups (Session 2) — best-effort, never blocks upload.
+    // previousMainContent is the raw JSON of what main was BEFORE this upload.
+    // Runs async without await so it doesn't delay the return.
+    if (typeof previousMainContent === 'string' && previousMainContent) {
+      rotateBackups(previousMainContent).catch((e) => {
+        console.warn('[sync]', 'rotateBackups background failure', e);
+      });
+    }
     return true;
   } catch (e) {
     console.error('[SYNC] upload:', e);
@@ -1643,6 +1992,9 @@ async function openDriveSyncOptionsPanel() {
           <button type="button" class="modal-btn secondary" data-dso-action="download">
             ↓ ${tr('driveSyncDownload', null, 'Download')}
           </button>
+          <button type="button" class="modal-btn secondary" data-dso-action="restore">
+            💾 ${tr('backupRestoreBtn', null, 'Restore from backup')}
+          </button>
         </div>
       </div>
 
@@ -1762,6 +2114,15 @@ function bindDriveSyncOptionsPanel(body) {
     downloadBtn.addEventListener('click', function () {
       if (typeof closeAppPanel === 'function') closeAppPanel();
       downloadFromDrive(true);
+    });
+  }
+
+  // Restore button (secondary) — opens backup selection modal
+  const restoreBtn = body.querySelector('[data-dso-action="restore"]');
+  if (restoreBtn) {
+    restoreBtn.addEventListener('click', function () {
+      if (typeof closeAppPanel === 'function') closeAppPanel();
+      openRestoreBackupModal();
     });
   }
 

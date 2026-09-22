@@ -1089,4 +1089,15 @@ window.translations.uk = {
   uploadWarningHint: 'Якщо це не навмисно — скасуйте й спочатку завантажте дані з Drive.',
   uploadWarningProceed: 'Надіслати попри це',
   driveUploadCancelled: 'Надсилання скасовано',
+
+  // === ROLLING BACKUPS (Session 2) ===
+  backupSectionTitle: 'Резервні копії',
+  backupRestoreBtn: 'Відновити з резервної копії',
+  backupModalTitle: 'Виберіть резервну копію',
+  backupEmpty: 'Немає резервних копій. Перша копія створиться при наступній синхронізації.',
+  backupItemFormat: '{date} · rev {rev}',
+  backupItemFormatNoRev: '{date}',
+  backupRestoreConfirmTitle: 'Відновити з резервної копії?',
+  backupRestoreConfirmBody: 'Це замінить поточні локальні дані копією від {label}.',
+  backupRestored: 'Відновлено з резервної копії від {label}',
 };
