@@ -1041,6 +1041,9 @@ function renderInfo() {
     noteEditTargets.forEach((el) => {
       el.addEventListener('click', () => startNoteEdit(el));
       el.addEventListener('keydown', (event) => {
+        // Only activate when span itself is focused, not when event bubbles
+        // from a child input (fixes Space being swallowed while typing)
+        if (event.target !== el) return;
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault();
           startNoteEdit(el);
