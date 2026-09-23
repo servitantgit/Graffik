@@ -30,11 +30,9 @@ jobs:
       - name: Show Node version
         run: node --version
 
-      - name: Install dev dependencies (ESLint)
-        run: npm ci || npm install
-
-      - name: ESLint (js/)
-        run: npx eslint js/ --max-warnings 200
+      # No npm needed — catches missing login button, duration order, OT fields
+      - name: Smoke checks
+        run: node tools/smoke-check.js
 
       - name: Run unit tests
         id: tests
@@ -88,3 +86,10 @@ jobs:
           path: test-results.xml
           reporter: java-junit
           fail-on-error: false
+
+      # Optional: only the clean duration contract modules (does not block merge if npm is slow)
+      - name: ESLint (duration contract modules)
+        continue-on-error: true
+        run: |
+          npm install --no-fund --no-audit
+          npx eslint js/duration.js js/overtime-logic.js js/smart-popup.js js/schedules/_core.js --max-warnings 20

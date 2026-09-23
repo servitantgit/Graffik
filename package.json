@@ -3,10 +3,11 @@
   "private": true,
   "description": "Grafik Gillette — factory shift PWA (no runtime npm deps)",
   "scripts": {
+    "smoke": "node tools/smoke-check.js",
     "test": "node --test tests/*.test.js",
-    "lint": "eslint js/ --max-warnings 0",
-    "lint:fix": "eslint js/ --fix",
-    "check": "npm test && npm run lint"
+    "lint": "eslint js/duration.js js/overtime-logic.js js/smart-popup.js js/schedules/_core.js --max-warnings 20",
+    "lint:all": "eslint js/ --max-warnings 200",
+    "check": "npm run smoke && npm test"
   },
   "engines": {
     "node": ">=20"

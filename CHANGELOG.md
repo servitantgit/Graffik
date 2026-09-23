@@ -12,7 +12,7 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 - **Relief flow timeline OT nodes** (`js/smart-popup.js`): round hours to **1 decimal** (e.g. 4h 41m → `4.7h`) instead of raw float `4.683333…h`.
 - **Side menu Google login restored** — `#menuDriveLogin` in the Drive card when backup is ON and the user is not signed in (header button still works).
 - **Duration contract module** — `js/duration.js` is the single source for OT duration format/parse/limits. Loaded before schedules/UI.
-- **Dev tooling** — `package.json` + ESLint 9 (`npm run lint` / `npm test` / `npm run check`). CI runs lint before unit tests. No runtime npm dependencies.
+- **Dev tooling** — `package.json` + ESLint 9 + zero-dep smoke (`node tools/smoke-check.js`). CI: smoke → unit tests; ESLint optional. `npm run check` needs no npm install.
 - **Overtime data model** — `overtimes[key]` now has 3 slots (`przed`, `po`, `weekend`) instead of 2. Existing records without `weekend` field still work (backward compatible). Sync payload includes weekend automatically (structural serialization).
 - **Google Drive UX — single entry point via ⚙ Sync options panel.** All Drive controls (mode selector, diff table, Upload/Download) consolidated into one full-screen panel opened from the Drive card in the side menu. Scattered switches removed from Settings → Data & privacy.
 - **Warning row in Drive card is now clickable** — tap opens the Sync options panel with the diff. Replaces the previous separate "Details →" button.
