@@ -34,8 +34,9 @@ synchronization between a user's own devices.
 
 The script order in `index.html` is significant.
 
-1. `js/schedules/_core.js`
-2. `js/schedules/_registry.js`
+1. `js/duration.js` (duration contract — pure helpers)
+2. `js/schedules/_core.js`
+3. `js/schedules/_registry.js`
 3. `js/schedules/gillette/metadata.js`
 4. `js/schedules/gillette/2026.js`
 5. `js/personal/sync-tracking.js`
@@ -194,11 +195,14 @@ Example:
   }
 }
 
-**Storage format:** `hours` is always a decimal number of hours (e.g. `1.5` = 1 hour 30 minutes, `4.8` = 4 hours 48 minutes). This keeps calculations, sync, and localStorage backward-compatible.
+**Duration contract** (canonical module: `js/duration.js`, loaded before schedules/UI):
 
-**Input format:** Users enter **hours + minutes** in two number fields (not a decimal). Quick buttons 1h–5h still work. Helpers `decimalHoursToParts` / `partsToDecimalHours` convert on load/save. Minimum 30 minutes for weekend hours; przed/po max 5 hours (same limits as before).
-
-**Display format:** UI never shows raw decimals like `4.8h`. All user-facing overtime durations use `formatDurationHours` / `formatDurationHoursI18n` from `js/schedules/_core.js`, which render hours + minutes (e.g. `4h 48m`, Ukrainian `4год 48хв`, Polish `4godz 48min`). Time ranges use `formatTimeRange` / `formatClockTime` and support fractional hours (`14:00–14:30`).
+| Layer | Rule |
+|-------|------|
+| **Storage** | `hours` is always a non-negative decimal number (e.g. `1.5`, `4.8`). Never store display strings. |
+| **Input** | Two fields: whole hours + minutes (0–59). Convert with `partsToDecimalHours`. Weekend limits: `DURATION_LIMITS` (0.5–24h). Przed/po max 5h. |
+| **Display** | `formatDurationHoursI18n` → `4год 41хв` / `4h 41m`. Compact timeline: `formatHoursCompact` → `4.7h`. Ranges: `formatTimeRange` / `formatClockTime`. |
+| **Validate** | `isValidWeekendDuration` / `isValidPrzedPoDuration`. |
 
 **Categorization:** `categorizeOvertime` counts day/night by the minute so fractional durations are accurate. Night window remains 22:00–06:00.
 
@@ -259,6 +263,9 @@ are exported into public schedule files only by the admin publishing flow;
 must not be removed by personal-data cleanup.
 4. Module Map
 Schedules
+js/duration.js
+Duration contract (storage decimal hours; input H+M; display formatters). See §3.4.
+
 js/schedules/_core.js
 Shared constants and pure helpers:
 
@@ -268,11 +275,8 @@ localStorage key constants
 daysInMonthCal()
 isWolne()
 escapeHtml()
-formatClockTime() — HH:MM from fractional hour
-formatTimeRange() — start–end, supports minutes
-formatDurationHours() / formatDurationHoursI18n() — decimal hours → "4h 48m" / localized units
-decimalHoursToParts() / partsToDecimalHours() — convert for hours+minutes input fields
 buildHolidays()
+(re-exports duration helpers under Node for older tests)
 js/schedules/_registry.js
 Schedule registry and public-data aliases:
 

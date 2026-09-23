@@ -334,7 +334,7 @@ function openAddShiftModal(day) {
     const preview = document.getElementById('addShiftHoursPreview');
     if (!hEl || !mEl || !preview) return;
     const hours = partsToDecimalHours(hEl.value, mEl.value);
-    if (!hours || hours <= 0 || hours > 24) {
+    if (typeof isValidWeekendDuration === 'function' ? !isValidWeekendDuration(hours) : !hours || hours <= 0 || hours > 24) {
       preview.style.display = 'none';
       return;
     }
@@ -382,8 +382,8 @@ function openAddShiftModal(day) {
         const mEl = document.getElementById('addShiftHoursM');
         const noteInput = document.getElementById('addShiftHoursNote');
         const hours = partsToDecimalHours(hEl && hEl.value, mEl && mEl.value);
-        // Min 30 minutes (0.5h), max 24h — same limits as before
-        if (!hours || hours < 0.5 || hours > 24) {
+        // Duration contract: weekend 0.5–24h
+        if (typeof isValidWeekendDuration === 'function' ? !isValidWeekendDuration(hours) : !hours || hours < 0.5 || hours > 24) {
           showToast('error', t('addShiftHoursInvalid'));
           return;
         }

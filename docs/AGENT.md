@@ -80,10 +80,11 @@ These areas were manually repaired after the large refactor and must not be rede
 - `revision` field in the Drive sync payload and `meta.revision` in `gillette_sync_meta` — only ever advances, never regress it;
 - unified `notes[key]` array format (`{id, tag, text}`, tag null/'before'/'after'/'weekend') — do not reintroduce separate per-position note fields on `overtimes[key]`;
 - `openDriveSyncOptionsPanel()`, `bindDriveSyncOptionsPanel()`, `renderDriveSyncOptionsDiff()` in `js/sync.js` — the single Drive management UI; do not add duplicate Drive controls elsewhere;
-- Drive card in the side menu is the only Drive entry point: enable/disable switch, account display, warning row (opens the panel), Sync options button (opens the panel), logout button. Do not scatter Drive controls into Settings or other panels;
+- Drive card in the side menu is the primary Drive entry point: enable/disable switch, **login** (`#menuDriveLogin`), account display, warning row, Sync options, logout. Do not scatter Drive controls into Settings or other panels;
 - mode toggle (Auto/Manual) in the Sync Options panel writes `prefs.driveAutoSync` directly and MUST NOT trigger any Drive request or token refresh — avoids accidental Google popups on misclick;
 - `overtimes[key].weekend` slot in `js/core.js` — third position alongside `przed`/`po` for hours-only overtime; do not remove or rename without updating `overtime-logic.js` and `js/calendar.js` display code;
-- Overtime `hours` field is always decimal in storage (e.g. `4.8`); display must use `formatDurationHoursI18n` / `formatDurationHours` from `js/schedules/_core.js` — never show raw `4.8h` to users. `categorizeOvertime` counts by the minute for fractional accuracy;
+- Overtime duration contract lives in `js/duration.js` (loaded first): storage is decimal hours; UI input is hours+minutes; display via `formatDurationHoursI18n` / `formatHoursCompact` — never show raw floats like `4.68333h`. Do not reintroduce decimal-only inputs without updating this module and tests;
+- Drive card login: `#menuDriveLogin` must remain when Drive is ON and user is logged out (alongside header `userAuthBtn`);
 - Weekend hours UI mutual exclusion in `openAddShiftModal()` (`js/calendar.js`) — picking R/P/N clears weekend slot, saving weekend hours clears custom shift; do not allow both simultaneously;
 - Variant C safeguard in `getMonthOvertimeSummary()` (`js/core.js`) — `if (isAddedShift && !hasWeekendHours)` prevents double-counting when both slots exist through corrupted data;
 - Space/Enter accessibility guard in `bindNotesListEvents` (`js/notes-view.js`) and `renderInfo` note-edit block (`js/calendar.js`) — `if (event.target !== el) return;` prevents Space key from being swallowed when typing in inline edit input.

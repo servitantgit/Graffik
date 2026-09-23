@@ -50,13 +50,9 @@ function tlRenderNode(config) {
     if (otPercent === 50) classes.push('tl-ot-50');
     else if (otPercent === 100) classes.push('tl-ot-100');
     else classes.push('tl-ot');
-    // Compact timeline: round to 1 decimal (4h 41m → 4.7h), strip trailing .0
-    const num = Number(value);
-    let display = '0h';
-    if (isFinite(num) && num > 0) {
-      const r = Math.round(num * 10) / 10;
-      display = (Number.isInteger(r) ? String(r) : r.toFixed(1)) + 'h';
-    }
+    // Compact timeline via duration contract (1 decimal, e.g. 4h 41m → 4.7h)
+    const display =
+      typeof formatHoursCompact === 'function' ? formatHoursCompact(value) : value + 'h';
     content = `<div class="tl-value">${display}</div>`;
     if (otPercent != null) content += `<div class="tl-label">+${otPercent}%</div>`;
   } else if (type === 'free') {

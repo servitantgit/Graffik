@@ -371,7 +371,7 @@ const {
   formatDurationHours,
   formatTimeRange,
   formatClockTime,
-} = require('../js/schedules/_core.js');
+} = require('../js/duration.js');
 
 test('formatDurationHours: whole hours', () => {
   assert.strictEqual(formatDurationHours(4), '4h');
@@ -398,7 +398,7 @@ test('formatClockTime / formatTimeRange: fractional', () => {
   assert.strictEqual(formatTimeRange(4.5, 6), '04:30–06:00');
 });
 
-const { decimalHoursToParts, partsToDecimalHours } = require('../js/schedules/_core.js');
+const { decimalHoursToParts, partsToDecimalHours } = require('../js/duration.js');
 
 test('decimalHoursToParts / partsToDecimalHours round-trip', () => {
   assert.deepStrictEqual(decimalHoursToParts(4.8), { hours: 4, minutes: 48 });

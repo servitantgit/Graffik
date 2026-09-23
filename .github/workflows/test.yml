@@ -30,6 +30,12 @@ jobs:
       - name: Show Node version
         run: node --version
 
+      - name: Install dev dependencies (ESLint)
+        run: npm ci || npm install
+
+      - name: ESLint (js/)
+        run: npx eslint js/ --max-warnings 200
+
       - name: Run unit tests
         id: tests
         run: |
