@@ -397,3 +397,16 @@ test('formatClockTime / formatTimeRange: fractional', () => {
   assert.strictEqual(formatTimeRange(14, 14.5), '14:00–14:30');
   assert.strictEqual(formatTimeRange(4.5, 6), '04:30–06:00');
 });
+
+const { decimalHoursToParts, partsToDecimalHours } = require('../js/schedules/_core.js');
+
+test('decimalHoursToParts / partsToDecimalHours round-trip', () => {
+  assert.deepStrictEqual(decimalHoursToParts(4.8), { hours: 4, minutes: 48 });
+  assert.deepStrictEqual(decimalHoursToParts(4 + 40 / 60), { hours: 4, minutes: 40 });
+  assert.deepStrictEqual(decimalHoursToParts(0.5), { hours: 0, minutes: 30 });
+  assert.strictEqual(partsToDecimalHours(4, 41), 4 + 41 / 60);
+  assert.strictEqual(partsToDecimalHours(0, 30), 0.5);
+  assert.strictEqual(partsToDecimalHours(4, 48), 4.8);
+  // clamp minutes
+  assert.strictEqual(partsToDecimalHours(1, 99), 1 + 59 / 60);
+});

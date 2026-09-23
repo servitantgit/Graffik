@@ -154,7 +154,7 @@ window.translations.en = {
   infoStatusFree: '🏖️ Free',
 
   // === OVERTIME ===
-  otHoursLabel: 'How many hours?',
+  otHoursLabel: 'How many hours and minutes?',
   otOrCustom: 'or custom:',
   otHoursUnit: 'hours',
   otNote: '📝 Note (optional)',
@@ -194,7 +194,7 @@ window.translations.en = {
   otTodaySummary: '📊 Total today: <b>{h}</b> worked · 💰 <b>{paid}</b> paid',
   otSaved: 'Saved {h} overtime',
   otDeleted: 'Overtime deleted',
-  otSelectHours: 'Select number of hours',
+  otSelectHours: 'Enter hours and minutes (or use a quick button)',
   otMonthSummary: '⏱ Overtime this month',
   otMonthEntry: 'entry',
   otMonthEntries: 'entries',
@@ -1071,12 +1071,12 @@ window.translations.en = {
 
   // === ADD SHIFT: HOURS-ONLY SECTION ===
   addShiftHoursSection: 'Or work without full shift',
-  addShiftHoursLabel: 'How many hours?',
-  addShiftHoursPlaceholder: 'e.g. 5',
+  addShiftHoursLabel: 'How many hours and minutes?',
+  addShiftHoursPlaceholder: 'e.g. 4h 40m',
   addShiftHoursSave: 'Save hours',
   addShiftHoursDelete: 'Delete hours entry',
   addShiftHoursPreview: 'Payment preview',
-  addShiftHoursInvalid: 'Enter hours between 0.5 and 24',
+  addShiftHoursInvalid: 'Enter between 30 minutes and 24 hours (hours + minutes)',
   addShiftHoursSaved: 'Saved {h}',
   addShiftHoursRemoved: 'Hours entry removed',
 

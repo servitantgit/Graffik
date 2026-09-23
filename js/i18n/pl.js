@@ -153,7 +153,7 @@ window.translations.pl = {
   infoStatusFree: '🏖️ Wolne',
 
   // === OVERTIME ===
-  otHoursLabel: 'Ile godzin?',
+  otHoursLabel: 'Ile godzin i minut?',
   otOrCustom: 'lub własnie:',
   otHoursUnit: 'godzin',
   otNote: '📝 Notatka (opcjonalne)',
@@ -193,7 +193,7 @@ window.translations.pl = {
   otTodaySummary: '📊 Razem dziś: <b>{h}</b> pracy · 💰 <b>{paid}</b> płatne',
   otSaved: 'Zapisano {h} nadgodzin',
   otDeleted: 'Nadgodziny usunięte',
-  otSelectHours: 'Wybierz liczbę godzin',
+  otSelectHours: 'Podaj godziny i minuty (lub szybki przycisk)',
   otMonthSummary: '⏱ Nadgodziny w miesiącu',
   otMonthEntry: 'wpis',
   otMonthEntries: 'wpisów',
@@ -1072,12 +1072,12 @@ window.translations.pl = {
 
   // === ADD SHIFT: HOURS-ONLY SECTION ===
   addShiftHoursSection: 'Lub praca bez pełnej zmiany',
-  addShiftHoursLabel: 'Ile godzin?',
-  addShiftHoursPlaceholder: 'np. 5',
+  addShiftHoursLabel: 'Ile godzin i minut?',
+  addShiftHoursPlaceholder: 'np. 4 godz 40 min',
   addShiftHoursSave: 'Zapisz godziny',
   addShiftHoursDelete: 'Usuń zapis godzin',
   addShiftHoursPreview: 'Podgląd wypłaty',
-  addShiftHoursInvalid: 'Wprowadź liczbę godzin od 0.5 do 24',
+  addShiftHoursInvalid: 'Wprowadź od 30 min do 24 godz (godziny + minuty)',
   addShiftHoursSaved: 'Zapisano {h}',
   addShiftHoursRemoved: 'Zapis godzin usunięto',
 

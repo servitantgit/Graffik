@@ -247,6 +247,31 @@ function formatDurationHoursI18n(hours) {
 }
 
 /**
+ * Split decimal hours into whole hours + minutes (0–59).
+ * @param {number} hours
+ * @returns {{ hours: number, minutes: number }}
+ */
+function decimalHoursToParts(hours) {
+  if (hours == null || !isFinite(hours) || hours < 0) return { hours: 0, minutes: 0 };
+  const totalMin = Math.round(Number(hours) * 60);
+  return { hours: Math.floor(totalMin / 60), minutes: totalMin % 60 };
+}
+
+/**
+ * Combine hours + minutes into decimal hours for storage.
+ * Minutes are clamped to 0–59.
+ * @param {number|string} h
+ * @param {number|string} m
+ * @returns {number}
+ */
+function partsToDecimalHours(h, m) {
+  const hh = Math.max(0, parseInt(h, 10) || 0);
+  let mm = Math.max(0, parseInt(m, 10) || 0);
+  if (mm > 59) mm = 59;
+  return hh + mm / 60;
+}
+
+/**
  * Builds map of Polish public holidays for a year.
  * @param {number} year
  * @returns {object} - { "1-1": "New Year", "1-6": "Epiphany", ... }
@@ -315,5 +340,7 @@ if (typeof module !== 'undefined' && module.exports) {
     formatClockTime,
     formatDurationHours,
     formatDurationHoursI18n,
+    decimalHoursToParts,
+    partsToDecimalHours,
   };
 }

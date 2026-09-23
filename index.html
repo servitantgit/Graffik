@@ -319,10 +319,14 @@
           </div>
           <div style="display:flex; align-items:center; gap:8px; margin-top:8px; flex-wrap:wrap;">
             <label style="font-size:13px; color:var(--text-muted);" data-i18n="otOrCustom">lub własnie:</label>
-            <input type="number" id="otCustomHours" min="0.5" max="5" step="0.5"
-              data-i18n-placeholder="otNotePlaceholder"
-              style="width:90px; padding:6px 10px; border:1px solid var(--border-cell); border-radius:6px; background:var(--bg-container); color:var(--text-main); font-size:14px;">
-              <span style="color:var(--text-muted); font-size:13px;" data-i18n="otHoursUnit">godzin</span>
+            <input type="number" id="otCustomHoursH" min="0" max="5" step="1" inputmode="numeric"
+              aria-label="Hours"
+              style="width:64px; padding:6px 8px; border:1px solid var(--border-cell); border-radius:6px; background:var(--bg-container); color:var(--text-main); font-size:14px;">
+            <span style="color:var(--text-muted); font-size:13px;" data-i18n="durationHoursUnit">h</span>
+            <input type="number" id="otCustomHoursM" min="0" max="59" step="1" inputmode="numeric"
+              aria-label="Minutes"
+              style="width:64px; padding:6px 8px; border:1px solid var(--border-cell); border-radius:6px; background:var(--bg-container); color:var(--text-main); font-size:14px;">
+            <span style="color:var(--text-muted); font-size:13px;" data-i18n="durationMinutesUnit">m</span>
           </div>
         </div>
 

@@ -264,7 +264,10 @@ function openAddShiftModal(day) {
   // Existing weekend hours (if any) — for pre-filling input and showing Delete button
   const existingOt = getOvertimes(currentYear, currentMonth, day, selectedShift);
   const existingWeekend = existingOt && existingOt.weekend ? existingOt.weekend : null;
-  const existingHours = existingWeekend ? existingWeekend.hours : '';
+  const existingParts =
+    existingWeekend && typeof existingWeekend.hours === 'number'
+      ? decimalHoursToParts(existingWeekend.hours)
+      : { hours: '', minutes: '' };
   const existingNote =
     typeof getDayNoteTextByTag === 'function'
       ? getDayNoteTextByTag(currentYear, currentMonth, day, selectedShift, 'weekend')
@@ -274,12 +277,18 @@ function openAddShiftModal(day) {
     ? `
     <div style="margin-top:20px; padding-top:15px; border-top:1px solid var(--border-cell);">
       <div style="font-weight:600; margin-bottom:10px;">${t('addShiftHoursSection')}:</div>
-      <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+      <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px; flex-wrap:wrap;">
         <label style="font-size:13px; color:var(--text-muted); flex-shrink:0;">${t('addShiftHoursLabel')}</label>
-        <input type="number" id="addShiftHoursInput" min="0.5" max="24" step="0.5"
-          placeholder="${t('addShiftHoursPlaceholder')}"
-          value="${existingHours}"
-          style="flex:1; padding:8px 10px; border:1px solid var(--border-cell); border-radius:6px; background:var(--bg-container); color:var(--text-main); font-size:14px;">
+        <input type="number" id="addShiftHoursH" min="0" max="24" step="1" inputmode="numeric"
+          placeholder="0"
+          value="${existingParts.hours === '' ? '' : existingParts.hours}"
+          style="width:64px; padding:8px 8px; border:1px solid var(--border-cell); border-radius:6px; background:var(--bg-container); color:var(--text-main); font-size:14px;">
+        <span style="color:var(--text-muted); font-size:13px;">${t('durationHoursUnit') || 'h'}</span>
+        <input type="number" id="addShiftHoursM" min="0" max="59" step="1" inputmode="numeric"
+          placeholder="0"
+          value="${existingParts.minutes === '' ? '' : existingParts.minutes}"
+          style="width:64px; padding:8px 8px; border:1px solid var(--border-cell); border-radius:6px; background:var(--bg-container); color:var(--text-main); font-size:14px;">
+        <span style="color:var(--text-muted); font-size:13px;">${t('durationMinutesUnit') || 'm'}</span>
       </div>
       <div id="addShiftHoursPreview" style="padding:10px; background:var(--bg-info); border-radius:8px; font-size:13px; margin-bottom:10px; display:none;"></div>
       <div style="margin-bottom:10px;">
@@ -318,12 +327,13 @@ function openAddShiftModal(day) {
     buttons: [{ text: t('otCancelBtn'), class: 'secondary' }],
   });
 
-  // Helper: live preview for hours input
+  // Helper: live preview for hours + minutes input
   function updateHoursPreview() {
-    const input = document.getElementById('addShiftHoursInput');
+    const hEl = document.getElementById('addShiftHoursH');
+    const mEl = document.getElementById('addShiftHoursM');
     const preview = document.getElementById('addShiftHoursPreview');
-    if (!input || !preview) return;
-    const hours = parseFloat(input.value);
+    if (!hEl || !mEl || !preview) return;
+    const hours = partsToDecimalHours(hEl.value, mEl.value);
     if (!hours || hours <= 0 || hours > 24) {
       preview.style.display = 'none';
       return;
@@ -355,21 +365,24 @@ function openAddShiftModal(day) {
       });
     });
 
-    // Hours input live preview
-    const hoursInput = document.getElementById('addShiftHoursInput');
-    if (hoursInput) {
-      hoursInput.addEventListener('input', updateHoursPreview);
-      // Show preview immediately if pre-filled
-      if (hoursInput.value) updateHoursPreview();
+    // Hours + minutes input live preview
+    const hoursH = document.getElementById('addShiftHoursH');
+    const hoursM = document.getElementById('addShiftHoursM');
+    if (hoursH && hoursM) {
+      hoursH.addEventListener('input', updateHoursPreview);
+      hoursM.addEventListener('input', updateHoursPreview);
+      if (hoursH.value || hoursM.value) updateHoursPreview();
     }
 
     // Save hours button
     const saveBtn = document.getElementById('addShiftHoursSaveBtn');
     if (saveBtn) {
       saveBtn.addEventListener('click', () => {
-        const input = document.getElementById('addShiftHoursInput');
+        const hEl = document.getElementById('addShiftHoursH');
+        const mEl = document.getElementById('addShiftHoursM');
         const noteInput = document.getElementById('addShiftHoursNote');
-        const hours = parseFloat(input.value);
+        const hours = partsToDecimalHours(hEl && hEl.value, mEl && mEl.value);
+        // Min 30 minutes (0.5h), max 24h — same limits as before
         if (!hours || hours < 0.5 || hours > 24) {
           showToast('error', t('addShiftHoursInvalid'));
           return;
@@ -430,13 +443,19 @@ function openOvertimeModal(day, shift, position, existing) {
     selectedShift,
     position === 'przed' ? 'before' : 'after'
   );
-  document.getElementById('otCustomHours').value = '';
+  document.getElementById('otCustomHoursH').value = '';
+  document.getElementById('otCustomHoursM').value = '';
 
   document.querySelectorAll('.ot-qbtn').forEach((b) => b.classList.remove('active'));
   if (existing) {
     const btn = document.querySelector(`.ot-qbtn[data-h="${existing.hours}"]`);
-    if (btn) btn.classList.add('active');
-    else document.getElementById('otCustomHours').value = existing.hours;
+    if (btn) {
+      btn.classList.add('active');
+    } else {
+      const parts = decimalHoursToParts(existing.hours);
+      document.getElementById('otCustomHoursH').value = parts.hours || '';
+      document.getElementById('otCustomHoursM').value = parts.minutes || '';
+    }
     updateOvertimePreview(existing.hours);
   } else {
     document.getElementById('otPreview').style.display = 'none';
@@ -477,8 +496,12 @@ function openOvertimeModal(day, shift, position, existing) {
 }
 
 function getSelectedHours() {
-  const custom = parseFloat(document.getElementById('otCustomHours').value);
-  if (!isNaN(custom) && custom > 0) return custom;
+  const hEl = document.getElementById('otCustomHoursH');
+  const mEl = document.getElementById('otCustomHoursM');
+  if (hEl || mEl) {
+    const custom = partsToDecimalHours(hEl && hEl.value, mEl && mEl.value);
+    if (custom > 0) return custom;
+  }
   const active = document.querySelector('.ot-qbtn.active');
   if (active) return parseFloat(active.dataset.h);
   return null;
@@ -543,18 +566,25 @@ document.querySelectorAll('.ot-qbtn').forEach((btn) => {
   btn.onclick = () => {
     document.querySelectorAll('.ot-qbtn').forEach((b) => b.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById('otCustomHours').value = '';
+    const hEl = document.getElementById('otCustomHoursH');
+    const mEl = document.getElementById('otCustomHoursM');
+    if (hEl) hEl.value = '';
+    if (mEl) mEl.value = '';
     updateOvertimePreview(parseFloat(btn.dataset.h));
   };
 });
 
-document.getElementById('otCustomHours').addEventListener('input', (e) => {
-  const v = parseFloat(e.target.value);
-  if (!isNaN(v) && v > 0) {
+function onOtCustomDurationInput() {
+  const hEl = document.getElementById('otCustomHoursH');
+  const mEl = document.getElementById('otCustomHoursM');
+  const v = partsToDecimalHours(hEl && hEl.value, mEl && mEl.value);
+  if (v > 0) {
     document.querySelectorAll('.ot-qbtn').forEach((b) => b.classList.remove('active'));
     updateOvertimePreview(v);
   }
-});
+}
+document.getElementById('otCustomHoursH').addEventListener('input', onOtCustomDurationInput);
+document.getElementById('otCustomHoursM').addEventListener('input', onOtCustomDurationInput);
 
 /* === MONTHLY OVERTIME SUMMARY === */
 function renderMonthOvertimeSummary() {

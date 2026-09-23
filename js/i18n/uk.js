@@ -153,7 +153,7 @@ window.translations.uk = {
   infoStatusFree: '🏖️ Вихідний',
 
   // === OVERTIME ===
-  otHoursLabel: 'Скільки годин?',
+  otHoursLabel: 'Скільки годин і хвилин?',
   otOrCustom: 'або власна:',
   otHoursUnit: 'годин',
   otNote: '📝 Нотатка (опційно)',
@@ -193,7 +193,7 @@ window.translations.uk = {
   otTodaySummary: '📊 Разом сьогодні: <b>{h}</b> відпрацьовано · 💰 <b>{paid}</b> оплачено',
   otSaved: 'Збережено {h} надгодин',
   otDeleted: 'Надгодини видалено',
-  otSelectHours: 'Виберіть кількість годин',
+  otSelectHours: 'Вкажіть години і хвилини (або швидку кнопку)',
   otMonthSummary: '⏱ Надгодини за місяць',
   otMonthEntry: 'запис',
   otMonthEntries: 'записів',
@@ -1072,12 +1072,12 @@ window.translations.uk = {
 
   // === ADD SHIFT: HOURS-ONLY SECTION ===
   addShiftHoursSection: 'Або робота без повної зміни',
-  addShiftHoursLabel: 'Скільки годин?',
-  addShiftHoursPlaceholder: 'напр. 5',
+  addShiftHoursLabel: 'Скільки годин і хвилин?',
+  addShiftHoursPlaceholder: 'напр. 4 год 40 хв',
   addShiftHoursSave: 'Зберегти години',
   addShiftHoursDelete: 'Видалити запис годин',
   addShiftHoursPreview: 'Попередній розрахунок оплати',
-  addShiftHoursInvalid: 'Введіть кількість годин від 0.5 до 24',
+  addShiftHoursInvalid: 'Введіть від 30 хв до 24 год (години + хвилини)',
   addShiftHoursSaved: 'Збережено {h}',
   addShiftHoursRemoved: 'Запис годин видалено',
 
