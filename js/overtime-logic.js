@@ -58,7 +58,9 @@ function categorizeOvertime(year, month, day, shift, position, hours) {
   // For 4-brigade 24/7 schedule, Saturday and Sunday are regular workdays.
   // Standard weekly workers (5-day) use +100% for Sunday, but that rule
   // does not apply here. Only day/night distinction matters.
-  return { h50: dayMin / 60, h100: nightMin / 60, h200: 0 };
+  // Nearest-minute hours so UI never shows float noise (1.333333…).
+  const toHours = (min) => Math.round(min) / 60;
+  return { h50: toHours(dayMin), h100: toHours(nightMin), h200: 0 };
 }
 
 /**
