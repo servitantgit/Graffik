@@ -1148,7 +1148,13 @@ async function uploadToDrive(force = false) {
     if (!gDriveFileId) {
       // Look for an existing file
       const found = await findDriveFile();
-      if (found) gDriveFileId = found.id;
+      if (found) {
+        gDriveFileId = found.id;
+        // Persist to localStorage so stale-device state (empty file id)
+        // does not repeat on every reload. Without this, findDriveFile
+        // fallback would run on every upload even after a successful one.
+        localStorage.setItem('grafik_drive_file_id', gDriveFileId);
+      }
     }
 
     if (!gDriveFileId) {
