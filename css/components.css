@@ -971,6 +971,7 @@ button.drive-enable-row:hover {
 }
 .drive-card.is-drive-off .drive-account,
 .drive-card.is-drive-off .drive-warn,
+.drive-card.is-drive-off .drive-login,
 .drive-card.is-drive-off .drive-logout {
   opacity: 0.55;
 }
@@ -1100,6 +1101,39 @@ button.drive-sync-options:active {
 button.drive-sync-options .mi-icon {
   font-size: 16px;
   line-height: 1;
+}
+
+/* e-login) Sign in with Google — primary action when not logged in */
+button.drive-login {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  color: #3c4043;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+button.drive-login:hover {
+  background: #f8f9fa;
+  box-shadow: 0 1px 3px rgba(60, 64, 67, 0.2);
+}
+button.drive-login:active {
+  transform: scale(0.98);
+}
+button.drive-login .mi-icon {
+  width: auto;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* e) Logout button — secondary/outline */

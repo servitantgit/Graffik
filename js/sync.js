@@ -1470,10 +1470,13 @@ function updateMenuSyncStatus() {
   }
   if (card) card.classList.toggle('is-drive-off', !driveFeatureOn());
 
+  const loginBtn = document.getElementById('menuDriveLogin');
+
   // Feature off — hide everything except the enable switch itself
   if (!driveFeatureOn()) {
     if (warnBlock) warnBlock.style.display = 'none';
     if (syncOptionsBtn) syncOptionsBtn.style.display = 'none';
+    if (loginBtn) loginBtn.style.display = 'none';
     return;
   }
 
@@ -1487,7 +1490,12 @@ function updateMenuSyncStatus() {
     syncOptionsBtn.style.display = logged ? 'flex' : 'none';
   }
 
-  // Not connected — warning off, account block (updated by updateDriveUI) will prompt sign-in
+  // Login button — when Drive is ON but user is not signed in
+  if (loginBtn) {
+    loginBtn.style.display = logged ? 'none' : 'flex';
+  }
+
+  // Not connected — warning off; login button is the sign-in entry point
   if (!logged) {
     if (warnBlock) warnBlock.style.display = 'none';
     return;
@@ -1522,8 +1530,13 @@ function updateDriveUI() {
   updateMenuSyncStatus();
   const logged = typeof isDriveLoggedIn === 'function' ? isDriveLoggedIn() : isDriveTokenValid();
   const logoutBtn = document.getElementById('menuDriveLogout');
+  const loginBtn = document.getElementById('menuDriveLogin');
   const authBtn = document.getElementById('userAuthBtn');
   if (logoutBtn) logoutBtn.style.display = logged ? 'flex' : 'none';
+  // Login in side menu when Drive feature is ON and not logged in
+  if (loginBtn) {
+    loginBtn.style.display = driveFeatureOn() && !logged ? 'flex' : 'none';
+  }
 
   // Logged-in account line in the Drive menu section
   const acct = document.getElementById('menuDriveAccount');
@@ -2322,6 +2335,15 @@ function initSync() {
       } else {
         loginDrive();
       }
+    };
+  }
+
+  // Side-menu Sign in with Google
+  const loginBtn = document.getElementById('menuDriveLogin');
+  if (loginBtn) {
+    loginBtn.onclick = () => {
+      closeSideMenu();
+      loginDrive();
     };
   }
 

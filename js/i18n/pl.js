@@ -460,6 +460,7 @@ window.translations.pl = {
 
   // === MENU (items) ===
   menuDrive: 'Google Drive (zaloguj)',
+  menuDriveLogin: 'Zaloguj przez Google',
   menuDriveLogout: 'Wyloguj z Google Drive',
   menuIcs: 'Eksport do kalendarza (.ics)',
   menuPrint: 'Drukuj',

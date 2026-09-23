@@ -459,6 +459,7 @@ window.translations.uk = {
 
   // === MENU (items) ===
   menuDrive: 'Google Drive (увійти)',
+  menuDriveLogin: 'Увійти через Google',
   menuDriveLogout: 'Вийти з Google Drive',
   menuIcs: 'Експорт до календаря (.ics)',
   menuPrint: 'Друк',
