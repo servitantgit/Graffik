@@ -269,12 +269,12 @@ function renderDashboard() {
         if (otActive.przed) {
           const cat = categorizeOvertime(activeContext.activeYear, activeContext.activeMonth, activeContext.activeDay, shiftCode, 'przed', otActive.przed.hours);
           const dom = cat.h200 > 0 ? '+200%' : cat.h100 > 0 ? '+100%' : '+50%';
-          parts.push(`⬅ ${otActive.przed.hours}h ${dom}`);
+          parts.push(`⬅ ${formatDurationHoursI18n(otActive.przed.hours)} ${dom}`);
         }
         if (otActive.po) {
           const cat = categorizeOvertime(activeContext.activeYear, activeContext.activeMonth, activeContext.activeDay, shiftCode, 'po', otActive.po.hours);
           const dom = cat.h200 > 0 ? '+200%' : cat.h100 > 0 ? '+100%' : '+50%';
-          parts.push(`${otActive.po.hours}h ${dom} ➡`);
+          parts.push(`${formatDurationHoursI18n(otActive.po.hours)} ${dom} ➡`);
         }
         otInfo = `<div class="advanced-only" style="margin-top:8px; padding:8px 12px; background:rgba(0,0,0,0.35); border-radius:8px; font-size:13px; font-weight:600; color:#fff;">${t('infoOvertime')}: ${parts.join(' · ')}<br><span style="font-size:12px; font-weight:700; color:#fff;">${t('infoTime')} ${actualTime}</span></div>`;
       }
@@ -353,7 +353,7 @@ function renderDashboard() {
         <div class="dsc-icon">⏱</div>
         <div class="dsc-info">
           <div class="dsc-label">${t('infoOvertime')} (${monthNamesShort[m - 1]})</div>
-          <div class="dsc-value">${totalOT}h <small>(${otMonthSum.h50}+${otMonthSum.h100}+${otMonthSum.h200})</small></div>
+          <div class="dsc-value">${formatDurationHoursI18n(totalOT)} <small>(${formatDurationHoursI18n(otMonthSum.h50)}+${formatDurationHoursI18n(otMonthSum.h100)}+${formatDurationHoursI18n(otMonthSum.h200)})</small></div>
         </div>
       </div>`
       : '';

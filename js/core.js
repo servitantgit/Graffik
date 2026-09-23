@@ -980,7 +980,16 @@ function getActualWorkTime(year, month, day, brigade, shift) {
     if (realStart < 0) realStart += 24;
   }
   if (ot.po) realEnd = end + ot.po.hours;
-  const fmt = (h) => String(Math.floor(((h % 24) + 24) % 24)).padStart(2, '0');
+  // formatClockTime supports fractional hours (minutes)
+  const fmt =
+    typeof formatClockTime === 'function'
+      ? formatClockTime
+      : (h) => {
+          const totalMin = Math.round((((h % 24) + 24) % 24) * 60);
+          const hh = Math.floor(totalMin / 60) % 24;
+          const mm = totalMin % 60;
+          return String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0');
+        };
   return `${fmt(realStart)}-${fmt(realEnd)}`;
 }
 

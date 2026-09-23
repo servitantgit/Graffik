@@ -194,6 +194,12 @@ Example:
   }
 }
 
+**Storage format:** `hours` is always a decimal number of hours (e.g. `1.5` = 1 hour 30 minutes, `4.8` = 4 hours 48 minutes). This keeps calculations, sync, and localStorage backward-compatible.
+
+**Display format:** UI never shows raw decimals like `4.8h`. All user-facing overtime durations use `formatDurationHours` / `formatDurationHoursI18n` from `js/schedules/_core.js`, which render hours + minutes (e.g. `4h 48m`, Ukrainian `4год 48хв`, Polish `4godz 48min`). Time ranges use `formatTimeRange` / `formatClockTime` and support fractional hours (`14:00–14:30`).
+
+**Categorization:** `categorizeOvertime` counts day/night by the minute so fractional durations (0.5 step and arbitrary decimals) are accurate. Night window remains 22:00–06:00.
+
 Three position slots:
 - `przed` — overtime BEFORE a scheduled shift (requires the day to have a shift)
 - `po` — overtime AFTER a scheduled shift (requires the day to have a shift)
@@ -260,7 +266,9 @@ localStorage key constants
 daysInMonthCal()
 isWolne()
 escapeHtml()
-formatTimeRange()
+formatClockTime() — HH:MM from fractional hour
+formatTimeRange() — start–end, supports minutes
+formatDurationHours() / formatDurationHoursI18n() — decimal hours → "4h 48m" / localized units
 buildHolidays()
 js/schedules/_registry.js
 Schedule registry and public-data aliases:

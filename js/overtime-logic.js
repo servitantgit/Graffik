@@ -43,17 +43,22 @@ function categorizeOvertime(year, month, day, shift, position, hours) {
   else curHour = shEnd;
   if (curHour < 0) curHour += 24;
 
-  let nightH = 0,
-    dayH = 0;
-  for (let i = 0; i < hours; i++) {
-    const h = (((curHour + i) % 24) + 24) % 24;
-    if (h >= 22 || h < 6) nightH++;
-    else dayH++;
+  // Count day/night by minutes so fractional hours (0.5, 1.5, 4.8, …) are accurate.
+  // Night window: 22:00–06:00 (same rule as whole-hour path).
+  const totalMin = Math.round(Number(hours) * 60);
+  let nightMin = 0;
+  let dayMin = 0;
+  const startMin = Math.round((((curHour % 24) + 24) % 24) * 60);
+  for (let i = 0; i < totalMin; i++) {
+    const absMin = startMin + i;
+    const hourOfDay = Math.floor(absMin / 60) % 24;
+    if (hourOfDay >= 22 || hourOfDay < 6) nightMin++;
+    else dayMin++;
   }
   // For 4-brigade 24/7 schedule, Saturday and Sunday are regular workdays.
   // Standard weekly workers (5-day) use +100% for Sunday, but that rule
   // does not apply here. Only day/night distinction matters.
-  return { h50: dayH, h100: nightH, h200: 0 };
+  return { h50: dayMin / 60, h100: nightMin / 60, h200: 0 };
 }
 
 /**

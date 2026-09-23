@@ -8,6 +8,7 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/).
 
 ### Changed
 
+- **Overtime display: hours + minutes instead of decimals.** Storage stays decimal (`hours: 4.8` = 4h 48m) for compatibility; UI shows `4h 48m` / `4год 48хв` / `4godz 48min` via `formatDurationHours` / `formatDurationHoursI18n` in `js/schedules/_core.js`. Time ranges support minutes (`14:00–14:30`). `categorizeOvertime` now counts day/night by the minute so fractional OT is accurate. i18n keys `durationHoursUnit` / `durationMinutesUnit` added (uk/pl/en). Toast strings no longer append a second unit suffix.
 - **Overtime data model** — `overtimes[key]` now has 3 slots (`przed`, `po`, `weekend`) instead of 2. Existing records without `weekend` field still work (backward compatible). Sync payload includes weekend automatically (structural serialization).
 - **Google Drive UX — single entry point via ⚙ Sync options panel.** All Drive controls (mode selector, diff table, Upload/Download) consolidated into one full-screen panel opened from the Drive card in the side menu. Scattered switches removed from Settings → Data & privacy.
 - **Warning row in Drive card is now clickable** — tap opens the Sync options panel with the diff. Replaces the previous separate "Details →" button.

@@ -191,8 +191,8 @@ window.translations.en = {
   otCategory100: '🟣 +100%',
   otCategory200: '🔴 +200%',
   otPayment: '💰 Total paid',
-  otTodaySummary: '📊 Total today: <b>{h}h</b> worked · 💰 <b>{paid}h</b> paid',
-  otSaved: 'Saved {h}h overtime',
+  otTodaySummary: '📊 Total today: <b>{h}</b> worked · 💰 <b>{paid}</b> paid',
+  otSaved: 'Saved {h} overtime',
   otDeleted: 'Overtime deleted',
   otSelectHours: 'Select number of hours',
   otMonthSummary: '⏱ Overtime this month',
@@ -707,6 +707,8 @@ window.translations.en = {
   remindMeIn: 'Remind me in:',
   hourSingular: 'hour',
   hoursPlural: 'hours',
+  durationHoursUnit: 'h',
+  durationMinutesUnit: 'm',
   notificationLeadToast: 'Reminder',
   beforeShift: 'before shift',
   browserNoNotificationSupport: 'Browser does not support notifications',
@@ -1075,7 +1077,7 @@ window.translations.en = {
   addShiftHoursDelete: 'Delete hours entry',
   addShiftHoursPreview: 'Payment preview',
   addShiftHoursInvalid: 'Enter hours between 0.5 and 24',
-  addShiftHoursSaved: 'Saved {h}h',
+  addShiftHoursSaved: 'Saved {h}',
   addShiftHoursRemoved: 'Hours entry removed',
 
   // === UPLOAD REGRESSION WARNING (Session 1) ===

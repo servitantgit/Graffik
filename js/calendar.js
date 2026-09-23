@@ -144,7 +144,9 @@ function renderCalendar(direction) {
             );
             const r = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
             if (r > maxRate) maxRate = r;
-            parts.push(`${t('otBefore') || 'przed'}: ${ot.przed.hours}h +${r}%`);
+            parts.push(
+              `${t('otBefore') || 'przed'}: ${formatDurationHoursI18n(ot.przed.hours)} +${r}%`
+            );
           }
           if (ot.po) {
             const cat = categorizeOvertime(
@@ -157,7 +159,9 @@ function renderCalendar(direction) {
             );
             const r = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
             if (r > maxRate) maxRate = r;
-            parts.push(`${t('otAfter') || 'po'}: ${ot.po.hours}h +${r}%`);
+            parts.push(
+              `${t('otAfter') || 'po'}: ${formatDurationHoursI18n(ot.po.hours)} +${r}%`
+            );
           }
         }
         if (hasWeekend) {
@@ -171,7 +175,7 @@ function renderCalendar(direction) {
           );
           const r = cat.h200 > 0 ? 200 : cat.h100 > 0 ? 100 : 50;
           if (r > maxRate) maxRate = r;
-          parts.push(`${ot.weekend.hours}h +${r}%`);
+          parts.push(`${formatDurationHoursI18n(ot.weekend.hours)} +${r}%`);
         }
 
         // Corner clock — palette colors: 50 gray, 100 purple, 200 red
@@ -329,8 +333,8 @@ function openAddShiftModal(day) {
     preview.style.display = 'block';
     preview.innerHTML = `
       <div style="font-weight:700; margin-bottom:4px;">${t('addShiftHoursPreview')}:</div>
-      <div>${hours}h × ${cat.h200 > 0 ? '+200%' : cat.h100 > 0 ? '+100%' : '+50%'}</div>
-      <div style="margin-top:4px; font-weight:700;">💰 ${paid}h ${t('infoPaid')}</div>
+      <div>${formatDurationHoursI18n(hours)} × ${cat.h200 > 0 ? '+200%' : cat.h100 > 0 ? '+100%' : '+50%'}</div>
+      <div style="margin-top:4px; font-weight:700;">💰 ${formatDurationHoursI18n(paid)} ${t('infoPaid')}</div>
     `;
   }
 
@@ -379,7 +383,7 @@ function openAddShiftModal(day) {
         if (typeof upsertDayNoteByTag === 'function') {
           upsertDayNoteByTag(currentYear, currentMonth, day, selectedShift, 'weekend', noteText);
         }
-        showToast('success', t('addShiftHoursSaved', { h: hours }));
+        showToast('success', t('addShiftHoursSaved', { h: formatDurationHoursI18n(hours) }));
         hideModal();
         refreshViews();
       });
@@ -492,15 +496,16 @@ function updateOvertimePreview(hours) {
   const crossesMidnight = to < from;
   preview.style.display = 'block';
   const paid = cat.h50 * 1.5 + cat.h100 * 2 + cat.h200 * 3;
+  const fmt = formatDurationHoursI18n;
   preview.innerHTML = `
     <div style="font-weight:700; color:var(--text-header); margin-bottom:6px;">${t('otPreview')}</div>
-    <div>${t('infoTime')} <b>${formatTimeRange(from, to)}</b> (${hours}h)</div>
+    <div>${t('infoTime')} <b>${formatTimeRange(from, to)}</b> (${fmt(hours)})</div>
     ${crossesMidnight ? `<div style="color:#c0392b; font-weight:700; margin-top:4px;">${t('otCrossesMidnight')}</div>` : ''}
-    ${cat.h50 > 0 ? `<div>🟡 <b>+50%</b>: ${cat.h50}h → ${cat.h50 * 1.5}h ${t('infoPaid')}</div>` : ''}
-    ${cat.h100 > 0 ? `<div>🟣 <b>+100%</b>: ${cat.h100}h → ${cat.h100 * 2}h ${t('infoPaid')}</div>` : ''}
-    ${cat.h200 > 0 ? `<div>🔴 <b>+200%</b>: ${cat.h200}h → ${cat.h200 * 3}h ${t('infoPaid')}</div>` : ''}
+    ${cat.h50 > 0 ? `<div>🟡 <b>+50%</b>: ${fmt(cat.h50)} → ${fmt(cat.h50 * 1.5)} ${t('infoPaid')}</div>` : ''}
+    ${cat.h100 > 0 ? `<div>🟣 <b>+100%</b>: ${fmt(cat.h100)} → ${fmt(cat.h100 * 2)} ${t('infoPaid')}</div>` : ''}
+    ${cat.h200 > 0 ? `<div>🔴 <b>+200%</b>: ${fmt(cat.h200)} → ${fmt(cat.h200 * 3)} ${t('infoPaid')}</div>` : ''}
     <div style="margin-top:6px; padding-top:6px; border-top:1px solid var(--border-cell); font-weight:700;">
-      ${t('otPayment')}: ${paid}h
+      ${t('otPayment')}: ${fmt(paid)}
     </div>
   `;
 }
@@ -524,7 +529,7 @@ function saveOvertimeFromModal() {
     note
   );
   document.getElementById('otOverlay').classList.remove('show');
-  showToast('success', t('otSaved', { h: hours }));
+  showToast('success', t('otSaved', { h: formatDurationHoursI18n(hours) }));
   refreshViews();
 }
 
@@ -569,6 +574,7 @@ function renderMonthOvertimeSummary() {
 
   const paid = sum.h50 * 1.5 + sum.h100 * 2 + sum.h200 * 3;
   const totalH = sum.h50 + sum.h100 + sum.h200;
+  const fmt = formatDurationHoursI18n;
 
   const el = document.createElement('div');
   el.id = 'otMonthSummary';
@@ -578,19 +584,19 @@ function renderMonthOvertimeSummary() {
     <div class="ot-summary-grid">
       <div class="ot-summary-card s-50">
         <div class="ssc-label">+50%</div>
-        <div class="ssc-value">${sum.h50}h</div>
+        <div class="ssc-value">${fmt(sum.h50)}</div>
       </div>
       <div class="ot-summary-card s-100">
         <div class="ssc-label">+100%</div>
-        <div class="ssc-value">${sum.h100}h</div>
+        <div class="ssc-value">${fmt(sum.h100)}</div>
       </div>
       <div class="ot-summary-card s-200">
         <div class="ssc-label">+200%</div>
-        <div class="ssc-value">${sum.h200}h</div>
+        <div class="ssc-value">${fmt(sum.h200)}</div>
       </div>
     </div>
     <div class="ot-summary-total">
-      ${t('otMonthTotal')}: <b>${totalH}h</b> ${t('otMonthWorked')} · 💰 <b>${paid}h</b> ${t('otMonthPaid')}
+      ${t('otMonthTotal')}: <b>${fmt(totalH)}</b> ${t('otMonthWorked')} · 💰 <b>${fmt(paid)}</b> ${t('otMonthPaid')}
     </div>
   `;
   // Place monthly OT summary at the end of the month view (after info panel)
@@ -805,8 +811,8 @@ function renderInfo() {
         <div class="info-card" style="grid-column:1/-1;">
           <div class="label">⏱ ${escapeHtml(t('addShiftHoursSection'))}</div>
           <div class="value">
-            <div style="font-weight:700; font-size:15px;">${weekendHours}h × ${weekendRate}</div>
-            <div style="margin-top:4px; color:var(--text-muted);">💰 ${escapeHtml(t('otPayment'))}: ${weekendPaid}h</div>
+            <div style="font-weight:700; font-size:15px;">${formatDurationHoursI18n(weekendHours)} × ${weekendRate}</div>
+            <div style="margin-top:4px; color:var(--text-muted);">💰 ${escapeHtml(t('otPayment'))}: ${formatDurationHoursI18n(weekendPaid)}</div>
             ${weekendNoteText ? `<div style="margin-top:6px; padding:6px 10px; background:var(--bg-cell); border-radius:6px; font-size:13px;">📝 ${escapeHtml(weekendNoteText)}</div>` : ''}
           </div>
         </div>`;

@@ -190,8 +190,8 @@ window.translations.pl = {
   otCategory100: '🟣 +100%',
   otCategory200: '🔴 +200%',
   otPayment: '💰 Razem płatne',
-  otTodaySummary: '📊 Razem dziś: <b>{h}h</b> pracy · 💰 <b>{paid}h</b> płatne',
-  otSaved: 'Zapisano {h}h nadgodzin',
+  otTodaySummary: '📊 Razem dziś: <b>{h}</b> pracy · 💰 <b>{paid}</b> płatne',
+  otSaved: 'Zapisano {h} nadgodzin',
   otDeleted: 'Nadgodziny usunięte',
   otSelectHours: 'Wybierz liczbę godzin',
   otMonthSummary: '⏱ Nadgodziny w miesiącu',
@@ -708,6 +708,8 @@ window.translations.pl = {
   remindMeIn: 'Przypomnij za:',
   hourSingular: 'godzinę',
   hoursPlural: 'godzin',
+  durationHoursUnit: 'godz',
+  durationMinutesUnit: 'min',
   notificationLeadToast: 'Przypomnienie',
   beforeShift: 'przed zmianą',
   browserNoNotificationSupport: 'Przeglądarka nie obsługuje powiadomień',
@@ -1076,7 +1078,7 @@ window.translations.pl = {
   addShiftHoursDelete: 'Usuń zapis godzin',
   addShiftHoursPreview: 'Podgląd wypłaty',
   addShiftHoursInvalid: 'Wprowadź liczbę godzin od 0.5 do 24',
-  addShiftHoursSaved: 'Zapisano {h}h',
+  addShiftHoursSaved: 'Zapisano {h}',
   addShiftHoursRemoved: 'Zapis godzin usunięto',
 
   // === UPLOAD REGRESSION WARNING (Session 1) ===

@@ -335,3 +335,65 @@ test('calcOvertimeTime: 0 hours przed keeps from===to at shift start', () => {
 test('calcOvertimeTime: 0 hours po keeps from===to at shift end (R end 14)', () => {
   assert.deepStrictEqual(calcOvertimeTime('R', 'po', 0), { from: 14, to: 14 });
 });
+
+// ============================================================
+// Fractional hours (0.5 step) — minute-accurate categorization
+// ============================================================
+
+test('categorizeOvertime: fractional 0.5h po on R (day)', () => {
+  // R ends 14:00; po 0.5h = 14:00-14:30 → all day
+  const result = categorizeOvertime(2026, 3, 4, 'R', 'po', 0.5);
+  assert.deepStrictEqual(result, { h50: 0.5, h100: 0, h200: 0 });
+});
+
+test('categorizeOvertime: fractional 1.5h po on P crossing night', () => {
+  // P ends 22:00; po 1.5h = 22:00-23:30 → all night
+  const result = categorizeOvertime(2026, 3, 4, 'P', 'po', 1.5);
+  assert.deepStrictEqual(result, { h50: 0, h100: 1.5, h200: 0 });
+});
+
+test('categorizeOvertime: fractional 4.8h weekend holiday → +200%', () => {
+  const result = categorizeOvertime(2026, 5, 1, null, 'weekend', 4.8);
+  assert.deepStrictEqual(result, { h50: 0, h100: 0, h200: 4.8 });
+});
+
+test('calcOvertimeTime: fractional po 0.5 on R', () => {
+  assert.deepStrictEqual(calcOvertimeTime('R', 'po', 0.5), { from: 14, to: 14.5 });
+});
+
+test('calcOvertimeTime: fractional przed 1.5 on R', () => {
+  // R start 6; przed 1.5 → from 4.5 to 6
+  assert.deepStrictEqual(calcOvertimeTime('R', 'przed', 1.5), { from: 4.5, to: 6 });
+});
+
+// formatDurationHours / formatTimeRange (from _core)
+const {
+  formatDurationHours,
+  formatTimeRange,
+  formatClockTime,
+} = require('../js/schedules/_core.js');
+
+test('formatDurationHours: whole hours', () => {
+  assert.strictEqual(formatDurationHours(4), '4h');
+  assert.strictEqual(formatDurationHours(0), '0h');
+});
+
+test('formatDurationHours: hours + minutes (4.8 → 4h 48m)', () => {
+  assert.strictEqual(formatDurationHours(4.8), '4h 48m');
+  assert.strictEqual(formatDurationHours(4 + 40 / 60), '4h 40m');
+  assert.strictEqual(formatDurationHours(0.5), '30m');
+});
+
+test('formatDurationHours: custom units (uk style)', () => {
+  assert.strictEqual(
+    formatDurationHours(4.8, { hoursUnit: 'год', minutesUnit: 'хв' }),
+    '4год 48хв'
+  );
+});
+
+test('formatClockTime / formatTimeRange: fractional', () => {
+  assert.strictEqual(formatClockTime(14.5), '14:30');
+  assert.strictEqual(formatClockTime(4.8), '04:48');
+  assert.strictEqual(formatTimeRange(14, 14.5), '14:00–14:30');
+  assert.strictEqual(formatTimeRange(4.5, 6), '04:30–06:00');
+});

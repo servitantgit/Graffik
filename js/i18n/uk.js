@@ -190,8 +190,8 @@ window.translations.uk = {
   otCategory100: '🟣 +100%',
   otCategory200: '🔴 +200%',
   otPayment: '💰 Разом оплачується',
-  otTodaySummary: '📊 Разом сьогодні: <b>{h}год</b> відпрацьовано · 💰 <b>{paid}год</b> оплачено',
-  otSaved: 'Збережено {h}год надгодин',
+  otTodaySummary: '📊 Разом сьогодні: <b>{h}</b> відпрацьовано · 💰 <b>{paid}</b> оплачено',
+  otSaved: 'Збережено {h} надгодин',
   otDeleted: 'Надгодини видалено',
   otSelectHours: 'Виберіть кількість годин',
   otMonthSummary: '⏱ Надгодини за місяць',
@@ -708,6 +708,8 @@ window.translations.uk = {
   remindMeIn: 'Нагадати через:',
   hourSingular: 'годину',
   hoursPlural: 'годин',
+  durationHoursUnit: 'год',
+  durationMinutesUnit: 'хв',
   notificationLeadToast: 'Нагадування',
   beforeShift: 'до зміни',
   browserNoNotificationSupport: 'Браузер не підтримує сповіщення',
@@ -1076,7 +1078,7 @@ window.translations.uk = {
   addShiftHoursDelete: 'Видалити запис годин',
   addShiftHoursPreview: 'Попередній розрахунок оплати',
   addShiftHoursInvalid: 'Введіть кількість годин від 0.5 до 24',
-  addShiftHoursSaved: 'Збережено {h}год',
+  addShiftHoursSaved: 'Збережено {h}',
   addShiftHoursRemoved: 'Запис годин видалено',
 
   // === UPLOAD REGRESSION WARNING (Session 1) ===
